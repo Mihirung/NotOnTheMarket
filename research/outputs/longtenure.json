@@ -1,0 +1,186 @@
+{
+ "bands": {
+  "0-4 yrs": {
+   "n_rows": 513953,
+   "n_sellers": 18532,
+   "base_rate": 0.0361,
+   "auc_base": 0.6291,
+   "auc_full": 0.6312,
+   "lift_base": 1.768,
+   "lift_full": 1.781,
+   "lift_diff": 0.012,
+   "lift_diff_ci95": [
+    -0.025,
+    0.053
+   ],
+   "p_improve": 0.743
+  },
+  "5-9 yrs": {
+   "n_rows": 396364,
+   "n_sellers": 18844,
+   "base_rate": 0.0475,
+   "auc_base": 0.5594,
+   "auc_full": 0.5601,
+   "lift_base": 1.412,
+   "lift_full": 1.384,
+   "lift_diff": -0.028,
+   "lift_diff_ci95": [
+    -0.066,
+    0.011
+   ],
+   "p_improve": 0.077
+  },
+  "10-19 yrs": {
+   "n_rows": 862976,
+   "n_sellers": 31949,
+   "base_rate": 0.037,
+   "auc_base": 0.5602,
+   "auc_full": 0.5628,
+   "lift_base": 1.442,
+   "lift_full": 1.449,
+   "lift_diff": 0.007,
+   "lift_diff_ci95": [
+    -0.02,
+    0.035
+   ],
+   "p_improve": 0.69
+  },
+  "20+ yrs": {
+   "n_rows": 195550,
+   "n_sellers": 5203,
+   "base_rate": 0.0266,
+   "auc_base": 0.5175,
+   "auc_full": 0.5418,
+   "lift_base": 1.161,
+   "lift_full": 1.257,
+   "lift_diff": 0.096,
+   "lift_diff_ci95": [
+    -0.024,
+    0.211
+   ],
+   "p_improve": 0.958
+  }
+ },
+ "longtenure_importance": {
+  "log_price_rel": {
+   "mean": 0.01073,
+   "std": 0.00058
+  },
+  "so2": {
+   "mean": 0.00929,
+   "std": 0.00069
+  },
+  "price_rel_nat": {
+   "mean": 0.00562,
+   "std": 0.0013
+  },
+  "km_pharmacy": {
+   "mean": 0.00463,
+   "std": 0.00141
+  },
+  "ls_band": {
+   "mean": 0.00463,
+   "std": 0.00166
+  },
+  "turnover_3y": {
+   "mean": 0.00405,
+   "std": 0.00097
+  },
+  "pc_within_5km": {
+   "mean": 0.00367,
+   "std": 0.00066
+  },
+  "pc_sales_2y": {
+   "mean": 0.00354,
+   "std": 0.00068
+  },
+  "is_new": {
+   "mean": 0.00219,
+   "std": 0.00128
+  },
+  "km_dentist": {
+   "mean": 0.0014,
+   "std": 0.00014
+  },
+  "km_gp": {
+   "mean": 0.0013,
+   "std": 0.00065
+  },
+  "km_town": {
+   "mean": 0.00125,
+   "std": 0.00032
+  },
+  "n_prior": {
+   "mean": 0.00096,
+   "std": 0.00073
+  },
+  "km_hospital": {
+   "mean": 0.00086,
+   "std": 0.00074
+  },
+  "nox": {
+   "mean": 0.00065,
+   "std": 0.00118
+  },
+  "pm10": {
+   "mean": 0.00042,
+   "std": 0.00169
+  },
+  "mismatch_starter_remote": {
+   "mean": 0.00034,
+   "std": 0.00043
+  },
+  "mismatch_family_urban": {
+   "mean": 0.00023,
+   "std": 0.00027
+  },
+  "km_regional": {
+   "mean": 0.00014,
+   "std": 0.00051
+  },
+  "km_major": {
+   "mean": 0.00012,
+   "std": 0.00102
+  },
+  "ptype_S": {
+   "mean": 0.0001,
+   "std": 0.00019
+  },
+  "aq_rel_region": {
+   "mean": 4e-05,
+   "std": 0.00069
+  },
+  "tenure": {
+   "mean": 0.0,
+   "std": 0.0
+  },
+  "excess_tenure": {
+   "mean": 0.0,
+   "std": 0.0
+  },
+  "ptype_T": {
+   "mean": -0.00029,
+   "std": 0.00032
+  },
+  "leasehold": {
+   "mean": -0.00035,
+   "std": 0.00022
+  },
+  "pc_within_1km": {
+   "mean": -0.00039,
+   "std": 0.00041
+  },
+  "ptype_D": {
+   "mean": -0.00068,
+   "std": 0.00029
+  },
+  "ptype_F": {
+   "mean": -0.00084,
+   "std": 0.00062
+  },
+  "price_growth_3y": {
+   "mean": -0.00116,
+   "std": 0.00028
+  }
+ }
+}

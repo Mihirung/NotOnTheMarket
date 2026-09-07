@@ -16,6 +16,7 @@ traditional estate agent.
 | [`docs/01-concept-assessment.md`](docs/01-concept-assessment.md) | Honest evaluation of the concept: premise reality-check, what is strong, the problems most likely to kill it, regulation, business model, recommended wedge and go/no-go metrics. |
 | [`docs/02-prediction-problem.md`](docs/02-prediction-problem.md) | The machine learning deep dive: formal framing, empirical results from 25 years of Land Registry data, the boundary map of what is and is not predictable, and the modelling roadmap. |
 | [`docs/03-data-sources.md`](docs/03-data-sources.md) | Full inventory of usable UK data sources, their licences and gotchas, and the linkage plan. |
+| [`docs/04-does-open-geography-help.md`](docs/04-does-open-geography-help.md) | The AHAH experiment: does open environmental data make targeting good enough? Honest ablation with confidence intervals, plus the response economics that decide whether buyers get replies and how much postage is at risk. |
 | [`research/`](research/) | Reproducible feasibility study: pipeline that links 24.25M Land Registry transactions into 13.8M property histories, survival analysis of ownership spells, and an out-of-time sale-propensity model with honest performance numbers. |
 
 ## Headline findings from the feasibility study
@@ -38,3 +39,13 @@ traditional estate agent.
 4. **The moat is the model nobody can pre-build.** Offer-acceptance
    data (which premium unlocks which owner) exists nowhere publicly;
    the postcard campaigns generate it as a by-product from wave one.
+5. **Open environmental data (AHAH) barely improves targeting overall
+   — 1.5% — but helps where nothing else does.** For owners of 20+
+   years, who supply nearly 4 in 10 of today's sellers and where
+   transaction history is close to useless, it lifts targeting 9%
+   (96% probability of a real gain, interval still touching zero).
+6. **Response risk is a product-design problem, not a modelling one.**
+   Break-even is a 0.34% scan rate; the model moved cost per
+   conversation by £1. What decides whether a buyer hears anything is
+   how wide their brief is — which is why the prototype now searches
+   by liveability rather than by street.

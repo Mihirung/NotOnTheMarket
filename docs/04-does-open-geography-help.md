@@ -64,35 +64,62 @@ contributes. AHAH's domains are also *static*: they describe a place's
 persistent character, and the hard part of this problem is **timing**,
 not character.
 
-## 3. The real result: it helps exactly where the base model fails
+## 3. The one place it earns its keep: long-tenure owners
 
-Overall averages hide the finding. Split the test set by how long the
-owner has been there:
+Overall averages hide the only interesting result. We split the test set
+by how long the owner had been there and bootstrapped the difference in
+top-decile lift (400 resamples), so we would not report noise as a
+finding:
 
-| Owner tenure | AUC, history only | AUC, + geography | Top-decile lift, history | Top-decile lift, full |
-|---|---|---|---|---|
-| 10+ years | 0.5613 | 0.5664 | 1.460 | 1.489 |
-| 20+ years | 0.5175 | **0.5374** | 1.161 | **1.257** |
+| Owner tenure | Sellers in test | Lift, history only | Lift, + geo + life | Difference (95% CI) | P(improved) |
+|---|---|---|---|---|---|
+| 0–4 years | 18,532 | 1.77 | 1.78 | +0.01 (−0.03, +0.05) | 74% |
+| 5–9 years | 18,844 | 1.41 | 1.38 | −0.03 (−0.07, +0.01) | 8% |
+| 10–19 years | 31,949 | 1.44 | 1.45 | +0.01 (−0.02, +0.04) | 69% |
+| **20+ years** | 5,203 | **1.16** | **1.26** | **+0.10 (−0.02, +0.21)** | **96%** |
 
-For owners of 20 years or more, transaction history is nearly useless —
-AUC 0.5175 is barely better than a coin flip, and top-decile lift of
-1.16 means targeting is almost pointless. Adding geography and
-life-stage inference lifts that to 1.257, an **8.3% improvement in the
-cohort where the base model has almost nothing**.
+Read that table carefully, because it says two things and the second one
+is easy to miss.
 
-That matters far more than the headline number, because of a finding
-from the earlier study: **38.8% of current sellers are owners who bought
-24+ years ago.** The long-tenure cohort is not a niche. It is the
-largest single source of the latent supply this business is built on,
-and it is precisely where public transaction records go quiet.
+**First: for three of the four bands, the extra data does nothing.** For
+owners of 5–9 years it is very slightly *negative*. Where transaction
+history is strong, adding geography is at best neutral — the model
+already knows what it needs.
 
-LONGTENURE_DETAIL
+**Second: the 20+ year band is different.** There, transaction history
+is nearly useless — a top-decile lift of 1.16 means targeting barely
+beats mailing at random. Adding geography and life-stage inference takes
+it to 1.26, a 9% improvement, with a 96% posterior probability of being
+a real gain.
 
-Your instinct about inferring life stage from what people bought is
-where this shows up most. The features that encode "this household
-bought a family home and has now been there far longer than families
-normally stay" carry more weight for long-tenure owners than any single
-environmental measure.
+Being straight about the strength of that: **the 95% interval just
+includes zero** (−0.02 to +0.21). It is suggestive, not established.
+With only 5,203 long-tenure sellers in the test window the estimate is
+noisy, and it deserves a confirmation run on the full sample rather than
+a 5% one before anyone builds a plan on it.
+
+But it is the one place worth pursuing, and here is why it matters more
+than its size suggests: **38.8% of current sellers are owners who bought
+24+ years ago.** The cohort where public transaction records go quiet is
+the largest single source of the latent supply the business is built on.
+A 9% targeting gain on 39% of the market is worth more than a 1.5% gain
+on the average.
+
+**What carries it** (permutation importance restricted to 20+ year
+owners, `research/outputs/longtenure.png`): after the property's
+purchase price relative to its local market, the strongest single signal
+is **SO2** — above every other feature, base or geographic — followed by
+distance to a pharmacy, the life-stage band, and built density at 5km.
+
+Your instinct about inferring life stage from what people bought does
+show up: `ls_band` ranks fifth of thirty, and it is the feature the
+`+LIFE` set adds most through. But treat the SO2 result with suspicion
+rather than excitement. SO2 is largely a legacy-industrial signature, so
+it is most likely proxying for *a kind of place* — older industrial
+areas with a particular housing stock and a particular ageing
+demographic — rather than exerting any influence of its own. Combined
+with the current-vintage caveat below, that is a hypothesis to test, not
+a mechanism to trust.
 
 ## 4. The reframe: AHAH's biggest value is on the demand side
 
@@ -180,10 +207,12 @@ of five.
    worth more than any further work on the open-data feature set. The
    ceiling analysis in [`02-prediction-problem.md`](02-prediction-problem.md)
    still holds.
-5. **Keep AHAH.** Not because it materially improves targeting overall,
-   but because it earns its place twice: it is the buyer's search
-   vocabulary, and it is the only thing that gives us any grip at all on
-   long-tenure owners.
+5. **Keep AHAH, for the right two reasons.** Not because it materially
+   improves targeting overall — it does not. Because it is the buyer's
+   search vocabulary, and because it is the only thing that gave us any
+   grip at all on long-tenure owners. Before relying on the second
+   reason, re-run the long-tenure test on the full sample rather than
+   the 5% one, to turn a 96%-probable effect into a settled one.
 
 ## Honest limitations
 
@@ -191,7 +220,11 @@ of five.
   2001–2019 panel. Geography is persistent, so this is acceptable for a
   feasibility read, but it slightly flatters the model wherever
   environmental quality correlates with recent gentrification. A
-  production model should use vintage-matched environmental data.
+  production model should use vintage-matched environmental data. This
+  caveat bears directly on the SO2 result in section 3.
+- The long-tenure finding rests on **5,203 sellers** in a 5% property
+  sample. Its 95% interval includes zero. It is the strongest signal we
+  found and it still needs a full-sample confirmation.
 - Drive times are straight-line distance at 50 km/h, not routed. True
   isochrones need a routing engine (Valhalla, OSRM or the Ordnance
   Survey network); AHAH's own toolkit uses Valhalla. Every figure
