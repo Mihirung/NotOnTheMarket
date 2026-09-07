@@ -5,202 +5,246 @@
   --paper:#F5F4EF; --card:#FDFCF8; --ink:#20282E; --muted:#5A646D; --line:#DBD8CC;
   --accent:#2E6E62; --accent-deep:#24564C; --accent-soft:#E3EDE9; --accent-mid:#7FB5A8;
   --post:#C33D2E; --post-soft:#F6E3DF;
-  --meter1:#CFE5DF; --meter2:#8FC3B6; --meter3:#4E9484; --meter4:#275E54;
-  --ok:#2E6E33; --shadow:0 1px 2px rgba(32,40,46,.06),0 8px 28px rgba(32,40,46,.08);
+  --m1:#CFE5DF; --m2:#8FC3B6; --m3:#4E9484; --m4:#275E54;
+  --warn:#B4741A; --warn-soft:#F7EBD9; --ok:#2E6E33;
+  --shadow:0 1px 2px rgba(32,40,46,.06),0 8px 28px rgba(32,40,46,.08);
 }
-:root:not([data-theme="light"]){ }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --paper:#181D20; --card:#20262B; --ink:#E9E7DC; --muted:#9BA6AC; --line:#394248;
     --accent:#63A899; --accent-deep:#8FC3B6; --accent-soft:#243731; --accent-mid:#4E9484;
     --post:#E06A54; --post-soft:#3A2723;
-    --meter1:#2C3C38; --meter2:#3E6B60; --meter3:#63A899; --meter4:#A5D2C6;
-    --ok:#7BC181; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+    --m1:#2C3C38; --m2:#3E6B60; --m3:#63A899; --m4:#A5D2C6;
+    --warn:#E0A756; --warn-soft:#3A2E1C; --ok:#7BC181;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
   }
 }
 :root[data-theme="dark"]{
   --paper:#181D20; --card:#20262B; --ink:#E9E7DC; --muted:#9BA6AC; --line:#394248;
   --accent:#63A899; --accent-deep:#8FC3B6; --accent-soft:#243731; --accent-mid:#4E9484;
   --post:#E06A54; --post-soft:#3A2723;
-  --meter1:#2C3C38; --meter2:#3E6B60; --meter3:#63A899; --meter4:#A5D2C6;
-  --ok:#7BC181; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+  --m1:#2C3C38; --m2:#3E6B60; --m3:#63A899; --m4:#A5D2C6;
+  --warn:#E0A756; --warn-soft:#3A2E1C; --ok:#7BC181;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
 body{margin:0;background:var(--paper);color:var(--ink);
-  font-family:"Spectral",Georgia,serif;font-size:16.5px;line-height:1.62;}
-h1,h2,h3,.disp{font-family:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;line-height:1.12;text-wrap:balance;margin:0}
-.mono,code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+  font-family:"Spectral",Georgia,serif;font-size:16.5px;line-height:1.62}
+h1,h2,h3{font-family:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  line-height:1.12;text-wrap:balance;margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
 a{color:var(--accent-deep)}
-.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
 .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--accent);font-weight:500}
 .num{font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--muted)}
 
-/* top bar */
 .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:16px}
-.brand{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer}
 .frank{width:34px;height:34px;border-radius:50%;border:2px solid var(--post);color:var(--post);
-  display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:500;
-  transform:rotate(-8deg);letter-spacing:.02em}
-.brand b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;letter-spacing:-.01em}
-.topnav{display:flex;gap:8px;flex-wrap:wrap}
-.tlink{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;text-decoration:none;color:var(--muted);
-  padding:7px 12px;border-radius:999px;border:1px solid transparent}
+  display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:10px;
+  transform:rotate(-8deg)}
+.brand b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px}
+.topnav{display:flex;gap:6px;flex-wrap:wrap}
+.tlink{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;text-decoration:none;
+  color:var(--muted);padding:7px 12px;border-radius:999px;border:1px solid transparent}
 .tlink.on{color:var(--ink);border-color:var(--line);background:var(--card)}
 
-/* buttons & chips */
 .btn{display:inline-flex;align-items:center;gap:8px;font-family:"Bricolage Grotesque",sans-serif;
   font-weight:600;font-size:15.5px;border-radius:10px;padding:11px 20px;cursor:pointer;
   border:1.5px solid var(--accent-deep);background:var(--accent);color:#fff;text-decoration:none}
-:root[data-theme="dark"] .btn,body .btn.dk{color:#10201B}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:#10201B}}
 .btn.ghost{background:transparent;color:var(--accent-deep);border-color:var(--accent)}
 .btn.post{background:var(--post);border-color:var(--post);color:#fff}
 .btn.quiet{background:var(--card);color:var(--muted);border-color:var(--line)}
-.btn:focus-visible,.chip:focus-visible,.tlink:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
-.chip{font-family:"Bricolage Grotesque",sans-serif;font-size:13.5px;font-weight:600;border-radius:999px;
-  padding:7px 14px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer}
+.btn:focus-visible,.chip:focus-visible,.tlink:focus-visible,.cohort:focus-visible{
+  outline:2.5px solid var(--accent);outline-offset:2px}
+.chip{font-family:"Bricolage Grotesque",sans-serif;font-size:13.5px;font-weight:600;
+  border-radius:999px;padding:7px 14px;border:1.5px solid var(--line);background:var(--card);
+  color:var(--muted);cursor:pointer}
 .chip.on{border-color:var(--accent);color:var(--accent-deep);background:var(--accent-soft)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:24px 26px;box-shadow:var(--shadow)}
 
 /* landing */
-.hero{padding:58px 0 30px;display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center}
-@media(max-width:840px){.hero{grid-template-columns:1fr}}
-.hero h1{font-size:clamp(34px,5.2vw,56px);font-weight:800;letter-spacing:-.02em}
+.hero{padding:52px 0 26px;display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(32px,5vw,54px);font-weight:800;letter-spacing:-.02em}
 .hero h1 em{font-style:normal;color:var(--accent)}
 .lede{font-size:19px;color:var(--muted);max-width:34em;margin:18px 0 26px}
-.statrow{display:flex;gap:26px;flex-wrap:wrap;margin-top:34px}
+.statrow{display:flex;gap:26px;flex-wrap:wrap;margin-top:32px}
 .stat{border-left:3px solid var(--accent-mid);padding-left:14px}
-.stat .v{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:26px}
+.stat .v{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:25px}
 .stat .k{font-size:13px;color:var(--muted)}
-.howgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:26px 0 8px}
-@media(max-width:760px){.howgrid{grid-template-columns:1fr}}
+.howgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0 8px}
+@media(max-width:780px){.howgrid{grid-template-columns:1fr}}
 .how{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
 .how .stepno{font-family:"IBM Plex Mono",monospace;color:var(--post);font-size:12px}
 .how h3{font-size:18px;margin:6px 0 8px}
 .how p{margin:0;font-size:15px;color:var(--muted)}
-.sellerbox{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:var(--post-soft);
-  border:1px dashed var(--post);border-radius:14px;padding:18px 22px;margin:38px 0}
+section.band{padding:32px 0;border-top:1px solid var(--line)}
+.sellerbox{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--post-soft);
+  border:1px dashed var(--post);border-radius:14px;padding:18px 22px;margin-top:14px}
 .sellerbox input{font-family:"IBM Plex Mono",monospace;font-size:15px;padding:10px 12px;width:150px;
-  border:1.5px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);text-transform:uppercase}
-section.band{padding:34px 0;border-top:1px solid var(--line)}
+  border:1.5px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);
+  text-transform:uppercase}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+@media(max-width:780px){.grid2{grid-template-columns:1fr}}
 
-/* postcard object */
-.postcard{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
-  aspect-ratio:148/105;padding:20px;position:relative;overflow:hidden}
-.postcard.heroPC{transform:rotate(2.4deg)}
+/* postcard */
+.postcard{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  box-shadow:var(--shadow);aspect-ratio:148/105;padding:20px;position:relative;overflow:hidden}
+.postcard.tilt{transform:rotate(2.2deg)}
 .pc-rule{position:absolute;top:16px;bottom:16px;left:58%;width:1px;background:var(--line)}
 .pc-stamp{position:absolute;top:14px;right:14px;width:78px;height:78px;background:#fff;padding:5px;
-  border:1px solid var(--line);outline:4px dotted var(--paper);outline-offset:-2px}
-.pc-stamp img,.pc-stamp canvas,.pc-stamp table{width:68px !important;height:68px !important}
-.pc-frank{position:absolute;top:52px;right:74px;width:64px;height:64px;border:2px solid var(--post);
-  border-radius:50%;opacity:.65;transform:rotate(-14deg);display:grid;place-items:center;text-align:center;
-  font-family:"IBM Plex Mono",monospace;font-size:8.5px;color:var(--post);pointer-events:none}
-.pc-addr{position:absolute;left:62%;right:20px;top:110px;font-family:"IBM Plex Mono",monospace;
+  border:1px solid var(--line)}
+.pc-stamp img,.pc-stamp canvas{width:68px!important;height:68px!important}
+.pc-frank{position:absolute;top:52px;right:74px;width:62px;height:62px;border:2px solid var(--post);
+  border-radius:50%;opacity:.6;transform:rotate(-14deg);display:grid;place-items:center;
+  text-align:center;font-family:"IBM Plex Mono",monospace;font-size:8px;color:var(--post)}
+.pc-addr{position:absolute;left:62%;right:20px;top:108px;font-family:"IBM Plex Mono",monospace;
   font-size:12.5px;line-height:2.1;color:var(--muted)}
 .pc-msg{position:absolute;left:20px;top:18px;width:52%}
-.pc-msg .h{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(15px,1.9vw,21px);line-height:1.18}
+.pc-msg .h{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:clamp(15px,1.9vw,21px);line-height:1.18}
 .pc-msg .o{margin-top:10px;font-size:13.5px;color:var(--muted)}
 .pc-msg .o b{color:var(--accent-deep)}
 .pc-foot{position:absolute;left:20px;bottom:14px;right:20px;display:flex;justify-content:space-between;
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted)}
 
-/* forms */
-.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow)}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
-@media(max-width:760px){.formgrid{grid-template-columns:1fr}}
-.f-label{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15px;margin:0 0 10px}
-.f-hint{font-size:13px;color:var(--muted);margin-top:8px}
-.chiprow{display:flex;gap:8px;flex-wrap:wrap}
-input[type=range]{width:100%;accent-color:var(--accent)}
-.budget-read{font-family:"IBM Plex Mono",monospace;font-size:14px;color:var(--accent-deep)}
+/* lifestyle search */
+.searchgrid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
+@media(max-width:900px){.searchgrid{grid-template-columns:1fr}}
+.crit{border-bottom:1px solid var(--line);padding:15px 0}
+.crit:last-child{border-bottom:none}
+.crit .lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.crit .lab b{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15.5px}
+.crit .val{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent-deep)}
+.crit .why{font-size:13px;color:var(--muted);margin-top:3px}
+input[type=range]{width:100%;accent-color:var(--accent);margin-top:9px}
+.chiprow{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+
+/* live count rail */
+.rail{position:sticky;top:16px}
+.rail .big{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:42px;letter-spacing:-.02em;line-height:1}
+.rail .sub{color:var(--muted);font-size:14.5px;margin-top:4px}
+.kv{display:flex;justify-content:space-between;font-size:14px;gap:12px;padding:3px 0}
+.kv .k{color:var(--muted)}
+.kv .v{font-weight:500}
+.gauge{margin-top:14px;border-radius:12px;padding:13px 15px;border:1.5px solid}
+.gauge.good{background:var(--accent-soft);border-color:var(--accent-mid)}
+.gauge.warn{background:var(--warn-soft);border-color:var(--warn)}
+.gauge h4{font-family:"Bricolage Grotesque",sans-serif;font-size:14.5px;margin:0 0 4px}
+.gauge.good h4{color:var(--accent-deep)}
+.gauge.warn h4{color:var(--warn)}
+.gauge p{margin:0;font-size:13.5px;color:var(--muted)}
+.bar{height:9px;border-radius:5px;background:var(--line);overflow:hidden;margin:9px 0 7px}
+.bar i{display:block;height:100%;border-radius:5px}
+
+/* map */
+.mapwrap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.mapwrap h3{font-size:15.5px;margin-bottom:2px}
+.legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:8px;
+  font-size:12px;color:var(--muted)}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:5px;
+  vertical-align:-1px}
 
 /* results */
-.resulthead{display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:8px 0 20px}
-.bignum{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(30px,4.4vw,44px);letter-spacing:-.02em}
-.bignum small{font-size:.45em;font-weight:600;color:var(--muted);letter-spacing:0}
-.cohortgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
-.cohort{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:18px 20px 16px;
-  cursor:pointer;position:relative;display:flex;flex-direction:column;gap:10px}
+.resulthead{display:flex;align-items:end;justify-content:space-between;gap:20px;
+  flex-wrap:wrap;margin:6px 0 18px}
+.bignum{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:clamp(28px,4.2vw,42px);letter-spacing:-.02em}
+.bignum small{font-size:.45em;font-weight:600;color:var(--muted)}
+.cohortgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:16px}
+.cohort{background:var(--card);border:1.5px solid var(--line);border-radius:14px;
+  padding:17px 19px 15px;cursor:pointer;position:relative;display:flex;flex-direction:column;gap:9px}
 .cohort.sel{border-color:var(--accent);background:var(--accent-soft)}
 .cohort .tick{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:7px;
-  border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;color:transparent;background:var(--card)}
+  border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;
+  color:transparent;background:var(--card)}
 .cohort.sel .tick{background:var(--accent);border-color:var(--accent);color:#fff}
-.cohort h3{font-size:17.5px;padding-right:30px}
-.cohort .where{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+.cohort h3{font-size:17px;padding-right:30px}
+.cohort .where{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);
+  letter-spacing:.05em}
 .likely{display:flex;align-items:baseline;gap:8px}
-.likely b{font-family:"Bricolage Grotesque",sans-serif;font-size:24px;font-weight:800;color:var(--accent-deep)}
+.likely b{font-family:"Bricolage Grotesque",sans-serif;font-size:23px;font-weight:800;
+  color:var(--accent-deep)}
 .likely span{font-size:13px;color:var(--muted)}
-.meter{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;background:transparent}
-.meter i{display:block;height:100%}
-.kv{display:flex;justify-content:space-between;font-size:14px;gap:12px}
-.kv .k{color:var(--muted)} .kv .v{font-weight:500}
-.foot-cite{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:3px 8px;border-radius:6px;
+  background:var(--paper);border:1px solid var(--line);color:var(--muted)}
+.tray{position:sticky;bottom:14px;margin-top:22px;background:var(--ink);color:var(--paper);
+  border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;box-shadow:var(--shadow)}
 
-/* tray */
-.tray{position:sticky;bottom:14px;margin-top:26px;background:var(--ink);color:var(--paper);border-radius:14px;
-  padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;box-shadow:var(--shadow)}
-.tray .mono{font-size:13px}
-
-/* campaign */
-.funnel{display:flex;flex-direction:column;gap:10px;margin:10px 0}
-.frow{display:grid;grid-template-columns:170px 1fr 120px;gap:14px;align-items:center;font-size:14.5px}
-.frow .bar{height:14px;border-radius:4px;background:var(--meter3);min-width:3px}
-.frow .lbl{color:var(--muted)} .frow .val{text-align:right;font-family:"IBM Plex Mono",monospace;font-size:13px}
-.timeline{border-left:2px solid var(--line);margin:16px 0 6px 8px;padding-left:22px;display:flex;flex-direction:column;gap:16px}
-.tl{position:relative}
-.tl::before{content:"";position:absolute;left:-29px;top:5px;width:12px;height:12px;border-radius:50%;
-  background:var(--line);border:2.5px solid var(--paper)}
-.tl.done::before{background:var(--accent)}
-.tl.pulse::before{background:var(--post)}
-.tl .when{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);letter-spacing:.06em}
-.tl .what{font-size:15.5px}
-.response{border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--paper);
-  display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
-.response.hot{border-color:var(--post)}
-.pill{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;border-radius:999px;padding:4px 11px}
+/* warm book */
+.warm{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  border:1.5px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);
+  margin-bottom:9px}
+.warm.hot{border-color:var(--post)}
+.pill{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;
+  border-radius:999px;padding:4px 11px}
 .pill.warm{background:var(--post-soft);color:var(--post)}
 .pill.cool{background:var(--accent-soft);color:var(--accent-deep)}
 .pill.okp{background:var(--accent-soft);color:var(--ok)}
-.checklist{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:15px}
+
+/* campaign */
+.funnel{display:flex;flex-direction:column;gap:9px;margin:10px 0}
+.frow{display:grid;grid-template-columns:165px 1fr 110px;gap:12px;align-items:center;font-size:14.5px}
+.frow .fbar{height:13px;border-radius:4px;background:var(--m3);min-width:3px}
+.frow .lbl{color:var(--muted)}
+.frow .val{text-align:right;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.timeline{border-left:2px solid var(--line);margin:16px 0 6px 8px;padding-left:22px;
+  display:flex;flex-direction:column;gap:15px}
+.tl{position:relative}
+.tl::before{content:"";position:absolute;left:-29px;top:5px;width:12px;height:12px;
+  border-radius:50%;background:var(--line);border:2.5px solid var(--paper)}
+.tl.done::before{background:var(--accent)}
+.tl.pulse::before{background:var(--post)}
+.tl .when{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+.simbar{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;
+  border:1px dashed var(--line);border-radius:12px;padding:10px 16px;margin:16px 0;
+  color:var(--muted);font-size:13.5px}
+.checklist{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;
+  gap:9px;font-size:15px}
 .checklist li{display:flex;gap:10px;align-items:baseline}
 .checklist .st{font-family:"IBM Plex Mono",monospace;font-size:11px;width:66px;flex:none;color:var(--muted)}
 .checklist .st.done{color:var(--ok)}
 .msg{display:flex;gap:10px;margin-top:12px}
-.msg .who{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent-deep);
-  display:grid;place-items:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:13px}
-.msg .bubble{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:14.5px;max-width:44em}
-.simbar{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;
-  border:1px dashed var(--line);border-radius:12px;padding:10px 16px;margin:18px 0;color:var(--muted);font-size:13.5px}
+.msg .who{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent-soft);
+  color:var(--accent-deep);display:grid;place-items:center;
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:13px}
+.msg .bubble{background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;font-size:14.5px;max-width:44em}
 
 /* seller */
 .offerhero{max-width:720px;margin:0 auto}
-.offerbig{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(30px,5vw,46px);color:var(--accent-deep);letter-spacing:-.02em}
+.offerbig{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:clamp(29px,5vw,45px);color:var(--accent-deep);letter-spacing:-.02em}
 .actions{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 8px}
 details.faq{border-top:1px solid var(--line);padding:13px 2px}
-details.faq summary{cursor:pointer;font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15.5px}
+details.faq summary{cursor:pointer;font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:600;font-size:15.5px}
 details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
-.steps{counter-reset:s;display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.steps{display:flex;flex-direction:column;gap:14px;margin-top:8px;counter-reset:s}
 .step{display:flex;gap:14px}
-.step::before{counter-increment:s;content:counter(s);flex:none;width:28px;height:28px;border-radius:50%;
-  background:var(--accent);color:#fff;display:grid;place-items:center;font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14px}
+.step::before{counter-increment:s;content:counter(s);flex:none;width:28px;height:28px;
+  border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14px}
 .slotrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-
-/* misc */
-.note{font-size:13px;color:var(--muted)}
-.footer{border-top:1px solid var(--line);margin-top:56px;padding:26px 0 40px;color:var(--muted);font-size:13.5px}
+.footer{border-top:1px solid var(--line);margin-top:52px;padding:24px 0 40px;
+  color:var(--muted);font-size:13.5px}
 .footer .mono{font-size:11.5px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
-@media(max-width:760px){.grid2{grid-template-columns:1fr}}
-.fadein{animation:fi .45s ease}
+.fadein{animation:fi .4s ease}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion: reduce){.fadein{animation:none}.postcard.heroPC{transform:none}}
+@media (prefers-reduced-motion:reduce){.fadein{animation:none}.postcard.tilt{transform:none}}
 </style>
 
 <div class="wrap">
   <header class="top">
-    <div class="brand" onclick="go('/')" tabindex="0" role="link" aria-label="Quiet Market home"
+    <div class="brand" onclick="go('/')" tabindex="0" role="link"
          onkeydown="if(event.key==='Enter')go('/')">
       <div class="frank">QM</div><b>Quiet&nbsp;Market</b>
     </div>
@@ -209,976 +253,160 @@ details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
   <main id="app"></main>
   <footer class="footer">
     <div><b style="font-family:'Bricolage Grotesque',sans-serif">Quiet Market</b> — the homes that aren't for sale. Yet.</div>
-    <div style="margin-top:8px">Prototype v1 for internal review. No postcards are printed or posted from this page.
+    <div style="margin-top:8px">Prototype v2 for internal review. No postcards are printed or posted from this page.
       Likelihood figures come from a real model trained on HM Land Registry Price Paid Data
-      (England &amp; Wales, 1995–2019, 24.3M transactions; out-of-time AUC 0.588). Offer figures use a
-      proof-of-concept pricing rule, clearly an assumption until campaign data exists. Demo area: Exeter.</div>
-    <div class="mono" style="margin-top:8px">Contains HM Land Registry data © Crown copyright, licensed under the OGL v3.0.</div>
+      (England &amp; Wales, 1995–2019, 24.3M transactions; out-of-time AUC 0.588). Air quality and
+      health-access figures are real, from AHAH v4 inputs. Drive times are approximated from
+      straight-line distance at 50 km/h, not routed. Offer figures use a proof-of-concept pricing
+      rule — an assumption until campaign data exists. Demo area: Exeter.</div>
+    <div class="mono" style="margin-top:8px">Contains HM Land Registry data © Crown copyright (OGL v3.0) ·
+      ONS postcode geography (OGL) · AHAH v4, Geographic Data Service.</div>
   </footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const DATA = {
- "area": {
-  "n_owned_tracked": 32573,
-  "exp_sellers_12m": 1385,
-  "top_band_cut": 0.0532,
-  "p_sale_mean": 0.0425,
-  "by_outcode": {
-   "EX1": {
-    "n": 6222,
-    "exp_sellers_12m": 295,
-    "est_value_med": 287000
-   },
-   "EX2": {
-    "n": 11825,
-    "exp_sellers_12m": 479,
-    "est_value_med": 257000
-   },
-   "EX3": {
-    "n": 1689,
-    "exp_sellers_12m": 69,
-    "est_value_med": 447000
-   },
-   "EX4": {
-    "n": 12837,
-    "exp_sellers_12m": 542,
-    "est_value_med": 234000
-   }
-  },
-  "model": {
-   "auc_oot": 0.588,
-   "lift_top1pct": 1.89,
-   "trained_on": "HM Land Registry Price Paid Data 1995-2019, England & Wales, 24.3M transactions"
-  }
- },
- "cohorts": [
-  {
-   "outcode": "EX1",
-   "ptype": "D",
-   "band": "under250",
-   "n": 31,
-   "n_top": 12,
-   "exp_sellers_12m": 1.5,
-   "p_median": 0.0474,
-   "p_top_decile": 0.0685,
-   "est_value_med": 221000,
-   "offer_mid_med": 248000,
-   "premium_med": 0.105,
-   "tenure_med": 6.0,
-   "leasehold_share": 0.1
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "D",
-   "band": "250to400",
-   "n": 481,
-   "n_top": 114,
-   "exp_sellers_12m": 20.3,
-   "p_median": 0.0418,
-   "p_top_decile": 0.0628,
-   "est_value_med": 344000,
-   "offer_mid_med": 389000,
-   "premium_med": 0.143,
-   "tenure_med": 3.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "D",
-   "band": "400to600",
-   "n": 465,
-   "n_top": 56,
-   "exp_sellers_12m": 17.5,
-   "p_median": 0.0375,
-   "p_top_decile": 0.0544,
-   "est_value_med": 459000,
-   "offer_mid_med": 535000,
-   "premium_med": 0.173,
-   "tenure_med": 6.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "D",
-   "band": "over600",
-   "n": 124,
-   "n_top": 1,
-   "exp_sellers_12m": 4.0,
-   "p_median": 0.0314,
-   "p_top_decile": 0.0427,
-   "est_value_med": 712000,
-   "offer_mid_med": 868000,
-   "premium_med": 0.21,
-   "tenure_med": 14.0,
-   "leasehold_share": 0.02
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "F",
-   "band": "under250",
-   "n": 1000,
-   "n_top": 556,
-   "exp_sellers_12m": 55.9,
-   "p_median": 0.0559,
-   "p_top_decile": 0.0776,
-   "est_value_med": 180000,
-   "offer_mid_med": 204000,
-   "premium_med": 0.108,
-   "tenure_med": 7.0,
-   "leasehold_share": 0.98
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "F",
-   "band": "250to400",
-   "n": 162,
-   "n_top": 91,
-   "exp_sellers_12m": 9.1,
-   "p_median": 0.0562,
-   "p_top_decile": 0.0727,
-   "est_value_med": 287000,
-   "offer_mid_med": 329000,
-   "premium_med": 0.123,
-   "tenure_med": 11.0,
-   "leasehold_share": 0.94
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "F",
-   "band": "400to600",
-   "n": 47,
-   "n_top": 22,
-   "exp_sellers_12m": 2.3,
-   "p_median": 0.0518,
-   "p_top_decile": 0.0598,
-   "est_value_med": 470000,
-   "offer_mid_med": 535000,
-   "premium_med": 0.128,
-   "tenure_med": 9.0,
-   "leasehold_share": 0.98
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "S",
-   "band": "under250",
-   "n": 149,
-   "n_top": 48,
-   "exp_sellers_12m": 6.7,
-   "p_median": 0.0429,
-   "p_top_decile": 0.0646,
-   "est_value_med": 226000,
-   "offer_mid_med": 259000,
-   "premium_med": 0.149,
-   "tenure_med": 7.0,
-   "leasehold_share": 0.09
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "S",
-   "band": "250to400",
-   "n": 933,
-   "n_top": 209,
-   "exp_sellers_12m": 40.4,
-   "p_median": 0.0407,
-   "p_top_decile": 0.0696,
-   "est_value_med": 316000,
-   "offer_mid_med": 366000,
-   "premium_med": 0.157,
-   "tenure_med": 7.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "S",
-   "band": "400to600",
-   "n": 207,
-   "n_top": 17,
-   "exp_sellers_12m": 8.1,
-   "p_median": 0.0373,
-   "p_top_decile": 0.0501,
-   "est_value_med": 449000,
-   "offer_mid_med": 530000,
-   "premium_med": 0.183,
-   "tenure_med": 13.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "T",
-   "band": "under250",
-   "n": 885,
-   "n_top": 368,
-   "exp_sellers_12m": 45.3,
-   "p_median": 0.0474,
-   "p_top_decile": 0.078,
-   "est_value_med": 225000,
-   "offer_mid_med": 252000,
-   "premium_med": 0.117,
-   "tenure_med": 6.0,
-   "leasehold_share": 0.05
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "T",
-   "band": "250to400",
-   "n": 1495,
-   "n_top": 574,
-   "exp_sellers_12m": 74.6,
-   "p_median": 0.0467,
-   "p_top_decile": 0.075,
-   "est_value_med": 291000,
-   "offer_mid_med": 336000,
-   "premium_med": 0.139,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "T",
-   "band": "400to600",
-   "n": 153,
-   "n_top": 17,
-   "exp_sellers_12m": 6.2,
-   "p_median": 0.0391,
-   "p_top_decile": 0.0543,
-   "est_value_med": 449000,
-   "offer_mid_med": 526000,
-   "premium_med": 0.176,
-   "tenure_med": 13.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX1",
-   "ptype": "T",
-   "band": "over600",
-   "n": 52,
-   "n_top": 0,
-   "exp_sellers_12m": 1.7,
-   "p_median": 0.0337,
-   "p_top_decile": 0.0419,
-   "est_value_med": 743000,
-   "offer_mid_med": 903000,
-   "premium_med": 0.188,
-   "tenure_med": 12.5,
-   "leasehold_share": 0.02
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "D",
-   "band": "under250",
-   "n": 124,
-   "n_top": 13,
-   "exp_sellers_12m": 5.0,
-   "p_median": 0.0404,
-   "p_top_decile": 0.054,
-   "est_value_med": 225000,
-   "offer_mid_med": 260000,
-   "premium_med": 0.145,
-   "tenure_med": 8.0,
-   "leasehold_share": 0.05
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "D",
-   "band": "250to400",
-   "n": 948,
-   "n_top": 52,
-   "exp_sellers_12m": 36.3,
-   "p_median": 0.0384,
-   "p_top_decile": 0.0509,
-   "est_value_med": 338000,
-   "offer_mid_med": 393000,
-   "premium_med": 0.158,
-   "tenure_med": 7.0,
-   "leasehold_share": 0.01
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "D",
-   "band": "400to600",
-   "n": 878,
-   "n_top": 8,
-   "exp_sellers_12m": 30.3,
-   "p_median": 0.0352,
-   "p_top_decile": 0.0462,
-   "est_value_med": 469000,
-   "offer_mid_med": 555000,
-   "premium_med": 0.182,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.01
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "D",
-   "band": "over600",
-   "n": 330,
-   "n_top": 0,
-   "exp_sellers_12m": 9.8,
-   "p_median": 0.0303,
-   "p_top_decile": 0.0399,
-   "est_value_med": 723000,
-   "offer_mid_med": 863000,
-   "premium_med": 0.198,
-   "tenure_med": 12.0,
-   "leasehold_share": 0.01
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "F",
-   "band": "under250",
-   "n": 1649,
-   "n_top": 403,
-   "exp_sellers_12m": 73.8,
-   "p_median": 0.0445,
-   "p_top_decile": 0.0615,
-   "est_value_med": 166000,
-   "offer_mid_med": 189000,
-   "premium_med": 0.14,
-   "tenure_med": 8.0,
-   "leasehold_share": 0.96
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "F",
-   "band": "250to400",
-   "n": 385,
-   "n_top": 65,
-   "exp_sellers_12m": 16.9,
-   "p_median": 0.0447,
-   "p_top_decile": 0.057,
-   "est_value_med": 291000,
-   "offer_mid_med": 342000,
-   "premium_med": 0.159,
-   "tenure_med": 13.0,
-   "leasehold_share": 0.96
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "F",
-   "band": "400to600",
-   "n": 71,
-   "n_top": 1,
-   "exp_sellers_12m": 2.7,
-   "p_median": 0.0427,
-   "p_top_decile": 0.0514,
-   "est_value_med": 455000,
-   "offer_mid_med": 529000,
-   "premium_med": 0.177,
-   "tenure_med": 11.0,
-   "leasehold_share": 0.96
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "S",
-   "band": "under250",
-   "n": 1214,
-   "n_top": 136,
-   "exp_sellers_12m": 49.1,
-   "p_median": 0.0405,
-   "p_top_decile": 0.0548,
-   "est_value_med": 204000,
-   "offer_mid_med": 235000,
-   "premium_med": 0.147,
-   "tenure_med": 8.0,
-   "leasehold_share": 0.04
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "S",
-   "band": "250to400",
-   "n": 1447,
-   "n_top": 135,
-   "exp_sellers_12m": 54.4,
-   "p_median": 0.0372,
-   "p_top_decile": 0.0523,
-   "est_value_med": 296000,
-   "offer_mid_med": 349000,
-   "premium_med": 0.174,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.04
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "S",
-   "band": "400to600",
-   "n": 196,
-   "n_top": 0,
-   "exp_sellers_12m": 6.8,
-   "p_median": 0.0354,
-   "p_top_decile": 0.0451,
-   "est_value_med": 444000,
-   "offer_mid_med": 525000,
-   "premium_med": 0.183,
-   "tenure_med": 13.0,
-   "leasehold_share": 0.01
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "S",
-   "band": "over600",
-   "n": 68,
-   "n_top": 0,
-   "exp_sellers_12m": 2.1,
-   "p_median": 0.0315,
-   "p_top_decile": 0.0379,
-   "est_value_med": 783000,
-   "offer_mid_med": 937000,
-   "premium_med": 0.193,
-   "tenure_med": 9.5,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "T",
-   "band": "under250",
-   "n": 2596,
-   "n_top": 589,
-   "exp_sellers_12m": 113.2,
-   "p_median": 0.0424,
-   "p_top_decile": 0.0613,
-   "est_value_med": 209000,
-   "offer_mid_med": 240000,
-   "premium_med": 0.143,
-   "tenure_med": 9.0,
-   "leasehold_share": 0.05
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "T",
-   "band": "250to400",
-   "n": 1567,
-   "n_top": 323,
-   "exp_sellers_12m": 65.4,
-   "p_median": 0.0403,
-   "p_top_decile": 0.0584,
-   "est_value_med": 288000,
-   "offer_mid_med": 335000,
-   "premium_med": 0.163,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.02
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "T",
-   "band": "400to600",
-   "n": 289,
-   "n_top": 12,
-   "exp_sellers_12m": 10.6,
-   "p_median": 0.0377,
-   "p_top_decile": 0.0485,
-   "est_value_med": 450000,
-   "offer_mid_med": 526000,
-   "premium_med": 0.179,
-   "tenure_med": 9.0,
-   "leasehold_share": 0.13
-  },
-  {
-   "outcode": "EX2",
-   "ptype": "T",
-   "band": "over600",
-   "n": 58,
-   "n_top": 0,
-   "exp_sellers_12m": 1.9,
-   "p_median": 0.0339,
-   "p_top_decile": 0.0386,
-   "est_value_med": 737000,
-   "offer_mid_med": 884000,
-   "premium_med": 0.206,
-   "tenure_med": 13.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "D",
-   "band": "250to400",
-   "n": 44,
-   "n_top": 5,
-   "exp_sellers_12m": 1.8,
-   "p_median": 0.0429,
-   "p_top_decile": 0.0538,
-   "est_value_med": 355000,
-   "offer_mid_med": 414000,
-   "premium_med": 0.136,
-   "tenure_med": 6.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "D",
-   "band": "400to600",
-   "n": 145,
-   "n_top": 2,
-   "exp_sellers_12m": 5.0,
-   "p_median": 0.035,
-   "p_top_decile": 0.0456,
-   "est_value_med": 501000,
-   "offer_mid_med": 594000,
-   "premium_med": 0.176,
-   "tenure_med": 7.0,
-   "leasehold_share": 0.01
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "D",
-   "band": "over600",
-   "n": 337,
-   "n_top": 1,
-   "exp_sellers_12m": 10.4,
-   "p_median": 0.0319,
-   "p_top_decile": 0.0393,
-   "est_value_med": 839000,
-   "offer_mid_med": 1007000,
-   "premium_med": 0.184,
-   "tenure_med": 9.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "F",
-   "band": "under250",
-   "n": 130,
-   "n_top": 71,
-   "exp_sellers_12m": 7.0,
-   "p_median": 0.0552,
-   "p_top_decile": 0.0772,
-   "est_value_med": 204000,
-   "offer_mid_med": 234000,
-   "premium_med": 0.108,
-   "tenure_med": 7.0,
-   "leasehold_share": 0.98
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "F",
-   "band": "250to400",
-   "n": 68,
-   "n_top": 28,
-   "exp_sellers_12m": 3.4,
-   "p_median": 0.0447,
-   "p_top_decile": 0.0783,
-   "est_value_med": 308000,
-   "offer_mid_med": 359000,
-   "premium_med": 0.143,
-   "tenure_med": 8.0,
-   "leasehold_share": 0.93
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "F",
-   "band": "400to600",
-   "n": 44,
-   "n_top": 14,
-   "exp_sellers_12m": 2.1,
-   "p_median": 0.0471,
-   "p_top_decile": 0.0751,
-   "est_value_med": 459000,
-   "offer_mid_med": 530000,
-   "premium_med": 0.144,
-   "tenure_med": 6.0,
-   "leasehold_share": 0.95
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "S",
-   "band": "250to400",
-   "n": 101,
-   "n_top": 24,
-   "exp_sellers_12m": 4.3,
-   "p_median": 0.042,
-   "p_top_decile": 0.0603,
-   "est_value_med": 339000,
-   "offer_mid_med": 395000,
-   "premium_med": 0.151,
-   "tenure_med": 9.0,
-   "leasehold_share": 0.01
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "S",
-   "band": "400to600",
-   "n": 112,
-   "n_top": 8,
-   "exp_sellers_12m": 4.0,
-   "p_median": 0.0349,
-   "p_top_decile": 0.0468,
-   "est_value_med": 461000,
-   "offer_mid_med": 543000,
-   "premium_med": 0.18,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "S",
-   "band": "over600",
-   "n": 56,
-   "n_top": 3,
-   "exp_sellers_12m": 1.9,
-   "p_median": 0.0328,
-   "p_top_decile": 0.0448,
-   "est_value_med": 756000,
-   "offer_mid_med": 905000,
-   "premium_med": 0.188,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "T",
-   "band": "under250",
-   "n": 63,
-   "n_top": 13,
-   "exp_sellers_12m": 2.5,
-   "p_median": 0.0346,
-   "p_top_decile": 0.0651,
-   "est_value_med": 215000,
-   "offer_mid_med": 250000,
-   "premium_med": 0.202,
-   "tenure_med": 14.0,
-   "leasehold_share": 0.11
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "T",
-   "band": "250to400",
-   "n": 259,
-   "n_top": 120,
-   "exp_sellers_12m": 13.1,
-   "p_median": 0.0507,
-   "p_top_decile": 0.0745,
-   "est_value_med": 322000,
-   "offer_mid_med": 371000,
-   "premium_med": 0.121,
-   "tenure_med": 8.0,
-   "leasehold_share": 0.03
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "T",
-   "band": "400to600",
-   "n": 194,
-   "n_top": 44,
-   "exp_sellers_12m": 8.5,
-   "p_median": 0.0422,
-   "p_top_decile": 0.0609,
-   "est_value_med": 456000,
-   "offer_mid_med": 539000,
-   "premium_med": 0.151,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.03
-  },
-  {
-   "outcode": "EX3",
-   "ptype": "T",
-   "band": "over600",
-   "n": 102,
-   "n_top": 6,
-   "exp_sellers_12m": 3.6,
-   "p_median": 0.0355,
-   "p_top_decile": 0.047,
-   "est_value_med": 754000,
-   "offer_mid_med": 906000,
-   "premium_med": 0.18,
-   "tenure_med": 9.0,
-   "leasehold_share": 0.02
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "D",
-   "band": "under250",
-   "n": 143,
-   "n_top": 24,
-   "exp_sellers_12m": 6.0,
-   "p_median": 0.0404,
-   "p_top_decile": 0.0563,
-   "est_value_med": 221000,
-   "offer_mid_med": 255000,
-   "premium_med": 0.165,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.03
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "D",
-   "band": "250to400",
-   "n": 1097,
-   "n_top": 61,
-   "exp_sellers_12m": 42.4,
-   "p_median": 0.0389,
-   "p_top_decile": 0.0494,
-   "est_value_med": 324000,
-   "offer_mid_med": 378000,
-   "premium_med": 0.172,
-   "tenure_med": 9.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "D",
-   "band": "400to600",
-   "n": 641,
-   "n_top": 0,
-   "exp_sellers_12m": 21.0,
-   "p_median": 0.033,
-   "p_top_decile": 0.0427,
-   "est_value_med": 464000,
-   "offer_mid_med": 556000,
-   "premium_med": 0.185,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.01
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "D",
-   "band": "over600",
-   "n": 242,
-   "n_top": 0,
-   "exp_sellers_12m": 6.8,
-   "p_median": 0.0285,
-   "p_top_decile": 0.0349,
-   "est_value_med": 743000,
-   "offer_mid_med": 894000,
-   "premium_med": 0.201,
-   "tenure_med": 10.5,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "F",
-   "band": "under250",
-   "n": 2269,
-   "n_top": 737,
-   "exp_sellers_12m": 110.4,
-   "p_median": 0.0474,
-   "p_top_decile": 0.0649,
-   "est_value_med": 151000,
-   "offer_mid_med": 173000,
-   "premium_med": 0.134,
-   "tenure_med": 8.0,
-   "leasehold_share": 0.98
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "F",
-   "band": "250to400",
-   "n": 205,
-   "n_top": 59,
-   "exp_sellers_12m": 9.6,
-   "p_median": 0.0476,
-   "p_top_decile": 0.0585,
-   "est_value_med": 296000,
-   "offer_mid_med": 336000,
-   "premium_med": 0.153,
-   "tenure_med": 11.0,
-   "leasehold_share": 0.96
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "S",
-   "band": "under250",
-   "n": 1211,
-   "n_top": 158,
-   "exp_sellers_12m": 48.1,
-   "p_median": 0.0378,
-   "p_top_decile": 0.056,
-   "est_value_med": 220000,
-   "offer_mid_med": 254000,
-   "premium_med": 0.174,
-   "tenure_med": 11.0,
-   "leasehold_share": 0.02
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "S",
-   "band": "250to400",
-   "n": 1310,
-   "n_top": 107,
-   "exp_sellers_12m": 49.5,
-   "p_median": 0.0376,
-   "p_top_decile": 0.051,
-   "est_value_med": 289000,
-   "offer_mid_med": 340000,
-   "premium_med": 0.176,
-   "tenure_med": 11.0,
-   "leasehold_share": 0.01
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "S",
-   "band": "400to600",
-   "n": 154,
-   "n_top": 0,
-   "exp_sellers_12m": 5.0,
-   "p_median": 0.0332,
-   "p_top_decile": 0.0425,
-   "est_value_med": 446000,
-   "offer_mid_med": 545000,
-   "premium_med": 0.194,
-   "tenure_med": 13.0,
-   "leasehold_share": 0.01
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "S",
-   "band": "over600",
-   "n": 48,
-   "n_top": 0,
-   "exp_sellers_12m": 1.4,
-   "p_median": 0.0301,
-   "p_top_decile": 0.0377,
-   "est_value_med": 702000,
-   "offer_mid_med": 846000,
-   "premium_med": 0.188,
-   "tenure_med": 9.0,
-   "leasehold_share": 0.0
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "T",
-   "band": "under250",
-   "n": 3739,
-   "n_top": 1014,
-   "exp_sellers_12m": 170.6,
-   "p_median": 0.0426,
-   "p_top_decile": 0.0657,
-   "est_value_med": 207000,
-   "offer_mid_med": 237000,
-   "premium_med": 0.159,
-   "tenure_med": 10.0,
-   "leasehold_share": 0.03
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "T",
-   "band": "250to400",
-   "n": 1397,
-   "n_top": 183,
-   "exp_sellers_12m": 58.3,
-   "p_median": 0.0398,
-   "p_top_decile": 0.0558,
-   "est_value_med": 287000,
-   "offer_mid_med": 336000,
-   "premium_med": 0.175,
-   "tenure_med": 13.0,
-   "leasehold_share": 0.03
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "T",
-   "band": "400to600",
-   "n": 306,
-   "n_top": 5,
-   "exp_sellers_12m": 10.6,
-   "p_median": 0.0351,
-   "p_top_decile": 0.0442,
-   "est_value_med": 464000,
-   "offer_mid_med": 555000,
-   "premium_med": 0.183,
-   "tenure_med": 12.5,
-   "leasehold_share": 0.09
-  },
-  {
-   "outcode": "EX4",
-   "ptype": "T",
-   "band": "over600",
-   "n": 50,
-   "n_top": 0,
-   "exp_sellers_12m": 1.6,
-   "p_median": 0.0317,
-   "p_top_decile": 0.0406,
-   "est_value_med": 687000,
-   "offer_mid_med": 834000,
-   "premium_med": 0.22,
-   "tenure_med": 19.0,
-   "leasehold_share": 0.14
-  }
- ],
- "exemplars": [
-  {
-   "code": "EX3-EC66",
-   "sector": "EX3 0",
-   "ptype": "T",
-   "tenure": 4,
-   "p_sale": 0.121,
-   "est_value": 270000,
-   "offer_lo": 281000,
-   "offer_mid": 292000,
-   "offer_hi": 304000,
-   "premium_pct": 7.6,
-   "pc_sales_2y": 4
-  },
-  {
-   "code": "EX1-4DB3",
-   "sector": "EX1 2",
-   "ptype": "T",
-   "tenure": 9,
-   "p_sale": 0.107,
-   "est_value": 250000,
-   "offer_lo": 259000,
-   "offer_mid": 270000,
-   "offer_hi": 281000,
-   "premium_pct": 9.6,
-   "pc_sales_2y": 9
-  },
-  {
-   "code": "EX1-135C",
-   "sector": "EX1 3",
-   "ptype": "T",
-   "tenure": 4,
-   "p_sale": 0.097,
-   "est_value": 250000,
-   "offer_lo": 255000,
-   "offer_mid": 265000,
-   "offer_hi": 276000,
-   "premium_pct": 7.6,
-   "pc_sales_2y": 3
-  }
- ],
- "generated": "propensity + PoC offer model, features to end-2019"
-};
+const DATA = /*__DATA__*/ null;
 
-/* ---------- state ---------- */
-const DEFAULTS = {brief:{min:150000,max:500000,types:["S","T","D","F"],areas:["EX1","EX2","EX3","EX4"],freeholdOnly:false},
-  selected:[], campaign:null, day:0, connected:false, seller:{}};
-let S = load();
-function load(){ try{const raw=localStorage.getItem("qm-state");if(raw)return {...structuredClone(DEFAULTS),...JSON.parse(raw)};}catch(e){} return structuredClone(DEFAULTS); }
-function save(){ try{localStorage.setItem("qm-state",JSON.stringify(S));}catch(e){} }
+/* ---------- assumptions, stated once ---------- */
+const UNLOCK = 2.2;        // right-offer uplift on base sale propensity
+const CARD_COST = 0.72;    // £ print + post at volume
+const SCAN = 0.010;        // conservative base scan rate (pilot will measure)
+const LIFT = 1.59;         // measured top-decile model lift
+const TALK = 0.33;         // scanners who start a conversation
+const REPLY_PER_CARD = SCAN * LIFT * TALK;
 
-/* ---------- helpers ---------- */
-const AREAS = {EX1:"City centre & St James",EX2:"St Leonard's & Alphington",EX3:"Topsham & Countess Wear",EX4:"St David's, Pennsylvania & Whipton"};
+const AREAS = {EX1:"City centre & St James",EX2:"St Leonard's & Alphington",
+  EX3:"Topsham & Countess Wear",EX4:"St David's, Pennsylvania & Whipton"};
 const PT = {D:"Detached houses",S:"Semi-detached houses",T:"Terraced houses",F:"Flats & maisonettes"};
 const PT1 = {D:"detached house",S:"semi-detached house",T:"terraced house",F:"flat"};
-const BANDS = {under250:[0,250000],"250to400":[250000,400000],"400to600":[400000,600000],over600:[600000,99e6]};
-const BANDL = {under250:"under £250k","250to400":"£250k–£400k","400to600":"£400k–£600k",over600:"£600k +"};
-const UNLOCK = 2.2;             // right-offer uplift on base propensity (stated assumption)
-const CARD_COST = 0.72;         // £ print + post at volume
-const SCAN = 0.024, TALK = 0.008; // modelled response assumptions
+const BANDL = {under250:"under £250k","250to400":"£250k–£400k",
+  "400to600":"£400k–£600k",over600:"£600k +"};
+const BANDR = {under250:[0,250000],"250to400":[250000,400000],
+  "400to600":[400000,600000],over600:[600000,99e6]};
+
 const GBP = n => "£"+Math.round(n).toLocaleString("en-GB");
 const GBPk = n => n>=1e6 ? "£"+(n/1e6).toFixed(2)+"m" : "£"+Math.round(n/1000)+"k";
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function cohortId(c){return c.outcode+"|"+c.ptype+"|"+c.band}
-function matches(c,b){ const [lo,hi]=BANDS[c.band];
-  return b.types.includes(c.ptype) && b.areas.includes(c.outcode)
-    && hi>b.min && lo<b.max && (!b.freeholdOnly || c.leasehold_share<=0.5); }
-function likely(c){ return Math.min(Math.round(c.exp_sellers_12m*UNLOCK), Math.round(c.n*0.5)); }
-function fmtRange(mid){ return GBPk(mid*0.96)+"–"+GBPk(mid*1.04); }
+
+const DEFAULTS = {brief:{max:475000, types:["S","T","D"], airMax:100, openMin:0,
+    minsRegional:30, gpKm:3}, selected:[], campaign:null, day:0, connected:false, seller:{}};
+let S = load();
+function load(){ try{const r=localStorage.getItem("qm2");
+  if(r) return {...structuredClone(DEFAULTS), ...JSON.parse(r)};}catch(e){}
+  return structuredClone(DEFAULTS); }
+function save(){ try{localStorage.setItem("qm2",JSON.stringify(S));}catch(e){} }
+
+/* ---------- lifestyle filtering ---------- */
+// Air-quality slider is a national percentile of NOx: "cleanest N%".
+function noxCut(pctile){
+  const q = DATA.area.nox_national;
+  const keys = [[10,"0.1"],[25,"0.25"],[50,"0.5"],[75,"0.75"],[90,"0.9"]];
+  if(pctile>=100) return Infinity;
+  let best = q["0.9"];
+  for(const [p,k] of keys){ if(pctile<=p){ best=q[k]; break; } }
+  return best;
+}
+// Openness slider is a national percentile of built density, inverted:
+// 0 = anywhere, 100 = only the most open/greenest surroundings.
+function densCut(openMin){
+  const q = DATA.area.density_national;
+  if(openMin<=0) return Infinity;
+  if(openMin<=25) return q["0.75"];
+  if(openMin<=50) return q["0.5"];
+  if(openMin<=75) return q["0.25"];
+  return q["0.1"];
+}
+function matchCells(b){
+  const nx = noxCut(b.airMax), dn = densCut(b.openMin);
+  return DATA.cells.filter(c=>{
+    const [lo] = BANDR[c.band];
+    return b.types.includes(c.ptype) && lo < b.max && c.offer_med <= b.max*1.06
+      && c.nox <= nx && c.density <= dn
+      && c.min_regional <= b.minsRegional && c.km_gp <= b.gpKm;
+  });
+}
+function summarise(cells){
+  const n = cells.reduce((s,c)=>s+c.n,0);
+  const nTop = cells.reduce((s,c)=>s+c.n_top,0);
+  const exp = cells.reduce((s,c)=>s+c.exp_sellers,0);
+  const likely = Math.min(Math.round(exp*UNLOCK), Math.round(n*0.5));
+  const expReplies = nTop * REPLY_PER_CARD;
+  return {n, nTop, likely, expReplies, pSilent: Math.exp(-expReplies),
+          cost: nTop*CARD_COST, sectors:new Set(cells.map(c=>c.sector)).size};
+}
+
+/* ---------- warm-seller book ----------
+   Owners who already replied to earlier city-wide canvassing. In the live
+   product this is real inbound; here it is generated deterministically
+   from the highest-propensity cells so the demo behaves consistently. */
+function warmBook(){
+  const pool = [...DATA.cells].sort((a,b)=>b.p_med-a.p_med).slice(0,26);
+  const days = [2,3,5,6,8,9,11,13,15,17,19,22,24,27,30,33];
+  return pool.map((c,i)=>({
+    sector:c.sector, ptype:c.ptype, band:c.band, value:c.value_med,
+    offer:c.offer_med, tenure:Math.round(c.tenure_med), nox:c.nox,
+    mins:c.min_regional, days:days[i%days.length],
+    stage: i%5===0 ? "ready" : (i%3===0 ? "talking" : "curious")
+  }));
+}
+function warmMatching(b){
+  const nx=noxCut(b.airMax), dn=densCut(b.openMin);
+  return warmBook().filter(w=> b.types.includes(w.ptype) && w.offer<=b.max*1.06
+    && w.nox<=nx && w.mins<=b.minsRegional
+    && (DATA.cells.find(c=>c.sector===w.sector)||{density:0}).density<=dn);
+}
 
 /* ---------- router ---------- */
-function go(path){ location.hash = "#"+path; }
+function go(p){ location.hash="#"+p; }
 window.addEventListener("hashchange", render);
-function route(){ const h=(location.hash||"#/").slice(1); const m=h.match(/^\/offer\/([\w-]+)/i);
+function route(){ const h=(location.hash||"#/").slice(1);
+  const m=h.match(/^\/offer\/([\w-]+)/i);
   if(m) return {v:"offer",code:m[1].toUpperCase()};
-  if(h.startsWith("/search"))return{v:"search"};
-  if(h.startsWith("/results"))return{v:"results"};
-  if(h.startsWith("/campaign"))return{v:"campaign"};
-  return {v:"home"}; }
-
+  if(h.startsWith("/search")) return {v:"search"};
+  if(h.startsWith("/results")) return {v:"results"};
+  if(h.startsWith("/campaign")) return {v:"campaign"};
+  return {v:"home"};
+}
 function nav(cur){
-  const items=[["/","Why Quiet Market","home"],["/search","Your brief","search"],
-    ["/results","What's out there","results"],["/campaign","Your campaign","campaign"]];
-  return items.map(([p,l,k])=>`<a class="tlink ${cur===k?"on":""}" href="#${p}">${l}</a>`).join("");
+  return [["/","Why Quiet Market","home"],["/search","Where you'd live","search"],
+    ["/results","What's out there","results"],["/campaign","Your campaign","campaign"]]
+    .map(([p,l,k])=>`<a class="tlink ${cur===k?"on":""}" href="#${p}">${l}</a>`).join("");
+}
+
+/* ---------- sector map ---------- */
+function sectorMap(matched){
+  const all = DATA.cells;
+  const byS = {};
+  all.forEach(c=>{ (byS[c.sector] ||= {lat:c.lat, lon:c.lon, n:0, top:0, on:false}).n += c.n; });
+  matched.forEach(c=>{ byS[c.sector].on = true; byS[c.sector].top += c.n_top; });
+  const pts = Object.entries(byS);
+  const lats = pts.map(([,p])=>p.lat), lons = pts.map(([,p])=>p.lon);
+  const la0=Math.min(...lats), la1=Math.max(...lats),
+        lo0=Math.min(...lons), lo1=Math.max(...lons);
+  const W=300,H=210,pad=16;
+  const px = p => pad + (p.lon-lo0)/((lo1-lo0)||1)*(W-2*pad);
+  const py = p => H-pad - (p.lat-la0)/((la1-la0)||1)*(H-2*pad);
+  const maxTop = Math.max(1, ...pts.map(([,p])=>p.top));
+  const circles = pts.map(([s,p])=>{
+    const r = 3 + Math.sqrt(p.n)/7;
+    if(!p.on) return `<circle cx="${px(p).toFixed(1)}" cy="${py(p).toFixed(1)}" r="${r.toFixed(1)}"
+      fill="var(--line)" opacity=".85"><title>${esc(s)} — outside your criteria</title></circle>`;
+    const t = p.top/maxTop;
+    const fill = t>.66?"var(--m4)":t>.33?"var(--m3)":"var(--m2)";
+    return `<circle cx="${px(p).toFixed(1)}" cy="${py(p).toFixed(1)}" r="${r.toFixed(1)}"
+      fill="${fill}"><title>${esc(s)} — ${p.top} homes we'd write to</title></circle>`;
+  }).join("");
+  return `<div class="mapwrap">
+    <h3>Where your life fits</h3>
+    <p class="note" style="margin:2px 0 6px">Postcode sectors across Exeter. Filled = matches your criteria.</p>
+    <svg viewBox="0 0 ${W} ${H}" width="100%" height="auto" role="img"
+      aria-label="Map of Exeter postcode sectors matching your criteria">${circles}</svg>
+    <div class="legend"><span><i style="background:var(--m2)"></i>some</span>
+      <span><i style="background:var(--m3)"></i>more</span>
+      <span><i style="background:var(--m4)"></i>most to write to</span>
+      <span><i style="background:var(--line)"></i>ruled out</span></div>
+  </div>`;
 }
 
 /* ---------- views ---------- */
@@ -1188,19 +416,22 @@ function vHome(){
   <div class="hero">
     <div>
       <div class="eyebrow">Buying, beyond the portals · Exeter pilot</div>
-      <h1 style="margin-top:10px">The best home you'll never see listed is <em>already yours to ask for.</em></h1>
-      <p class="lede">At any moment, about 97% of Britain's homes aren't on the market — but nearly all of them
-        would sell at the right price. Quiet Market finds the ones most likely to say yes to
-        <i>your</i> budget, posts the owners a private offer, and handles everything when they reply.</p>
-      <a class="btn" href="#/search">See what's really available</a>
-      <a class="btn ghost" href="#/results" style="margin-left:8px">Browse the hidden market</a>
+      <h1 style="margin-top:10px">Describe the life you want. <em>We'll go and ask for it.</em></h1>
+      <p class="lede">You don't want a specific house. You want clean air, twenty minutes from town,
+        a doctor nearby, and a budget that works. About 97% of the homes that fit are not for sale —
+        but nearly all of them would sell at the right price. We find them and ask the owners, privately.</p>
+      <a class="btn" href="#/search">Describe where you'd live</a>
+      <a class="btn ghost" href="#/results" style="margin-left:8px">See who's already interested</a>
       <div class="statrow">
-        <div class="stat"><div class="v num">${a.n_owned_tracked.toLocaleString()}</div><div class="k">owned homes tracked in Exeter</div></div>
-        <div class="stat"><div class="v num">≈ ${Math.round(a.exp_sellers_12m*UNLOCK).toLocaleString()}</div><div class="k">likely to move for the right offer, next 12 months</div></div>
-        <div class="stat"><div class="v num">24.3M</div><div class="k">sales our model learned from</div></div>
+        <div class="stat"><div class="v num">${a.n_owned_tracked.toLocaleString()}</div>
+          <div class="k">owned homes tracked in Exeter</div></div>
+        <div class="stat"><div class="v num">≈ ${Math.round(a.exp_sellers_12m*UNLOCK).toLocaleString()}</div>
+          <div class="k">would move for the right offer, next 12 months</div></div>
+        <div class="stat"><div class="v num">${warmBook().length}</div>
+          <div class="k">owners already talking to us</div></div>
       </div>
     </div>
-    <div class="postcard heroPC" aria-hidden="true">
+    <div class="postcard tilt" aria-hidden="true">
       <div class="pc-msg">
         <div class="h">Someone would like to buy a home like yours.</div>
         <div class="o">A vetted buyer is ready at <b>£384k–£416k</b>.<br>No listing. No viewings circus.<br>Scan for your private offer.</div>
@@ -1209,42 +440,45 @@ function vHome(){
       <div class="pc-stamp" id="heroQR"></div>
       <div class="pc-frank">QUIET<br>MARKET<br>· EX ·</div>
       <div class="pc-addr">The Homeowner<br>██ Barley Lane<br>Exeter<br>EX4 ███</div>
-      <div class="pc-foot"><span>ref EX4-9C2E</span><span>quietmarket.example/offer</span></div>
+      <div class="pc-foot"><span>ref ${esc((DATA.exemplars[0]||{}).code||"")}</span><span>quietmarket.example/offer</span></div>
     </div>
   </div>
 
   <section class="band">
     <div class="eyebrow">How it works</div>
     <div class="howgrid">
-      <div class="how"><div class="stepno">STEP 01</div><h3>Tell us the home you want</h3>
-        <p>Area, budget, type. We show you the whole picture — every home like that in the city, not the 3% with a For Sale board.</p></div>
-      <div class="how"><div class="stepno">STEP 02</div><h3>We ask the owners, quietly</h3>
-        <p>Our model reads 25 years of public records to find the owners most likely to sell, and what it would honestly take. They get one discreet card in the post. No pressure, no spam — one card, one number, one choice.</p></div>
+      <div class="how"><div class="stepno">STEP 01</div><h3>Describe the life, not the house</h3>
+        <p>Air quality, green surroundings, travel time, a GP within reach, your budget. We count every
+        home in the city that fits — not the 3% with a For Sale board.</p></div>
+      <div class="how"><div class="stepno">STEP 02</div><h3>We ask those owners, quietly</h3>
+        <p>A model trained on 24 million sales ranks who's most likely to move, and what it would honestly
+        take. They get one discreet card. One number, one choice, no chasing.</p></div>
       <div class="how"><div class="stepno">STEP 03</div><h3>Say yes together</h3>
-        <p>When an owner accepts, you're both told — never left alone in a negotiation. Our progression team runs the survey, the paperwork and the timeline through to keys.</p></div>
+        <p>When an owner accepts you're both told, and never left alone in a negotiation. We run the
+        survey, the paperwork and the chain through to keys.</p></div>
     </div>
   </section>
 
   <section class="band">
     <div class="grid2">
       <div>
-        <div class="eyebrow">Why this works</div>
-        <h2 style="font-size:26px;margin:8px 0 12px">Selling is predictable. Listings aren't the market.</h2>
-        <p style="color:var(--muted)">Homes come up for sale on rhythms you can measure: how long the owner has been there,
-        the kind of home, what's been happening on the street. We trained on every recorded sale in England and Wales
-        since 1995 — 24.3 million of them — to score how likely each home is to move, and we tested it on years the model
-        had never seen. Then we add the missing ingredient no portal has: <b>the right offer</b>, put politely to the owner.</p>
-        <p style="color:var(--muted)">Nearly 4 in 10 sellers today have owned for 25 years or more. They were never going
-        to list this month. They'd still say yes to the right buyer. That's your market.</p>
+        <div class="eyebrow">Why searching this way works</div>
+        <h2 style="font-size:25px;margin:8px 0 12px">A street is a tiny market. A life is a big one.</h2>
+        <p style="color:var(--muted)">Ask a portal for "three-bed semi, St Leonard's" and you're
+        fishing in a pond of a few dozen homes — most weeks, nothing. Ask us for "clean air, open
+        surroundings, half an hour from the centre, under £475k" and the same requirement covers
+        thousands of homes across the city.</p>
+        <p style="color:var(--muted)">That's not just a nicer way to search. It's the difference between
+        knocking on enough doors to get an answer and knocking on too few to hear anything back.</p>
       </div>
       <div>
         <div class="eyebrow">For owners</div>
-        <h2 style="font-size:26px;margin:8px 0 12px">Had a card from us?</h2>
-        <p style="color:var(--muted)">It means a real, vetted buyer asked us about homes like yours. There's no obligation,
-        nothing public, and we'll never call. See your private offer:</p>
+        <h2 style="font-size:25px;margin:8px 0 12px">Had a card from us?</h2>
+        <p style="color:var(--muted)">It means a real, vetted buyer described a life that your home fits.
+        No obligation, nothing public, and we'll never call.</p>
         <div class="sellerbox">
-          <label class="f-label" for="refin" style="margin:0">Your reference</label>
-          <input id="refin" placeholder="EX4-9C2E" aria-label="postcard reference">
+          <label style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600" for="refin">Your reference</label>
+          <input id="refin" placeholder="${esc((DATA.exemplars[0]||{}).code||"EX4-9C2E")}" aria-label="postcard reference">
           <button class="btn post" onclick="openRef()">View my offer</button>
         </div>
       </div>
@@ -1252,196 +486,246 @@ function vHome(){
   </section>
   </div>`;
 }
-function openRef(){ const v=(document.getElementById("refin").value||"EX4-9C2E").trim().toUpperCase(); go("/offer/"+v); }
+function openRef(){
+  const v=(document.getElementById("refin").value||DATA.exemplars[0].code).trim().toUpperCase();
+  go("/offer/"+v);
+}
 
 function vSearch(){
-  const b=S.brief;
-  return `<div class="fadein" style="max-width:820px;margin:0 auto">
-  <div class="eyebrow">Your brief · step 1 of 2</div>
-  <h1 style="font-size:34px;margin:8px 0 6px">What are you looking for?</h1>
-  <p style="color:var(--muted);margin:0 0 22px">We'll count every matching home in Exeter — including all the ones no portal can show you.</p>
-  <div class="panel">
-    <div class="formgrid">
-      <div>
-        <p class="f-label">Where in Exeter</p>
-        <div class="chiprow">${Object.keys(AREAS).map(oc=>`
-          <button class="chip ${b.areas.includes(oc)?"on":""}" onclick="tgl('areas','${oc}')">${oc} · ${AREAS[oc]}</button>`).join("")}
-        </div>
-        <p class="f-hint">Postcode districts. Pick as many as you like.</p>
+  const b=S.brief, cells=matchCells(b), s=summarise(cells), warm=warmMatching(b).length;
+  const wide = s.pSilent < 0.20;
+  return `<div class="fadein">
+  <div class="eyebrow">Where you'd live · this is the whole search</div>
+  <h1 style="font-size:32px;margin:8px 0 6px">What would make a place right?</h1>
+  <p style="color:var(--muted);margin:0 0 20px;max-width:52em">Every number on the right updates as you
+    move these. Air quality and distances are real measurements for every postcode in Exeter.</p>
+  <div class="searchgrid">
+    <div class="panel">
+      <div class="crit">
+        <div class="lab"><b>Clean air</b><span class="val">${b.airMax>=100?"anywhere":"cleanest "+b.airMax+"% nationally"}</span></div>
+        <div class="why">Modelled NOx from the AHAH index, per postcode.</div>
+        <input type="range" min="10" max="100" step="15" value="${b.airMax}"
+          aria-label="air quality" oninput="S.brief.airMax=+this.value;save();render()">
       </div>
-      <div>
-        <p class="f-label">Type of home</p>
+      <div class="crit">
+        <div class="lab"><b>Open, green surroundings</b><span class="val">${b.openMin<=0?"anywhere":b.openMin>=90?"most open only":"top "+(100-b.openMin)+"% most open"}</span></div>
+        <div class="why">How built-up the immediate area is — our stand-in for green space.</div>
+        <input type="range" min="0" max="100" step="25" value="${b.openMin}"
+          aria-label="openness" oninput="S.brief.openMin=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Drive to a centre</b><span class="val">under ${b.minsRegional} min</span></div>
+        <div class="why">Approximate drive time to a regional centre. Not routed — straight-line at 50 km/h.</div>
+        <input type="range" min="5" max="45" step="5" value="${b.minsRegional}"
+          aria-label="drive time" oninput="S.brief.minsRegional=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>GP within</b><span class="val">${b.gpKm} km</span></div>
+        <div class="why">Straight-line distance to the nearest GP surgery.</div>
+        <input type="range" min="0.5" max="6" step="0.5" value="${b.gpKm}"
+          aria-label="distance to GP" oninput="S.brief.gpKm=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Budget ceiling</b><span class="val">${GBP(b.max)}</span></div>
+        <div class="why">What you could pay for the <i>right offer</i> — usually 6–20% over today's value.</div>
+        <input type="range" min="180000" max="900000" step="25000" value="${b.max}"
+          aria-label="budget" oninput="S.brief.max=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Kind of home</b></div>
         <div class="chiprow">${Object.keys(PT).map(t=>`
-          <button class="chip ${b.types.includes(t)?"on":""}" onclick="tgl('types','${t}')">${PT[t]}</button>`).join("")}
+          <button class="chip ${b.types.includes(t)?"on":""}" onclick="tglType('${t}')">${PT[t]}</button>`).join("")}
         </div>
-        <p class="f-hint">
-          <button class="chip ${b.freeholdOnly?"on":""}" onclick="S.brief.freeholdOnly=!S.brief.freeholdOnly;save();render()">Freehold-leaning only</button>
-        </p>
-      </div>
-      <div>
-        <p class="f-label">Budget — up to <span class="budget-read num">${GBP(b.max)}</span></p>
-        <input type="range" min="150000" max="900000" step="10000" value="${b.max}"
-          aria-label="maximum budget" oninput="S.brief.max=+this.value;save();render()">
-        <p class="f-hint">This is your ceiling for the <i>right offer</i> — usually 6–20% over today's value. That premium is what opens doors nothing else can.</p>
-      </div>
-      <div style="display:flex;align-items:end">
-        <button class="btn" style="width:100%;justify-content:center" onclick="go('/results')">Show me the hidden market →</button>
       </div>
     </div>
+
+    <div class="rail">
+      <div class="panel">
+        <div class="eyebrow">Homes that fit your life</div>
+        <div class="big num">${s.n.toLocaleString()}</div>
+        <div class="sub">across ${s.sectors} postcode sectors</div>
+        <div style="height:1px;background:var(--line);margin:14px 0"></div>
+        <div class="kv"><span class="k">Would move for the right offer</span><span class="v num">≈ ${s.likely.toLocaleString()}</span></div>
+        <div class="kv"><span class="k">We'd write to</span><span class="v num">${s.nTop.toLocaleString()}</span></div>
+        <div class="kv"><span class="k">Already talking to us</span><span class="v num" style="color:var(--post)">${warm}</span></div>
+        <div class="gauge ${wide?"good":"warn"}">
+          <h4>${wide?"Wide enough to get answers":"Too narrow to hear back"}</h4>
+          <div class="bar"><i style="width:${Math.min(100,Math.round((1-s.pSilent)*100))}%;
+            background:${wide?"var(--accent)":"var(--warn)"}"></i></div>
+          <p>${wide
+            ? `About <b>${s.expReplies.toFixed(1)}</b> owners should reply to a first wave.`
+            : `A first wave to ${s.nTop.toLocaleString()} homes has a <b>${Math.round(s.pSilent*100)}%</b> chance of no reply at all. Loosen a slider — or start with the owners already talking to us.`}</p>
+        </div>
+        <a class="btn" style="width:100%;justify-content:center;margin-top:14px" href="#/results">See what's out there →</a>
+      </div>
+      <div style="margin-top:14px">${sectorMap(cells)}</div>
+    </div>
   </div>
-  <p class="note" style="margin-top:14px">We don't ask for photos of dream kitchens. We ask what you can pay — because that's the thing that actually creates supply.</p>
   </div>`;
 }
-function tgl(k,v){ const arr=S.brief[k]; const i=arr.indexOf(v); if(i>=0){if(arr.length>1)arr.splice(i,1);}else arr.push(v); save(); render(); }
+function tglType(t){ const a=S.brief.types, i=a.indexOf(t);
+  if(i>=0){ if(a.length>1) a.splice(i,1); } else a.push(t); save(); render(); }
 
 function vResults(){
-  const b=S.brief;
-  const cs = DATA.cohorts.filter(c=>matches(c,b)).sort((x,y)=>likely(y)-likely(x));
-  const totN = cs.reduce((s,c)=>s+c.n,0), totL = cs.reduce((s,c)=>s+likely(c),0),
-        totTop = cs.reduce((s,c)=>s+c.n_top,0);
-  S.selected = S.selected.filter(id=>cs.some(c=>cohortId(c)===id)); save();
-  const selCs = cs.filter(c=>S.selected.includes(cohortId(c)));
-  const selCards = selCs.reduce((s,c)=>s+c.n_top,0);
+  const b=S.brief, cells=matchCells(b).sort((x,y)=>y.n_top-x.n_top), s=summarise(cells);
+  const warm=warmMatching(b);
+  S.selected = S.selected.filter(id=>cells.some(c=>cellId(c)===id)); save();
+  const selCells = cells.filter(c=>S.selected.includes(cellId(c)));
+  const selCards = selCells.reduce((a,c)=>a+c.n_top,0);
+  const selReplies = selCards*REPLY_PER_CARD;
   return `<div class="fadein">
-  <div class="eyebrow">The hidden market · step 2 of 2</div>
+  <div class="eyebrow">What's out there</div>
   <div class="resulthead">
     <div>
-      <div class="bignum num">${totN.toLocaleString()} homes <small>match your brief in Exeter</small></div>
-      <div style="font-size:17px;margin-top:6px">≈ <b class="num" style="color:var(--accent-deep)">${totL.toLocaleString()}</b> would
-        likely sell for the right offer within 12 months. Your postcards go to the
-        <b class="num">${totTop.toLocaleString()}</b> highest-scoring doors first.</div>
-      <div class="note" style="margin-top:6px">Portals in this area today: roughly ${Math.round(totN*0.032).toLocaleString()} listings. You're seeing the other ${(100-3.2).toFixed(0)}%.</div>
+      <div class="bignum num">${s.n.toLocaleString()} homes <small>fit the life you described</small></div>
+      <div style="font-size:17px;margin-top:6px">≈ <b class="num" style="color:var(--accent-deep)">${s.likely.toLocaleString()}</b>
+        would sell for the right offer within 12 months. Portals in this area today show roughly
+        <b class="num">${Math.max(1,Math.round(s.n*0.032)).toLocaleString()}</b>.</div>
     </div>
-    <a class="btn ghost" href="#/search">Adjust brief</a>
+    <a class="btn ghost" href="#/search">Change what matters</a>
   </div>
+
+  ${warm.length?`
+  <section style="margin-bottom:26px">
+    <div class="eyebrow">Owners already talking to us</div>
+    <h2 style="font-size:22px;margin:6px 0 4px">${warm.length} people who fit your brief have already raised a hand</h2>
+    <p class="note" style="margin:0 0 12px">From our continuous canvassing across Exeter — no waiting, no postage, they're already in conversation.</p>
+    ${warm.slice(0,4).map(w=>`
+      <div class="warm ${w.stage==="ready"?"hot":""}">
+        <div><b>${PT1[w.ptype][0].toUpperCase()+PT1[w.ptype].slice(1)}, ${esc(w.sector)}█</b>
+          <div class="note">Owner ${w.tenure} yrs · ${w.mins} min to a centre · NOx ${w.nox}
+            · would consider <b style="color:var(--accent-deep)">${GBPk(w.offer*0.96)}–${GBPk(w.offer*1.04)}</b></div></div>
+        <span class="pill ${w.stage==="ready"?"warm":"cool"}">${
+          w.stage==="ready"?"ready to proceed":w.stage==="talking"?"in conversation":"curious"} · ${w.days}d ago</span>
+      </div>`).join("")}
+    ${warm.length>4?`<p class="note">+ ${warm.length-4} more once you're registered.</p>`:""}
+  </section>`:""}
+
+  <div class="eyebrow">Everyone else we could ask</div>
+  <h2 style="font-size:22px;margin:6px 0 12px">Pick the pockets of the city worth writing to</h2>
   <div class="cohortgrid">
-    ${cs.map(c=>{
-      const id=cohortId(c), sel=S.selected.includes(id), lk=likely(c);
-      const share=Math.min(1, (c.exp_sellers_12m/c.n)/((DATA.area.p_sale_mean||0.05)*2));
-      const segs=[.25,.5,.75,1].map((t,i)=>`<i style="flex:1;background:${share>=t-0.24?`var(--meter${i+1})`:"var(--line)"}"></i>`).join("");
+    ${cells.slice(0,12).map(c=>{
+      const id=cellId(c), sel=S.selected.includes(id);
+      const lk=Math.min(Math.round(c.exp_sellers*UNLOCK), Math.round(c.n*0.5));
       return `<div class="cohort ${sel?"sel":""}" tabindex="0" role="button" aria-pressed="${sel}"
         onclick="selC('${id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selC('${id}')}">
         <div class="tick">✓</div>
-        <div class="where">${c.outcode} · ${esc(AREAS[c.outcode]||"")}</div>
+        <div class="where">${esc(c.sector)} · ${esc(AREAS[c.outcode]||"")}</div>
         <h3>${PT[c.ptype]}, ${BANDL[c.band]}</h3>
-        <div class="likely"><b class="num">≈ ${lk}</b><span>of ${c.n.toLocaleString()} likely to move for the right offer</span></div>
-        <div class="meter" role="img" aria-label="likelihood versus city average">${segs}</div>
-        <div class="kv"><span class="k">Typical value today</span><span class="v num">${GBPk(c.est_value_med)}</span></div>
-        <div class="kv"><span class="k">The right offer</span><span class="v num" style="color:var(--accent-deep)">${fmtRange(c.offer_mid_med)}</span></div>
-        <div class="kv"><span class="k">Owners typically</span><span class="v num">${Math.round(c.tenure_med)} yrs in</span></div>
-        <div class="foot-cite">top band: ${c.n_top} homes · premium ≈ ${(c.premium_med*100).toFixed(0)}%${c.leasehold_share>0.5?" · mostly leasehold":""}</div>
+        <div class="likely"><b class="num">≈ ${lk}</b><span>of ${c.n.toLocaleString()} would move for the right offer</span></div>
+        <div class="kv"><span class="k">Typical value today</span><span class="v num">${GBPk(c.value_med)}</span></div>
+        <div class="kv"><span class="k">The right offer</span><span class="v num" style="color:var(--accent-deep)">${GBPk(c.offer_med*0.96)}–${GBPk(c.offer_med*1.04)}</span></div>
+        <div class="tags"><span class="tag">NOx ${c.nox}</span><span class="tag">${c.min_regional} min to centre</span>
+          <span class="tag">GP ${c.km_gp} km</span><span class="tag">${Math.round(c.tenure_med)} yrs owned</span></div>
+        <div class="note" style="margin-top:2px">${c.n_top} cards · premium ≈ ${(c.premium_med*100).toFixed(0)}%</div>
       </div>`;}).join("")}
   </div>
-  ${cs.length===0?`<div class="panel">Nothing matches that brief — widen the budget or areas.</div>`:""}
+  ${cells.length>12?`<p class="note" style="margin-top:12px">Showing the 12 biggest of ${cells.length} matching pockets.</p>`:""}
+  ${cells.length===0?`<div class="panel">Nothing matches yet — loosen a slider on <a href="#/search">your criteria</a>.</div>`:""}
+
   <div class="tray" role="status">
-    <div><b style="font-family:'Bricolage Grotesque',sans-serif">${S.selected.length} cohort${S.selected.length===1?"":"s"} selected</b>
-      <span class="mono num" style="opacity:.8"> · ${selCards.toLocaleString()} top-band homes would get your card</span></div>
+    <div><b style="font-family:'Bricolage Grotesque',sans-serif">${S.selected.length} selected</b>
+      <span class="mono num" style="opacity:.85"> · ${selCards.toLocaleString()} cards · ${GBP(selCards*CARD_COST)} ·
+      ≈ ${selReplies.toFixed(1)} replies expected</span></div>
     <button class="btn post" ${S.selected.length?"":"disabled"} onclick="startCampaign()">Prepare postcards →</button>
   </div>
-  <p class="note" style="margin-top:14px">Why no photos? Because none of these homes are listed — showing you one would be a promise
-  nobody's made yet. We show you the true count, the honest price, and we go and ask. The photos come when an owner says yes.</p>
+  <p class="note" style="margin-top:14px">No photos, deliberately: none of these homes are listed, so a
+    picture would be a promise nobody has made. You get the true count, the honest price, and we go and ask.</p>
   </div>`;
 }
-function selC(id){ const i=S.selected.indexOf(id); if(i>=0)S.selected.splice(i,1); else S.selected.push(id); save(); render(); }
+function cellId(c){ return c.sector+"|"+c.ptype+"|"+c.band; }
+function selC(id){ const i=S.selected.indexOf(id);
+  if(i>=0) S.selected.splice(i,1); else S.selected.push(id); save(); render(); }
 function startCampaign(){
-  const cs=DATA.cohorts.filter(c=>S.selected.includes(cohortId(c)));
-  const cards=cs.reduce((s,c)=>s+c.n_top,0);
-  S.campaign={cards, sent:false, cohorts:S.selected.slice()}; S.day=0; S.connected=false; save(); go("/campaign");
+  const cells=matchCells(S.brief).filter(c=>S.selected.includes(cellId(c)));
+  S.campaign={cards:cells.reduce((a,c)=>a+c.n_top,0), sent:false};
+  S.day=0; S.connected=false; save(); go("/campaign");
 }
 
 function vCampaign(){
   if(!S.campaign) return `<div class="panel fadein" style="max-width:640px;margin:40px auto;text-align:center">
     <h2 style="font-size:24px">No campaign yet</h2>
-    <p style="color:var(--muted)">Pick cohorts from the hidden market first — your postcards start there.</p>
-    <a class="btn" href="#/results">Browse the hidden market</a></div>`;
-  const c=S.campaign, cards=c.cards;
-  const scans=Math.max(3,Math.round(cards*SCAN)), talks=Math.max(1,Math.round(cards*TALK));
-  const cost=cards*CARD_COST;
-  const ex=DATA.exemplars[0];
-  if(!c.sent) return `<div class="fadein" style="max-width:900px;margin:0 auto">
+    <p style="color:var(--muted)">Choose some pockets of the city first — your postcards start there.</p>
+    <a class="btn" href="#/results">See what's out there</a></div>`;
+  const c=S.campaign, cards=c.cards, ex=DATA.exemplars[0];
+  const replies=cards*REPLY_PER_CARD, scans=Math.max(1,Math.round(cards*SCAN*LIFT));
+  if(!c.sent) return `<div class="fadein" style="max-width:920px;margin:0 auto">
     <div class="eyebrow">Your campaign · review</div>
-    <h1 style="font-size:32px;margin:8px 0 18px">One card. ${cards.toLocaleString()} doors. Your offer on it.</h1>
+    <h1 style="font-size:31px;margin:8px 0 16px">One card. ${cards.toLocaleString()} doors. Your offer on it.</h1>
     <div class="grid2">
       <div class="postcard">
         <div class="pc-msg">
           <div class="h">Someone would like to buy a home like yours.</div>
-          <div class="o">A vetted buyer is ready at <b>${fmtRange(ex.offer_mid)}</b>.<br>Private, no obligation, no listing.<br>Scan for your offer — it expires in 30 days.</div>
+          <div class="o">A vetted buyer is ready at <b>${GBPk(ex.offer_mid*0.96)}–${GBPk(ex.offer_mid*1.04)}</b>.<br>Private, no obligation, no listing.<br>Scan for your offer — it expires in 30 days.</div>
         </div>
         <div class="pc-rule"></div>
         <div class="pc-stamp" id="cardQR"></div>
         <div class="pc-frank">QUIET<br>MARKET<br>· EX ·</div>
         <div class="pc-addr">The Homeowner<br>██ ${esc(ex.sector)} ██<br>Exeter</div>
-        <div class="pc-foot"><span>ref ${ex.code}</span><span>one card only — we don't chase</span></div>
+        <div class="pc-foot"><span>ref ${esc(ex.code)}</span><span>one card only — we don't chase</span></div>
       </div>
       <div>
         <div class="panel">
-          <div class="kv"><span class="k">Postcards (top likelihood band only)</span><span class="v num">${cards.toLocaleString()}</span></div>
-          <div class="kv"><span class="k">Print &amp; postage @ ${CARD_COST.toFixed(2).replace("0.","£0.")}</span><span class="v num">${GBP(cost)}</span></div>
+          <div class="kv"><span class="k">Postcards (highest-likelihood only)</span><span class="v num">${cards.toLocaleString()}</span></div>
+          <div class="kv"><span class="k">Print &amp; postage @ £${CARD_COST.toFixed(2)}</span><span class="v num">${GBP(cards*CARD_COST)}</span></div>
           <div class="kv"><span class="k">Shared with</span><span class="v num">3 other matching buyers</span></div>
-          <div class="kv"><span class="k">Your share</span><span class="v num">${GBP(cost/4)}</span></div>
-          <hr style="border:none;border-top:1px solid var(--line);margin:12px 0">
+          <div class="kv"><span class="k">Your share</span><span class="v num">${GBP(cards*CARD_COST/4)}</span></div>
+          <div style="height:1px;background:var(--line);margin:12px 0"></div>
           <div class="funnel" aria-label="expected response, modelled">
-            <div class="frow"><span class="lbl">Delivered</span><div class="bar" style="width:96%"></div><span class="val num">≈ ${Math.round(cards*.96).toLocaleString()}</span></div>
-            <div class="frow"><span class="lbl">Scan their offer</span><div class="bar" style="width:${Math.max(2.4,SCAN*100)}%"></div><span class="val num">≈ ${scans}</span></div>
-            <div class="frow"><span class="lbl">Start a conversation</span><div class="bar" style="width:${Math.max(1,TALK*100)}%"></div><span class="val num">≈ ${talks}</span></div>
-            <div class="frow"><span class="lbl">Agreed sale</span><div class="bar" style="width:.6%;background:var(--post)"></div><span class="val num">0–2</span></div>
+            <div class="frow"><span class="lbl">Delivered</span><div class="fbar" style="width:96%"></div><span class="val num">≈ ${Math.round(cards*.96).toLocaleString()}</span></div>
+            <div class="frow"><span class="lbl">Read their offer</span><div class="fbar" style="width:${Math.max(2.5,SCAN*LIFT*100)}%"></div><span class="val num">≈ ${scans}</span></div>
+            <div class="frow"><span class="lbl">Start a conversation</span><div class="fbar" style="width:${Math.max(1.2,REPLY_PER_CARD*100)}%"></div><span class="val num">≈ ${replies.toFixed(1)}</span></div>
+            <div class="frow"><span class="lbl">Agreed sale</span><div class="fbar" style="width:.6%;background:var(--post)"></div><span class="val num">0–${Math.max(1,Math.round(replies*0.15))}</span></div>
           </div>
-          <p class="note">Modelled from our response assumptions — the pilot exists to measure these for real.</p>
+          <p class="note">Modelled on a conservative 1.0% read rate and the measured 1.59× targeting lift.
+            The pilot exists to replace these with real numbers.</p>
         </div>
-        <button class="btn post" style="margin-top:16px;width:100%;justify-content:center" onclick="S.campaign.sent=true;S.day=0;save();render()">
-          Post my ${cards.toLocaleString()} cards</button>
+        <button class="btn post" style="margin-top:16px;width:100%;justify-content:center"
+          onclick="S.campaign.sent=true;S.day=0;save();render()">Post my ${cards.toLocaleString()} cards</button>
       </div>
     </div>
   </div>`;
 
-  /* sent: dashboard */
-  const d=S.day;
-  const scanNow=d<3?0:Math.min(scans,Math.round(scans*(d-2)/4));
-  const events=[
-    {day:0,label:"Cards printed & handed to Royal Mail",cls:"done"},
-    {day:2,label:`Delivered — ${Math.round(cards*.96).toLocaleString()} of ${cards.toLocaleString()} doors`,cls:d>=2?"done":""},
-    {day:3,label:`First scans — owners reading their offers`,cls:d>=3?"done":""},
-    {day:5,label:`Replies arriving`,cls:d>=5?"done":""},
-    {day:6,label:`An owner accepted your range`,cls:d>=6?"pulse":""},
-  ];
-  const ex2=DATA.exemplars[1]||ex, ex3=DATA.exemplars[2]||ex;
-  return `<div class="fadein" style="max-width:900px;margin:0 auto">
+  const d=S.day, ex2=DATA.exemplars[1]||ex, ex3=DATA.exemplars[2]||ex;
+  const events=[[0,"Cards printed & handed to Royal Mail",d>=0],
+    [2,`Delivered — ${Math.round(cards*.96).toLocaleString()} of ${cards.toLocaleString()} doors`,d>=2],
+    [3,"First scans — owners reading their offers",d>=3],
+    [5,"Replies arriving",d>=5],[6,"An owner accepted your range",d>=6]];
+  return `<div class="fadein" style="max-width:920px;margin:0 auto">
     <div class="eyebrow">Your campaign · live</div>
-    <h1 style="font-size:32px;margin:8px 0 8px">Cards are out. Day ${d}.</h1>
-    <div class="simbar"><span>⏱ Prototype control — in the live product this happens over a fortnight.</span>
-      <span>
-      <button class="btn quiet" ${d>=6?"disabled":""} onclick="S.day=Math.min(6,S.day+1);save();render()">Simulate next day ▸</button>
-      <button class="btn quiet" onclick="resetDemo()">Restart demo</button></span>
-    </div>
+    <h1 style="font-size:31px;margin:8px 0 8px">Cards are out. Day ${d}.</h1>
+    <div class="simbar"><span>⏱ Prototype control — in the live product this plays out over a fortnight.</span>
+      <span><button class="btn quiet" ${d>=6?"disabled":""} onclick="S.day=Math.min(6,S.day+1);save();render()">Simulate next day ▸</button>
+      <button class="btn quiet" onclick="resetDemo()">Restart demo</button></span></div>
     <div class="grid2">
       <div>
         <div class="panel">
           <div class="kv"><span class="k">Doors reached</span><span class="v num">${d>=2?Math.round(cards*.96).toLocaleString():"—"}</span></div>
-          <div class="kv"><span class="k">Offers viewed</span><span class="v num">${scanNow||"—"}</span></div>
+          <div class="kv"><span class="k">Offers read</span><span class="v num">${d>=3?Math.min(scans,Math.round(scans*(d-2)/4)):"—"}</span></div>
           <div class="kv"><span class="k">Conversations</span><span class="v num">${d>=5?3:"—"}</span></div>
           <div class="kv"><span class="k">Accepted</span><span class="v num" style="color:var(--post)">${d>=6?1:"—"}</span></div>
         </div>
-        <div class="timeline" style="margin-top:20px">
-          ${events.map(e=>`<div class="tl ${e.cls}"><div class="when">DAY ${e.day}</div><div class="what">${e.what||e.label}</div></div>`).join("")}
+        <div class="timeline" style="margin-top:18px">
+          ${events.map(([day,label,on])=>`<div class="tl ${on?(day===6?"pulse":"done"):""}">
+            <div class="when">DAY ${day}</div><div>${label}</div></div>`).join("")}
         </div>
       </div>
       <div>
         ${d<5?`<div class="panel"><h3 style="font-size:18px">While you wait</h3>
-          <p style="color:var(--muted);font-size:15px">Owners are opening their post. Most cards get read within 48 hours of landing —
-          then people talk to partners, sleep on it, scan in the evening. We never send a second card; the quiet is the point.</p>
+          <p style="color:var(--muted);font-size:15px">Owners are opening their post. Most cards are read
+          within 48 hours of landing — then people talk to a partner, sleep on it, scan in the evening.
+          We never send a second card; the quiet is the point.</p>
           <p class="note">You'll get one alert per genuine reply. Nothing else.</p></div>`:""}
-        ${d>=5?`
-        <h3 style="font-size:18px;margin-bottom:6px">Replies</h3>
-        <div class="response"><div><b>${esc(ex2.sector)}</b> · ${PT1[ex2.ptype]} · owner ${ex2.tenure} yrs
+        ${d>=5?`<h3 style="font-size:18px;margin-bottom:8px">Replies</h3>
+        <div class="warm"><div><b>${esc(ex2.sector)}█</b> · ${PT1[ex2.ptype]} · owner ${ex2.tenure} yrs
           <div class="note">"Curious what this is — tell me more."</div></div><span class="pill cool">exploring</span></div>
-        <div class="response"><div><b>${esc(ex3.sector)}</b> · ${PT1[ex3.ptype]} · owner ${ex3.tenure} yrs
+        <div class="warm"><div><b>${esc(ex3.sector)}█</b> · ${PT1[ex3.ptype]} · owner ${ex3.tenure} yrs
           <div class="note">"Not this year. Ask me again in spring."</div></div><span class="pill cool">later</span></div>
-        ${d>=6?`<div class="response hot"><div><b>${esc(ex.sector)}</b> · ${PT1[ex.ptype]} · owner ${ex.tenure} yrs
-          <div class="note">Accepted your range <b class="num">${fmtRange(ex.offer_mid)}</b> — wants to proceed.</div></div>
-          ${S.connected?`<span class="pill okp">connected</span>`:`<button class="btn post" onclick="S.connected=true;save();render()">Review &amp; connect</button>`}</div>`:""}
-        `:""}
-        ${S.connected?`
-        <div class="panel" style="margin-top:16px;border-color:var(--accent)">
+        ${d>=6?`<div class="warm hot"><div><b>${esc(ex.sector)}█</b> · ${PT1[ex.ptype]} · owner ${ex.tenure} yrs
+          <div class="note">Accepted your range <b>${GBPk(ex.offer_mid*0.96)}–${GBPk(ex.offer_mid*1.04)}</b> — wants to proceed.</div></div>
+          ${S.connected?`<span class="pill okp">connected</span>`
+            :`<button class="btn post" onclick="S.connected=true;save();render()">Review &amp; connect</button>`}</div>`:""}`:""}
+        ${S.connected?`<div class="panel" style="margin-top:16px;border-color:var(--accent)">
           <div class="eyebrow">You're connected</div>
           <h3 style="font-size:19px;margin:6px 0 2px">${PT1[ex.ptype][0].toUpperCase()+PT1[ex.ptype].slice(1)}, ${esc(ex.sector)}█ — agreed at ${GBPk(ex.offer_mid)}</h3>
           <p class="note">Full address and photos unlock when both sides confirm ID — that protects you both.</p>
@@ -1449,14 +733,14 @@ function vCampaign(){
             <li><span class="st done">DONE</span> Both parties verified (AML &amp; ID)</li>
             <li><span class="st done">DONE</span> Your mortgage in principle checked</li>
             <li><span class="st">TODAY</span> Walkthrough visit — pick a slot, we accompany</li>
-            <li><span class="st">NEXT</span> Conveyancers instructed both sides (ours, or yours)</li>
-            <li><span class="st">WK 2–8</span> Survey → exchange → keys. We chase everyone, weekly, so you never have to.</li>
+            <li><span class="st">NEXT</span> Conveyancers instructed both sides</li>
+            <li><span class="st">WK 2–8</span> Survey → exchange → keys. We chase everyone, weekly.</li>
           </ul>
           <div class="msg"><div class="who">A</div><div class="bubble">Hello both — I'm Amara, your progression lead.
-            You never need to negotiate face to face: anything awkward, tell me and I'll carry it. First: three walkthrough slots are ready below.</div></div>
-          <div class="slotrow">
-            <button class="chip">Thu 6:00pm</button><button class="chip">Sat 10:30am</button><button class="chip">Sun 2:00pm</button>
-          </div>
+            You never need to negotiate face to face: anything awkward, tell me and I'll carry it.
+            Three walkthrough slots are ready below.</div></div>
+          <div class="slotrow"><button class="chip">Thu 6:00pm</button>
+            <button class="chip">Sat 10:30am</button><button class="chip">Sun 2:00pm</button></div>
         </div>`:""}
       </div>
     </div>
@@ -1464,59 +748,65 @@ function vCampaign(){
 }
 function resetDemo(){ S=structuredClone(DEFAULTS); save(); go("/"); }
 
-/* ---------- seller flow ---------- */
 function vOffer(code){
   const ex = DATA.exemplars.find(e=>e.code===code) || DATA.exemplars[0];
   const st = S.seller[code]||"new";
-  const head=`
-    <div class="eyebrow">Private offer · ref <span class="mono">${esc(code)}</span></div>`;
+  const head = `<div class="eyebrow">Private offer · ref <span class="mono">${esc(code)}</span></div>`;
   if(st==="declined") return `<div class="offerhero fadein" style="text-align:center;padding:40px 0">
-    ${head}<h1 style="font-size:30px;margin:14px 0">Understood — we won't write again.</h1>
-    <p style="color:var(--muted)">Your address is now suppressed from every future campaign. Nothing was listed,
-    nothing is public, and no one will follow up. Thank you for telling us.</p>
+    ${head}<h1 style="font-size:29px;margin:14px 0">Understood — we won't write again.</h1>
+    <p style="color:var(--muted)">Your address is now suppressed from every future campaign. Nothing was
+    listed, nothing is public, and no one will follow up. Thank you for telling us.</p>
     <p class="note">Changed your mind? Your reference stays valid for 30 days.</p>
     <button class="btn ghost" onclick="S.seller['${esc(code)}']='new';save();render()">Reopen my offer</button></div>`;
   if(st==="accepted") return `<div class="offerhero fadein" style="padding:26px 0">
-    ${head}<h1 style="font-size:30px;margin:14px 0">Done — the buyers have been told.</h1>
-    <p style="color:var(--muted)">Here's exactly what happens next. No boards, no portal listing, no stream of viewings —
-    one accompanied walkthrough and a managed path to completion.</p>
+    ${head}<h1 style="font-size:29px;margin:14px 0">Done — the buyer has been told.</h1>
+    <p style="color:var(--muted)">Here's exactly what happens next. No boards, no portal listing, no stream
+    of viewings — one accompanied walkthrough and a managed path to completion.</p>
     <div class="panel"><div class="steps">
-      <div class="step"><div><b>Today — a real person calls you.</b><br><span class="note">Your progression lead (a named human, not a call centre) confirms the number and answers anything. You can stop at any point before contracts — no fee, no tie-in.</span></div></div>
-      <div class="step"><div><b>This week — one walkthrough.</b><br><span class="note">The buyer visits once, with us present. If the home matches what the public record says, the range holds; we agree the final figure openly on the day.</span></div></div>
-      <div class="step"><div><b>Weeks 2–8 — we run the paperwork.</b><br><span class="note">Conveyancing, survey, chain (we can line up your next purchase inside Quiet Market too). We chase everyone weekly. You never negotiate directly unless you want to.</span></div></div>
+      <div class="step"><div><b>Today — a real person calls you.</b><br><span class="note">Your progression
+      lead confirms the number and answers anything. You can stop at any point before contracts — no fee, no tie-in.</span></div></div>
+      <div class="step"><div><b>This week — one walkthrough.</b><br><span class="note">The buyer visits once,
+      with us present. If the home matches what the public record says, the range holds; we agree the final
+      figure openly on the day.</span></div></div>
+      <div class="step"><div><b>Weeks 2–8 — we run the paperwork.</b><br><span class="note">Conveyancing,
+      survey, chain (we can find your next home inside Quiet Market too). We chase everyone weekly. You never
+      negotiate directly unless you want to.</span></div></div>
     </div></div>
     <p class="note" style="margin-top:14px">Your fee: £0. Buyers fund Quiet Market on completion.</p></div>`;
 
   return `<div class="offerhero fadein" style="padding:12px 0">
     ${head}
-    <h1 style="font-size:clamp(28px,4.5vw,40px);margin:12px 0 6px">A vetted buyer is ready to pay</h1>
+    <h1 style="font-size:clamp(27px,4.5vw,39px);margin:12px 0 6px">A vetted buyer is ready to pay</h1>
     <div class="offerbig num">${GBP(ex.offer_lo)} – ${GBP(ex.offer_hi)}</div>
     <p style="font-size:17px;margin:10px 0 4px">for a ${PT1[ex.ptype]} like yours in <b>${esc(ex.sector)}█</b>.</p>
-    <p style="color:var(--muted)">That's around <b class="num">${ex.premium_pct.toFixed(0)}% over</b> what homes like yours have been
-    changing hands for. Because the buyer chose your street — you were never "on the market", so you never paid to be found.</p>
+    <p style="color:var(--muted)">That's around <b class="num">${ex.premium_pct.toFixed(0)}% over</b> what homes
+    like yours have been changing hands for. They weren't looking for your street — they were looking for
+    clean air, ${ex.min_regional} minutes from a centre, and a home like yours. Yours fits.</p>
     <div class="actions">
       <button class="btn post" onclick="S.seller['${esc(code)}']='accepted';save();render()">I'm interested — start the conversation</button>
       <button class="btn ghost" onclick="document.getElementById('faqs').scrollIntoView({behavior:'smooth'})">Tell me more first</button>
       <button class="btn quiet" onclick="S.seller['${esc(code)}']='declined';save();render()">No thanks — don't write again</button>
     </div>
-    <p class="note">No obligation. Nothing public. Interested ≠ committed — it just opens a conversation, through us, never directly.</p>
-    <div id="faqs" style="margin-top:34px">
+    <p class="note">No obligation. Nothing public. Interested ≠ committed — it opens a conversation, through us, never directly.</p>
+    <div id="faqs" style="margin-top:32px">
       <div class="eyebrow">Fair questions</div>
-      <details class="faq" open><summary>How did you get my address — and what do you actually know?</summary>
-        <p>Only public records: HM Land Registry's sale history and energy-certificate data, addressed to "The Homeowner".
-        We know when homes on your street last sold and for what. We don't know your name, and we haven't looked in your windows.</p></details>
+      <details class="faq" open><summary>How did you get my address — and what do you know?</summary>
+        <p>Only public records: HM Land Registry's sale history, energy-certificate data and published
+        environmental data, addressed to "The Homeowner". We know when homes on your street last sold and
+        for what. We don't know your name, and we haven't looked in your windows.</p></details>
       <details class="faq"><summary>Who is the buyer?</summary>
-        <p>A private buyer, financially vetted by us (proof of funds or mortgage in principle) before a single card was printed.
-        You'll meet them exactly once before contracts — at the walkthrough, with us in the room.</p></details>
+        <p>A private buyer, financially vetted by us (proof of funds or mortgage in principle) before a
+        single card was printed. You'll meet them once before contracts — at the walkthrough, with us there.</p></details>
       <details class="faq"><summary>What does it cost me?</summary>
-        <p>Nothing. No estate agency fee, no marketing, no listing. The buyer pays us on completion. If you'd normally pay
-        1.5% to an agent, that's roughly <b class="num">${GBP(ex.est_value*0.015)}</b> staying in your pocket.</p></details>
+        <p>Nothing. No estate agency fee, no marketing, no listing. The buyer pays us on completion. If you'd
+        normally pay 1.5% to an agent, that's roughly <b class="num">${GBP(ex.est_value*0.015)}</b> staying in your pocket.</p></details>
       <details class="faq"><summary>Is the number real? What if my home is nicer than average?</summary>
-        <p>The range is a genuine starting commitment based on your street's record, not a teaser. If your home is better than the
-        public record suggests, the walkthrough is where the number moves up — openly, on the day, with us anchoring it.</p></details>
+        <p>The range is a genuine starting commitment based on your street's record, not a teaser. If your
+        home is better than the public record suggests, the walkthrough is where the number moves up —
+        openly, on the day, with us anchoring it.</p></details>
       <details class="faq"><summary>What if I need somewhere to move to?</summary>
-        <p>Most people do. Tell us what you'd want next and we'll run the same quiet search for you on the buying side —
-        that's the half of this most owners end up loving.</p></details>
+        <p>Most people do. Tell us what you'd want next and we'll run the same quiet search for you on the
+        buying side — that's the half of this most owners end up loving.</p></details>
     </div>
   </div>`;
 }
@@ -1524,18 +814,19 @@ function vOffer(code){
 /* ---------- render ---------- */
 function render(){
   const r=route();
-  document.getElementById("nav").innerHTML = r.v==="offer" ?
-    `<span class="mono" style="font-size:11px;color:var(--muted)">A PRIVATE NOTE FROM A REAL BUYER</span>` : nav(r.v);
-  const app=document.getElementById("app");
-  app.innerHTML = r.v==="offer"?vOffer(r.code) : r.v==="search"?vSearch() :
-                  r.v==="results"?vResults() : r.v==="campaign"?vCampaign() : vHome();
+  document.getElementById("nav").innerHTML = r.v==="offer"
+    ? `<span class="mono" style="font-size:11px;color:var(--muted)">A PRIVATE NOTE FROM A REAL BUYER</span>`
+    : nav(r.v);
+  document.getElementById("app").innerHTML =
+    r.v==="offer"?vOffer(r.code) : r.v==="search"?vSearch() :
+    r.v==="results"?vResults() : r.v==="campaign"?vCampaign() : vHome();
   window.scrollTo({top:0});
   for(const id of ["heroQR","cardQR"]){
     const el=document.getElementById(id);
     if(el && window.QRCode){ try{
-      const ref=(DATA.exemplars[0]||{code:"EX4-9C2E"}).code;
-      new QRCode(el,{text:location.origin+location.pathname+"#/offer/"+ref,width:68,height:68,
-        colorDark:"#20282E",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
+      new QRCode(el,{text:location.origin+location.pathname+"#/offer/"+DATA.exemplars[0].code,
+        width:68,height:68,colorDark:"#20282E",colorLight:"#ffffff",
+        correctLevel:QRCode.CorrectLevel.M});
     }catch(e){ el.textContent="QR"; } }
   }
 }
