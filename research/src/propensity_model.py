@@ -79,6 +79,7 @@ def build_panel(tx: pd.DataFrame, dy: pd.DataFrame, sample_pct: int):
         "ptype": tx["ptype"], "leasehold": tx["leasehold"],
         "is_new": tx["is_new"], "price": tx["price"],
         "outcode": tx["outcode"], "n_prior": tx["n_prior"].astype("int16"),
+        "pc_code": tx["postcode"].cat.codes.astype("int32"),
         "sold": same_next,
         "end_year": np.where(same_next, next_year, END_YEAR).astype("int32"),
     })
@@ -114,11 +115,29 @@ def build_panel(tx: pd.DataFrame, dy: pd.DataFrame, sample_pct: int):
     ctx["year"] = ctx["year"] + 1
     ctx = ctx.rename(columns={"med_price": "district_med_price"})
     panel = panel.merge(ctx, on=["outcode", "year"], how="left")
+
+    # Neighbour contagion: sales in the same full postcode (~15 homes)
+    # during years t-2 and t-1, excluding this property's own purchase.
+    pcy = (tx.assign(pc_code=tx["postcode"].cat.codes.astype("int32"))
+           .groupby(["pc_code", "year"], observed=True).size()
+           .rename("s").reset_index())
+    pcy["year"] = pcy["year"].astype("int32")
+    for lag in (1, 2):
+        tmp = pcy.copy()
+        tmp["year"] = tmp["year"] + lag
+        tmp = tmp.rename(columns={"s": f"s_l{lag}"})
+        panel = panel.merge(tmp, on=["pc_code", "year"], how="left")
+    own = ((panel["buy_year"] == panel["year"] - 1)
+           | (panel["buy_year"] == panel["year"] - 2)).astype("int16")
+    panel["pc_sales_2y"] = (panel["s_l1"].fillna(0) + panel["s_l2"].fillna(0)
+                            - own).clip(lower=0).astype("int16")
+    panel.drop(columns=["s_l1", "s_l2"], inplace=True)
     return panel
 
 
 FEATURES = ["tenure", "log_price_rel", "leasehold", "is_new", "n_prior",
             "turnover_3y", "price_rel_nat", "price_growth_3y",
+            "pc_sales_2y",
             "ptype_D", "ptype_S", "ptype_T", "ptype_F"]
 
 

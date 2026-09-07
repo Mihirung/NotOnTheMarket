@@ -57,7 +57,8 @@ def load_year(zpath: Path) -> pd.DataFrame:
         "ptype": df["ptype"].astype("category"),
         "is_new": (df["is_new"] == "Y"),
         "leasehold": (df["duration"] == "L"),
-        # Postcode district ("outcode"), e.g. SS2 — the local-market unit.
+        # Full postcode (~15 households) and district ("outcode", e.g. SS2).
+        "postcode": pc.astype("category"),
         "outcode": pc.str.split(" ").str[0].astype("category"),
         "county": df["county"].astype("category"),
     })
@@ -72,7 +73,7 @@ def main(zip_dir: str, out_path: str) -> None:
         print(f"{zpath.name}: {len(df):,} category-A residential rows", flush=True)
     allx = pd.concat(frames, ignore_index=True)
     # Re-unify category dtypes across years.
-    for c in ("ptype", "outcode", "county"):
+    for c in ("ptype", "postcode", "outcode", "county"):
         allx[c] = allx[c].astype("category")
     allx.sort_values(["key", "year", "month"], inplace=True, ignore_index=True)
     allx.to_parquet(out_path, index=False)
