@@ -28,9 +28,12 @@ traditional estate agent.
    come from owners who bought 24+ years ago — exactly the latent
    supply the product targets, and the cohort where enrichment beyond
    transaction data (EPC, demographics) matters most.
-3. **Targeting works out-of-time.** A model trained on 2001-2015 and
-   tested on 2017-2019 concentrates sellers several-fold in its top
-   decile versus random mailing (full metrics in
+3. **Targeting works out-of-time, and its limits are mapped.** A model
+   trained on 2001-2015 and tested on 2017-2019 delivers a stable AUC
+   of 0.588 and 1.6x-1.9x mail efficiency in its top deciles from
+   open transaction data alone; the analysis shows trigger signals
+   (withdrawn listings, EPC-without-sale, landlord exits) are what
+   buy the next multiple (full metrics in
    [`docs/02-prediction-problem.md`](docs/02-prediction-problem.md)).
 4. **The moat is the model nobody can pre-build.** Offer-acceptance
    data (which premium unlocks which owner) exists nowhere publicly;
