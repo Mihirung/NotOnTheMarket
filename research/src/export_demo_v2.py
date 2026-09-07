@@ -4,16 +4,16 @@ Version 2 of the prototype's data. Rather than pre-baked cohorts, this
 emits one row per (postcode sector x property type x value band) with
 the real model's propensity, the PoC offer, and the geographic
 attributes a buyer actually chooses on: air quality, openness of
-surroundings, distance to a GP, and approximate drive time to a town,
-regional centre and major city.
+surroundings, distance to a GP, and approximate drive time to the city
+centre.
 
 That lets the prototype filter the way people really search — "clean
-air, green surroundings, twenty minutes from a centre, under £450k" —
+air, green surroundings, ten minutes from the centre, under £450k" —
 and count the matching latent supply live.
 
-Drive time is approximated from straight-line distance at 50 km/h. It is
-labelled as an approximation everywhere it appears; a production build
-would call a routing engine for true isochrones.
+Drive time is approximated from straight-line distance, not routed. It
+is labelled as an approximation everywhere it appears; a production
+build would call a routing engine for true isochrones.
 
 Usage: python export_demo_v2.py <transactions.parquet> <geo.parquet> <out_json>
 """
@@ -32,7 +32,13 @@ from propensity_model import (FEATURES, build_panel,  # noqa: E402
 from export_demo_cohorts import (DEMO_OUTCODES, SCORE_YEAR,  # noqa: E402
                                  offer_model, open_spells, score_frame)
 
-KMH = 50.0  # assumed average road speed for the drive-time approximation
+KMH = 50.0        # assumed road speed between settlements
+KMH_URBAN = 30.0  # assumed road speed within a city
+# Exeter Cathedral — the reference point for "minutes from the centre".
+# Within a single city every sector is ~0 minutes from "a regional
+# centre", so that national measure cannot discriminate here; distance
+# to this city's own centre is the one that varies.
+CENTRE = (50.7236, -3.5275)
 BANDS = [(0, 250_000, "under250"), (250_000, 400_000, "250to400"),
          (400_000, 600_000, "400to600"), (600_000, np.inf, "over600")]
 
@@ -42,6 +48,14 @@ def band_of(v):
         if lo <= v < hi:
             return name
     return "over600"
+
+
+def mins_to_centre(lat, lon):
+    """Approximate drive minutes from a point to the city centre."""
+    dlat = (np.asarray(lat) - CENTRE[0]) * 111.19
+    dlon = (np.asarray(lon) - CENTRE[1]) * 111.19 * np.cos(np.radians(CENTRE[0]))
+    km = np.hypot(dlat, dlon)
+    return np.round(km / KMH_URBAN * 60).astype(int)
 
 
 def main(tx_path, geo_path, out_json):
@@ -104,6 +118,7 @@ def main(tx_path, geo_path, out_json):
             "nox": round(float(g["nox"].median()), 1),
             "density": int(g["pc_within_1km"].median()),
             "km_gp": round(float(g["km_gp"].median()), 2),
+            "min_centre": int(mins_to_centre(g["lat"].median(), g["lon"].median())),
             "min_town": int(round(g["km_town"].median() / KMH * 60)),
             "min_regional": int(round(g["km_regional"].median() / KMH * 60)),
             "min_major": int(round(g["km_major"].median() / KMH * 60)),
@@ -131,6 +146,7 @@ def main(tx_path, geo_path, out_json):
             "premium_pct": round(float(r["premium"]) * 100, 1),
             "nox": round(float(r["nox"]), 1),
             "min_regional": int(round(r["km_regional"] / KMH * 60)),
+            "min_centre": int(mins_to_centre(r["lat"], r["lon"])),
         })
 
     out = {
@@ -146,7 +162,8 @@ def main(tx_path, geo_path, out_json):
                                     "1995-2019, 24.3M transactions"},
             "geo_sources": "AHAH v4 air quality & health POIs; ONS postcode "
                            "centroids via Geovation; drive time approximated "
-                           f"from straight-line distance at {KMH:.0f} km/h",
+                           f"from straight-line distance at {KMH_URBAN:.0f} km/h "
+                           "within the city",
         },
         "cells": rows,
         "exemplars": exemplars,
@@ -156,9 +173,9 @@ def main(tx_path, geo_path, out_json):
     print(f"{len(rows)} sector cells, {len(exemplars)} exemplars -> {out_json}")
     print(f"  NOx range across cells: "
           f"{min(r['nox'] for r in rows)}-{max(r['nox'] for r in rows)}")
-    print(f"  drive to regional centre: "
-          f"{min(r['min_regional'] for r in rows)}-"
-          f"{max(r['min_regional'] for r in rows)} min")
+    print(f"  drive to city centre: "
+          f"{min(r['min_centre'] for r in rows)}-"
+          f"{max(r['min_centre'] for r in rows)} min")
 
 
 if __name__ == "__main__":
