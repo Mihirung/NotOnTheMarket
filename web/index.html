@@ -219,7 +219,925 @@ details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const DATA = /*__DATA__*/ null;
+const DATA = {
+ "area": {
+  "n_owned_tracked": 32573,
+  "exp_sellers_12m": 1385,
+  "top_band_cut": 0.0532,
+  "p_sale_mean": 0.0425,
+  "by_outcode": {
+   "EX1": {
+    "n": 6222,
+    "exp_sellers_12m": 295,
+    "est_value_med": 287000
+   },
+   "EX2": {
+    "n": 11825,
+    "exp_sellers_12m": 479,
+    "est_value_med": 257000
+   },
+   "EX3": {
+    "n": 1689,
+    "exp_sellers_12m": 69,
+    "est_value_med": 447000
+   },
+   "EX4": {
+    "n": 12837,
+    "exp_sellers_12m": 542,
+    "est_value_med": 234000
+   }
+  },
+  "model": {
+   "auc_oot": 0.588,
+   "lift_top1pct": 1.89,
+   "trained_on": "HM Land Registry Price Paid Data 1995-2019, England & Wales, 24.3M transactions"
+  }
+ },
+ "cohorts": [
+  {
+   "outcode": "EX1",
+   "ptype": "D",
+   "band": "under250",
+   "n": 31,
+   "n_top": 12,
+   "exp_sellers_12m": 1.5,
+   "p_median": 0.0474,
+   "p_top_decile": 0.0685,
+   "est_value_med": 221000,
+   "offer_mid_med": 248000,
+   "premium_med": 0.105,
+   "tenure_med": 6.0,
+   "leasehold_share": 0.1
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "D",
+   "band": "250to400",
+   "n": 481,
+   "n_top": 114,
+   "exp_sellers_12m": 20.3,
+   "p_median": 0.0418,
+   "p_top_decile": 0.0628,
+   "est_value_med": 344000,
+   "offer_mid_med": 389000,
+   "premium_med": 0.143,
+   "tenure_med": 3.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "D",
+   "band": "400to600",
+   "n": 465,
+   "n_top": 56,
+   "exp_sellers_12m": 17.5,
+   "p_median": 0.0375,
+   "p_top_decile": 0.0544,
+   "est_value_med": 459000,
+   "offer_mid_med": 535000,
+   "premium_med": 0.173,
+   "tenure_med": 6.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "D",
+   "band": "over600",
+   "n": 124,
+   "n_top": 1,
+   "exp_sellers_12m": 4.0,
+   "p_median": 0.0314,
+   "p_top_decile": 0.0427,
+   "est_value_med": 712000,
+   "offer_mid_med": 868000,
+   "premium_med": 0.21,
+   "tenure_med": 14.0,
+   "leasehold_share": 0.02
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "F",
+   "band": "under250",
+   "n": 1000,
+   "n_top": 556,
+   "exp_sellers_12m": 55.9,
+   "p_median": 0.0559,
+   "p_top_decile": 0.0776,
+   "est_value_med": 180000,
+   "offer_mid_med": 204000,
+   "premium_med": 0.108,
+   "tenure_med": 7.0,
+   "leasehold_share": 0.98
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "F",
+   "band": "250to400",
+   "n": 162,
+   "n_top": 91,
+   "exp_sellers_12m": 9.1,
+   "p_median": 0.0562,
+   "p_top_decile": 0.0727,
+   "est_value_med": 287000,
+   "offer_mid_med": 329000,
+   "premium_med": 0.123,
+   "tenure_med": 11.0,
+   "leasehold_share": 0.94
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "F",
+   "band": "400to600",
+   "n": 47,
+   "n_top": 22,
+   "exp_sellers_12m": 2.3,
+   "p_median": 0.0518,
+   "p_top_decile": 0.0598,
+   "est_value_med": 470000,
+   "offer_mid_med": 535000,
+   "premium_med": 0.128,
+   "tenure_med": 9.0,
+   "leasehold_share": 0.98
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "S",
+   "band": "under250",
+   "n": 149,
+   "n_top": 48,
+   "exp_sellers_12m": 6.7,
+   "p_median": 0.0429,
+   "p_top_decile": 0.0646,
+   "est_value_med": 226000,
+   "offer_mid_med": 259000,
+   "premium_med": 0.149,
+   "tenure_med": 7.0,
+   "leasehold_share": 0.09
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "S",
+   "band": "250to400",
+   "n": 933,
+   "n_top": 209,
+   "exp_sellers_12m": 40.4,
+   "p_median": 0.0407,
+   "p_top_decile": 0.0696,
+   "est_value_med": 316000,
+   "offer_mid_med": 366000,
+   "premium_med": 0.157,
+   "tenure_med": 7.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "S",
+   "band": "400to600",
+   "n": 207,
+   "n_top": 17,
+   "exp_sellers_12m": 8.1,
+   "p_median": 0.0373,
+   "p_top_decile": 0.0501,
+   "est_value_med": 449000,
+   "offer_mid_med": 530000,
+   "premium_med": 0.183,
+   "tenure_med": 13.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "T",
+   "band": "under250",
+   "n": 885,
+   "n_top": 368,
+   "exp_sellers_12m": 45.3,
+   "p_median": 0.0474,
+   "p_top_decile": 0.078,
+   "est_value_med": 225000,
+   "offer_mid_med": 252000,
+   "premium_med": 0.117,
+   "tenure_med": 6.0,
+   "leasehold_share": 0.05
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "T",
+   "band": "250to400",
+   "n": 1495,
+   "n_top": 574,
+   "exp_sellers_12m": 74.6,
+   "p_median": 0.0467,
+   "p_top_decile": 0.075,
+   "est_value_med": 291000,
+   "offer_mid_med": 336000,
+   "premium_med": 0.139,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "T",
+   "band": "400to600",
+   "n": 153,
+   "n_top": 17,
+   "exp_sellers_12m": 6.2,
+   "p_median": 0.0391,
+   "p_top_decile": 0.0543,
+   "est_value_med": 449000,
+   "offer_mid_med": 526000,
+   "premium_med": 0.176,
+   "tenure_med": 13.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX1",
+   "ptype": "T",
+   "band": "over600",
+   "n": 52,
+   "n_top": 0,
+   "exp_sellers_12m": 1.7,
+   "p_median": 0.0337,
+   "p_top_decile": 0.0419,
+   "est_value_med": 743000,
+   "offer_mid_med": 903000,
+   "premium_med": 0.188,
+   "tenure_med": 12.5,
+   "leasehold_share": 0.02
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "D",
+   "band": "under250",
+   "n": 124,
+   "n_top": 13,
+   "exp_sellers_12m": 5.0,
+   "p_median": 0.0404,
+   "p_top_decile": 0.054,
+   "est_value_med": 225000,
+   "offer_mid_med": 260000,
+   "premium_med": 0.145,
+   "tenure_med": 8.0,
+   "leasehold_share": 0.05
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "D",
+   "band": "250to400",
+   "n": 948,
+   "n_top": 52,
+   "exp_sellers_12m": 36.3,
+   "p_median": 0.0384,
+   "p_top_decile": 0.0509,
+   "est_value_med": 338000,
+   "offer_mid_med": 393000,
+   "premium_med": 0.158,
+   "tenure_med": 7.0,
+   "leasehold_share": 0.01
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "D",
+   "band": "400to600",
+   "n": 878,
+   "n_top": 8,
+   "exp_sellers_12m": 30.3,
+   "p_median": 0.0352,
+   "p_top_decile": 0.0462,
+   "est_value_med": 469000,
+   "offer_mid_med": 555000,
+   "premium_med": 0.182,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.01
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "D",
+   "band": "over600",
+   "n": 330,
+   "n_top": 0,
+   "exp_sellers_12m": 9.8,
+   "p_median": 0.0303,
+   "p_top_decile": 0.0399,
+   "est_value_med": 723000,
+   "offer_mid_med": 863000,
+   "premium_med": 0.198,
+   "tenure_med": 12.0,
+   "leasehold_share": 0.01
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "F",
+   "band": "under250",
+   "n": 1649,
+   "n_top": 403,
+   "exp_sellers_12m": 73.8,
+   "p_median": 0.0445,
+   "p_top_decile": 0.0615,
+   "est_value_med": 166000,
+   "offer_mid_med": 189000,
+   "premium_med": 0.14,
+   "tenure_med": 8.0,
+   "leasehold_share": 0.96
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "F",
+   "band": "250to400",
+   "n": 385,
+   "n_top": 65,
+   "exp_sellers_12m": 16.9,
+   "p_median": 0.0447,
+   "p_top_decile": 0.057,
+   "est_value_med": 291000,
+   "offer_mid_med": 342000,
+   "premium_med": 0.159,
+   "tenure_med": 13.0,
+   "leasehold_share": 0.96
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "F",
+   "band": "400to600",
+   "n": 71,
+   "n_top": 1,
+   "exp_sellers_12m": 2.7,
+   "p_median": 0.0427,
+   "p_top_decile": 0.0514,
+   "est_value_med": 455000,
+   "offer_mid_med": 529000,
+   "premium_med": 0.177,
+   "tenure_med": 11.0,
+   "leasehold_share": 0.96
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "S",
+   "band": "under250",
+   "n": 1214,
+   "n_top": 136,
+   "exp_sellers_12m": 49.1,
+   "p_median": 0.0405,
+   "p_top_decile": 0.0548,
+   "est_value_med": 204000,
+   "offer_mid_med": 235000,
+   "premium_med": 0.147,
+   "tenure_med": 8.0,
+   "leasehold_share": 0.04
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "S",
+   "band": "250to400",
+   "n": 1447,
+   "n_top": 135,
+   "exp_sellers_12m": 54.4,
+   "p_median": 0.0372,
+   "p_top_decile": 0.0523,
+   "est_value_med": 296000,
+   "offer_mid_med": 349000,
+   "premium_med": 0.174,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.04
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "S",
+   "band": "400to600",
+   "n": 196,
+   "n_top": 0,
+   "exp_sellers_12m": 6.8,
+   "p_median": 0.0354,
+   "p_top_decile": 0.0451,
+   "est_value_med": 444000,
+   "offer_mid_med": 525000,
+   "premium_med": 0.183,
+   "tenure_med": 13.0,
+   "leasehold_share": 0.01
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "S",
+   "band": "over600",
+   "n": 68,
+   "n_top": 0,
+   "exp_sellers_12m": 2.1,
+   "p_median": 0.0315,
+   "p_top_decile": 0.0379,
+   "est_value_med": 783000,
+   "offer_mid_med": 937000,
+   "premium_med": 0.193,
+   "tenure_med": 9.5,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "T",
+   "band": "under250",
+   "n": 2596,
+   "n_top": 589,
+   "exp_sellers_12m": 113.2,
+   "p_median": 0.0424,
+   "p_top_decile": 0.0613,
+   "est_value_med": 209000,
+   "offer_mid_med": 240000,
+   "premium_med": 0.143,
+   "tenure_med": 9.0,
+   "leasehold_share": 0.05
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "T",
+   "band": "250to400",
+   "n": 1567,
+   "n_top": 323,
+   "exp_sellers_12m": 65.4,
+   "p_median": 0.0403,
+   "p_top_decile": 0.0584,
+   "est_value_med": 288000,
+   "offer_mid_med": 335000,
+   "premium_med": 0.163,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.02
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "T",
+   "band": "400to600",
+   "n": 289,
+   "n_top": 12,
+   "exp_sellers_12m": 10.6,
+   "p_median": 0.0377,
+   "p_top_decile": 0.0485,
+   "est_value_med": 450000,
+   "offer_mid_med": 526000,
+   "premium_med": 0.179,
+   "tenure_med": 9.0,
+   "leasehold_share": 0.13
+  },
+  {
+   "outcode": "EX2",
+   "ptype": "T",
+   "band": "over600",
+   "n": 58,
+   "n_top": 0,
+   "exp_sellers_12m": 1.9,
+   "p_median": 0.0339,
+   "p_top_decile": 0.0386,
+   "est_value_med": 737000,
+   "offer_mid_med": 884000,
+   "premium_med": 0.206,
+   "tenure_med": 13.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "D",
+   "band": "250to400",
+   "n": 44,
+   "n_top": 5,
+   "exp_sellers_12m": 1.8,
+   "p_median": 0.0429,
+   "p_top_decile": 0.0538,
+   "est_value_med": 355000,
+   "offer_mid_med": 414000,
+   "premium_med": 0.136,
+   "tenure_med": 6.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "D",
+   "band": "400to600",
+   "n": 145,
+   "n_top": 2,
+   "exp_sellers_12m": 5.0,
+   "p_median": 0.035,
+   "p_top_decile": 0.0456,
+   "est_value_med": 501000,
+   "offer_mid_med": 594000,
+   "premium_med": 0.176,
+   "tenure_med": 7.0,
+   "leasehold_share": 0.01
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "D",
+   "band": "over600",
+   "n": 337,
+   "n_top": 1,
+   "exp_sellers_12m": 10.4,
+   "p_median": 0.0319,
+   "p_top_decile": 0.0393,
+   "est_value_med": 839000,
+   "offer_mid_med": 1007000,
+   "premium_med": 0.184,
+   "tenure_med": 9.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "F",
+   "band": "under250",
+   "n": 130,
+   "n_top": 71,
+   "exp_sellers_12m": 7.0,
+   "p_median": 0.0552,
+   "p_top_decile": 0.0772,
+   "est_value_med": 204000,
+   "offer_mid_med": 234000,
+   "premium_med": 0.108,
+   "tenure_med": 7.0,
+   "leasehold_share": 0.98
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "F",
+   "band": "250to400",
+   "n": 68,
+   "n_top": 28,
+   "exp_sellers_12m": 3.4,
+   "p_median": 0.0447,
+   "p_top_decile": 0.0783,
+   "est_value_med": 308000,
+   "offer_mid_med": 359000,
+   "premium_med": 0.143,
+   "tenure_med": 8.0,
+   "leasehold_share": 0.93
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "F",
+   "band": "400to600",
+   "n": 44,
+   "n_top": 14,
+   "exp_sellers_12m": 2.1,
+   "p_median": 0.0471,
+   "p_top_decile": 0.0751,
+   "est_value_med": 459000,
+   "offer_mid_med": 530000,
+   "premium_med": 0.144,
+   "tenure_med": 6.0,
+   "leasehold_share": 0.95
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "S",
+   "band": "250to400",
+   "n": 101,
+   "n_top": 24,
+   "exp_sellers_12m": 4.3,
+   "p_median": 0.042,
+   "p_top_decile": 0.0603,
+   "est_value_med": 339000,
+   "offer_mid_med": 395000,
+   "premium_med": 0.151,
+   "tenure_med": 9.0,
+   "leasehold_share": 0.01
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "S",
+   "band": "400to600",
+   "n": 112,
+   "n_top": 8,
+   "exp_sellers_12m": 4.0,
+   "p_median": 0.0349,
+   "p_top_decile": 0.0468,
+   "est_value_med": 461000,
+   "offer_mid_med": 543000,
+   "premium_med": 0.18,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "S",
+   "band": "over600",
+   "n": 56,
+   "n_top": 3,
+   "exp_sellers_12m": 1.9,
+   "p_median": 0.0328,
+   "p_top_decile": 0.0448,
+   "est_value_med": 756000,
+   "offer_mid_med": 905000,
+   "premium_med": 0.188,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "T",
+   "band": "under250",
+   "n": 63,
+   "n_top": 13,
+   "exp_sellers_12m": 2.5,
+   "p_median": 0.0346,
+   "p_top_decile": 0.0651,
+   "est_value_med": 215000,
+   "offer_mid_med": 250000,
+   "premium_med": 0.202,
+   "tenure_med": 14.0,
+   "leasehold_share": 0.11
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "T",
+   "band": "250to400",
+   "n": 259,
+   "n_top": 120,
+   "exp_sellers_12m": 13.1,
+   "p_median": 0.0507,
+   "p_top_decile": 0.0745,
+   "est_value_med": 322000,
+   "offer_mid_med": 371000,
+   "premium_med": 0.121,
+   "tenure_med": 8.0,
+   "leasehold_share": 0.03
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "T",
+   "band": "400to600",
+   "n": 194,
+   "n_top": 44,
+   "exp_sellers_12m": 8.5,
+   "p_median": 0.0422,
+   "p_top_decile": 0.0609,
+   "est_value_med": 456000,
+   "offer_mid_med": 539000,
+   "premium_med": 0.151,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.03
+  },
+  {
+   "outcode": "EX3",
+   "ptype": "T",
+   "band": "over600",
+   "n": 102,
+   "n_top": 6,
+   "exp_sellers_12m": 3.6,
+   "p_median": 0.0355,
+   "p_top_decile": 0.047,
+   "est_value_med": 754000,
+   "offer_mid_med": 906000,
+   "premium_med": 0.18,
+   "tenure_med": 9.0,
+   "leasehold_share": 0.02
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "D",
+   "band": "under250",
+   "n": 143,
+   "n_top": 24,
+   "exp_sellers_12m": 6.0,
+   "p_median": 0.0404,
+   "p_top_decile": 0.0563,
+   "est_value_med": 221000,
+   "offer_mid_med": 255000,
+   "premium_med": 0.165,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.03
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "D",
+   "band": "250to400",
+   "n": 1097,
+   "n_top": 61,
+   "exp_sellers_12m": 42.4,
+   "p_median": 0.0389,
+   "p_top_decile": 0.0494,
+   "est_value_med": 324000,
+   "offer_mid_med": 378000,
+   "premium_med": 0.172,
+   "tenure_med": 9.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "D",
+   "band": "400to600",
+   "n": 641,
+   "n_top": 0,
+   "exp_sellers_12m": 21.0,
+   "p_median": 0.033,
+   "p_top_decile": 0.0427,
+   "est_value_med": 464000,
+   "offer_mid_med": 556000,
+   "premium_med": 0.185,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.01
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "D",
+   "band": "over600",
+   "n": 242,
+   "n_top": 0,
+   "exp_sellers_12m": 6.8,
+   "p_median": 0.0285,
+   "p_top_decile": 0.0349,
+   "est_value_med": 743000,
+   "offer_mid_med": 894000,
+   "premium_med": 0.201,
+   "tenure_med": 10.5,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "F",
+   "band": "under250",
+   "n": 2269,
+   "n_top": 737,
+   "exp_sellers_12m": 110.4,
+   "p_median": 0.0474,
+   "p_top_decile": 0.0649,
+   "est_value_med": 151000,
+   "offer_mid_med": 173000,
+   "premium_med": 0.134,
+   "tenure_med": 8.0,
+   "leasehold_share": 0.98
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "F",
+   "band": "250to400",
+   "n": 205,
+   "n_top": 59,
+   "exp_sellers_12m": 9.6,
+   "p_median": 0.0476,
+   "p_top_decile": 0.0585,
+   "est_value_med": 296000,
+   "offer_mid_med": 336000,
+   "premium_med": 0.153,
+   "tenure_med": 11.0,
+   "leasehold_share": 0.96
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "S",
+   "band": "under250",
+   "n": 1211,
+   "n_top": 158,
+   "exp_sellers_12m": 48.1,
+   "p_median": 0.0378,
+   "p_top_decile": 0.056,
+   "est_value_med": 220000,
+   "offer_mid_med": 254000,
+   "premium_med": 0.174,
+   "tenure_med": 11.0,
+   "leasehold_share": 0.02
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "S",
+   "band": "250to400",
+   "n": 1310,
+   "n_top": 107,
+   "exp_sellers_12m": 49.5,
+   "p_median": 0.0376,
+   "p_top_decile": 0.051,
+   "est_value_med": 289000,
+   "offer_mid_med": 340000,
+   "premium_med": 0.176,
+   "tenure_med": 11.0,
+   "leasehold_share": 0.01
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "S",
+   "band": "400to600",
+   "n": 154,
+   "n_top": 0,
+   "exp_sellers_12m": 5.0,
+   "p_median": 0.0332,
+   "p_top_decile": 0.0425,
+   "est_value_med": 446000,
+   "offer_mid_med": 545000,
+   "premium_med": 0.194,
+   "tenure_med": 13.0,
+   "leasehold_share": 0.01
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "S",
+   "band": "over600",
+   "n": 48,
+   "n_top": 0,
+   "exp_sellers_12m": 1.4,
+   "p_median": 0.0301,
+   "p_top_decile": 0.0377,
+   "est_value_med": 702000,
+   "offer_mid_med": 846000,
+   "premium_med": 0.188,
+   "tenure_med": 9.0,
+   "leasehold_share": 0.0
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "T",
+   "band": "under250",
+   "n": 3739,
+   "n_top": 1014,
+   "exp_sellers_12m": 170.6,
+   "p_median": 0.0426,
+   "p_top_decile": 0.0657,
+   "est_value_med": 207000,
+   "offer_mid_med": 237000,
+   "premium_med": 0.159,
+   "tenure_med": 10.0,
+   "leasehold_share": 0.03
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "T",
+   "band": "250to400",
+   "n": 1397,
+   "n_top": 183,
+   "exp_sellers_12m": 58.3,
+   "p_median": 0.0398,
+   "p_top_decile": 0.0558,
+   "est_value_med": 287000,
+   "offer_mid_med": 336000,
+   "premium_med": 0.175,
+   "tenure_med": 13.0,
+   "leasehold_share": 0.03
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "T",
+   "band": "400to600",
+   "n": 306,
+   "n_top": 5,
+   "exp_sellers_12m": 10.6,
+   "p_median": 0.0351,
+   "p_top_decile": 0.0442,
+   "est_value_med": 464000,
+   "offer_mid_med": 555000,
+   "premium_med": 0.183,
+   "tenure_med": 12.5,
+   "leasehold_share": 0.09
+  },
+  {
+   "outcode": "EX4",
+   "ptype": "T",
+   "band": "over600",
+   "n": 50,
+   "n_top": 0,
+   "exp_sellers_12m": 1.6,
+   "p_median": 0.0317,
+   "p_top_decile": 0.0406,
+   "est_value_med": 687000,
+   "offer_mid_med": 834000,
+   "premium_med": 0.22,
+   "tenure_med": 19.0,
+   "leasehold_share": 0.14
+  }
+ ],
+ "exemplars": [
+  {
+   "code": "EX3-EC66",
+   "sector": "EX3 0",
+   "ptype": "T",
+   "tenure": 4,
+   "p_sale": 0.121,
+   "est_value": 270000,
+   "offer_lo": 281000,
+   "offer_mid": 292000,
+   "offer_hi": 304000,
+   "premium_pct": 7.6,
+   "pc_sales_2y": 4
+  },
+  {
+   "code": "EX1-4DB3",
+   "sector": "EX1 2",
+   "ptype": "T",
+   "tenure": 9,
+   "p_sale": 0.107,
+   "est_value": 250000,
+   "offer_lo": 259000,
+   "offer_mid": 270000,
+   "offer_hi": 281000,
+   "premium_pct": 9.6,
+   "pc_sales_2y": 9
+  },
+  {
+   "code": "EX1-135C",
+   "sector": "EX1 3",
+   "ptype": "T",
+   "tenure": 4,
+   "p_sale": 0.097,
+   "est_value": 250000,
+   "offer_lo": 255000,
+   "offer_mid": 265000,
+   "offer_hi": 276000,
+   "premium_pct": 7.6,
+   "pc_sales_2y": 3
+  }
+ ],
+ "generated": "propensity + PoC offer model, features to end-2019"
+};
 
 /* ---------- state ---------- */
 const DEFAULTS = {brief:{min:150000,max:500000,types:["S","T","D","F"],areas:["EX1","EX2","EX3","EX4"],freeholdOnly:false},
@@ -237,15 +1155,15 @@ const BANDL = {under250:"under £250k","250to400":"£250k–£400k","400to600":"
 const UNLOCK = 2.2;             // right-offer uplift on base propensity (stated assumption)
 const CARD_COST = 0.72;         // £ print + post at volume
 const SCAN = 0.024, TALK = 0.008; // modelled response assumptions
-const £ = n => "£"+Math.round(n).toLocaleString("en-GB");
-const £k = n => n>=1e6 ? "£"+(n/1e6).toFixed(2)+"m" : "£"+Math.round(n/1000)+"k";
+const GBP = n => "£"+Math.round(n).toLocaleString("en-GB");
+const GBPk = n => n>=1e6 ? "£"+(n/1e6).toFixed(2)+"m" : "£"+Math.round(n/1000)+"k";
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function cohortId(c){return c.outcode+"|"+c.ptype+"|"+c.band}
 function matches(c,b){ const [lo,hi]=BANDS[c.band];
   return b.types.includes(c.ptype) && b.areas.includes(c.outcode)
     && hi>b.min && lo<b.max && (!b.freeholdOnly || c.leasehold_share<=0.5); }
 function likely(c){ return Math.min(Math.round(c.exp_sellers_12m*UNLOCK), Math.round(c.n*0.5)); }
-function fmtRange(mid){ return £k(mid*0.96)+"–"+£k(mid*1.04); }
+function fmtRange(mid){ return GBPk(mid*0.96)+"–"+GBPk(mid*1.04); }
 
 /* ---------- router ---------- */
 function go(path){ location.hash = "#"+path; }
@@ -361,7 +1279,7 @@ function vSearch(){
         </p>
       </div>
       <div>
-        <p class="f-label">Budget — up to <span class="budget-read num">${£(b.max)}</span></p>
+        <p class="f-label">Budget — up to <span class="budget-read num">${GBP(b.max)}</span></p>
         <input type="range" min="150000" max="900000" step="10000" value="${b.max}"
           aria-label="maximum budget" oninput="S.brief.max=+this.value;save();render()">
         <p class="f-hint">This is your ceiling for the <i>right offer</i> — usually 6–20% over today's value. That premium is what opens doors nothing else can.</p>
@@ -390,8 +1308,8 @@ function vResults(){
     <div>
       <div class="bignum num">${totN.toLocaleString()} homes <small>match your brief in Exeter</small></div>
       <div style="font-size:17px;margin-top:6px">≈ <b class="num" style="color:var(--accent-deep)">${totL.toLocaleString()}</b> would
-        likely sell for the right offer within 12 months — and <b class="num">${totTop.toLocaleString()}</b> sit in our
-        top-likelihood band, where we'd post first.</div>
+        likely sell for the right offer within 12 months. Your postcards go to the
+        <b class="num">${totTop.toLocaleString()}</b> highest-scoring doors first.</div>
       <div class="note" style="margin-top:6px">Portals in this area today: roughly ${Math.round(totN*0.032).toLocaleString()} listings. You're seeing the other ${(100-3.2).toFixed(0)}%.</div>
     </div>
     <a class="btn ghost" href="#/search">Adjust brief</a>
@@ -408,7 +1326,7 @@ function vResults(){
         <h3>${PT[c.ptype]}, ${BANDL[c.band]}</h3>
         <div class="likely"><b class="num">≈ ${lk}</b><span>of ${c.n.toLocaleString()} likely to move for the right offer</span></div>
         <div class="meter" role="img" aria-label="likelihood versus city average">${segs}</div>
-        <div class="kv"><span class="k">Typical value today</span><span class="v num">${£k(c.est_value_med)}</span></div>
+        <div class="kv"><span class="k">Typical value today</span><span class="v num">${GBPk(c.est_value_med)}</span></div>
         <div class="kv"><span class="k">The right offer</span><span class="v num" style="color:var(--accent-deep)">${fmtRange(c.offer_mid_med)}</span></div>
         <div class="kv"><span class="k">Owners typically</span><span class="v num">${Math.round(c.tenure_med)} yrs in</span></div>
         <div class="foot-cite">top band: ${c.n_top} homes · premium ≈ ${(c.premium_med*100).toFixed(0)}%${c.leasehold_share>0.5?" · mostly leasehold":""}</div>
@@ -458,9 +1376,9 @@ function vCampaign(){
       <div>
         <div class="panel">
           <div class="kv"><span class="k">Postcards (top likelihood band only)</span><span class="v num">${cards.toLocaleString()}</span></div>
-          <div class="kv"><span class="k">Print &amp; postage @ ${CARD_COST.toFixed(2).replace("0.","£0.")}</span><span class="v num">${£(cost)}</span></div>
+          <div class="kv"><span class="k">Print &amp; postage @ ${CARD_COST.toFixed(2).replace("0.","£0.")}</span><span class="v num">${GBP(cost)}</span></div>
           <div class="kv"><span class="k">Shared with</span><span class="v num">3 other matching buyers</span></div>
-          <div class="kv"><span class="k">Your share</span><span class="v num">${£(cost/4)}</span></div>
+          <div class="kv"><span class="k">Your share</span><span class="v num">${GBP(cost/4)}</span></div>
           <hr style="border:none;border-top:1px solid var(--line);margin:12px 0">
           <div class="funnel" aria-label="expected response, modelled">
             <div class="frow"><span class="lbl">Delivered</span><div class="bar" style="width:96%"></div><span class="val num">≈ ${Math.round(cards*.96).toLocaleString()}</span></div>
@@ -525,7 +1443,7 @@ function vCampaign(){
         ${S.connected?`
         <div class="panel" style="margin-top:16px;border-color:var(--accent)">
           <div class="eyebrow">You're connected</div>
-          <h3 style="font-size:19px;margin:6px 0 2px">${PT1[ex.ptype][0].toUpperCase()+PT1[ex.ptype].slice(1)}, ${esc(ex.sector)}█ — agreed at ${£k(ex.offer_mid)}</h3>
+          <h3 style="font-size:19px;margin:6px 0 2px">${PT1[ex.ptype][0].toUpperCase()+PT1[ex.ptype].slice(1)}, ${esc(ex.sector)}█ — agreed at ${GBPk(ex.offer_mid)}</h3>
           <p class="note">Full address and photos unlock when both sides confirm ID — that protects you both.</p>
           <ul class="checklist">
             <li><span class="st done">DONE</span> Both parties verified (AML &amp; ID)</li>
@@ -572,8 +1490,8 @@ function vOffer(code){
   return `<div class="offerhero fadein" style="padding:12px 0">
     ${head}
     <h1 style="font-size:clamp(28px,4.5vw,40px);margin:12px 0 6px">A vetted buyer is ready to pay</h1>
-    <div class="offerbig num">${£(ex.offer_lo)} – ${£(ex.offer_hi)}</div>
-    <p style="font-size:17px;margin:10px 0 4px">for a ${PT1[ex.ptype]} like yours on <b>${esc(ex.sector)}█</b>.</p>
+    <div class="offerbig num">${GBP(ex.offer_lo)} – ${GBP(ex.offer_hi)}</div>
+    <p style="font-size:17px;margin:10px 0 4px">for a ${PT1[ex.ptype]} like yours in <b>${esc(ex.sector)}█</b>.</p>
     <p style="color:var(--muted)">That's around <b class="num">${ex.premium_pct.toFixed(0)}% over</b> what homes like yours have been
     changing hands for. Because the buyer chose your street — you were never "on the market", so you never paid to be found.</p>
     <div class="actions">
@@ -592,7 +1510,7 @@ function vOffer(code){
         You'll meet them exactly once before contracts — at the walkthrough, with us in the room.</p></details>
       <details class="faq"><summary>What does it cost me?</summary>
         <p>Nothing. No estate agency fee, no marketing, no listing. The buyer pays us on completion. If you'd normally pay
-        1.5% to an agent, that's roughly <b class="num">${£(ex.est_value*0.015)}</b> staying in your pocket.</p></details>
+        1.5% to an agent, that's roughly <b class="num">${GBP(ex.est_value*0.015)}</b> staying in your pocket.</p></details>
       <details class="faq"><summary>Is the number real? What if my home is nicer than average?</summary>
         <p>The range is a genuine starting commitment based on your street's record, not a teaser. If your home is better than the
         public record suggests, the walkthrough is where the number moves up — openly, on the day, with us anchoring it.</p></details>
