@@ -2,7 +2,7 @@
 
 Empirical study of how predictable UK property sales are, run on the full
 HM Land Registry Price Paid Data for England and Wales, 1995 to 2019
-(~24 million standard residential transactions, ~15 million distinct
+(24,254,747 standard residential transactions, 13,790,299 distinct
 properties linked by address).
 
 ## Reproducing
