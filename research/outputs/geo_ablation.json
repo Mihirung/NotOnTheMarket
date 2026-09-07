@@ -1,0 +1,71 @@
+{
+ "_meta": {
+  "panel_rows": 10133998,
+  "geo_match_rate": 0.9981,
+  "train_years": [
+   2001,
+   2015
+  ],
+  "test_years": [
+   2017,
+   2019
+  ],
+  "test_base_rate": 0.037853703926620866,
+  "assumptions": {
+   "base_scan_rate": 0.024,
+   "talk_given_scan": 0.33,
+   "card_cost_gbp": 0.72
+  }
+ },
+ "BASE": {
+  "n_features": 13,
+  "auc": 0.5883458841011779,
+  "lift_top1": 1.8852386837226207,
+  "lift_top5": 1.722576690877578,
+  "lift_top10": 1.594168380146168,
+  "lift_top20": 1.4623385313545167,
+  "captured_top10": 0.15941659510519537,
+  "captured_top20": 0.2924672606268785,
+  "auc_tenure10plus": 0.5613318040097899,
+  "lift_top10_tenure10plus": 1.459956595826204,
+  "auc_tenure20plus": 0.5174808085734832,
+  "lift_top10_tenure20plus": 1.1608687295790892,
+  "scan_rate_top10_pct": 3.83,
+  "talks_per_1000_cards": 12.6,
+  "cost_per_conversation": 57
+ },
+ "+GEO": {
+  "n_features": 25,
+  "auc": 0.5917088066006944,
+  "lift_top1": 1.9080494008922182,
+  "lift_top5": 1.7553161138853772,
+  "lift_top10": 1.6188571253651642,
+  "lift_top20": 1.475487971742895,
+  "captured_top10": 0.16188546586517819,
+  "captured_top20": 0.295097144697295,
+  "auc_tenure10plus": 0.5663505156035002,
+  "lift_top10_tenure10plus": 1.4852582034972333,
+  "auc_tenure20plus": 0.5374320681483862,
+  "lift_top10_tenure20plus": 1.1954641552950223,
+  "scan_rate_top10_pct": 3.89,
+  "talks_per_1000_cards": 12.8,
+  "cost_per_conversation": 56
+ },
+ "+LIFE": {
+  "n_features": 30,
+  "auc": 0.5910170850494432,
+  "lift_top1": 1.9107330146768766,
+  "lift_top5": 1.729285589034914,
+  "lift_top10": 1.6151001423970561,
+  "lift_top20": 1.475286704798175,
+  "captured_top10": 0.16150976814083298,
+  "captured_top20": 0.29505689136968655,
+  "auc_tenure10plus": 0.566188956968362,
+  "lift_top10_tenure10plus": 1.4884881959658753,
+  "auc_tenure20plus": 0.5417593831469009,
+  "lift_top10_tenure20plus": 1.2569671343455697,
+  "scan_rate_top10_pct": 3.88,
+  "talks_per_1000_cards": 12.8,
+  "cost_per_conversation": 56
+ }
+}
