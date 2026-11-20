@@ -79,15 +79,18 @@ pip install lightgbm rasterio pyproj
 python src/build_view30.py data/cop30 <pc-db-dir> data/view30_postcode.parquet 4
 
 # 9. The national property-year panel, version 2: 73 signals per home-year,
-#    written as float16 chunks of 5% of all properties each (8 chunks = 40%,
-#    76 million home-years, 11 GB):
+#    written as float16 chunks of 5% of all properties each. 20 chunks is
+#    every home: 190 million home-years, 28 GB. A further argument starts
+#    at a later chunk, to extend a table already built:
 python src/panel2.py data/transactions.parquet data/geo_postcode.parquet \
-    data/view30_postcode.parquet data/panel 8
+    data/view30_postcode.parquet data/panel 20
 
 # 10. The experiments, each out-of-time with block-bootstrap intervals:
-for e in ladder curve deploy rolling sampling ablate; do
+for e in ladder curve rolling sampling ablate; do
   python src/model_lab.py data/panel outputs/lab $e 4
 done
+python src/model_lab.py data/panel outputs/lab ablate_view 4 100   # views, on every home
+python src/model_lab.py data/panel outputs/lab deploy 4 100        # the site's model
 
 # 10b. Judge every fitted model inside each postcode district, the way a
 #      campaign is mailed, then print the tables and draw the charts:
@@ -108,7 +111,7 @@ python src/lab_report.py outputs/lab outputs/views2
   waves. Every signal for year *t* uses data up to *t − 1* only.
 - **`src/model_lab.py`** trains LightGBM out-of-core on those chunks.
   `ladder` adds one family of signals at a time; `curve` trains the same
-  model on 1% to 40% of the country; `rolling` compares a model frozen
+  model on 1% of the country up to every home in it; `rolling` compares a model frozen
   in 2015 with one refitted each year; `sampling` checks that training on
   every sale plus a quarter of the non-sales loses nothing; `ablate`
   removes geography or outlook from the largest model; `deploy` fits the

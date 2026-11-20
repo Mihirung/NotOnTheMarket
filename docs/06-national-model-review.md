@@ -10,31 +10,35 @@ where it stops.
 
 | | Before | Now |
 |---|---|---|
-| Homes the model learned from | 690 thousand (5%) | 5.5 million (40%) |
-| Home-years of history | 9.5 million | 76 million |
+| Homes the model learned from | 690 thousand (5%) | 13.8 million (every home that has sold since 1995) |
+| Home-years of history | 9.5 million | 190 million |
 | Signals per home | 13 | 73 |
 | Sellers reached by writing to the best tenth of a district, against random | 1.61 times | 1.68 times |
 | The best twentieth of a district | 1.70 times | 1.82 times |
-| Owners of 20 years or more, best tenth | 1.2 times | 1.2 times |
+| Owners of 20 years or more, best tenth | 1.17 times | 1.25 times |
 
 Five findings, in plain terms:
 
 1. **The reviewed model is better, and the gain is real.** In its best
    tenth it reaches 4% more sellers per card, and in its best twentieth
-   7% more. The range on the first figure is 3% to 5%.
+   7% more. The range on the first figure is 3% to 6%.
 2. **More data helps the richer model and does nothing for the simple
    one.** The original 13 signals had learned all they could from 1% of
    the country. The 73-signal model is no better than the original at
-   1%, clearly better at 5%, and still creeping upwards at 40%. So the
-   instinct was right: detailed signals need national-scale data before
-   they pay. But each doubling of data now adds about 0.01. There is no
-   step change waiting.
+   1%, clearly better at 5%, and was still creeping upwards when given
+   every home in the country. So the instinct was right: detailed
+   signals need national-scale data before they pay. But each doubling
+   of data adds only about 0.01, and with every home now in the table
+   there are no doublings left. There is no step change in it.
 3. **Air quality, distances and the national view layer add nothing to
-   local targeting.** Take either family out of a large model and its
-   ranking inside a district does not change.
-4. **Long-held homes remain the blind spot.** For owners of 20 years or
-   more, every version manages about 1.2 times random. Only refitting
-   the model every year helps, a little.
+   local targeting.** Take either family out of the model and its
+   ranking inside a district does not change. For views this was tested
+   on every home in the country, which settles it.
+4. **Long-held homes remain the weak spot.** For owners of 20 years or
+   more the original model manages 1.17 times random. Trained on every
+   home, the reviewed model reaches 1.25. That is encouraging rather
+   than proven, because this group is small in the test and its figure
+   wobbles. Refitting every year adds a little more.
 5. **The business sums move by £5 a conversation.** The next step up
    will come from new kinds of information, not from more of the same.
 
@@ -42,9 +46,12 @@ Five findings, in plain terms:
 
 - 24,254,747 sales in England and Wales, 1995 to 2019, linked into
   13,790,299 homes.
+- The national records were rebuilt in full for this round. The
+  previous round's view test had kept only Exeter's rows, which was
+  enough for one city and not for this.
 - A table with one row for every year a home was owned and could have
-  been sold: 76 million rows for 5.5 million homes, with 3.7 million
-  sales among them.
+  been sold: 190 million rows for all 13.8 million homes, with 9.2
+  million sales among them.
 - Every row carries 73 signals, each using only what was known at the
   start of that year.
 - The model learns from 2001 to 2015 and is tested on 2017 and 2018,
@@ -134,30 +141,51 @@ Local lift in the best tenth of each district:
 | 10% | 1.4 million | 1.62 | 1.66 | +0.04 (0.02 to 0.06) |
 | 20% | 2.8 million | 1.62 | 1.66 | +0.05 (0.03 to 0.07) |
 | 40% | 5.5 million | 1.61 | 1.68 | +0.06 (0.04 to 0.08) |
+| 100% | 13.8 million | 1.61 | 1.68 | +0.07 (0.05 to 0.09) |
 
-**The simple model was already full.** With 13 signals, forty times
-more data changes nothing: 1.60 at 1% of the country, 1.61 at 40%.
+**The simple model was already full.** With 13 signals, a hundred times
+more data changes nothing: 1.60 at 1% of the country, 1.61 with every
+home in it.
 
 **The richer model needs the data.** At 1% its extra 60 signals buy
-nothing. The same signals are worth +0.03 at 5% and +0.06 at 40%. That
-is the precise sense in which more training data unlocks bigger
-effects: the detail in the signals can only be learned from a lot of
-examples.
+nothing. The same signals are worth +0.03 at 5% and +0.07 with every
+home. That is the precise sense in which more training data unlocks
+bigger effects: the detail in the signals can only be learned from a
+lot of examples.
 
-**But the slope is shallow.** From 1% to 5% the reviewed model gains
-0.04. From 5% to 40%, eight times more data, it gains another 0.03
-(range 0.01 to 0.05). Using every home in the country would at this
-rate add 0.01 to 0.02 more. Worth having, since it costs only computing
-time, and not a breakthrough.
+**But the slope is shallow, and the data has now run out.** From 1% to
+5% the reviewed model gains 0.04. From 5% to every home, twenty times
+more data, it gains another 0.04 (range 0.02 to 0.06): about 0.01 for
+each doubling. The last step, from 40% of homes to all of them, added
+0.01 (range −0.01 to +0.02). There is no more data of this kind to add.
+This is every recorded sale from 1995 to 2019.
+
+On the national measure the every-home model reaches 1.75 times random
+in its best tenth and 2.23 times in its best hundredth, against 1.64
+and 1.92 for the original trained on 5% of the country.
 
 ## 6. Owners by how long they have stayed
 
 ![Extra sellers found in the best tenth, by length of ownership](../research/outputs/lab/lift_by_tenure.png)
 
+The chart compares the two models, both trained on every home, on the
+national measure.
+
 The model is at its best on recent buyers and weakest where the
-business most needs it. For owners of 20 years or more it finds about a
-quarter more sellers than chance, and none of the new signals, at any
-scale, moved that reliably.
+business most needs it. For owners of 20 years or more, trained on
+every home:
+
+| Owners of 20 years or more, best tenth | Original | Reviewed, every home | Gain |
+|---|---|---|---|
+| Ranked within a district | 1.17 | 1.25 | +0.07 (0.00 to +0.15) |
+| Ranked nationally | 1.22 | 1.34 | +0.12 (0.03 to 0.20) |
+
+Read this with care. Long-held homes are a small part of the test, 6,230
+sales, and on smaller training samples the same comparison came out
+anywhere between −0.03 and +0.09. The every-home figure is the largest
+and steadiest fit we have, and both measures agree in direction, so it
+is the best evidence yet that the richer model helps here. It is not
+yet beyond doubt, and this is still the weakest group by a distance.
 
 This is not a modelling failure. A long-held home has one sale on
 record, decades ago, and nothing since. What would tell us that its
@@ -206,7 +234,25 @@ missing rows back.
 
 ## 9. Geography and views, with everything else in
 
-Take one family out of a model trained on a fifth of the country and
+The earlier view test used one city's sale records. This is the
+national version, in two parts.
+
+**Views, on every home.** The same model, trained on all 13.8 million
+homes, with and without the 22 national view signals:
+
+| Model, trained on every home | Local lift | National lift |
+|---|---|---|
+| Everything | 1.68 | 1.75 |
+| Without the national views | 1.69 | 1.72 |
+
+Inside a district the views add nothing: −0.01 (range −0.03 to +0.01).
+On the national measure they add a small real amount: +0.03 (range 0.01
+to 0.04). So with every home in the country behind it, the view signal
+does exist, and it is about which parts of the country turn over
+faster. It does not help choose between two homes in the same town,
+which is the only choice a campaign makes.
+
+**Both families, on a fifth of the country.** Take one family out and
 see what is lost.
 
 | Model | Local lift | National lift |
@@ -220,9 +266,8 @@ Locally, neither family matters: removing views changes local lift by
 +0.01).
 
 The national column tells a different story, and it is a useful
-warning. There, views appear to help and geography appears to hurt.
-Both effects are about telling regions apart, which a campaign does not
-need.
+warning. There, views help and geography hurts. Both effects are about
+telling regions apart, which a campaign does not need.
 
 ### Why geography can hurt on the national measure
 
@@ -244,10 +289,10 @@ liability in a model that is not refitted often.**
 Using the same assumptions as before (72p a card, 1 owner in 100 reads
 their offer, 1 reader in 3 starts a conversation):
 
-| | Original model, 5% of the country | Reviewed model, 40% |
+| | Original model, 5% of the country | Reviewed model, every home |
 |---|---|---|
 | Sellers reached, best tenth of a district, against random | 1.61 times | 1.68 times |
-| Replies per 1,000 cards | 5.3 | 5.5 |
+| Replies per 1,000 cards | 5.3 | 5.6 |
 | Postage per conversation started | £135 | £130 |
 
 Five pounds. The conclusion of
@@ -270,11 +315,10 @@ That points to where the next gain is:
    offer. Nobody else has this, and it measures the thing we actually
    care about: who will sell *for the right offer*, not who would have
    sold anyway.
-3. **Refit every year, on every home.** Both are free. Together they are
-   worth roughly another 0.03 to 0.05 of lift.
+3. **Refit every year.** It is free, and worth roughly another 0.02 to
+   0.04 of lift on top of the all-homes model.
 4. **Stop adding fixed geography to the targeting model.** Use it where
    it earns its keep, which is the buyer's search.
 
-The prototype scores every home with the reviewed model, trained on a
-tenth of the country up to 2018. That version reaches 1.66 times as
-many sellers as random in the best tenth of a district.
+The prototype scores every home with the reviewed model, trained on
+every home in England and Wales up to 2018.

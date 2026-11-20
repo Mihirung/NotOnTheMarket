@@ -57,8 +57,12 @@ def main(lab_dir, views_dir=None):
 
         fig, ax = plt.subplots(figsize=(7.6, 3.9), facecolor=SURFACE); style(ax)
         x = range(len(BANDS)); w = 0.36
-        old = [100 * (ladder["BASE"].get(f"lift10_{b}") - 1) for b, _ in BANDS]
-        new = [100 * (ladder["ALL"].get(f"lift10_{b}") - 1) for b, _ in BANDS]
+        # Use the fits on the largest share of homes available.
+        big = max((int(k.split("@")[1]) for k in (curve or {}) if k.startswith("ALL@")), default=None)
+        src_old = curve[f"BASE@{big}"] if big else ladder["BASE"]
+        src_new = curve[f"ALL@{big}"] if big else ladder["ALL"]
+        old = [100 * (src_old.get(f"lift10_{b}") - 1) for b, _ in BANDS]
+        new = [100 * (src_new.get(f"lift10_{b}") - 1) for b, _ in BANDS]
         ax.bar([i - w / 2 - .012 for i in x], old, w, color=S1, label="Original 13 signals")
         ax.bar([i + w / 2 + .012 for i in x], new, w, color=S2, label="Reviewed model, 73 signals")
         for i in x:

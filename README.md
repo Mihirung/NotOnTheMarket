@@ -20,7 +20,7 @@ The prototype trades under the working name **Quiet Market**.
 | [`docs/03-data-sources.md`](docs/03-data-sources.md) | Inventory of usable UK data sources, their licences and catches, and the plan for linking them. |
 | [`docs/04-does-open-geography-help.md`](docs/04-does-open-geography-help.md) | Does open environmental data make targeting good enough? An honest test with ranges, plus the response economics that decide whether buyers get replies and how much postage is at risk. |
 | [`docs/05-views-without-photos.md`](docs/05-views-without-photos.md) | The first view experiment: the outlook from every Exeter postcode, computed from a 1 metre laser survey and a 3-D model of buildings and trees, searchable without a photograph. |
-| [`docs/06-national-model-review.md`](docs/06-national-model-review.md) | The whole country and a harder look at the model: 76 million home-years, 73 signals, a fairer local yardstick, and a clear answer on whether more data unlocks bigger effects. |
+| [`docs/06-national-model-review.md`](docs/06-national-model-review.md) | The whole country and a harder look at the model: every home in England and Wales, 190 million home-years, 73 signals, a fairer local yardstick, and a clear answer on whether more data unlocks bigger effects. |
 | [`docs/07-house-level-views.md`](docs/07-house-level-views.md) | House by house in two cities: every home's view and garden sun, "can see the cathedral" as a search, the drawn panorama, Bath as the second city, and whether views or sunlight predict how long people stay. |
 | [`research/`](research/) | The reproducible study behind all of the above. See [`research/README.md`](research/README.md). |
 | [`web/`](web/) | The prototype site. `template.html` is the page, `demo_v4.json` its data, `build.py` joins them into `index.html`. |
@@ -36,23 +36,24 @@ The prototype trades under the working name **Quiet Market**.
    hidden supply the product targets.
 3. **Targeting works on years the model has never seen, and its ceiling
    is now mapped.** Writing to the best tenth of homes in a district
-   reaches 1.68 times as many sellers as writing at random. A national
-   rebuild with eight times the data and 73 signals instead of 13 moved
-   that from 1.61 to 1.68
+   reaches 1.68 times as many sellers as writing at random. A rebuild
+   on every home in England and Wales, twenty times the data, with 73
+   signals instead of 13, moved that from 1.61 to 1.68
    ([docs/06](docs/06-national-model-review.md)).
 4. **More data helps, but only a richer model, and only slowly.** The
    original 13 signals had learned all they could from 1% of the
    country. The 73-signal model is no better at 1%, clearly better at
-   5%, and still gaining about 0.01 with each doubling at 40%. There is
-   no step change waiting at national scale.
-5. **For owners of 20 years or more, nothing in sale records helps.**
-   Every version of the model manages about 1.2 times random. The next
-   gain has to come from signs of intent: a new energy certificate with
-   no sale, a withdrawn listing, a planning application, a probate
-   notice.
-6. **Fixed facts about a place do not predict who sells.** Air quality,
-   distances and a national view layer add nothing once local sale
-   history is in the model, and can mislead when regional markets shift.
+   5%, and best with every home in the country. But each doubling of
+   data adds only about 0.01, and there are no doublings left.
+5. **Owners of 20 years or more remain the weak spot.** The original
+   model manages 1.17 times random for them and the every-home model
+   1.25, which is encouraging but not yet proven. The next real gain has
+   to come from signs of intent: a new energy certificate with no sale,
+   a withdrawn listing, a planning application, a probate notice.
+6. **Fixed facts about a place do not help choose which doors to write
+   to.** Air quality, distances and a national view layer add nothing
+   inside a district once local sale history is in the model. For views
+   this was tested on every home in the country.
 7. **The view can be computed for every house and searched, without a
    photograph.** In Exeter 22% of addresses can see the cathedral, and
    in Bath 26% can see the Abbey. On half of Exeter's postcodes some
