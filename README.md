@@ -64,15 +64,21 @@ The prototype trades under the working name **Quiet Market**.
 8. **The method travels, and a view is worth the same in both cities.**
    Built in Exeter and run unchanged in Bath, it puts the long views on
    the hillside streets and not the valley floor, and buyers pay 4% to
-   5% more for a long view in both places.
+   5% more for a long view in both places. A score built from Exeter's
+   sales alone, never shown a Bath sale, predicts Bath prices, and the
+   reverse holds too.
 9. **A view changes what a home is worth, not when its owner sells.** An
    earlier finding that homes with long views sell less often holds in
-   Exeter and does not carry over to Bath. Views are for the buyer's
-   search and for setting the offer, not for choosing doors.
-10. **Lighter homes are kept longer.** In both cities the darkest quarter
-   of homes is sold about a fifth more often than the lightest. Most of
-   that is the kind of home, a smaller effect survives a fair
-   comparison, and whether front or back matters more is not settled.
+   Exeter and does not carry over to Bath: the same cross-city test
+   that carries prices cleanly gives a flat zero for sale timing. Views
+   are for the buyer's search and for setting the offer, not for
+   choosing doors.
+10. **Lighter homes are kept longer, mostly because of the kind of
+   home.** In both cities the darkest quarter of homes is sold about a
+   fifth more often than the lightest. What is left after a fair
+   comparison is clear in Exeter and weak in Bath, and it does not
+   carry from one city to the other, so it is a lead and not yet a
+   finding.
 11. **Whether a buyer hears back is a product-design problem, not a
     modelling one.** Break-even is 1 owner in 300 scanning their card.
     The whole model review moved the postage per conversation by £5.

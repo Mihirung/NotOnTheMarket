@@ -71,10 +71,11 @@ def wauc(y, o, w):
     return (wp * np.cumsum(wn)).sum() / (wp.sum() * wn.sum())
 
 
-def compare(tr, te, label):
+def compare(tr, te, label, view=None):
+    view = VIEW if view is None else list(view)
     ytr, yte = tr["label"].to_numpy(), te["label"].to_numpy()
     pa = fit(tr[BASE].astype("float32"), ytr).predict(te[BASE].astype("float32"))
-    pb = fit(tr[BASE + VIEW].astype("float32"), ytr).predict(te[BASE + VIEW].astype("float32"))
+    pb = fit(tr[BASE + view].astype("float32"), ytr).predict(te[BASE + view].astype("float32"))
     blk = te["block"].to_numpy(); rng = np.random.default_rng(3)
     oa, ob = np.argsort(pa, kind="stable"), np.argsort(pb, kind="stable"); d = []
     for _ in range(BOOT):

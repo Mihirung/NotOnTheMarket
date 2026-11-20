@@ -1,0 +1,342 @@
+{
+ "price": {
+  "sales_exeter": 21196,
+  "sales_bath": 15649,
+  "exeter_to_bath_outlook": {
+   "slope": 1.02,
+   "range": [
+    0.46,
+    1.47
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.67,
+   "top_vs_bottom_quarter": 16.3
+  },
+  "exeter_to_bath_garden_light": {
+   "slope": 1.78,
+   "range": [
+    1.09,
+    2.12
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.84,
+   "top_vs_bottom_quarter": 33.52
+  },
+  "exeter_to_bath_all": {
+   "slope": 1.44,
+   "range": [
+    0.91,
+    1.77
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.74,
+   "top_vs_bottom_quarter": 37.78
+  },
+  "bath_to_exeter_outlook": {
+   "slope": 0.58,
+   "range": [
+    0.35,
+    0.82
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.76,
+   "top_vs_bottom_quarter": 11.81
+  },
+  "bath_to_exeter_garden_light": {
+   "slope": 0.48,
+   "range": [
+    0.31,
+    0.64
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.85,
+   "top_vs_bottom_quarter": 15.12
+  },
+  "bath_to_exeter_all": {
+   "slope": 0.5,
+   "range": [
+    0.36,
+    0.6
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.78,
+   "top_vs_bottom_quarter": 17.86
+  },
+  "exeter_to_bath_outlook_size": {
+   "slope": 0.57,
+   "range": [
+    0.19,
+    0.94
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.36,
+   "top_vs_bottom_quarter": 9.01
+  },
+  "exeter_to_bath_garden_light_size": {
+   "slope": 1.5,
+   "range": [
+    0.99,
+    1.87
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.95,
+   "top_vs_bottom_quarter": 33.38
+  },
+  "exeter_to_bath_all_size": {
+   "slope": 1.04,
+   "range": [
+    0.64,
+    1.31
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.62,
+   "top_vs_bottom_quarter": 26.52
+  },
+  "bath_to_exeter_outlook_size": {
+   "slope": 0.44,
+   "range": [
+    0.04,
+    0.77
+   ],
+   "p_positive": 0.983,
+   "share_of_own_fit": 0.3,
+   "top_vs_bottom_quarter": 6.39
+  },
+  "bath_to_exeter_garden_light_size": {
+   "slope": 0.62,
+   "range": [
+    0.42,
+    0.79
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.96,
+   "top_vs_bottom_quarter": 19.01
+  },
+  "bath_to_exeter_all_size": {
+   "slope": 0.53,
+   "range": [
+    0.32,
+    0.67
+   ],
+   "p_positive": 1.0,
+   "share_of_own_fit": 0.65,
+   "top_vs_bottom_quarter": 16.99
+  }
+ },
+ "timing": {
+  "home_years_exeter": 468725,
+  "sales_exeter": 25932,
+  "home_years_bath": 365339,
+  "sales_bath": 18894,
+  "exeter_to_bath_outlook": {
+   "slope": -0.0,
+   "range": [
+    -0.44,
+    0.35
+   ],
+   "p_positive": 0.453,
+   "share_of_own_fit": 0.0,
+   "top_vs_bottom_quarter": -0.0,
+   "sale_rate_by_quarter_of_score": [
+    0.0503,
+    0.0511,
+    0.053,
+    0.0525
+   ]
+  },
+  "exeter_to_bath_garden_light": {
+   "slope": 0.09,
+   "range": [
+    -0.17,
+    0.34
+   ],
+   "p_positive": 0.713,
+   "share_of_own_fit": 0.03,
+   "top_vs_bottom_quarter": 0.08,
+   "sale_rate_by_quarter_of_score": [
+    0.0484,
+    0.0501,
+    0.0521,
+    0.0562
+   ]
+  },
+  "exeter_to_bath_all": {
+   "slope": -0.0,
+   "range": [
+    -0.2,
+    0.25
+   ],
+   "p_positive": 0.51,
+   "share_of_own_fit": 0.0,
+   "top_vs_bottom_quarter": -0.0,
+   "sale_rate_by_quarter_of_score": [
+    0.0489,
+    0.0516,
+    0.052,
+    0.0544
+   ]
+  },
+  "bath_to_exeter_outlook": {
+   "slope": -0.67,
+   "range": [
+    -1.33,
+    0.37
+   ],
+   "p_positive": 0.097,
+   "share_of_own_fit": 0.14,
+   "top_vs_bottom_quarter": -0.26,
+   "sale_rate_by_quarter_of_score": [
+    0.0599,
+    0.0535,
+    0.0534,
+    0.0545
+   ]
+  },
+  "bath_to_exeter_garden_light": {
+   "slope": 0.36,
+   "range": [
+    -0.48,
+    1.04
+   ],
+   "p_positive": 0.78,
+   "share_of_own_fit": 0.04,
+   "top_vs_bottom_quarter": 0.13,
+   "sale_rate_by_quarter_of_score": [
+    0.0541,
+    0.053,
+    0.0564,
+    0.0579
+   ]
+  },
+  "bath_to_exeter_all": {
+   "slope": -0.07,
+   "range": [
+    -0.55,
+    0.39
+   ],
+   "p_positive": 0.363,
+   "share_of_own_fit": 0.0,
+   "top_vs_bottom_quarter": -0.05,
+   "sale_rate_by_quarter_of_score": [
+    0.0563,
+    0.0524,
+    0.055,
+    0.0576
+   ]
+  }
+ },
+ "picking": {
+  "exeter_to_exeter_garden_light": {
+   "train_sales": 18485,
+   "test_sales": 3698,
+   "auc_base": 0.5935,
+   "auc_view": 0.5977,
+   "lift10_base": 1.571,
+   "lift10_view": 1.614,
+   "d_auc": [
+    -0.0006,
+    0.0043,
+    0.0094
+   ],
+   "p_improves": 0.95
+  },
+  "bath_to_bath_garden_light": {
+   "train_sales": 13836,
+   "test_sales": 2445,
+   "auc_base": 0.589,
+   "auc_view": 0.5902,
+   "lift10_base": 1.603,
+   "lift10_view": 1.591,
+   "d_auc": [
+    -0.0043,
+    0.001,
+    0.0078
+   ],
+   "p_improves": 0.643
+  },
+  "exeter_to_bath_garden_light": {
+   "train_sales": 18485,
+   "test_sales": 2445,
+   "auc_base": 0.5787,
+   "auc_view": 0.5739,
+   "lift10_base": 1.591,
+   "lift10_view": 1.538,
+   "d_auc": [
+    -0.0129,
+    -0.0048,
+    0.002
+   ],
+   "p_improves": 0.077
+  },
+  "bath_to_exeter_garden_light": {
+   "train_sales": 13836,
+   "test_sales": 3698,
+   "auc_base": 0.5933,
+   "auc_view": 0.5933,
+   "lift10_base": 1.501,
+   "lift10_view": 1.468,
+   "d_auc": [
+    -0.0056,
+    -0.0,
+    0.0053
+   ],
+   "p_improves": 0.493
+  },
+  "exeter_to_exeter_outlook": {
+   "train_sales": 18485,
+   "test_sales": 3698,
+   "auc_base": 0.5935,
+   "auc_view": 0.6016,
+   "lift10_base": 1.571,
+   "lift10_view": 1.622,
+   "d_auc": [
+    0.0035,
+    0.0081,
+    0.0123
+   ],
+   "p_improves": 1.0
+  },
+  "bath_to_bath_outlook": {
+   "train_sales": 13836,
+   "test_sales": 2445,
+   "auc_base": 0.589,
+   "auc_view": 0.5911,
+   "lift10_base": 1.603,
+   "lift10_view": 1.603,
+   "d_auc": [
+    -0.0041,
+    0.0021,
+    0.0088
+   ],
+   "p_improves": 0.76
+  },
+  "exeter_to_bath_outlook": {
+   "train_sales": 18485,
+   "test_sales": 2445,
+   "auc_base": 0.5787,
+   "auc_view": 0.5789,
+   "lift10_base": 1.591,
+   "lift10_view": 1.493,
+   "d_auc": [
+    -0.0055,
+    0.0004,
+    0.0068
+   ],
+   "p_improves": 0.553
+  },
+  "bath_to_exeter_outlook": {
+   "train_sales": 13836,
+   "test_sales": 3698,
+   "auc_base": 0.5933,
+   "auc_view": 0.5883,
+   "lift10_base": 1.501,
+   "lift10_view": 1.503,
+   "d_auc": [
+    -0.0106,
+    -0.0049,
+    0.0014
+   ],
+   "p_improves": 0.063
+  }
+ }
+}

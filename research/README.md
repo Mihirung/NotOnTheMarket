@@ -45,7 +45,7 @@ Outputs land in `outputs/`: charts (PNG), `survival_results.json`,
 
 - **`src/build_dataset.py`** parses the yearly PPD zips, keeps standard
   (category A) residential sales, and links transactions into properties
-  keyed on (postcode, PAON, SAON) — the standard repeat-sales approach
+  keyed on (postcode, PAON, SAON), the standard repeat-sales approach
   for this dataset. Production would switch to UPRN matching.
 - **`src/survival_analysis.py`** builds ownership spells
   (purchase → next sale, right-censored at end-2019) and estimates the
@@ -158,6 +158,12 @@ python src/light.py compute bath outputs/views2 3
 python src/light.py compute exeter outputs/views2 3
 python src/light.py analyse data/transactions.parquet outputs/views2
 
+# 13c. The strict version of 13a: a score built from one city's sales
+#      alone, tested on the other city, for price and for sale timing;
+#      then the chart of it:
+python src/transfer_tests.py data/transactions.parquet outputs/views2
+python src/transfer_chart.py outputs/views2 ../docs/img/transfer.png
+
 # 14. Data for prototype v4, then inline it into the page:
 python src/export_site_v4.py score data/transactions.parquet data/geo_postcode.parquet \
     data/view30_postcode.parquet outputs/lab/model_deploy.txt data/site_cache
@@ -183,6 +189,10 @@ python ../web/build.py
 - **`src/travel_tests.py`** is the proof that the method travels: named
   hillside and valley streets in each city, and the price premium for
   each view measure in each city.
+- **`src/transfer_tests.py`** is the strict version: weights fitted in
+  one city make a score for every home in the other, and the other
+  city's prices and sale timing are tested against it, with and without
+  stand-ins for the size of the home. `src/transfer_chart.py` draws it.
 - **`src/light.py`** stands one metre outside each house's front and back
   walls at window height, traces the skyline, and counts the hours of
   direct sun on those windows through the year. Its `analyse` step tests

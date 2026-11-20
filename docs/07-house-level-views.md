@@ -9,7 +9,7 @@ now done.
 | One viewpoint per postcode | Three for **every house**: the front upper windows, the back upper windows and the garden. 51,513 houses in Exeter, 38,026 in Bath |
 | A coloured strip showing the skyline | A **drawn panorama for every one of those 89,539 houses**, with the sun's path over the garden |
 | "Share of homes with long views" | **"Can see the cathedral"** as a search, counted home by home |
-| One city | **Two**: Bath was added with no change to the method, and three tests show the method travels |
+| One city | **Two**: Bath was added with no change to the method, and four tests show the method travels |
 
 It also re-ran the question from last time, "does the view predict when
 a home sells?", in both cities. The answer changed, and section 6 says
@@ -220,7 +220,8 @@ In the prototype:
 
 ## 5. Bath: does it travel?
 
-Yes. Three separate tests say so.
+Yes. Four separate tests say so, the last of them the strictest: what is
+learned from one city's sales has to predict the other's.
 
 ### It runs unchanged
 
@@ -236,6 +237,12 @@ Abbey tower tops out at 73 metres above sea level, Beckford's Tower at
 241, Sham Castle at 187.
 
 ![Bath, looking across the valley](img/view-bath-best.png)
+
+The search works the same way. Here a Bath buyer asks for the Abbey in
+sight and evening sun in the garden, and 597 homes across 10
+neighbourhoods qualify.
+
+![Searching Bath for homes that can see the Abbey](img/search-abbey.png)
 
 ### It gets known places right
 
@@ -304,12 +311,51 @@ they pay about the same for them in Bath as in Exeter.** That is the
 strongest evidence that the numbers mean what they say.
 
 Two cautions. Sale records carry no floor area, so some of each
-premium is that homes with views tend to be larger. And two measures
-did not show a premium: evening sun in the garden, and sun on the
-windows. In Bath the lightest homes are in fact cheaper, because the
-darkest ones are the grand terraces in the centre.
+premium is that homes with views tend to be larger; the next test
+allows for that. And two measures did not show a premium: evening sun
+in the garden, and sun on the windows. In Bath the lightest homes are
+in fact cheaper, because the darkest ones are the grand terraces in the
+centre.
 
-What did not travel is in the next section.
+### What is learned in one city holds in the other
+
+The table above measures each city on its own and finds the same thing
+twice. A stricter test makes one city predict the other.
+
+We built a score from Exeter's sales alone: the weights on the view
+measures that best explain Exeter prices, after allowing for the kind
+of home, the neighbourhood and the year. Every Bath home was then given
+that Exeter-made score, and we asked whether Bath prices follow it. No
+Bath sale was used to build the score. Then the same in reverse.
+
+The answer is a slope. A slope of 1 means the premium learned in one
+city is paid in full in the other. A slope of 0 means it does not carry
+at all.
+
+![A score built in one city, tested on the other](img/transfer.png)
+
+| Measures in the score | Learned in Exeter, tested in Bath | Learned in Bath, tested in Exeter |
+|---|---|---|
+| The outlook from the upper windows | 0.57 (0.19 to 0.94) | 0.44 (0.04 to 0.77) |
+| The garden and sunlight | 1.50 (0.99 to 1.87) | 0.62 (0.42 to 0.79) |
+| All measures together | 1.04 (0.64 to 1.31) | 0.53 (0.32 to 0.67) |
+
+**All six ranges exclude zero.** A score made in Exeter, never shown a
+Bath sale, explains Bath prices, and a score made in Bath explains
+Exeter's. Each recovers about two thirds of what the other city's own
+sales can find with the same measures. The slope is about 1 going to
+Bath and about a half going to Exeter, which says the same thing from
+both ends: Bath pays more than Exeter for the same view.
+
+This test also deals with size as far as open data allows. On top of
+the kind of home, the neighbourhood and the year, it holds fixed the
+typical number of storeys, the depth of the house from front to back,
+the number of addresses in the building, how open the plot is and
+whether there is a garden. Without those the slopes for all measures
+together are 1.44 and 0.50, so the answer does not depend on them.
+
+The right-hand panel of the chart is the same test for when a home
+sells. That did not travel, and the next section explains.
 
 ## 6. Does the view predict when a home sells? A correction
 
@@ -337,6 +383,25 @@ in the other. And across the whole country, tested on every home, a
 lower-resolution version of the view added nothing to choosing between
 homes in the same district
 ([06-national-model-review.md](06-national-model-review.md), section 9).
+So Bath agrees with the country, and Exeter is the exception.
+
+The stricter test from section 5 gives the same verdict. A score built
+from one city's sale timing, holding the kind of home, its price, the
+length of ownership and the year fixed, was tested on the other city:
+
+| Measures in the score | Learned in Exeter, tested in Bath | Learned in Bath, tested in Exeter |
+|---|---|---|
+| The outlook from the upper windows | 0.00 (−0.44 to +0.35) | −0.67 (−1.33 to +0.37) |
+| The garden and sunlight | +0.09 (−0.17 to +0.34) | +0.36 (−0.48 to +1.04) |
+| All measures together | 0.00 (−0.20 to +0.25) | −0.07 (−0.55 to +0.39) |
+
+Every range includes zero. These are the same homes, the same measures
+and the same method that carried prices cleanly from one city to the
+other. The test can tell a pattern that travels from one that does not,
+and sale timing is one that does not. Cutting the 20 view signals in
+the model down to five or six chosen in advance made no difference:
+neither a short list about the outlook nor one about the garden and
+sunlight improved the ranking in the other city.
 
 Why? The table below shows the yearly sale rate for homes in the lowest
 and highest quarter of each measure.
@@ -357,12 +422,13 @@ where people stay. In Bath nearly everyone has a long view, so having
 one says nothing about who you are. The view was standing in for the
 neighbourhood.
 
-**Gardens tell the same story in both cities.** Open, sunny,
-private gardens sell less often. Enclosed, overlooked ones sell more
-often. That holds in both places, and it survives once property type,
-price and length of ownership are allowed for. But it is small, and
-mostly it is a way of saying "flats and tight terraces change hands
-more than houses with proper gardens", which the model already knows.
+**Gardens point the same way in both cities.** Open, sunny, private
+gardens sell less often. Enclosed, overlooked ones sell more often. But
+once property type, price and length of ownership are allowed for, a
+garden-and-sunlight score built in one city no longer predicts the
+other. It is mostly a way of saying "flats and tight terraces change
+hands more than houses with proper gardens", which the model already
+knows.
 
 So the honest position is this. **A view changes what a home is worth,
 in both cities. It does not change when its owner sells.** Views are
@@ -439,10 +505,12 @@ averaged away before the test begins. Matching each sale to its own
 house needs licensed address data. With that, this is a one-day test,
 and it is the first thing worth running.
 
-**What to take from it.** Light homes are kept longer, and part of that
-survives a fair comparison. It is not yet a rule about front or back,
-and it is a link, not proof that the light is the reason. It is far too
-small to help choose which doors to write to. It is exactly the kind of
+**What to take from it.** Light homes are kept longer. Part of that
+survives a fair comparison in Exeter. In Bath only the front windows
+show it, and a sunlight-and-garden score built in one city does not
+predict sale timing in the other (section 6). So it is a pattern worth
+testing with better data, not yet a finding, and not a rule about front
+or back. It is far too small to help choose which doors to write to. It is exactly the kind of
 thing a buyer wants to search by, so the prototype now offers "sunny
 back rooms", "sunny front rooms" and "winter sun indoors".
 
