@@ -7,6 +7,7 @@
   --post:#C33D2E; --post-soft:#F6E3DF;
   --m1:#CFE5DF; --m2:#8FC3B6; --m3:#4E9484; --m4:#275E54;
   --warn:#B4741A; --warn-soft:#F7EBD9; --ok:#2E6E33;
+  --v-bld:#7A8187; --v-tree:#5B8A4A; --v-land:#B3AA7A; --v-water:#4C86B0; --v-hill:#275E54;
   --shadow:0 1px 2px rgba(32,40,46,.06),0 8px 28px rgba(32,40,46,.08);
 }
 @media (prefers-color-scheme: dark){
@@ -16,6 +17,7 @@
     --post:#E06A54; --post-soft:#3A2723;
     --m1:#2C3C38; --m2:#3E6B60; --m3:#63A899; --m4:#A5D2C6;
     --warn:#E0A756; --warn-soft:#3A2E1C; --ok:#7BC181;
+    --v-bld:#8E969D; --v-tree:#6FA35C; --v-land:#9C9470; --v-water:#5F9BC6; --v-hill:#63A899;
     --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
   }
 }
@@ -25,6 +27,7 @@
   --post:#E06A54; --post-soft:#3A2723;
   --m1:#2C3C38; --m2:#3E6B60; --m3:#63A899; --m4:#A5D2C6;
   --warn:#E0A756; --warn-soft:#3A2E1C; --ok:#7BC181;
+  --v-bld:#8E969D; --v-tree:#6FA35C; --v-land:#9C9470; --v-water:#5F9BC6; --v-hill:#63A899;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
@@ -66,6 +69,25 @@ a{color:var(--accent-deep)}
 .chip.on{border-color:var(--accent);color:var(--accent-deep);background:var(--accent-soft)}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;
   padding:24px 26px;box-shadow:var(--shadow)}
+
+/* horizon / outlook */
+.hzmini{margin-top:4px;border-bottom:1px solid var(--line)}
+.viewtags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.viewtags .tag{border-color:transparent;color:#fff;font-weight:500}
+.tag.v-long{background:var(--accent-deep)} .tag.v-water{background:var(--v-water)}
+.tag.v-hills{background:var(--v-hill)} .tag.v-private{background:var(--v-bld)}
+.tag.v-west{background:var(--warn)}
+.viewpanel{background:var(--card);border:1.5px solid var(--accent);border-radius:16px;
+  padding:20px 24px;margin:0 0 18px;box-shadow:var(--shadow)}
+.viewpanel h3{font-size:19px}
+.hzlegend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.hzlegend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
+.lmrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.lm{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:4px 9px;border-radius:7px;
+  border:1px solid var(--line);color:var(--muted)}
+.lm.yes{border-color:var(--post);color:var(--post)}
+.seeview{font-family:"Bricolage Grotesque",sans-serif;font-size:12.5px;font-weight:600;
+  color:var(--accent-deep);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline}
 
 /* landing */
 .hero{padding:52px 0 26px;display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
@@ -276,6 +298,79 @@ const LIFT = 1.59;         // measured top-decile model lift
 const TALK = 0.33;         // scanners who start a conversation
 const REPLY_PER_CARD = SCAN * LIFT * TALK;
 
+/* ---------- outlook (viewshed) ---------- */
+// Minimum share of homes in a pocket that must have the view for the
+// pocket to match a "what you'd like to see" chip.
+const VIEW_MIN = {long:.4, water:.25, hills:.3, private:.4, west:.4};
+const VIEW_LABEL = {long:"Long views", water:"Water in view", hills:"Hills on the horizon",
+  private:"Not overlooked", west:"Evening sun in the garden"};
+const VIEW_WHY = {long:"Can see 2 km or more from an upstairs window, on a good share of bearings.",
+  water:"The Exe, the estuary or the sea somewhere in the upstairs view.",
+  hills:"Haldon, Dartmoor or Woodbury Common on the skyline.",
+  private:"Few neighbouring buildings looking into the garden within 40 m.",
+  west:"A low western horizon from the garden, so evening light reaches it."};
+const HZ_COL = {0:"transparent",1:"var(--v-bld)",2:"var(--v-tree)",3:"var(--v-land)",4:"var(--v-water)",5:"var(--v-hill)"};
+const HZ_NAME = {1:"buildings",2:"trees",3:"land",4:"water",5:"hills"};
+function compass(b){ const d=["N","NE","E","SE","S","SW","W","NW"]; return d[Math.round(b/45)%8]; }
+function viewOf(sector){ return (DATA.views||{})[sector]; }
+
+function horizonSVG(deg, cls, o={}){
+  const W=360, H=o.h||56, maxDeg=o.maxDeg||24, n=deg.length;
+  const x=i=>i/n*W, y=d=>H-Math.max(0,Math.min(maxDeg,d))/maxDeg*(H-6);
+  let paths="", i=0;
+  while(i<n){ let j=i; while(j<n && cls[j]===cls[i]) j++;
+    const pts=[]; for(let k=i;k<=Math.min(j,n-1);k++) pts.push(x(k).toFixed(1)+","+y(deg[k]).toFixed(1));
+    if(cls[i]!==0) paths+=`<path d="M${x(i).toFixed(1)},${H} L${pts.join(" L")} L${x(Math.min(j,n-1)).toFixed(1)},${H} Z" fill="${HZ_COL[cls[i]]}"/>`;
+    i=j; }
+  const ticks=[[0,"N"],[90,"E"],[180,"S"],[270,"W"]].map(([b,l])=>
+    `<text x="${(b/360*W).toFixed(0)}" y="${H+10}" font-size="8" fill="var(--muted)" text-anchor="middle" font-family="IBM Plex Mono,monospace">${l}</text>`).join("");
+  const lms=(o.landmarks||[]).map(l=>`<line x1="${(l.b/360*W).toFixed(0)}" x2="${(l.b/360*W).toFixed(0)}" y1="1" y2="${H}" stroke="var(--post)" stroke-width=".8" stroke-dasharray="2 2"/>
+    <text x="${(l.b/360*W).toFixed(0)}" y="8" font-size="7" fill="var(--post)" text-anchor="middle" font-family="IBM Plex Mono,monospace">${esc(l.name)}</text>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H+13}" style="width:100%;height:auto;display:block" role="img" aria-label="${esc(o.label||"Horizon profile, north to north through east, south and west")}">
+    <line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="var(--line)"/>${paths}${lms}${ticks}</svg>`;
+}
+function viewTags(v){
+  return Object.keys(VIEW_LABEL).filter(k=>v.shares[k]>=.3).map(k=>
+    `<span class="tag v-${k}">${VIEW_LABEL[k]} · ${Math.round(v.shares[k]*10)} in 10</span>`).join("");
+}
+function landmarkList(v, min=.5){
+  return Object.entries(v.landmarks||{}).filter(([,s])=>s>=min)
+    .map(([name,s])=>({name, s, b:(v.landmark_bearing||{})[name], km:(v.landmark_km||{})[name]}));
+}
+function viewSentence(v, where){
+  const seen=landmarkList(v);
+  if(!seen.length) return `From upstairs, homes ${where} typically look out over ${v.typical.longest_km>=2?"the roofs and trees to "+v.typical.longest_km+" km":"the immediate neighbourhood"}.`;
+  const parts=seen.map(l=>`${l.name} (${compass(l.b)}, ${l.km} km)`);
+  return `From upstairs, homes ${where} typically see ${parts.length>1?parts.slice(0,-1).join(", ")+" and "+parts.slice(-1):parts[0]}.`;
+}
+function vViewPanel(sector){
+  const v=viewOf(sector); if(!v) return "";
+  const up=S.viewMode!=="garden";
+  const deg=up?v.profile.u_deg:v.profile.g_deg, cls=up?v.profile.u_cls:v.profile.g_cls;
+  const lms=up?landmarkList(v):[];
+  return `<div class="viewpanel fadein">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+      <div><div class="eyebrow">The view · ${esc(sector)}</div>
+        <h3>${up?"From an upstairs window":"From the garden"}</h3></div>
+      <div class="chiprow" style="margin:0">
+        <button class="chip ${up?"on":""}" onclick="S.viewMode='upstairs';save();render()">Upstairs</button>
+        <button class="chip ${up?"":"on"}" onclick="S.viewMode='garden';save();render()">Garden</button>
+        <button class="chip" onclick="S.viewSector=null;save();render()">Close</button></div>
+    </div>
+    <p style="color:var(--muted);font-size:15px;margin:8px 0 10px">${esc(viewSentence(v,"here"))}
+      ${up?"":` The garden horizon sits about <b>${v.typical.horizon_deg}°</b> above eye level; ${Math.round(v.typical.overlooked*100)}% of the way round, a neighbouring building is within 40 m.`}</p>
+    ${horizonSVG(deg,cls,{h:72,landmarks:lms,label:"Horizon profile for "+sector})}
+    <div class="hzlegend"><span><i style="background:var(--v-bld)"></i>buildings</span><span><i style="background:var(--v-tree)"></i>trees</span>
+      <span><i style="background:var(--v-land)"></i>land</span><span><i style="background:var(--v-water)"></i>water</span>
+      <span><i style="background:var(--v-hill)"></i>hills</span><span>· height of the skyline, north round to north; computed from 1 m LIDAR, not a photo</span></div>
+    <div class="lmrow">${Object.entries(v.landmarks).map(([name,s])=>`<span class="lm ${s>=.5?"yes":""}">${esc(name)} · ${Math.round(s*10)}/10 homes</span>`).join("")}</div>
+    <div class="kv" style="margin-top:10px"><span class="k">Typical longest line of sight upstairs</span><span class="v num">${v.typical.longest_km} km</span></div>
+    <div class="kv"><span class="k">Homes with long views · water · hills · not overlooked · evening sun</span>
+      <span class="v num">${["long","water","hills","private","west"].map(k=>Math.round(v.shares[k]*10)+"/10").join(" · ")}</span></div>
+  </div>`;
+}
+function openView(sector){ S.viewSector=sector; S.viewMode=S.viewMode||"upstairs"; save(); render(); }
+
 const AREAS = {EX1:"City centre & St James",EX2:"St Leonard's & Alphington",
   EX3:"Topsham & Countess Wear",EX4:"St David's, Pennsylvania & Whipton"};
 const PT = {D:"Detached houses",S:"Semi-detached houses",T:"Terraced houses",F:"Flats & maisonettes"};
@@ -290,7 +385,8 @@ const GBPk = n => n>=1e6 ? "£"+(n/1e6).toFixed(2)+"m" : "£"+Math.round(n/1000)
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 const DEFAULTS = {brief:{max:475000, types:["S","T","D"], airMax:100, openMin:0,
-    minsCentre:12, gpKm:3}, selected:[], campaign:null, day:0, connected:false, seller:{}};
+    minsCentre:12, gpKm:3, views:[]}, selected:[], campaign:null, day:0, connected:false, seller:{},
+    viewSector:null, viewMode:"upstairs"};
 let S = load();
 function load(){ try{const r=localStorage.getItem("qm2");
   if(r) return {...structuredClone(DEFAULTS), ...JSON.parse(r)};}catch(e){}
@@ -323,7 +419,8 @@ function matchCells(b){
     const [lo] = BANDR[c.band];
     return b.types.includes(c.ptype) && lo < b.max && c.offer_med <= b.max*1.06
       && c.nox <= nx && c.density <= dn
-      && c.min_centre <= b.minsCentre && c.km_gp <= b.gpKm;
+      && c.min_centre <= b.minsCentre && c.km_gp <= b.gpKm
+      && (b.views||[]).every(k=>{ const v=viewOf(c.sector); return v && v.shares[k] >= VIEW_MIN[k]; });
   });
 }
 function summarise(cells){
@@ -418,7 +515,7 @@ function vHome(){
       <div class="eyebrow">Buying, beyond the portals · Exeter pilot</div>
       <h1 style="margin-top:10px">Describe the life you want. <em>We'll go and ask for it.</em></h1>
       <p class="lede">You don't want a specific house. You want clean air, twenty minutes from town,
-        a doctor nearby, and a budget that works. About 97% of the homes that fit are not for sale —
+        a doctor nearby, a view, and a budget that works. About 97% of the homes that fit are not for sale —
         but nearly all of them would sell at the right price. We find them and ask the owners, privately.</p>
       <a class="btn" href="#/search">Describe where you'd live</a>
       <a class="btn ghost" href="#/results" style="margin-left:8px">See who's already interested</a>
@@ -448,8 +545,9 @@ function vHome(){
     <div class="eyebrow">How it works</div>
     <div class="howgrid">
       <div class="how"><div class="stepno">STEP 01</div><h3>Describe the life, not the house</h3>
-        <p>Air quality, green surroundings, travel time, a GP within reach, your budget. We count every
-        home in the city that fits — not the 3% with a For Sale board.</p></div>
+        <p>Air quality, green surroundings, travel time, a GP within reach, your budget — even the view
+        from the upstairs window, worked out from a 3-D model of every building, tree and hill. We count
+        every home in the city that fits, not the 3% with a For Sale board.</p></div>
       <div class="how"><div class="stepno">STEP 02</div><h3>We ask those owners, quietly</h3>
         <p>A model trained on 24 million sales ranks who's most likely to move, and what it would honestly
         take. They get one discreet card. One number, one choice, no chasing.</p></div>
@@ -532,6 +630,13 @@ function vSearch(){
           aria-label="budget" oninput="S.brief.max=+this.value;save();render()">
       </div>
       <div class="crit">
+        <div class="lab"><b>What you'd like to see</b><span class="val">${(b.views||[]).length?(b.views||[]).map(k=>VIEW_LABEL[k]).join(" · "):"no preference"}</span></div>
+        <div class="why">Computed from a 3-D model of every building, tree and hill — the view from upstairs and from the garden, without a single photo.</div>
+        <div class="chiprow">${Object.keys(VIEW_LABEL).map(k=>`
+          <button class="chip ${(b.views||[]).includes(k)?"on":""}" title="${esc(VIEW_WHY[k])}" onclick="tglView('${k}')">${VIEW_LABEL[k]}</button>`).join("")}
+        </div>
+      </div>
+      <div class="crit">
         <div class="lab"><b>Kind of home</b></div>
         <div class="chiprow">${Object.keys(PT).map(t=>`
           <button class="chip ${b.types.includes(t)?"on":""}" onclick="tglType('${t}')">${PT[t]}</button>`).join("")}
@@ -563,6 +668,8 @@ function vSearch(){
   </div>
   </div>`;
 }
+function tglView(k){ const a=S.brief.views=(S.brief.views||[]); const i=a.indexOf(k);
+  if(i>=0) a.splice(i,1); else a.push(k); save(); render(); }
 function tglType(t){ const a=S.brief.types, i=a.indexOf(t);
   if(i>=0){ if(a.length>1) a.splice(i,1); } else a.push(t); save(); render(); }
 
@@ -603,6 +710,7 @@ function vResults(){
 
   <div class="eyebrow">Everyone else we could ask</div>
   <h2 style="font-size:22px;margin:6px 0 12px">Pick the pockets of the city worth writing to</h2>
+  ${S.viewSector?vViewPanel(S.viewSector):""}
   <div class="cohortgrid">
     ${cells.slice(0,12).map(c=>{
       const id=cellId(c), sel=S.selected.includes(id);
@@ -617,6 +725,9 @@ function vResults(){
         <div class="kv"><span class="k">The right offer</span><span class="v num" style="color:var(--accent-deep)">${GBPk(c.offer_med*0.96)}–${GBPk(c.offer_med*1.04)}</span></div>
         <div class="tags"><span class="tag">NOx ${c.nox}</span><span class="tag">${c.min_centre} min to centre</span>
           <span class="tag">GP ${c.km_gp} km</span><span class="tag">${Math.round(c.tenure_med)} yrs owned</span></div>
+        ${(()=>{const v=viewOf(c.sector); if(!v) return ""; return `
+        <div class="hzmini">${horizonSVG(v.profile.u_deg,v.profile.u_cls,{h:30})}</div>
+        <div class="viewtags">${viewTags(v)}<button class="seeview" onclick="event.stopPropagation();openView('${esc(c.sector)}')">See the view →</button></div>`;})()}
         <div class="note" style="margin-top:2px">${c.n_top} cards · premium ≈ ${(c.premium_med*100).toFixed(0)}%</div>
       </div>`;}).join("")}
   </div>
@@ -788,6 +899,14 @@ function vOffer(code){
       <button class="btn quiet" onclick="S.seller['${esc(code)}']='declined';save();render()">No thanks — don't write again</button>
     </div>
     <p class="note">No obligation. Nothing public. Interested ≠ committed — it opens a conversation, through us, never directly.</p>
+    ${(()=>{const v=viewOf(ex.sector); if(!v) return ""; const lms=landmarkList(v); return `
+    <div class="viewpanel" style="margin-top:30px">
+      <div class="eyebrow">What your home can see</div>
+      <h3 style="margin:6px 0 4px">We looked at your view before we wrote</h3>
+      <p style="color:var(--muted);font-size:15px;margin:0 0 10px">${esc(viewSentence(v,"on your street"))} That is part of why the buyer chose your street. Drawn from a 3-D model of the land and every building and tree around you — not a photo, and nobody has been near your home.</p>
+      ${horizonSVG(v.best.u_deg,v.best.u_cls,{h:64,landmarks:lms,label:"Horizon profile for your street"})}
+      <div class="hzlegend"><span><i style="background:var(--v-bld)"></i>buildings</span><span><i style="background:var(--v-tree)"></i>trees</span><span><i style="background:var(--v-land)"></i>land</span><span><i style="background:var(--v-water)"></i>water</span><span><i style="background:var(--v-hill)"></i>hills</span></div>
+    </div>`;})()}
     <div id="faqs" style="margin-top:32px">
       <div class="eyebrow">Fair questions</div>
       <details class="faq" open><summary>How did you get my address — and what do you know?</summary>
