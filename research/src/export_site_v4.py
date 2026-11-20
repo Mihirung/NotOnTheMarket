@@ -65,6 +65,13 @@ GENERIC = [("long", "Long views", "Can see 2 km or more from an upstairs window,
            ("private", "Not overlooked", "Neighbouring buildings look into the garden from fewer than half the directions around it."),
            ("evening", "Evening sun in the garden", "Two hours or more of direct sun in the garden after 6pm in June, allowing for every roof, tree and hill."),
            ("swgarden", "South or west-facing garden", "The garden lies to the south or west of the house.")]
+# Light indoors: direct sun on the downstairs windows, from light.py.
+LIGHT = [("lightback", "Sunny back rooms", "Five hours or more of direct sun a day on the downstairs back windows, averaged over the year.",
+          lambda L: L.light_back >= 5.0),
+         ("lightfront", "Sunny front rooms", "Five hours or more of direct sun a day on the downstairs front windows, averaged over the year.",
+          lambda L: L.light_front >= 5.0),
+         ("wintersun", "Winter sun indoors", "Two hours or more of direct sun on the downstairs windows, front or back, on the shortest day.",
+          lambda L: np.maximum(L.winter_front, L.winter_back) >= 2.0)]
 
 # 87 characters that are safe inside JSON inside a <script> block.
 ALPH = ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -160,11 +167,22 @@ def export_city(key, cfg, cache, geo, views_dir, model_meta):
     sec_json = json.load(open(Path(views_dir) / f"sectors_{key}.json"))
     houses = pd.read_parquet(Path(views_dir) / f"houses_{key}.parquet")
     lm_names = [l["name"] for l in sec_json["meta"]["landmarks"]]
-    flags = [{"key": k, "label": lab, "why": why or cfg[k]} for k, lab, why in GENERIC]
-    flags += [{"key": f"lm{i}", "label": cfg["lm_label"][nm], "lm": nm,
+    flags = [{"key": k, "label": lab, "why": why or cfg[k], "group": "view"} for k, lab, why in GENERIC]
+    generic_cols = ["has_" + k for k, *_ in GENERIC]
+    light_file = Path(views_dir) / f"light_{key}.parquet"
+    if light_file.exists():                              # rows are in the same order as the house table
+        L = pd.read_parquet(light_file)
+        assert len(L) == len(houses)
+        for k, lab, why, rule in LIGHT:
+            houses["has_" + k] = rule(L).to_numpy()
+            flags.append({"key": k, "label": lab, "why": why, "group": "light"})
+            generic_cols.append("has_" + k)
+    flags += [{"key": f"lm{i}", "label": cfg["lm_label"][nm], "lm": nm, "group": "lm",
                "why": f"A clear line of sight from the upper windows to {nm}, checked against every roof and tree in between."}
               for i, nm in enumerate(lm_names)]
-    flagcols = ["has_" + k for k, *_ in GENERIC] + ["sees_" + nm for nm in lm_names]
+    flagcols = generic_cols + ["sees_" + nm for nm in lm_names]
+    sec_share = {c[4:]: houses.groupby("sector").apply(lambda g, c=c: float(np.average(g[c].fillna(False).astype(float), weights=g.n_uprn)))
+                 for c in generic_cols}
     pc_dist, sec_dist = mask_tables(houses, flagcols)
 
     d["cell"] = d.sector + "|" + d.ptype + "|" + d.band
@@ -200,6 +218,7 @@ def export_city(key, cfg, cache, geo, views_dir, model_meta):
     views = {}
     for sec, e in sec_json["sectors"].items():
         v = {k: e[k] for k in ("n_houses", "n_addr", "shares", "landmarks", "typical", "best", "typ") if k in e}
+        v["shares"] = {k: round(float(sv.get(sec, 0.0)), 2) for k, sv in sec_share.items()}
         v["garden"] = e.get("garden")
         for k in ("pano_typical", "pano_best", "pano_garden"):
             if k in e:

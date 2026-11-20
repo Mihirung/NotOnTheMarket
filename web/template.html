@@ -83,6 +83,7 @@ a{color:var(--accent-deep)}
 .tag.v-long{background:var(--accent-deep)} .tag.v-water{background:var(--v-water)}
 .tag.v-hills{background:var(--v-hill)} .tag.v-private{background:var(--v-bld)}
 .tag.v-evening{background:var(--warn)} .tag.v-swgarden{background:var(--sun)} .tag.v-lm{background:var(--post)}
+.tag.v-lightback,.tag.v-lightfront,.tag.v-wintersun{background:var(--sun)}
 .viewpanel{background:var(--card);border:1.5px solid var(--accent);border-radius:16px;
   padding:20px 24px;margin:0 0 18px;box-shadow:var(--shadow)}
 .viewpanel h3{font-size:19px}
@@ -482,8 +483,7 @@ function vViewPanel(sector){
     ${mode==="garden"?sunBoxes(p,city):""}
     <p class="panocap">${esc(viewSentence(v,"in this pocket"))}</p>
     <div class="lmrow">${lmList(v).map(l=>`<span class="lm ${l.s>=.3?"yes":""}">${esc(l.name)} · ${share10(l.s)}</span>`).join("")}</div>
-    <div class="kv" style="margin-top:10px"><span class="k">${FLAGS().filter(f=>!f.lm).map(f=>f.label.toLowerCase()).join(" · ")}</span>
-      <span class="v num">${FLAGS().filter(f=>!f.lm).map(f=>Math.round((v.shares[f.key]||0)*10)+"/10").join(" · ")}</span></div>
+    <div class="lmrow">${FLAGS().filter(f=>!f.lm).map(f=>`<span class="lm" title="${esc(f.why)}">${f.label} · ${Math.round((v.shares[f.key]||0)*10)} in 10</span>`).join("")}</div>
     <p class="note" style="margin:8px 0 0">Drawn from a 3-D model of the ground, every building and every tree, measured by laser from the air. Not a photograph, and nobody has visited.</p>
   </div>`;
 }
@@ -758,9 +758,13 @@ function vSearch(){
       </div>
       <div class="crit">
         <div class="lab"><b>What you'd like to see</b><span class="val">${(b.views||[]).length?(b.views||[]).map(k=>(flagOf(k)||{}).label).filter(Boolean).join(" · "):"no preference"}</span></div>
-        <div class="why">Worked out for every house from a 3-D model of the ground, the buildings and the trees: the view from the upper windows and from the garden, and where the sun falls. No photos needed.</div>
+        <div class="why">Worked out for every house from a 3-D model of the ground, the buildings and the trees: the view from the upper windows and from the garden, and how much sun reaches the windows. No photos needed.</div>
         <div class="chipgroup">Outlook and garden</div>
-        <div class="chiprow">${FLAGS().filter(f=>!f.lm).map(f=>`
+        <div class="chiprow">${FLAGS().filter(f=>f.group==="view").map(f=>`
+          <button class="chip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${f.label}</button>`).join("")}
+        </div>
+        <div class="chipgroup">Light indoors</div>
+        <div class="chiprow">${FLAGS().filter(f=>f.group==="light").map(f=>`
           <button class="chip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${f.label}</button>`).join("")}
         </div>
         <div class="chipgroup">Landmarks in sight from the upper windows</div>

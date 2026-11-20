@@ -88,6 +88,11 @@ python src/panel2.py data/transactions.parquet data/geo_postcode.parquet \
 for e in ladder curve deploy rolling sampling ablate; do
   python src/model_lab.py data/panel outputs/lab $e 4
 done
+
+# 10b. Judge every fitted model inside each postcode district, the way a
+#      campaign is mailed, then print the tables and draw the charts:
+python src/panel_districts.py data/transactions.parquet data/panel 2
+python src/local_eval.py data/panel outputs/lab
 python src/lab_report.py outputs/lab outputs/views2
 ```
 
@@ -108,6 +113,11 @@ python src/lab_report.py outputs/lab outputs/views2
   every sale plus a quarter of the non-sales loses nothing; `ablate`
   removes geography or outlook from the largest model; `deploy` fits the
   model the prototype scores with.
+- **`src/panel_districts.py`** and **`src/local_eval.py`** recover the
+  district of every test row and score each model on its ranking inside
+  a district and year. National scores reward a model for knowing that
+  one town turns over faster than another, which is no help once a buyer
+  has chosen the town.
 - **`src/lab_report.py`** prints every figure quoted in the write-up and
   draws the two charts.
 
@@ -131,6 +141,12 @@ python src/city_views.py bath outputs/views2 3 sectors   # redraw panoramas only
 python src/view_ablation2.py data/transactions.parquet outputs/views2 outputs/views2
 python src/view_fidelity.py data/view30_postcode.parquet outputs/views2 outputs/views2/view_fidelity.json
 
+# 13b. Sun on the windows, front and back, downstairs and at the top floor,
+#      for every house; then whether lighter homes are sold less often:
+python src/light.py compute bath outputs/views2 3
+python src/light.py compute exeter outputs/views2 3
+python src/light.py analyse data/transactions.parquet outputs/views2
+
 # 14. Data for prototype v4, then inline it into the page:
 python src/export_site_v4.py score data/transactions.parquet data/geo_postcode.parquet \
     data/view30_postcode.parquet outputs/lab/model_deploy.txt data/site_cache
@@ -150,6 +166,11 @@ python ../web/build.py
   adding a city is a grid, a list of outcodes and a list of landmarks.
 - **`src/view_ablation2.py`** and **`src/view_fidelity.py`** are the two
   checks: sale timing, and national-layer fidelity.
+- **`src/light.py`** stands one metre outside each house's front and back
+  walls at window height, traces the skyline, and counts the hours of
+  direct sun on those windows through the year. Its `analyse` step tests
+  the link to how often homes are sold, on all postcodes and on those
+  where every house faces the same way.
 - **`src/export_site_v4.py`** scores every owned home in both cities with
   the deployed national model and joins house-level views at the
   postcode. No address, postcode or coordinate of an individual home is

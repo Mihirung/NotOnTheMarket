@@ -13,7 +13,8 @@ now done.
 
 It also re-ran the question from last time, "does the view predict when
 a home sells?", in both cities. The answer changed, and section 6 says
-so plainly.
+so plainly. Section 7 asks a new one: do people stay longer in homes with
+more sun on the windows?
 
 ## 1. Why house by house matters
 
@@ -261,11 +262,98 @@ So the honest position is this. **Views are for the buyer's search, not
 for the prediction.** They answer "would I want to live there?" with a
 precision no portal has. They do not tell us who is about to sell.
 
-## 7. What it cannot tell you
+## 7. Is a light home a home people stay in?
 
-- **Which window.** Eye level is the top floor at the centre of the
-  house. A view to the north from a house whose windows face south is
-  counted.
+A natural next question once the sun's path was on the page: does a home
+with plenty of sun on its windows, front or back, keep its owners
+longer?
+
+**How the sun on a window is measured.** The front of a house faces the
+nearest road. From the address point we walk out through the house,
+front and back, until we leave its outline, and stand one metre outside
+that wall, once at ground-floor window height and once at top-floor
+height. From each spot the skyline is traced all the way round. A
+window counts as in direct sun when the sun is above that skyline and
+within 75 degrees of square-on to the wall. The yearly figure averages
+midsummer, midwinter and the equinox twice.
+
+**What a typical home gets.** Direct sun on the downstairs windows, in
+hours a day averaged over the year:
+
+| The front of the house faces | Front windows | Back windows | Front at midwinter | Back at midwinter |
+|---|---|---|---|---|
+| North | 0.7 | 6.0 | none | 3.2 in Exeter, 2.5 in Bath |
+| East | 3.3 | 2.8 | 0.7 | none |
+| South | 6.4 | 0.6 | 3.5 in Exeter, 2.7 in Bath | none |
+| West | 3.1 | 3.0 | 0.4 | 0.2 |
+
+The sunnier side of a typical home gets about 5 hours a day. One home
+in eight in Exeter, and one in six in Bath, gets under 2 hours even on
+its sunnier side.
+
+**The raw answer is yes, in both cities.** Split homes into quarters by
+how much sun reaches the downstairs windows, front and back together:
+
+| | Darkest quarter | Lightest quarter |
+|---|---|---|
+| Exeter, share sold each year | 6.0% | 4.7% |
+| Bath, share sold each year | 6.0% | 4.7% |
+| Roughly, a typical stay of | 17 years | 21 years |
+
+**Most of that gap is the kind of home.** Dark homes are more often
+flats and tight terraces, which change hands faster whatever the light.
+The fair test holds property type, price, length of ownership and the
+year fixed. What is left is the change in the yearly chance of a sale
+for each extra hour of daily sun, in percentage points, with its 95%
+range:
+
+| Sun on the downstairs windows | Exeter | Bath |
+|---|---|---|
+| Back, yearly average | −0.09 (−0.14 to −0.05) | +0.04 (−0.02 to +0.09) |
+| Front, yearly average | −0.01 (−0.05 to +0.04) | −0.07 (−0.14 to −0.01) |
+| Front and back together | −0.10 (−0.14 to −0.04) | −0.03 (−0.08 to +0.03) |
+| Back, at midwinter | −0.14 (−0.21 to −0.08) | +0.03 (−0.04 to +0.11) |
+| Front, at midwinter | −0.08 (−0.13 to −0.02) | −0.11 (−0.20 to −0.01) |
+
+A minus sign means lighter homes are sold less often.
+
+**Front or back? The two cities disagree.** In Exeter it is the back
+that matters: a home with six hours on its back windows rather than one
+is about half a point less likely to sell in a year, roughly a year and
+a half longer in a typical stay. In Bath the back shows nothing and the
+front shows a similar-sized effect. A cleaner test, using only
+postcodes where every house faces the same way, repeats the Exeter back
+result more strongly (−0.21, range −0.33 to −0.09) and finds nothing in
+Bath.
+
+**Why this understates the truth, if there is one.** Between 62% and
+77% of the difference in light between homes is between neighbours on
+the same postcode: the two sides of one street. Sale records can only
+be matched to houses at the postcode, so most of the contrast is
+averaged away before the test begins. Matching each sale to its own
+house needs licensed address data. With that, this is a one-day test,
+and it is the first thing worth running.
+
+**What to take from it.** Light homes are kept longer, and part of that
+survives a fair comparison. It is not yet a rule about front or back,
+and it is a link, not proof that the light is the reason. It is far too
+small to help choose which doors to write to. It is exactly the kind of
+thing a buyer wants to search by, so the prototype now offers "sunny
+back rooms", "sunny front rooms" and "winter sun indoors".
+
+## 8. What it cannot tell you
+
+- **Which window.** The view is traced from the address point at
+  top-floor height. A view to the north from a house whose windows face
+  south is counted. In about 1 house in 20 the address point sits so far
+  back in a deep building that the house's own roof hides part of the
+  view; tracing from the front and back walls, as the light measure
+  already does, fixes this and is the next change to make.
+- **Windows and rooms.** We know where the walls are, not where the
+  windows are or which room is behind them.
+- **Postcodes at the ends of streets.** Each house is given the nearest
+  postcode centre, which is sometimes the next street's. The Office for
+  National Statistics publishes an exact list that would remove this.
 - **Inside the house.** Storeys are estimated from roof height. Loft
   rooms and split levels are guesses.
 - **Trees in winter.** The survey records leaf-on canopy as solid.
@@ -281,7 +369,7 @@ precision no portal has. They do not tell us who is about to sell.
 - **Flats.** One address point can stand for a whole block. Each flat
   gets the top floor's view.
 
-## 8. What to do with it
+## 9. What to do with it
 
 1. **Sell the search, not the forecast.** "Can see the cathedral",
    "evening sun in the garden" and the drawn view are things no
