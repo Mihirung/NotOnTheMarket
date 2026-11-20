@@ -68,3 +68,89 @@ Outputs land in `outputs/`: charts (PNG), `survival_results.json`,
 - **`src/response_economics.py`** converts model lift into break-even
   scan rate, postage per completed sale, wave-protocol spend caps, and
   the probability a buyer hears nothing.
+
+## The national model review (docs/06)
+
+```bash
+pip install lightgbm rasterio pyproj
+
+# 8. A 30 m outlook for every postcode in England and Wales, from the
+#    Copernicus GLO-30 surface model and its water mask (48 tiles):
+python src/build_view30.py data/cop30 <pc-db-dir> data/view30_postcode.parquet 4
+
+# 9. The national property-year panel, version 2: 73 signals per home-year,
+#    written as float16 chunks of 5% of all properties each (8 chunks = 40%,
+#    76 million home-years, 11 GB):
+python src/panel2.py data/transactions.parquet data/geo_postcode.parquet \
+    data/view30_postcode.parquet data/panel 8
+
+# 10. The experiments, each out-of-time with block-bootstrap intervals:
+for e in ladder curve deploy rolling sampling ablate; do
+  python src/model_lab.py data/panel outputs/lab $e 4
+done
+python src/lab_report.py outputs/lab outputs/views2
+```
+
+- **`src/build_view30.py`** warps the Copernicus tiles to the British
+  National Grid and casts 120 rays to 30 km from every postcode: skyline
+  height by compass quarter, how far you can see, sea and inland water in
+  view, hills on the horizon, plus relief, slope, aspect and distance to
+  the coast.
+- **`src/panel2.py`** rebuilds the property-year panel around what the
+  Price Paid Data is actually like: repeat sales per property, prices at
+  both ends of an ownership, 1.2 million postcodes nested in sectors and
+  districts, a strong market cycle, and new-build estates that sell in
+  waves. Every signal for year *t* uses data up to *t − 1* only.
+- **`src/model_lab.py`** trains LightGBM out-of-core on those chunks.
+  `ladder` adds one family of signals at a time; `curve` trains the same
+  model on 1% to 40% of the country; `rolling` compares a model frozen
+  in 2015 with one refitted each year; `sampling` checks that training on
+  every sale plus a quarter of the non-sales loses nothing; `ablate`
+  removes geography or outlook from the largest model; `deploy` fits the
+  model the prototype scores with.
+- **`src/lab_report.py`** prints every figure quoted in the write-up and
+  draws the two charts.
+
+## House-level views in two cities (docs/07)
+
+```bash
+# 11. Terrain: 1 m LIDAR surface and ground models, OS OpenMap Local,
+#     OS Open UPRN address points (all open data):
+python src/fetch_lidar.py dsm data/terrain/lidar_bath 368000 382000 160000 170000
+python src/fetch_lidar.py dtm data/terrain/lidar_bath 368000 382000 160000 170000
+
+# 12. Every house in the city: upper-window and garden outlooks, garden sun,
+#     sight-lines to landmarks, and drawn panoramas per postcode sector:
+python src/city_views.py exeter outputs/views2 3
+python src/city_views.py bath outputs/views2 3
+python src/city_views.py bath outputs/views2 3 sectors   # redraw panoramas only
+
+# 13. Do the views predict sale timing in both cities, and does the effect
+#     carry from one city to the other? How well does the national 30 m
+#     layer track the 1 m truth?
+python src/view_ablation2.py data/transactions.parquet outputs/views2 outputs/views2
+python src/view_fidelity.py data/view30_postcode.parquet outputs/views2 outputs/views2/view_fidelity.json
+
+# 14. Data for prototype v4, then inline it into the page:
+python src/export_site_v4.py score data/transactions.parquet data/geo_postcode.parquet \
+    data/view30_postcode.parquet outputs/lab/model_deploy.txt data/site_cache
+python src/export_site_v4.py export data/site_cache data/geo_postcode.parquet \
+    outputs/views2 outputs/lab ../web/demo_v4.json
+python ../web/build.py
+```
+
+- **`src/views2.py`** is the house-level engine: one viewpoint at the
+  upper windows and one in the garden of each address point, 240 rays
+  each, 1 m surface to 1 km and 30 m terrain to 30 km in one pass; hours
+  of direct sun in the garden from the horizon profile and the sun's
+  path; sight-lines to named landmarks; and the layered panorama used to
+  draw the view.
+- **`src/city_views.py`** runs it for a whole city and writes per-house,
+  per-postcode and per-sector tables. Exeter and Bath are configured;
+  adding a city is a grid, a list of outcodes and a list of landmarks.
+- **`src/view_ablation2.py`** and **`src/view_fidelity.py`** are the two
+  checks: sale timing, and national-layer fidelity.
+- **`src/export_site_v4.py`** scores every owned home in both cities with
+  the deployed national model and joins house-level views at the
+  postcode. No address, postcode or coordinate of an individual home is
+  exported.

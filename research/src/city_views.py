@@ -6,7 +6,10 @@ OS Open UPRN that sits on a building, and computes each house's outlook
 with views2. Writes per-house and per-postcode tables, sector summaries
 for the prototype, and layered panoramas for representative houses.
 
-Usage: python city_views.py <exeter|bath> <out_dir> [workers] [sample_n]
+Usage: python city_views.py <exeter|bath> <out_dir> [workers] [sample_n | sectors]
+
+"sectors" as the last argument redraws the sector panoramas from the
+saved house table without recomputing every house.
 """
 
 import glob
@@ -131,9 +134,12 @@ def load_city(cfg, cache):
     wood = mask("woodland", ["Woodland"])
     road = mask("road", ["Road"], buffer=5.0)
     cls = np.full(dsm.shape, V.TERRAIN, dtype="uint8")
-    cls[((dsm - ground) > 2.5) | wood] = V.TREE
-    cls[water] = V.WATER; cls[tidal] = V.TIDAL; cls[bld] = V.BUILDING
-    del wood, water, tidal
+    tall = (dsm - ground) > 2.5
+    cls[tall | wood] = V.TREE
+    # Water only where the surface really is the water: a canopy or a bridge
+    # over the river is what you see, not the river.
+    cls[water & ~tall] = V.WATER; cls[tidal & ~tall] = V.TIDAL; cls[bld] = V.BUILDING
+    del wood, water, tidal, tall
     print("warping far field...", flush=True)
     fz, fwb, fx0, fy0, fres = warp_far("research/data/cop30", (E0 + E1) / 2, (N0 + N1) / 2)
     city = V.City(dsm, ground, cls, road, E0, N1, fz, fwb, fx0, fy0, fres, cfg["centre"][0])
@@ -148,13 +154,36 @@ def landmarks(cfg, city):
     return out
 
 
+def pano(e, n, eye, skip_own, fixed):
+    """Layered panorama plus where each landmark sits in it. A landmark counts
+    as in sight only if the sight-line is clear AND the drawing itself shows
+    it above everything nearer, so the picture and the label never disagree."""
+    p = V.panorama(CITY, e, n, eye, skip_own, fixed, 1.0)
+    nb = len(p["bands"][0])
+    p["lm"] = []
+    for name, le, ln, lz in LMK:
+        d = float(np.hypot(le - e, ln - n))
+        drop = d ** 2 / (2 * V.R_EARTH) * (1 - V.REFRACTION)
+        b = float(np.degrees(np.arctan2(le - e, ln - n)) % 360)
+        a = float(np.degrees(np.arctan((lz - drop - eye) / max(d, 1.0))))
+        i0 = int(np.floor(b / p["step"])) % nb; i1 = (i0 + 1) % nb
+        nearer = [min(band[i0], band[i1]) / 10.0 for band, hi in zip(p["bands"], p["edges"][1:]) if hi <= d]
+        drawn = a >= (max(nearer) if nearer else -90.0) - 0.2
+        line = bool(V.sees(CITY, np.array([e]), np.array([n]), np.array([eye]), le, ln, lz)[0])
+        p["lm"].append({"name": name, "b": round(b, 1), "a": round(a, 2), "km": round(d / 1000, 1),
+                        "sees": bool(line and drawn)})
+    return p
+
+
 def work(batch):
     """One batch of houses -> metric columns."""
     e, n, eye, fixed, ge, gn, gz, hasg = batch
-    o, _ = V.cast(CITY, e, n, eye, True, own_fixed=fixed)
+    o, (slope, _, _) = V.cast(CITY, e, n, eye, True, own_fixed=fixed)
     res = V.metrics(o, "u")
     for name, le, ln, lz in LMK:
-        res["sees_" + name] = V.sees(CITY, e, n, eye, le, ln, lz)
+        res["sees_" + name] = (V.sees(CITY, e, n, eye, le, ln, lz)
+                               & V.near_clear(slope, o["bearing"], e, n, eye, le, ln, lz))
+    del slope
     res["u_hz2"] = o["hz_deg"][:, ::2].round(1); res["u_cls2"] = o["hz_cls"][:, ::2]
     g = np.nonzero(hasg)[0]
     gm = {}
@@ -168,6 +197,69 @@ def work(batch):
     return res
 
 
+def closest_to_typical(g, cols):
+    """The row nearest the group's medians on several measures at once."""
+    z = sum(((g[c] - g[c].median()) / (g[c].std() or 1.0)).fillna(3.0) ** 2 for c in cols)
+    return g.loc[z.idxmin()]
+
+
+def sector_summary(pts, cfg, var, out, city_key):
+    """Sector shares for the prototype, and drawn panoramas of a typical upstairs
+    view, the best outlook, and a typical garden in each sector."""
+    pts = pts.copy(); pts["log_reach"] = np.log10(pts.u_longest_km.clip(lower=0.05))
+    sectors = {}
+    for sec, g in pts.groupby("sector"):
+        if len(g) < 25:
+            continue
+        wg = g.n_uprn.to_numpy()
+        share = lambda col: round(float(np.average(g[col].fillna(False).astype(float), weights=wg)), 2)
+        typ = closest_to_typical(g, ["u_long", "u_horizon", "log_reach", "u_hills"])
+        score = g.u_long.fillna(0) + 2 * g.u_water.fillna(0) + g.u_hills.fillna(0) + 0.02 * g.u_longest_km.fillna(0)
+        for i, (name, *_) in enumerate(LMK):            # prefer a house that shows the landmarks
+            score = score + (1.0 if i == 0 else 0.3) * g["sees_" + name].fillna(False).astype(float)
+        want = LMK[0][0] if share("sees_" + LMK[0][0]) >= 0.03 else None
+        best = pbest = None
+        for idx in score.sort_values(ascending=False).index[:15]:
+            cand = g.loc[idx]; pc = pano(cand.e, cand.n, cand.eye_up, True, not cand.on_building)
+            if best is None:
+                best, pbest = cand, pc
+            if want is None or any(l["name"] == want and l["sees"] for l in pc["lm"]):
+                best, pbest = cand, pc
+                break
+        ptyp = pano(typ.e, typ.n, typ.eye_up, True, not typ.on_building)
+        gard = g[g.has_garden]
+        gt = closest_to_typical(gard, ["sun_equinox", "sun_evening_jun", "sun_dec", "g_horizon"]) if len(gard) else None
+        entry = {
+            "n_houses": int(len(g)), "n_addr": int(wg.sum()),
+            "shares": {k: share("has_" + k) for k in list(HAS) + ["swgarden", "garden"]},
+            "landmarks": {name: share("sees_" + name) for name, *_ in LMK},
+            "typical": {"horizon_deg": round(float(gard.g_horizon.median()), 1) if len(gard) else None,
+                        "overlooked": round(float(gard.g_overlooked.median()), 2) if len(gard) else None,
+                        "longest_km": round(float(g.u_longest_km.median()), 1),
+                        "sun_jun": round(float(gard.sun_jun.median()), 1) if len(gard) else None,
+                        "sun_evening_jun": round(float(gard.sun_evening_jun.median()), 1) if len(gard) else None,
+                        "sun_equinox": round(float(gard.sun_equinox.median()), 1) if len(gard) else None,
+                        "sun_dec": round(float(gard.sun_dec.median()), 1) if len(gard) else None,
+                        "storeys": float(g.storeys.median())},
+            "pano_typical": ptyp, "pano_best": pbest,
+            "best": {"longest_km": round(float(best.u_longest_km), 1), "storeys": int(best.storeys),
+                     "facing": round(float(best.u_best_bearing))},
+            "typ": {"facing": round(float(typ.u_best_bearing)), "storeys": int(typ.storeys),
+                    "longest_km": round(float(typ.u_longest_km), 1)},
+        }
+        if gt is not None:
+            entry["pano_garden"] = pano(gt.g_e, gt.g_n, gt.g_z + 1.6, False, False)
+            entry["garden"] = {"bearing": round(float(gt.garden_bearing)), "sun_jun": round(float(gt.sun_jun), 1),
+                               "sun_evening_jun": round(float(gt.sun_evening_jun), 1),
+                               "sun_equinox": round(float(gt.sun_equinox), 1), "sun_dec": round(float(gt.sun_dec), 1)}
+        sectors[sec] = entry
+    meta = {"city": cfg["name"], "lat": cfg["centre"][0],
+            "landmarks": [{"name": nm, "e": round(e), "n": round(n), "top_m": round(z)} for nm, e, n, z in LMK],
+            "n_houses": int(len(pts)), "n_addr": int(pts.n_uprn.sum()), "within_postcode_variance": var}
+    json.dump({"meta": meta, "sectors": sectors}, open(Path(out) / f"sectors_{city_key}.json", "w"), separators=(",", ":"))
+    return sectors
+
+
 def main(city_key, out_dir, workers=3, sample_n=0):
     global CITY, LMK
     cfg = CITIES[city_key]; out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
@@ -175,6 +267,12 @@ def main(city_key, out_dir, workers=3, sample_n=0):
     LMK = landmarks(cfg, CITY)
     for name, e, n, z in LMK:
         print(f"  landmark {name}: E{e:.0f} N{n:.0f} top {z:.0f} m", flush=True)
+    if sample_n == "sectors":                         # redraw panoramas from the saved house table
+        pts = pd.read_parquet(out / f"houses_{city_key}.parquet")
+        var = json.load(open(out / f"sectors_{city_key}.json"))["meta"]["within_postcode_variance"]
+        sectors = sector_summary(pts, cfg, var, out, city_key)
+        print(f"{cfg['name']}: redrew {len(sectors)} sectors")
+        return
 
     # ---- houses: address points on residential-looking buildings -----------
     u = pd.read_csv(cfg["uprn"], usecols=[0, 1, 2]); u.columns = ["uprn", "e", "n"]
@@ -263,50 +361,7 @@ def main(city_key, out_dir, workers=3, sample_n=0):
                                                      "g_overlooked", "sun_evening_jun", "sun_equinox")}
     print("share of house-to-house variance that is WITHIN a postcode:", var, flush=True)
 
-    # ---- sector summary + panoramas for the prototype ----------------------
-    sectors = {}
-    for sec, g in pts.groupby("sector"):
-        if len(g) < 25:
-            continue
-        wg = g.n_uprn.to_numpy()
-        share = lambda col: round(float(np.average(g[col].fillna(False).astype(float), weights=wg)), 2)
-        typ = g.iloc[(g.u_long - g.u_long.median()).abs().argsort().iloc[0]]
-        score = g.u_long.fillna(0) + 2 * g.u_water.fillna(0) + g.u_hills.fillna(0) + 0.02 * g.u_longest_km.fillna(0)
-        best = g.loc[score.idxmax()]
-        gard = g[g.has_garden]
-        gt = gard.iloc[(gard.sun_evening_jun - gard.sun_evening_jun.median()).abs().argsort().iloc[0]] if len(gard) else None
-        entry = {
-            "n_houses": int(len(g)), "n_addr": int(wg.sum()),
-            "shares": {k: share("has_" + k) for k in list(HAS) + ["swgarden", "garden"]},
-            "landmarks": {name: share("sees_" + name) for name, *_ in LMK},
-            "typical": {"horizon_deg": round(float(gard.g_horizon.median()), 1) if len(gard) else None,
-                        "overlooked": round(float(gard.g_overlooked.median()), 2) if len(gard) else None,
-                        "longest_km": round(float(g.u_longest_km.median()), 1),
-                        "sun_evening_jun": round(float(gard.sun_evening_jun.median()), 1) if len(gard) else None,
-                        "sun_equinox": round(float(gard.sun_equinox.median()), 1) if len(gard) else None,
-                        "storeys": float(g.storeys.median())},
-            "landmark_bearing": {name: round(float(np.degrees(np.arctan2(le - typ.e, ln - typ.n)) % 360))
-                                 for name, le, ln, _ in LMK},
-            "landmark_km": {name: round(float(np.hypot(le - typ.e, ln - typ.n)) / 1000, 1) for name, le, ln, _ in LMK},
-            "pano_typical": V.panorama(CITY, typ.e, typ.n, typ.eye_up, True, not typ.on_building, 2.0),
-            "pano_best": V.panorama(CITY, best.e, best.n, best.eye_up, True, not best.on_building, 2.0),
-            "best": {"longest_km": round(float(best.u_longest_km), 1), "storeys": int(best.storeys),
-                     "sees": [name for name, *_ in LMK if bool(best["sees_" + name])],
-                     "facing": round(float(best.u_best_bearing))},
-            "typ": {"sees": [name for name, *_ in LMK if bool(typ["sees_" + name])],
-                    "facing": round(float(typ.u_best_bearing)), "storeys": int(typ.storeys)},
-        }
-        if gt is not None:
-            entry["pano_garden"] = V.panorama(CITY, gt.g_e, gt.g_n, gt.g_z + 1.6, False, False, 2.0)
-            entry["garden"] = {"bearing": round(float(gt.garden_bearing)), "sun_evening_jun": round(float(gt.sun_evening_jun), 1),
-                               "sun_equinox": round(float(gt.sun_equinox), 1), "sun_dec": round(float(gt.sun_dec), 1)}
-        sectors[sec] = entry
-    meta = {"city": cfg["name"], "lat": cfg["centre"][0],
-            "landmarks": [{"name": nm, "e": round(e), "n": round(n), "top_m": round(z)} for nm, e, n, z in LMK],
-            "n_houses": int(len(pts)), "n_addr": int(pts.n_uprn.sum()), "within_postcode_variance": var,
-            "sun_paths": {k: [[round(float(a), 1), round(float(el), 1)] for _, a, el in zip(*V.sun_path(cfg["centre"][0], d, 20)) if el > 0]
-                          for k, d in V.SUN_DAYS.items()}}
-    json.dump({"meta": meta, "sectors": sectors}, open(out / f"sectors_{city_key}.json", "w"), separators=(",", ":"))
+    sectors = sector_summary(pts, cfg, var, out, city_key)
 
     print(f"\n{cfg['name']}: {len(pts):,} houses, {len(pcagg):,} postcodes, {len(sectors)} sectors")
     show = ["u_horizon", "g_horizon", "g_overlooked", "u_long", "u_longest_km", "u_water", "u_hills",
@@ -319,4 +374,4 @@ def main(city_key, out_dir, workers=3, sample_n=0):
 
 if __name__ == "__main__":
     a = sys.argv
-    main(a[1], a[2], a[3] if len(a) > 3 else 3, a[4] if len(a) > 4 else 0)
+    main(a[1], a[2], a[3] if len(a) > 3 else 3, (a[4] if a[4] == "sectors" else int(a[4])) if len(a) > 4 else 0)

@@ -216,6 +216,19 @@ def sees(city, e, n, z_eye, te, tn, tz, K=700):
     return (path < target) | (dist < 150)
 
 
+def near_clear(slope, bearing, e, n, z_eye, te, tn, tz):
+    """Is the target clear of everything in the first few metres beyond the
+    house's own walls (a hedge, a neighbour's gable)? sees() starts its
+    sight-line OWN_CAP metres out so that the house cannot block itself; this
+    closes the gap using the ray already cast in the target's direction."""
+    dist = np.hypot(te - e, tn - n)
+    target = (tz - dist ** 2 / (2 * R_EARTH) * (1 - REFRACTION) - z_eye) / np.maximum(dist, 1)
+    step = bearing[1] - bearing[0]
+    j = np.round((np.degrees(np.arctan2(te - e, tn - n)) % 360) / step).astype(int) % len(bearing)
+    near = slope[np.arange(len(e)), j, :OWN_CAP].max(axis=1)
+    return (near < target) | (dist < 150)
+
+
 # ---------------------------------------------------------------- per-house geometry
 def house_geometry(city, e, n, bld):
     """Ground level, roof height, eye level and garden for one address point."""

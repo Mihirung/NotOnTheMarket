@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 research/outputs/views/views_profiles.json
+research/outputs/views2/houses_*.parquet
+research/outputs/views2/profiles_*.npz
+research/outputs/lab/preds/
+research/outputs/lab/model_all_*.txt

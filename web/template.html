@@ -1,0 +1,1099 @@
+<title>Quiet Market</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Spectral:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F5F4EF; --card:#FDFCF8; --ink:#20282E; --muted:#5A646D; --line:#DBD8CC;
+  --accent:#2E6E62; --accent-deep:#24564C; --accent-soft:#E3EDE9; --accent-mid:#7FB5A8;
+  --post:#C33D2E; --post-soft:#F6E3DF;
+  --m1:#CFE5DF; --m2:#8FC3B6; --m3:#4E9484; --m4:#275E54;
+  --warn:#B4741A; --warn-soft:#F7EBD9; --ok:#2E6E33;
+  --v-bld:#7A8187; --v-tree:#5B8A4A; --v-land:#B3AA7A; --v-water:#4C86B0; --v-hill:#275E54;
+  --sky-top:#C9DDEA; --sky-low:#F3EFE2; --haze:#DCE4E6; --sun:#D9912B;
+  --shadow:0 1px 2px rgba(32,40,46,.06),0 8px 28px rgba(32,40,46,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#181D20; --card:#20262B; --ink:#E9E7DC; --muted:#9BA6AC; --line:#394248;
+    --accent:#63A899; --accent-deep:#8FC3B6; --accent-soft:#243731; --accent-mid:#4E9484;
+    --post:#E06A54; --post-soft:#3A2723;
+    --m1:#2C3C38; --m2:#3E6B60; --m3:#63A899; --m4:#A5D2C6;
+    --warn:#E0A756; --warn-soft:#3A2E1C; --ok:#7BC181;
+    --v-bld:#8E969D; --v-tree:#6FA35C; --v-land:#9C9470; --v-water:#5F9BC6; --v-hill:#63A899;
+    --sky-top:#1B2A36; --sky-low:#33404A; --haze:#3A4750; --sun:#E0A756;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#181D20; --card:#20262B; --ink:#E9E7DC; --muted:#9BA6AC; --line:#394248;
+  --accent:#63A899; --accent-deep:#8FC3B6; --accent-soft:#243731; --accent-mid:#4E9484;
+  --post:#E06A54; --post-soft:#3A2723;
+  --m1:#2C3C38; --m2:#3E6B60; --m3:#63A899; --m4:#A5D2C6;
+  --warn:#E0A756; --warn-soft:#3A2E1C; --ok:#7BC181;
+  --v-bld:#8E969D; --v-tree:#6FA35C; --v-land:#9C9470; --v-water:#5F9BC6; --v-hill:#63A899;
+  --sky-top:#1B2A36; --sky-low:#33404A; --haze:#3A4750; --sun:#E0A756;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Spectral",Georgia,serif;font-size:16.5px;line-height:1.62}
+h1,h2,h3{font-family:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  line-height:1.12;text-wrap:balance;margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+a{color:var(--accent-deep)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);font-weight:500}
+.num{font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--muted)}
+
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer}
+.frank{width:34px;height:34px;border-radius:50%;border:2px solid var(--post);color:var(--post);
+  display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:10px;
+  transform:rotate(-8deg)}
+.brand b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px}
+.topnav{display:flex;gap:6px;flex-wrap:wrap}
+.tlink{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;text-decoration:none;
+  color:var(--muted);padding:7px 12px;border-radius:999px;border:1px solid transparent}
+.tlink.on{color:var(--ink);border-color:var(--line);background:var(--card)}
+
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:600;font-size:15.5px;border-radius:10px;padding:11px 20px;cursor:pointer;
+  border:1.5px solid var(--accent-deep);background:var(--accent);color:#fff;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--accent-deep);border-color:var(--accent)}
+.btn.post{background:var(--post);border-color:var(--post);color:#fff}
+.btn.quiet{background:var(--card);color:var(--muted);border-color:var(--line)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.chip:focus-visible,.tlink:focus-visible,.cohort:focus-visible{
+  outline:2.5px solid var(--accent);outline-offset:2px}
+.chip{font-family:"Bricolage Grotesque",sans-serif;font-size:13.5px;font-weight:600;
+  border-radius:999px;padding:7px 14px;border:1.5px solid var(--line);background:var(--card);
+  color:var(--muted);cursor:pointer}
+.chip.on{border-color:var(--accent);color:var(--accent-deep);background:var(--accent-soft)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:24px 26px;box-shadow:var(--shadow)}
+
+/* horizon / outlook */
+.hzmini{margin-top:4px;border-bottom:1px solid var(--line)}
+.viewtags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.viewtags .tag{border-color:transparent;color:#fff;font-weight:500}
+.tag.v-long{background:var(--accent-deep)} .tag.v-water{background:var(--v-water)}
+.tag.v-hills{background:var(--v-hill)} .tag.v-private{background:var(--v-bld)}
+.tag.v-evening{background:var(--warn)} .tag.v-swgarden{background:var(--sun)} .tag.v-lm{background:var(--post)}
+.viewpanel{background:var(--card);border:1.5px solid var(--accent);border-radius:16px;
+  padding:20px 24px;margin:0 0 18px;box-shadow:var(--shadow)}
+.viewpanel h3{font-size:19px}
+.hzlegend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.hzlegend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
+.lmrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.lm{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:4px 9px;border-radius:7px;
+  border:1px solid var(--line);color:var(--muted)}
+.lm.yes{border-color:var(--post);color:var(--post)}
+.seeview{font-family:"Bricolage Grotesque",sans-serif;font-size:12.5px;font-weight:600;
+  color:var(--accent-deep);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline}
+
+.pano{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--sky-low)}
+.panoscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.panoscroll svg{min-width:760px}
+.panomini{border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-top:4px}
+.panocap{font-size:13px;color:var(--muted);margin-top:8px}
+.suntable{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+@media(max-width:560px){.suntable{grid-template-columns:1fr}}
+.sunbox{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper)}
+.sunbox b{font-family:"Bricolage Grotesque",sans-serif;font-size:19px;display:block}
+.sunbox span{font-size:12.5px;color:var(--muted)}
+.cityswitch{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card)}
+.cityswitch button{font-family:"Bricolage Grotesque",sans-serif;font-size:13.5px;font-weight:600;border:none;
+  background:transparent;color:var(--muted);padding:7px 14px;cursor:pointer}
+.cityswitch button.on{background:var(--accent);color:#fff}
+.cityswitch button:focus-visible{outline:2.5px solid var(--accent);outline-offset:-2px}
+.chipgroup{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:12px 0 0}
+.chip.lmchip.on{border-color:var(--post);color:var(--post);background:var(--post-soft)}
+.viewmatch{font-size:13px;color:var(--accent-deep);font-weight:500}
+
+/* landing */
+.hero{padding:52px 0 26px;display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(32px,5vw,54px);font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:19px;color:var(--muted);max-width:34em;margin:18px 0 26px}
+.statrow{display:flex;gap:26px;flex-wrap:wrap;margin-top:32px}
+.stat{border-left:3px solid var(--accent-mid);padding-left:14px}
+.stat .v{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:25px}
+.stat .k{font-size:13px;color:var(--muted)}
+.howgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:24px 0 8px}
+@media(max-width:780px){.howgrid{grid-template-columns:1fr}}
+.how{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+.how .stepno{font-family:"IBM Plex Mono",monospace;color:var(--post);font-size:12px}
+.how h3{font-size:18px;margin:6px 0 8px}
+.how p{margin:0;font-size:15px;color:var(--muted)}
+section.band{padding:32px 0;border-top:1px solid var(--line)}
+.sellerbox{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--post-soft);
+  border:1px dashed var(--post);border-radius:14px;padding:18px 22px;margin-top:14px}
+.sellerbox input{font-family:"IBM Plex Mono",monospace;font-size:15px;padding:10px 12px;width:150px;
+  border:1.5px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);
+  text-transform:uppercase}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+@media(max-width:780px){.grid2{grid-template-columns:1fr}}
+
+/* postcard */
+.postcard{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  box-shadow:var(--shadow);aspect-ratio:148/105;padding:20px;position:relative;overflow:hidden}
+.postcard.tilt{transform:rotate(2.2deg)}
+.pc-rule{position:absolute;top:16px;bottom:16px;left:58%;width:1px;background:var(--line)}
+.pc-stamp{position:absolute;top:14px;right:14px;width:78px;height:78px;background:#fff;padding:5px;
+  border:1px solid var(--line)}
+.pc-stamp img,.pc-stamp canvas{width:68px!important;height:68px!important}
+.pc-frank{position:absolute;top:52px;right:74px;width:62px;height:62px;border:2px solid var(--post);
+  border-radius:50%;opacity:.6;transform:rotate(-14deg);display:grid;place-items:center;
+  text-align:center;font-family:"IBM Plex Mono",monospace;font-size:8px;color:var(--post)}
+.pc-addr{position:absolute;left:62%;right:20px;top:108px;font-family:"IBM Plex Mono",monospace;
+  font-size:12.5px;line-height:2.1;color:var(--muted)}
+.pc-msg{position:absolute;left:20px;top:18px;width:52%}
+.pc-msg .h{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:clamp(15px,1.9vw,21px);line-height:1.18}
+.pc-msg .o{margin-top:10px;font-size:13.5px;color:var(--muted)}
+.pc-msg .o b{color:var(--accent-deep)}
+.pc-foot{position:absolute;left:20px;bottom:14px;right:20px;display:flex;justify-content:space-between;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted)}
+
+/* lifestyle search */
+.searchgrid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
+@media(max-width:900px){.searchgrid{grid-template-columns:1fr}}
+.crit{border-bottom:1px solid var(--line);padding:15px 0}
+.crit:last-child{border-bottom:none}
+.crit .lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.crit .lab b{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15.5px}
+.crit .val{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent-deep)}
+.crit .why{font-size:13px;color:var(--muted);margin-top:3px}
+input[type=range]{width:100%;accent-color:var(--accent);margin-top:9px}
+.chiprow{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+
+/* live count rail */
+.rail{position:sticky;top:16px}
+.rail .big{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:42px;letter-spacing:-.02em;line-height:1}
+.rail .sub{color:var(--muted);font-size:14.5px;margin-top:4px}
+.kv{display:flex;justify-content:space-between;font-size:14px;gap:12px;padding:3px 0}
+.kv .k{color:var(--muted)}
+.kv .v{font-weight:500}
+.gauge{margin-top:14px;border-radius:12px;padding:13px 15px;border:1.5px solid}
+.gauge.good{background:var(--accent-soft);border-color:var(--accent-mid)}
+.gauge.warn{background:var(--warn-soft);border-color:var(--warn)}
+.gauge h4{font-family:"Bricolage Grotesque",sans-serif;font-size:14.5px;margin:0 0 4px}
+.gauge.good h4{color:var(--accent-deep)}
+.gauge.warn h4{color:var(--warn)}
+.gauge p{margin:0;font-size:13.5px;color:var(--muted)}
+.bar{height:9px;border-radius:5px;background:var(--line);overflow:hidden;margin:9px 0 7px}
+.bar i{display:block;height:100%;border-radius:5px}
+
+/* map */
+.mapwrap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.mapwrap h3{font-size:15.5px;margin-bottom:2px}
+.legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:8px;
+  font-size:12px;color:var(--muted)}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:5px;
+  vertical-align:-1px}
+
+/* results */
+.resulthead{display:flex;align-items:end;justify-content:space-between;gap:20px;
+  flex-wrap:wrap;margin:6px 0 18px}
+.bignum{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:clamp(28px,4.2vw,42px);letter-spacing:-.02em}
+.bignum small{font-size:.45em;font-weight:600;color:var(--muted)}
+.cohortgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:16px}
+.cohort{background:var(--card);border:1.5px solid var(--line);border-radius:14px;
+  padding:17px 19px 15px;cursor:pointer;position:relative;display:flex;flex-direction:column;gap:9px}
+.cohort.sel{border-color:var(--accent);background:var(--accent-soft)}
+.cohort .tick{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:7px;
+  border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;
+  color:transparent;background:var(--card)}
+.cohort.sel .tick{background:var(--accent);border-color:var(--accent);color:#fff}
+.cohort h3{font-size:17px;padding-right:30px}
+.cohort .where{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);
+  letter-spacing:.05em}
+.likely{display:flex;align-items:baseline;gap:8px}
+.likely b{font-family:"Bricolage Grotesque",sans-serif;font-size:23px;font-weight:800;
+  color:var(--accent-deep)}
+.likely span{font-size:13px;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:10.5px;padding:3px 8px;border-radius:6px;
+  background:var(--paper);border:1px solid var(--line);color:var(--muted)}
+.tray{position:sticky;bottom:14px;margin-top:22px;background:var(--ink);color:var(--paper);
+  border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;box-shadow:var(--shadow)}
+
+/* warm book */
+.warm{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+  border:1.5px solid var(--line);border-radius:12px;padding:13px 16px;background:var(--card);
+  margin-bottom:9px}
+.warm.hot{border-color:var(--post)}
+.pill{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;
+  border-radius:999px;padding:4px 11px}
+.pill.warm{background:var(--post-soft);color:var(--post)}
+.pill.cool{background:var(--accent-soft);color:var(--accent-deep)}
+.pill.okp{background:var(--accent-soft);color:var(--ok)}
+
+/* campaign */
+.funnel{display:flex;flex-direction:column;gap:9px;margin:10px 0}
+.frow{display:grid;grid-template-columns:165px 1fr 110px;gap:12px;align-items:center;font-size:14.5px}
+.frow .fbar{height:13px;border-radius:4px;background:var(--m3);min-width:3px}
+.frow .lbl{color:var(--muted)}
+.frow .val{text-align:right;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.timeline{border-left:2px solid var(--line);margin:16px 0 6px 8px;padding-left:22px;
+  display:flex;flex-direction:column;gap:15px}
+.tl{position:relative}
+.tl::before{content:"";position:absolute;left:-29px;top:5px;width:12px;height:12px;
+  border-radius:50%;background:var(--line);border:2.5px solid var(--paper)}
+.tl.done::before{background:var(--accent)}
+.tl.pulse::before{background:var(--post)}
+.tl .when{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);letter-spacing:.06em}
+.simbar{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;
+  border:1px dashed var(--line);border-radius:12px;padding:10px 16px;margin:16px 0;
+  color:var(--muted);font-size:13.5px}
+.checklist{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;
+  gap:9px;font-size:15px}
+.checklist li{display:flex;gap:10px;align-items:baseline}
+.checklist .st{font-family:"IBM Plex Mono",monospace;font-size:11px;width:66px;flex:none;color:var(--muted)}
+.checklist .st.done{color:var(--ok)}
+.msg{display:flex;gap:10px;margin-top:12px}
+.msg .who{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent-soft);
+  color:var(--accent-deep);display:grid;place-items:center;
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:13px}
+.msg .bubble{background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;font-size:14.5px;max-width:44em}
+
+/* seller */
+.offerhero{max-width:720px;margin:0 auto}
+.offerbig{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:clamp(29px,5vw,45px);color:var(--accent-deep);letter-spacing:-.02em}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 8px}
+details.faq{border-top:1px solid var(--line);padding:13px 2px}
+details.faq summary{cursor:pointer;font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:600;font-size:15.5px}
+details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
+.steps{display:flex;flex-direction:column;gap:14px;margin-top:8px;counter-reset:s}
+.step{display:flex;gap:14px}
+.step::before{counter-increment:s;content:counter(s);flex:none;width:28px;height:28px;
+  border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14px}
+.slotrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.footer{border-top:1px solid var(--line);margin-top:52px;padding:24px 0 40px;
+  color:var(--muted);font-size:13.5px}
+.footer .mono{font-size:11.5px}
+.fadein{animation:fi .4s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fadein{animation:none}.postcard.tilt{transform:none}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand" onclick="go('/')" tabindex="0" role="link"
+         onkeydown="if(event.key==='Enter')go('/')">
+      <div class="frank">QM</div><b>Quiet&nbsp;Market</b>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end">
+      <div id="citysw"></div><nav class="topnav" id="nav"></nav></div>
+  </header>
+  <main id="app"></main>
+  <footer class="footer">
+    <div><b style="font-family:'Bricolage Grotesque',sans-serif">Quiet Market</b> — the homes that aren't for sale. Yet.</div>
+    <div style="margin-top:8px">Prototype v4 for internal review. No postcards are printed or posted from this page.
+      Views are computed house by house: one viewpoint at the upper windows and one in the garden of every address point,
+      from Environment Agency 1 m LIDAR, OS OpenMap Local buildings, OS Open UPRN and Copernicus terrain. Sale records
+      and address points meet at the postcode, so counts of homes with a given view are estimates. Likelihood figures
+      come from a real model trained on HM Land Registry Price Paid Data (England &amp; Wales, 1995–2019, 24.3M
+      transactions; out-of-time AUC <span id="footauc"></span>). Air quality and health-access figures are real, from AHAH v4 inputs.
+      Drive times are approximated from straight-line distance, not routed. Offer figures use a proof-of-concept
+      pricing rule, an assumption until campaign data exists. Demo cities: Exeter and Bath.</div>
+    <div class="mono" style="margin-top:8px">Contains HM Land Registry data © Crown copyright (OGL v3.0) ·
+      ONS postcode geography (OGL) · AHAH v4, Geographic Data Service · Environment Agency LIDAR (OGL) ·
+      OS OpenMap Local and OS Open UPRN © Crown copyright and database right · Copernicus DEM © DLR/Airbus, ESA.</div>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const DATA = {};
+
+/* ---------- assumptions, stated once ---------- */
+const UNLOCK = 2.2;        // right-offer uplift on base sale propensity
+const CARD_COST = 0.72;    // £ print + post at volume
+const SCAN = 0.010;        // conservative base scan rate (pilot will measure)
+const LIFT = (DATA.model&&DATA.model.lift_top10) || 1.59;   // measured top-decile model lift
+const TALK = 0.33;         // scanners who start a conversation
+const REPLY_PER_CARD = SCAN * LIFT * TALK;
+
+/* ---------- city ---------- */
+const C = () => DATA.cities[S.city] || DATA.cities.exeter;
+const FLAGS = () => C().flags;
+const flagBit = key => FLAGS().findIndex(f=>f.key===key);
+const flagOf = key => FLAGS().find(f=>f.key===key);
+function compass(b){ const d=["north","north-east","east","south-east","south","south-west","west","north-west"]; return d[Math.round(b/45)%8]; }
+function viewOf(sector, city){ return ((city?DATA.cities[city]:C()).views||{})[sector]; }
+function setCity(k){ if(k===S.city) return; S.city=k; S.selected=[]; S.campaign=null; S.viewSector=null;
+  S.brief.views=(S.brief.views||[]).filter(v=>!v.startsWith("lm")); S.day=0; S.connected=false; save(); render(); }
+
+/* ---------- the drawn view ----------
+   Each panorama arrives as seven distance bands (0-25 m ... 8-30 km). For
+   every 2 degrees of bearing a band holds the highest angle anything in it
+   reaches, and what that thing is. Painting the bands far to near, paler
+   with distance, gives the view as a drawing. Nothing here is a photo. */
+const _dec = new WeakMap();
+function decAngles(str){ const n=DATA.alph.length-1, out=new Array(str.length);
+  for(let i=0;i<str.length;i++){ if(str[i]===" "){ out[i]=null; continue; }
+    const v=DATA.alph.indexOf(str[i])/n*DATA.a_span+DATA.a_lo; out[i]=Math.sign(v)*v*v; }
+  return out; }
+function decPano(p){ if(!_dec.has(p)) _dec.set(p,{n:p.a[0].length, a:p.a.map(decAngles), c:p.c, wl:decAngles(p.wl), wh:decAngles(p.wh)});
+  return _dec.get(p); }
+const FY = a => Math.sign(a)*Math.sqrt(Math.abs(a));
+const CLS_COL = {1:"var(--v-bld)",2:"var(--v-tree)",3:"var(--v-land)",4:"var(--v-water)",5:"var(--v-hill)",6:"var(--v-water)"};
+const BAND_OP = [1,.9,.78,.64,.5,.38,.28];
+const SUN_DAYS = [["midsummer",172,"",1.8],["equinox",80,"5 4",1.3],["midwinter",355,"1.5 4",1.3]];
+function sunPath(lat, doy){ const pts=[], phi=lat*Math.PI/180, dec=23.44*Math.PI/180*Math.sin(2*Math.PI*(284+doy)/365);
+  for(let t=3;t<=21.001;t+=1/6){ const H=15*(t-12)*Math.PI/180;
+    const el=Math.asin(Math.sin(phi)*Math.sin(dec)+Math.cos(phi)*Math.cos(dec)*Math.cos(H))*180/Math.PI;
+    const az=(Math.atan2(Math.sin(H),Math.cos(H)*Math.sin(phi)-Math.tan(dec)*Math.cos(phi))*180/Math.PI+180+360)%360;
+    pts.push([t,az,el]); }
+  return pts; }
+function skyline(p){ const d=decPano(p), h=new Array(d.n).fill(-90);
+  d.a.forEach(a=>a.forEach((v,i)=>{ if(v>h[i]) h[i]=v; })); return h; }
+function sunHours(p, lat, lon){ const h=skyline(p), n=h.length, out={}, off=1-(lon||0)/15;
+  for(const [name,doy] of SUN_DAYS){ let tot=0, eve=0;
+    for(const [t,az,el] of sunPath(lat,doy)){ if(el>0.5 && el>h[Math.round(az/360*n)%n]){ tot+=1/6; if(t+off>=18) eve+=1/6; } }
+    out[name]={tot, eve}; }
+  return out; }
+function panoSVG(p, o={}){
+  const d=decPano(p), n=d.n, mini=!!o.mini;
+  const W=mini?360:1080, H=mini?56:(o.sun?300:260), top=mini?2:(o.sun?10:24);
+  const A_TOP=mini?28:(o.sun?66:45), A_BOT=mini?-4:-8, f1=FY(A_TOP), f0=FY(A_BOT);
+  const Y=a=>top+(f1-FY(Math.max(A_BOT,Math.min(A_TOP,a))))/(f1-f0)*(H-top);
+  const dx=W/n, X=b=>b/360*W, r1=v=>v.toFixed(1), edge=mini?"":` stroke="var(--ink)" stroke-opacity=".22" stroke-width=".6" stroke-linejoin="round"`;
+  const gid="sky"+(panoSVG.k=(panoSVG.k||0)+1);
+  let out=`<defs><linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--sky-top)"/>
+    <stop offset="${Math.round(Y(0)/H*100)}%" stop-color="var(--sky-low)"/></linearGradient></defs>
+    <rect width="${W}" height="${H}" fill="url(#${gid})"/>`;
+  for(let k=d.a.length-1;k>=0;k--){
+    const ys=d.a[k].map(Y), c=d.c[k];
+    if(ys.every(y=>y>=H-.6)) continue;
+    if(k>=4 || !c){                                  // distant country: one smooth ridge
+      let pth=`M0,${H+1} L0,${r1(ys[0])}`; for(let i=0;i<n;i++) pth+=` L${r1((i+.5)*dx)},${r1(ys[i])}`;
+      pth+=` L${W},${r1(ys[n-1])} L${W},${H+1} Z`;
+      out+=`<path d="${pth}" fill="var(--haze)"/><path d="${pth}" fill="var(--v-hill)" opacity="${BAND_OP[k]}"${edge}/>`;
+      continue;
+    }
+    const byC={}; let base="";
+    for(let i=0;i<n;){ let j=i; while(j<n && c[j]===c[i]) j++;
+      let seg=`M${r1(i*dx)},${H+1} L${r1(i*dx)},${r1(ys[i])}`;
+      if(c[i]==="1") for(let q=i;q<j;q++) seg+=` L${r1(q*dx)},${r1(ys[q])} L${r1((q+1)*dx)},${r1(ys[q])}`;   // roofs: flat-topped
+      else for(let q=i;q<j;q++) seg+=` L${r1((q+.5)*dx)},${r1(ys[q])}`;                                         // trees, ground: soft
+      seg+=` L${r1(j*dx)},${r1(ys[j-1])} L${r1(j*dx)},${H+1} Z `; base+=seg; byC[c[i]]=(byC[c[i]]||"")+seg; i=j; }
+    out+=`<path d="${base}" fill="var(--haze)"/>`;
+    for(const [cl,pth] of Object.entries(byC)) if(CLS_COL[cl]) out+=`<path d="${pth}" fill="${CLS_COL[cl]}" opacity="${BAND_OP[k]}"${edge}/>`;
+  }
+  let wat=""; for(let i=0;i<n;i++){ if(d.wl[i]==null) continue; const y1=Y(d.wh[i]), y2=Math.max(Y(d.wl[i]),y1+(mini?1:1.8));
+    wat+=`M${r1(i*dx)},${r1(y1)} h${r1(dx+.3)} V${r1(y2)} h-${r1(dx+.3)} Z `; }
+  if(wat) out+=`<path d="${wat}" fill="var(--v-water)"/>`;
+  if(mini) return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="${esc(o.label||"Drawn view")}">${out}</svg>`;
+  out+=`<line x1="0" x2="${W}" y1="${r1(Y(0))}" y2="${r1(Y(0))}" stroke="var(--ink)" stroke-width=".5" stroke-dasharray="2 5" opacity=".4"/>
+    <text x="6" y="${r1(Y(0)-4)}" font-size="9" fill="var(--ink)" opacity=".6" font-family="IBM Plex Mono,monospace">eye level</text>`;
+  if(o.sun){                                         // the sun's path, bright where it clears the skyline
+    const sky=skyline(p), off=1-(o.lon||0)/15, lit=q=>q[2]>0.5 && q[2]>sky[Math.round(q[1]/360*n)%n];
+    const mono=`font-family="IBM Plex Mono,monospace"`;
+    for(const [name,doy,dash,sw] of SUN_DAYS){
+      const pts=sunPath(o.lat,doy).filter(q=>q[2]>-0.5);
+      out+=`<path d="M${pts.map(q=>r1(X(q[1]))+","+r1(Y(q[2]))).join(" L")}" fill="none" stroke="var(--sun)" stroke-width="1" stroke-dasharray="1.5 4" opacity=".75"/>`;
+      let run=[]; const flush=()=>{ if(run.length>1) out+=`<path d="M${run.map(q=>r1(X(q[1]))+","+r1(Y(q[2]))).join(" L")}" fill="none" stroke="var(--sun)" stroke-width="${sw+1.4}" stroke-linecap="round"/>`; run=[]; };
+      for(const q of pts){ if(lit(q)) run.push(q); else flush(); } flush();
+      const hi=pts.reduce((a,b)=>b[2]>a[2]?b:a), ly=Y(hi[2])<24?Y(hi[2])+15:Y(hi[2])-7;
+      out+=`<text x="${r1(X(hi[1]))}" y="${r1(ly)}" font-size="10.5" font-weight="600" text-anchor="middle" fill="var(--ink)" ${mono} paint-order="stroke" stroke="var(--sky-low)" stroke-width="3">${name}</text>`;
+      if(name==="midsummer") for(const [clock,lab] of [[6,"6am"],[9,"9am"],[15,"3pm"],[18,"6pm"],[20,"8pm"]]){
+        const t=clock-off, q=pts.reduce((a,b)=>Math.abs(b[0]-t)<Math.abs(a[0]-t)?b:a); if(q[2]<0) continue;
+        out+=`<circle cx="${r1(X(q[1]))}" cy="${r1(Y(q[2]))}" r="3.4" fill="${lit(q)?"var(--sun)":"var(--card)"}" stroke="var(--sun)" stroke-width="1.4"/>
+          <text x="${r1(X(q[1]))}" y="${r1(Y(q[2])-8)}" font-size="9.5" text-anchor="middle" fill="var(--ink)" ${mono} paint-order="stroke" stroke="var(--sky-low)" stroke-width="3">${lab}</text>`;
+      }
+    }
+  } else {
+    const seen=(p.lm||[]).filter(l=>l.sees).sort((a,b)=>a.b-b.b); let lastX=-999, lvl=0;
+    for(const l of seen){ const x=X(l.b), y=Y(l.a); lvl=(x-lastX<170)?lvl+1:0; lastX=x;
+      const yt=Math.min(y-22, top+8+lvl*13), anc=x<90?"start":x>W-90?"end":"middle";
+      out+=`<line x1="${r1(x)}" x2="${r1(x)}" y1="${r1(yt+4)}" y2="${r1(y-5)}" stroke="var(--post)" stroke-width="1"/>
+        <path d="M${r1(x)},${r1(y-5)} l4.5,4.5 l-4.5,4.5 l-4.5,-4.5 Z" fill="var(--post)" stroke="var(--card)" stroke-width="1"/>
+        <text x="${r1(x)}" y="${r1(yt)}" font-size="11" font-weight="600" text-anchor="${anc}" fill="var(--post)" font-family="Bricolage Grotesque,sans-serif">${esc(l.name)} · ${l.km} km</text>`; }
+  }
+  out+=`<rect y="${H}" width="${W}" height="20" fill="var(--card)"/>`;
+  ["N","NE","E","SE","S","SW","W","NW","N"].forEach((t,i)=>{ const x=i*W/8;
+    out+=`<line x1="${x}" x2="${x}" y1="${H}" y2="${H+4}" stroke="var(--muted)"/>
+      <text x="${i===0?4:i===8?W-4:x}" y="${H+15}" font-size="10.5" fill="var(--muted)" text-anchor="${i===0?"start":i===8?"end":"middle"}" font-family="IBM Plex Mono,monospace">${t}</text>`; });
+  return `<svg viewBox="0 0 ${W} ${H+20}" style="width:100%;height:auto;display:block" role="img" aria-label="${esc(o.label||"Drawn panorama, north round to north through east, south and west")}">${out}</svg>`;
+}
+const fromWindows = st => st<=1 ? "the windows of a single-storey home" : `the upper windows of a ${st}-storey home`;
+function share10(s){ const n=Math.round(s*10); return n>=10?"nearly every home":n>=1?`${n} in 10 homes`:s>=.02?"a few homes":"no homes"; }
+function lmList(v){ const pos={}; ((v.pano_typical||{}).lm||[]).forEach(l=>pos[l.name]=l);
+  return Object.entries(v.landmarks||{}).map(([name,s])=>({name, s, b:(pos[name]||{}).b, km:(pos[name]||{}).km})); }
+function viewTags(v){
+  const gen=FLAGS().filter(f=>!f.lm && (v.shares[f.key]||0)>=.3).map(f=>
+    `<span class="tag v-${f.key}">${f.label} · ${Math.round(v.shares[f.key]*10)} in 10</span>`);
+  const lm=lmList(v).filter(l=>l.s>=.2).map(l=>`<span class="tag v-lm">${esc(l.name)} in sight · ${Math.round(l.s*10)} in 10</span>`);
+  return gen.concat(lm).join("");
+}
+function viewSentence(v, where){
+  const seen=lmList(v).filter(l=>l.s>=.15).sort((x,y)=>y.s-x.s);
+  const reach=v.typical.longest_km>=2?`look out over the roofs and trees to about ${v.typical.longest_km} km`:"look out over the immediate neighbourhood";
+  if(!seen.length) return `From the upper windows, homes ${where} typically ${reach}.`;
+  return `From the upper windows, homes ${where} typically ${reach}. In sight: ${seen.map(l=>`${l.name}, ${l.km} km to the ${compass(l.b)}, from ${share10(l.s)}`).join("; ")}.`;
+}
+function sunBoxes(p, city){
+  const h=sunHours(p, city.lat, city.lon), f=x=>x<.25?"none":(Math.round(x*2)/2)+" h";
+  return `<div class="suntable">
+    <div class="sunbox"><b>${f(h.midsummer.tot)}</b><span>of direct sun at midsummer, ${f(h.midsummer.eve)==="none"?"none of it":f(h.midsummer.eve)+" of it"} after 6pm</span></div>
+    <div class="sunbox"><b>${f(h.equinox.tot)}</b><span>of direct sun at the spring and autumn equinox</span></div>
+    <div class="sunbox"><b>${f(h.midwinter.tot)}</b><span>of direct sun at midwinter</span></div></div>`;
+}
+const HZ_LEGEND = `<div class="hzlegend"><span><i style="background:var(--v-bld)"></i>buildings</span><span><i style="background:var(--v-tree)"></i>trees</span>
+  <span><i style="background:var(--v-land)"></i>open ground</span><span><i style="background:var(--v-water)"></i>water</span>
+  <span><i style="background:var(--v-hill);opacity:.45"></i>distant country, paler with distance</span></div>`;
+function vViewPanel(sector){
+  const v=viewOf(sector); if(!v) return "";
+  const city=C(), mode=(S.viewMode==="garden"&&v.pano_garden)?"garden":S.viewMode==="best"?"best":"typical";
+  const p=mode==="garden"?v.pano_garden:mode==="best"?v.pano_best:v.pano_typical;
+  const seen=(p.lm||[]).filter(l=>l.sees);
+  const inSight=seen.length?`In sight from this one: ${seen.map(l=>`${l.name} (${l.km} km, ${compass(l.b)})`).join(", ")}.`:"None of the landmarks is in sight from this one.";
+  const intro = mode==="garden"
+    ? `A typical garden in this pocket, drawn from where you would stand in it. It lies to the <b>${compass(v.garden.bearing)}</b> of its house. The orange lines are the sun's path on three days of the year: solid where the sun reaches the garden, dotted where a roof or a tree is in the way.`
+    : mode==="best"
+    ? `The widest outlook we found in this pocket, from ${fromWindows(v.best.storeys)}. It reaches <b>${v.best.longest_km} km</b> and opens towards the ${compass(v.best.facing)}. ${inSight}`
+    : `A typical home in this pocket, seen from ${fromWindows(v.typ.storeys)}. It looks out about ${v.typ.longest_km} km at its furthest. ${inSight}`;
+  const btn=(k,l)=>`<button class="chip ${mode===k?"on":""}" onclick="S.viewMode='${k}';save();render()">${l}</button>`;
+  return `<div class="viewpanel fadein">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+      <div><div class="eyebrow">The view · ${esc(sector)} · ${v.n_houses.toLocaleString()} houses measured</div>
+        <h3>${mode==="garden"?"Standing in the garden":mode==="best"?"The best outlook here":"A typical upstairs view"}</h3></div>
+      <div class="chiprow" style="margin:0">${btn("typical","Typical upstairs")}${btn("best","Best here")}${v.pano_garden?btn("garden","Garden and sun"):""}
+        <button class="chip" onclick="S.viewSector=null;save();render()">Close</button></div>
+    </div>
+    <p style="color:var(--muted);font-size:15px;margin:8px 0 10px">${intro}</p>
+    <div class="pano panoscroll">${panoSVG(p,{sun:mode==="garden",lat:city.lat,lon:city.lon,label:"Drawn view for "+sector})}</div>
+    ${HZ_LEGEND}
+    ${mode==="garden"?sunBoxes(p,city):""}
+    <p class="panocap">${esc(viewSentence(v,"in this pocket"))}</p>
+    <div class="lmrow">${lmList(v).map(l=>`<span class="lm ${l.s>=.3?"yes":""}">${esc(l.name)} · ${share10(l.s)}</span>`).join("")}</div>
+    <div class="kv" style="margin-top:10px"><span class="k">${FLAGS().filter(f=>!f.lm).map(f=>f.label.toLowerCase()).join(" · ")}</span>
+      <span class="v num">${FLAGS().filter(f=>!f.lm).map(f=>Math.round((v.shares[f.key]||0)*10)+"/10").join(" · ")}</span></div>
+    <p class="note" style="margin:8px 0 0">Drawn from a 3-D model of the ground, every building and every tree, measured by laser from the air. Not a photograph, and nobody has visited.</p>
+  </div>`;
+}
+function openView(sector){ S.viewSector=sector; if(!["typical","best","garden"].includes(S.viewMode)) S.viewMode="typical"; save(); render(); }
+
+const PT = {D:"Detached houses",S:"Semi-detached houses",T:"Terraced houses",F:"Flats & maisonettes"};
+const PT1 = {D:"detached house",S:"semi-detached house",T:"terraced house",F:"flat"};
+const BANDL = {under250:"under £250k","250to400":"£250k–£400k",
+  "400to600":"£400k–£600k",over600:"£600k +"};
+const BANDR = {under250:[0,250000],"250to400":[250000,400000],
+  "400to600":[400000,600000],over600:[600000,99e6]};
+
+const GBP = n => "£"+Math.round(n).toLocaleString("en-GB");
+const GBPk = n => n>=1e6 ? "£"+(n/1e6).toFixed(2)+"m" : "£"+Math.round(n/1000)+"k";
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const DEFAULTS = {brief:{max:475000, types:["S","T","D"], airMax:100, openMin:0,
+    minsCentre:12, gpKm:3, views:[]}, selected:[], campaign:null, day:0, connected:false, seller:{},
+    viewSector:null, viewMode:"typical", city:"exeter"};
+let S = load();
+function load(){ try{const r=localStorage.getItem("qm4");
+  if(r) return {...structuredClone(DEFAULTS), ...JSON.parse(r)};}catch(e){}
+  return structuredClone(DEFAULTS); }
+function save(){ try{localStorage.setItem("qm4",JSON.stringify(S));}catch(e){} }
+if(!DATA.cities[S.city]) S.city="exeter";
+
+/* ---------- lifestyle filtering ---------- */
+// Air-quality slider is a national percentile of NOx: "cleanest N%".
+function noxCut(pctile){
+  const q = DATA.nox_national;
+  const keys = [[10,"0.1"],[25,"0.25"],[50,"0.5"],[75,"0.75"],[90,"0.9"]];
+  if(pctile>=100) return Infinity;
+  let best = q["0.9"];
+  for(const [p,k] of keys){ if(pctile<=p){ best=q[k]; break; } }
+  return best;
+}
+// Openness slider is a national percentile of built density, inverted:
+// 0 = anywhere, 100 = only the most open/greenest surroundings.
+function densCut(openMin){
+  const q = DATA.density_national;
+  if(openMin<=0) return Infinity;
+  if(openMin<=25) return q["0.75"];
+  if(openMin<=50) return q["0.5"];
+  if(openMin<=75) return q["0.25"];
+  return q["0.1"];
+}
+// Views are matched jointly at house level: each cell carries a small table of
+// how many of its homes have each combination of view flags.
+function viewNeed(b){ let m=0; (b.views||[]).forEach(k=>{ const i=flagBit(k); if(i>=0) m|=(1<<i); }); return m; }
+function viewFrac(c, need){ if(!need) return 1; const vm=c.vm||[]; let hit=0, tot=0;
+  for(let i=0;i<vm.length;i+=2){ tot+=vm[i+1]; if((vm[i]&need)===need) hit+=vm[i+1]; }
+  return tot?hit/tot:0; }
+function matchCells(b){
+  const nx = noxCut(b.airMax), dn = densCut(b.openMin), need = viewNeed(b), out=[];
+  for(const c of C().cells){
+    const [lo] = BANDR[c.band];
+    if(!(b.types.includes(c.ptype) && lo < b.max && c.offer_med <= b.max*1.06
+      && c.nox <= nx && c.density <= dn && c.min_centre <= b.minsCentre && c.km_gp <= b.gpKm)) continue;
+    const f = viewFrac(c, need), n = Math.round(c.n*f);
+    if(n < 1) continue;
+    out.push(need ? {...c, n0:c.n, f, n, n_top:Math.round(c.n_top*f), exp_sellers:c.exp_sellers*f} : {...c, n0:c.n, f:1});
+  }
+  return out;
+}
+function summarise(cells){
+  const n = cells.reduce((s,c)=>s+c.n,0);
+  const nTop = cells.reduce((s,c)=>s+c.n_top,0);
+  const exp = cells.reduce((s,c)=>s+c.exp_sellers,0);
+  const likely = Math.min(Math.round(exp*UNLOCK), Math.round(n*0.5));
+  const expReplies = nTop * REPLY_PER_CARD;
+  return {n, nTop, likely, expReplies, pSilent: Math.exp(-expReplies),
+          cost: nTop*CARD_COST, sectors:new Set(cells.map(c=>c.sector)).size};
+}
+
+/* ---------- warm-seller book ----------
+   Owners who already replied to earlier city-wide canvassing. In the live
+   product this is real inbound; here it is generated deterministically
+   from the highest-propensity cells so the demo behaves consistently. */
+function warmBook(){
+  const pool = [...C().cells].sort((a,b)=>b.p_med-a.p_med).slice(0,26);
+  const days = [2,3,5,6,8,9,11,13,15,17,19,22,24,27,30,33];
+  return pool.map((c,i)=>({
+    sector:c.sector, ptype:c.ptype, band:c.band, value:c.value_med,
+    offer:c.offer_med, tenure:Math.round(c.tenure_med), nox:c.nox,
+    mins:c.min_centre, days:days[i%days.length],
+    stage: i%5===0 ? "ready" : (i%3===0 ? "talking" : "curious")
+  }));
+}
+function warmMatching(b){
+  const nx=noxCut(b.airMax), dn=densCut(b.openMin);
+  return warmBook().filter(w=> b.types.includes(w.ptype) && w.offer<=b.max*1.06
+    && w.nox<=nx && w.mins<=b.minsCentre
+    && (C().cells.find(c=>c.sector===w.sector)||{density:0}).density<=dn);
+}
+
+/* ---------- router ---------- */
+function go(p){ location.hash="#"+p; }
+window.addEventListener("hashchange", render);
+function route(){ const h=(location.hash||"#/").slice(1);
+  const m=h.match(/^\/offer\/([\w-]+)/i);
+  if(m) return {v:"offer",code:m[1].toUpperCase()};
+  if(h.startsWith("/search")) return {v:"search"};
+  if(h.startsWith("/results")) return {v:"results"};
+  if(h.startsWith("/campaign")) return {v:"campaign"};
+  return {v:"home"};
+}
+function nav(cur){
+  return [["/","Why Quiet Market","home"],["/search","Where you'd live","search"],
+    ["/results","What's out there","results"],["/campaign","Your campaign","campaign"]]
+    .map(([p,l,k])=>`<a class="tlink ${cur===k?"on":""}" href="#${p}">${l}</a>`).join("");
+}
+
+/* ---------- sector map ---------- */
+function sectorMap(matched){
+  const all = C().cells;
+  const byS = {};
+  all.forEach(c=>{ (byS[c.sector] ||= {lat:c.lat, lon:c.lon, n:0, top:0, on:false}).n += c.n; });
+  matched.forEach(c=>{ byS[c.sector].on = true; byS[c.sector].top += c.n_top; });
+  const pts = Object.entries(byS);
+  const lats = pts.map(([,p])=>p.lat), lons = pts.map(([,p])=>p.lon);
+  const la0=Math.min(...lats), la1=Math.max(...lats),
+        lo0=Math.min(...lons), lo1=Math.max(...lons);
+  const W=300,H=210,pad=16;
+  const px = p => pad + (p.lon-lo0)/((lo1-lo0)||1)*(W-2*pad);
+  const py = p => H-pad - (p.lat-la0)/((la1-la0)||1)*(H-2*pad);
+  const maxTop = Math.max(1, ...pts.map(([,p])=>p.top));
+  const circles = pts.map(([s,p])=>{
+    const r = 3 + Math.sqrt(p.n)/7;
+    if(!p.on) return `<circle cx="${px(p).toFixed(1)}" cy="${py(p).toFixed(1)}" r="${r.toFixed(1)}"
+      fill="var(--line)" opacity=".85"><title>${esc(s)} — outside your criteria</title></circle>`;
+    const t = p.top/maxTop;
+    const fill = t>.66?"var(--m4)":t>.33?"var(--m3)":"var(--m2)";
+    return `<circle cx="${px(p).toFixed(1)}" cy="${py(p).toFixed(1)}" r="${r.toFixed(1)}"
+      fill="${fill}"><title>${esc(s)} — ${p.top} homes we'd write to</title></circle>`;
+  }).join("");
+  return `<div class="mapwrap">
+    <h3>Where your life fits</h3>
+    <p class="note" style="margin:2px 0 6px">Postcode sectors across ${C().name}. Filled = matches your criteria.</p>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img"
+      aria-label="Map of ${C().name} postcode sectors matching your criteria">${circles}</svg>
+    <div class="legend"><span><i style="background:var(--m2)"></i>some</span>
+      <span><i style="background:var(--m3)"></i>more</span>
+      <span><i style="background:var(--m4)"></i>most to write to</span>
+      <span><i style="background:var(--line)"></i>ruled out</span></div>
+  </div>`;
+}
+
+/* ---------- views ---------- */
+function vHome(){
+  const city=C(), a=city.area, ex0=city.exemplars[0]||{};
+  return `<div class="fadein">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Buying, beyond the portals · ${city.name} pilot</div>
+      <h1 style="margin-top:10px">Describe the life you want. <em>We'll go and ask for it.</em></h1>
+      <p class="lede">You don't want a specific house. You want clean air, twenty minutes from town,
+        a doctor nearby, a view, and a budget that works. About 97% of the homes that fit are not for sale —
+        but nearly all of them would sell at the right price. We find them and ask the owners, privately.</p>
+      <a class="btn" href="#/search">Describe where you'd live</a>
+      <a class="btn ghost" href="#/results" style="margin-left:8px">See who's already interested</a>
+      <div class="statrow">
+        <div class="stat"><div class="v num">${a.n_owned_tracked.toLocaleString()}</div>
+          <div class="k">owned homes tracked in ${city.name}</div></div>
+        <div class="stat"><div class="v num">≈ ${Math.round(a.exp_sellers_12m*UNLOCK).toLocaleString()}</div>
+          <div class="k">would move for the right offer, next 12 months</div></div>
+        <div class="stat"><div class="v num">${a.n_houses_viewed.toLocaleString()}</div>
+          <div class="k">houses whose view we have measured</div></div>
+      </div>
+    </div>
+    <div class="postcard tilt" aria-hidden="true">
+      <div class="pc-msg">
+        <div class="h">Someone would like to buy a home like yours.</div>
+        <div class="o">A vetted buyer is ready at <b>${GBPk((ex0.offer_mid||400000)*0.96)}–${GBPk((ex0.offer_mid||400000)*1.04)}</b>.<br>No listing. No viewings circus.<br>Scan for your private offer.</div>
+      </div>
+      <div class="pc-rule"></div>
+      <div class="pc-stamp" id="heroQR"></div>
+      <div class="pc-frank">QUIET<br>MARKET<br>· ${city.frank} ·</div>
+      <div class="pc-addr">The Homeowner<br>██ ██████ ████<br>${city.name}<br>${esc((ex0.sector||"").split(" ")[0])} ███</div>
+      <div class="pc-foot"><span>ref ${esc(ex0.code||"")}</span><span>quietmarket.example/offer</span></div>
+    </div>
+  </div>
+
+  <section class="band">
+    <div class="eyebrow">How it works</div>
+    <div class="howgrid">
+      <div class="how"><div class="stepno">STEP 01</div><h3>Describe the life, not the house</h3>
+        <p>Air quality, green surroundings, travel time, a GP within reach, your budget. Even whether you
+        can see ${city.centre_name} from the bedroom, or get the evening sun in the garden, worked out house by
+        house from a 3-D model of every building, tree and hill. We count every home in the city that fits,
+        not the 3% with a For Sale board.</p></div>
+      <div class="how"><div class="stepno">STEP 02</div><h3>We ask those owners, quietly</h3>
+        <p>A model trained on 24 million sales ranks who's most likely to move, and what it would honestly
+        take. They get one discreet card. One number, one choice, no chasing.</p></div>
+      <div class="how"><div class="stepno">STEP 03</div><h3>Say yes together</h3>
+        <p>When an owner accepts you're both told, and never left alone in a negotiation. We run the
+        survey, the paperwork and the chain through to keys.</p></div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="grid2">
+      <div>
+        <div class="eyebrow">Why searching this way works</div>
+        <h2 style="font-size:25px;margin:8px 0 12px">A street is a tiny market. A life is a big one.</h2>
+        <p style="color:var(--muted)">Ask a portal for "three-bed semi, St Leonard's" and you're
+        fishing in a pond of a few dozen homes — most weeks, nothing. Ask us for "clean air, open
+        surroundings, half an hour from the centre, under £475k" and the same requirement covers
+        thousands of homes across the city.</p>
+        <p style="color:var(--muted)">That's not just a nicer way to search. It's the difference between
+        knocking on enough doors to get an answer and knocking on too few to hear anything back.</p>
+      </div>
+      <div>
+        <div class="eyebrow">For owners</div>
+        <h2 style="font-size:25px;margin:8px 0 12px">Had a card from us?</h2>
+        <p style="color:var(--muted)">It means a real, vetted buyer described a life that your home fits.
+        No obligation, nothing public, and we'll never call.</p>
+        <div class="sellerbox">
+          <label style="font-family:'Bricolage Grotesque',sans-serif;font-weight:600" for="refin">Your reference</label>
+          <input id="refin" placeholder="${esc(ex0.code||"EX4-9C2E")}" aria-label="postcard reference">
+          <button class="btn post" onclick="openRef()">View my offer</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  </div>`;
+}
+function openRef(){
+  const v=(document.getElementById("refin").value||C().exemplars[0].code).trim().toUpperCase();
+  go("/offer/"+v);
+}
+
+function vSearch(){
+  const b=S.brief, cells=matchCells(b), s=summarise(cells), warm=warmMatching(b).length;
+  const wide = s.pSilent < 0.20;
+  return `<div class="fadein">
+  <div class="eyebrow">Where you'd live · this is the whole search</div>
+  <h1 style="font-size:32px;margin:8px 0 6px">What would make a place right?</h1>
+  <p style="color:var(--muted);margin:0 0 20px;max-width:52em">Every number on the right updates as you
+    move these. Air quality and distances are real measurements for every postcode in ${C().name}; views are
+    measured for every house.</p>
+  <div class="searchgrid">
+    <div class="panel">
+      <div class="crit">
+        <div class="lab"><b>Clean air</b><span class="val">${b.airMax>=100?"anywhere":"cleanest "+b.airMax+"% nationally"}</span></div>
+        <div class="why">Modelled NOx from the AHAH index, per postcode.</div>
+        <input type="range" min="10" max="100" step="15" value="${b.airMax}"
+          aria-label="air quality" oninput="S.brief.airMax=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Open, green surroundings</b><span class="val">${b.openMin<=0?"anywhere":b.openMin>=90?"most open only":"top "+(100-b.openMin)+"% most open"}</span></div>
+        <div class="why">How built-up the immediate area is — our stand-in for green space.</div>
+        <input type="range" min="0" max="100" step="25" value="${b.openMin}"
+          aria-label="openness" oninput="S.brief.openMin=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Drive to the city centre</b><span class="val">under ${b.minsCentre} min</span></div>
+        <div class="why">Approximate, from straight-line distance — not routed.</div>
+        <input type="range" min="3" max="20" step="1" value="${b.minsCentre}"
+          aria-label="drive time to city centre" oninput="S.brief.minsCentre=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>GP within</b><span class="val">${b.gpKm} km</span></div>
+        <div class="why">Straight-line distance to the nearest GP surgery.</div>
+        <input type="range" min="0.5" max="6" step="0.5" value="${b.gpKm}"
+          aria-label="distance to GP" oninput="S.brief.gpKm=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Budget ceiling</b><span class="val">${GBP(b.max)}</span></div>
+        <div class="why">What you could pay for the <i>right offer</i> — usually 6–20% over today's value.</div>
+        <input type="range" min="180000" max="900000" step="25000" value="${b.max}"
+          aria-label="budget" oninput="S.brief.max=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>What you'd like to see</b><span class="val">${(b.views||[]).length?(b.views||[]).map(k=>(flagOf(k)||{}).label).filter(Boolean).join(" · "):"no preference"}</span></div>
+        <div class="why">Worked out for every house from a 3-D model of the ground, the buildings and the trees: the view from the upper windows and from the garden, and where the sun falls. No photos needed.</div>
+        <div class="chipgroup">Outlook and garden</div>
+        <div class="chiprow">${FLAGS().filter(f=>!f.lm).map(f=>`
+          <button class="chip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${f.label}</button>`).join("")}
+        </div>
+        <div class="chipgroup">Landmarks in sight from the upper windows</div>
+        <div class="chiprow">${FLAGS().filter(f=>f.lm).map(f=>`
+          <button class="chip lmchip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${esc(f.label)}</button>`).join("")}
+        </div>
+        ${(b.views||[]).length?`<div class="why" style="margin-top:9px">Counted jointly: a home is only included if it has <b>all</b> of these.</div>`:""}
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Kind of home</b></div>
+        <div class="chiprow">${Object.keys(PT).map(t=>`
+          <button class="chip ${b.types.includes(t)?"on":""}" onclick="tglType('${t}')">${PT[t]}</button>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    <div class="rail">
+      <div class="panel">
+        <div class="eyebrow">Homes that fit your life</div>
+        <div class="big num">${s.n.toLocaleString()}</div>
+        <div class="sub">across ${s.sectors} postcode sectors</div>
+        <div style="height:1px;background:var(--line);margin:14px 0"></div>
+        <div class="kv"><span class="k">Would move for the right offer</span><span class="v num">≈ ${s.likely.toLocaleString()}</span></div>
+        <div class="kv"><span class="k">We'd write to</span><span class="v num">${s.nTop.toLocaleString()}</span></div>
+        <div class="kv"><span class="k">Already talking to us</span><span class="v num" style="color:var(--post)">${warm}</span></div>
+        <div class="gauge ${wide?"good":"warn"}">
+          <h4>${wide?"Wide enough to get answers":"Too narrow to hear back"}</h4>
+          <div class="bar"><i style="width:${Math.min(100,Math.round((1-s.pSilent)*100))}%;
+            background:${wide?"var(--accent)":"var(--warn)"}"></i></div>
+          <p>${wide
+            ? `About <b>${s.expReplies.toFixed(1)}</b> owners should reply to a first wave.`
+            : `A first wave to ${s.nTop.toLocaleString()} homes has a <b>${Math.round(s.pSilent*100)}%</b> chance of no reply at all. Loosen a slider — or start with the owners already talking to us.`}</p>
+        </div>
+        <a class="btn" style="width:100%;justify-content:center;margin-top:14px" href="#/results">See what's out there →</a>
+      </div>
+      <div style="margin-top:14px">${sectorMap(cells)}</div>
+    </div>
+  </div>
+  </div>`;
+}
+function tglView(k){ const a=S.brief.views=(S.brief.views||[]); const i=a.indexOf(k);
+  if(i>=0) a.splice(i,1); else a.push(k); save(); render(); }
+function tglType(t){ const a=S.brief.types, i=a.indexOf(t);
+  if(i>=0){ if(a.length>1) a.splice(i,1); } else a.push(t); save(); render(); }
+
+function vResults(){
+  const b=S.brief, cells=matchCells(b).sort((x,y)=>y.n_top-x.n_top), s=summarise(cells);
+  const warm=warmMatching(b);
+  S.selected = S.selected.filter(id=>cells.some(c=>cellId(c)===id)); save();
+  const selCells = cells.filter(c=>S.selected.includes(cellId(c)));
+  const selCards = selCells.reduce((a,c)=>a+c.n_top,0);
+  const selReplies = selCards*REPLY_PER_CARD;
+  return `<div class="fadein">
+  <div class="eyebrow">What's out there</div>
+  <div class="resulthead">
+    <div>
+      <div class="bignum num">${s.n.toLocaleString()} homes <small>fit the life you described</small></div>
+      <div style="font-size:17px;margin-top:6px">≈ <b class="num" style="color:var(--accent-deep)">${s.likely.toLocaleString()}</b>
+        would sell for the right offer within 12 months. Portals in this area today show roughly
+        <b class="num">${Math.max(1,Math.round(s.n*0.032)).toLocaleString()}</b>.</div>
+    </div>
+    <a class="btn ghost" href="#/search">Change what matters</a>
+  </div>
+
+  ${warm.length?`
+  <section style="margin-bottom:26px">
+    <div class="eyebrow">Owners already talking to us</div>
+    <h2 style="font-size:22px;margin:6px 0 4px">${warm.length} people who fit your brief have already raised a hand</h2>
+    <p class="note" style="margin:0 0 12px">From our continuous canvassing across ${C().name}: no waiting, no postage, they're already in conversation.</p>
+    ${warm.slice(0,4).map(w=>`
+      <div class="warm ${w.stage==="ready"?"hot":""}">
+        <div><b>${PT1[w.ptype][0].toUpperCase()+PT1[w.ptype].slice(1)}, ${esc(w.sector)}█</b>
+          <div class="note">Owner ${w.tenure} yrs · ${w.mins} min to centre · NOx ${w.nox}
+            · would consider <b style="color:var(--accent-deep)">${GBPk(w.offer*0.96)}–${GBPk(w.offer*1.04)}</b></div></div>
+        <span class="pill ${w.stage==="ready"?"warm":"cool"}">${
+          w.stage==="ready"?"ready to proceed":w.stage==="talking"?"in conversation":"curious"} · ${w.days}d ago</span>
+      </div>`).join("")}
+    ${warm.length>4?`<p class="note">+ ${warm.length-4} more once you're registered.</p>`:""}
+  </section>`:""}
+
+  <div class="eyebrow">Everyone else we could ask</div>
+  <h2 style="font-size:22px;margin:6px 0 12px">Pick the pockets of the city worth writing to</h2>
+  ${S.viewSector?vViewPanel(S.viewSector):""}
+  <div class="cohortgrid">
+    ${cells.slice(0,12).map(c=>{
+      const id=cellId(c), sel=S.selected.includes(id);
+      const lk=Math.min(Math.round(c.exp_sellers*UNLOCK), Math.round(c.n*0.5));
+      return `<div class="cohort ${sel?"sel":""}" tabindex="0" role="button" aria-pressed="${sel}"
+        onclick="selC('${id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selC('${id}')}">
+        <div class="tick">✓</div>
+        <div class="where">${esc(c.sector)} · ${esc(C().areas[c.outcode]||"")}</div>
+        <h3>${PT[c.ptype]}, ${BANDL[c.band]}</h3>
+        <div class="likely"><b class="num">≈ ${lk}</b><span>of ${c.n.toLocaleString()} would move for the right offer</span></div>
+        ${c.f<1?`<div class="viewmatch">${c.n.toLocaleString()} of the ${c.n0.toLocaleString()} homes here have the view you asked for</div>`:""}
+        <div class="kv"><span class="k">Typical value today</span><span class="v num">${GBPk(c.value_med)}</span></div>
+        <div class="kv"><span class="k">The right offer</span><span class="v num" style="color:var(--accent-deep)">${GBPk(c.offer_med*0.96)}–${GBPk(c.offer_med*1.04)}</span></div>
+        <div class="tags"><span class="tag">NOx ${c.nox}</span><span class="tag">${c.min_centre} min to centre</span>
+          <span class="tag">GP ${c.km_gp} km</span><span class="tag">${Math.round(c.tenure_med)} yrs owned</span></div>
+        ${(()=>{const v=viewOf(c.sector); if(!v) return ""; return `
+        <div class="panomini">${panoSVG(v.pano_typical,{mini:true,label:"Typical upstairs view in "+c.sector})}</div>
+        <div class="viewtags">${viewTags(v)}<button class="seeview" onclick="event.stopPropagation();openView('${esc(c.sector)}')">See the view →</button></div>`;})()}
+        <div class="note" style="margin-top:2px">${c.n_top} cards · premium ≈ ${(c.premium_med*100).toFixed(0)}%</div>
+      </div>`;}).join("")}
+  </div>
+  ${cells.length>12?`<p class="note" style="margin-top:12px">Showing the 12 biggest of ${cells.length} matching pockets.</p>`:""}
+  ${cells.length===0?`<div class="panel">Nothing matches yet — loosen a slider on <a href="#/search">your criteria</a>.</div>`:""}
+
+  <div class="tray" role="status">
+    <div><b style="font-family:'Bricolage Grotesque',sans-serif">${S.selected.length} selected</b>
+      <span class="mono num" style="opacity:.85"> · ${selCards.toLocaleString()} cards · ${GBP(selCards*CARD_COST)} ·
+      ≈ ${selReplies.toFixed(1)} replies expected</span></div>
+    <button class="btn post" ${S.selected.length?"":"disabled"} onclick="startCampaign()">Prepare postcards →</button>
+  </div>
+  <p class="note" style="margin-top:14px">No photos, deliberately: none of these homes are listed, so a
+    picture would be a promise nobody has made. You get the true count, the honest price, and we go and ask.</p>
+  </div>`;
+}
+function cellId(c){ return c.sector+"|"+c.ptype+"|"+c.band; }
+function selC(id){ const i=S.selected.indexOf(id);
+  if(i>=0) S.selected.splice(i,1); else S.selected.push(id); save(); render(); }
+function startCampaign(){
+  const cells=matchCells(S.brief).filter(c=>S.selected.includes(cellId(c)));
+  S.campaign={cards:cells.reduce((a,c)=>a+c.n_top,0), sent:false};
+  S.day=0; S.connected=false; save(); go("/campaign");
+}
+
+function vCampaign(){
+  if(!S.campaign) return `<div class="panel fadein" style="max-width:640px;margin:40px auto;text-align:center">
+    <h2 style="font-size:24px">No campaign yet</h2>
+    <p style="color:var(--muted)">Choose some pockets of the city first — your postcards start there.</p>
+    <a class="btn" href="#/results">See what's out there</a></div>`;
+  const c=S.campaign, cards=c.cards, ex=C().exemplars[0];
+  const replies=cards*REPLY_PER_CARD, scans=Math.max(1,Math.round(cards*SCAN*LIFT));
+  if(!c.sent) return `<div class="fadein" style="max-width:920px;margin:0 auto">
+    <div class="eyebrow">Your campaign · review</div>
+    <h1 style="font-size:31px;margin:8px 0 16px">One card. ${cards.toLocaleString()} doors. Your offer on it.</h1>
+    <div class="grid2">
+      <div class="postcard">
+        <div class="pc-msg">
+          <div class="h">Someone would like to buy a home like yours.</div>
+          <div class="o">A vetted buyer is ready at <b>${GBPk(ex.offer_mid*0.96)}–${GBPk(ex.offer_mid*1.04)}</b>.<br>Private, no obligation, no listing.<br>Scan for your offer — it expires in 30 days.</div>
+        </div>
+        <div class="pc-rule"></div>
+        <div class="pc-stamp" id="cardQR"></div>
+        <div class="pc-frank">QUIET<br>MARKET<br>· ${C().frank} ·</div>
+        <div class="pc-addr">The Homeowner<br>██ ${esc(ex.sector)} ██<br>${C().name}</div>
+        <div class="pc-foot"><span>ref ${esc(ex.code)}</span><span>one card only — we don't chase</span></div>
+      </div>
+      <div>
+        <div class="panel">
+          <div class="kv"><span class="k">Postcards (highest-likelihood only)</span><span class="v num">${cards.toLocaleString()}</span></div>
+          <div class="kv"><span class="k">Print &amp; postage @ £${CARD_COST.toFixed(2)}</span><span class="v num">${GBP(cards*CARD_COST)}</span></div>
+          <div class="kv"><span class="k">Shared with</span><span class="v num">3 other matching buyers</span></div>
+          <div class="kv"><span class="k">Your share</span><span class="v num">${GBP(cards*CARD_COST/4)}</span></div>
+          <div style="height:1px;background:var(--line);margin:12px 0"></div>
+          <div class="funnel" aria-label="expected response, modelled">
+            <div class="frow"><span class="lbl">Delivered</span><div class="fbar" style="width:96%"></div><span class="val num">≈ ${Math.round(cards*.96).toLocaleString()}</span></div>
+            <div class="frow"><span class="lbl">Read their offer</span><div class="fbar" style="width:${Math.max(2.5,SCAN*LIFT*100)}%"></div><span class="val num">≈ ${scans}</span></div>
+            <div class="frow"><span class="lbl">Start a conversation</span><div class="fbar" style="width:${Math.max(1.2,REPLY_PER_CARD*100)}%"></div><span class="val num">≈ ${replies.toFixed(1)}</span></div>
+            <div class="frow"><span class="lbl">Agreed sale</span><div class="fbar" style="width:.6%;background:var(--post)"></div><span class="val num">0–${Math.max(1,Math.round(replies*0.15))}</span></div>
+          </div>
+          <p class="note">Modelled on a conservative 1.0% read rate and the measured ${LIFT.toFixed(2)}× targeting lift.
+            The pilot exists to replace these with real numbers.</p>
+        </div>
+        <button class="btn post" style="margin-top:16px;width:100%;justify-content:center"
+          onclick="S.campaign.sent=true;S.day=0;save();render()">Post my ${cards.toLocaleString()} cards</button>
+      </div>
+    </div>
+  </div>`;
+
+  const d=S.day, ex2=C().exemplars[1]||ex, ex3=C().exemplars[2]||ex;
+  const events=[[0,"Cards printed & handed to Royal Mail",d>=0],
+    [2,`Delivered — ${Math.round(cards*.96).toLocaleString()} of ${cards.toLocaleString()} doors`,d>=2],
+    [3,"First scans — owners reading their offers",d>=3],
+    [5,"Replies arriving",d>=5],[6,"An owner accepted your range",d>=6]];
+  return `<div class="fadein" style="max-width:920px;margin:0 auto">
+    <div class="eyebrow">Your campaign · live</div>
+    <h1 style="font-size:31px;margin:8px 0 8px">Cards are out. Day ${d}.</h1>
+    <div class="simbar"><span>⏱ Prototype control — in the live product this plays out over a fortnight.</span>
+      <span><button class="btn quiet" ${d>=6?"disabled":""} onclick="S.day=Math.min(6,S.day+1);save();render()">Simulate next day ▸</button>
+      <button class="btn quiet" onclick="resetDemo()">Restart demo</button></span></div>
+    <div class="grid2">
+      <div>
+        <div class="panel">
+          <div class="kv"><span class="k">Doors reached</span><span class="v num">${d>=2?Math.round(cards*.96).toLocaleString():"—"}</span></div>
+          <div class="kv"><span class="k">Offers read</span><span class="v num">${d>=3?Math.min(scans,Math.round(scans*(d-2)/4)):"—"}</span></div>
+          <div class="kv"><span class="k">Conversations</span><span class="v num">${d>=5?3:"—"}</span></div>
+          <div class="kv"><span class="k">Accepted</span><span class="v num" style="color:var(--post)">${d>=6?1:"—"}</span></div>
+        </div>
+        <div class="timeline" style="margin-top:18px">
+          ${events.map(([day,label,on])=>`<div class="tl ${on?(day===6?"pulse":"done"):""}">
+            <div class="when">DAY ${day}</div><div>${label}</div></div>`).join("")}
+        </div>
+      </div>
+      <div>
+        ${d<5?`<div class="panel"><h3 style="font-size:18px">While you wait</h3>
+          <p style="color:var(--muted);font-size:15px">Owners are opening their post. Most cards are read
+          within 48 hours of landing — then people talk to a partner, sleep on it, scan in the evening.
+          We never send a second card; the quiet is the point.</p>
+          <p class="note">You'll get one alert per genuine reply. Nothing else.</p></div>`:""}
+        ${d>=5?`<h3 style="font-size:18px;margin-bottom:8px">Replies</h3>
+        <div class="warm"><div><b>${esc(ex2.sector)}█</b> · ${PT1[ex2.ptype]} · owner ${ex2.tenure} yrs
+          <div class="note">"Curious what this is — tell me more."</div></div><span class="pill cool">exploring</span></div>
+        <div class="warm"><div><b>${esc(ex3.sector)}█</b> · ${PT1[ex3.ptype]} · owner ${ex3.tenure} yrs
+          <div class="note">"Not this year. Ask me again in spring."</div></div><span class="pill cool">later</span></div>
+        ${d>=6?`<div class="warm hot"><div><b>${esc(ex.sector)}█</b> · ${PT1[ex.ptype]} · owner ${ex.tenure} yrs
+          <div class="note">Accepted your range <b>${GBPk(ex.offer_mid*0.96)}–${GBPk(ex.offer_mid*1.04)}</b> — wants to proceed.</div></div>
+          ${S.connected?`<span class="pill okp">connected</span>`
+            :`<button class="btn post" onclick="S.connected=true;save();render()">Review &amp; connect</button>`}</div>`:""}`:""}
+        ${S.connected?`<div class="panel" style="margin-top:16px;border-color:var(--accent)">
+          <div class="eyebrow">You're connected</div>
+          <h3 style="font-size:19px;margin:6px 0 2px">${PT1[ex.ptype][0].toUpperCase()+PT1[ex.ptype].slice(1)}, ${esc(ex.sector)}█ — agreed at ${GBPk(ex.offer_mid)}</h3>
+          <p class="note">Full address and photos unlock when both sides confirm ID — that protects you both.</p>
+          <ul class="checklist">
+            <li><span class="st done">DONE</span> Both parties verified (AML &amp; ID)</li>
+            <li><span class="st done">DONE</span> Your mortgage in principle checked</li>
+            <li><span class="st">TODAY</span> Walkthrough visit — pick a slot, we accompany</li>
+            <li><span class="st">NEXT</span> Conveyancers instructed both sides</li>
+            <li><span class="st">WK 2–8</span> Survey → exchange → keys. We chase everyone, weekly.</li>
+          </ul>
+          <div class="msg"><div class="who">A</div><div class="bubble">Hello both — I'm Amara, your progression lead.
+            You never need to negotiate face to face: anything awkward, tell me and I'll carry it.
+            Three walkthrough slots are ready below.</div></div>
+          <div class="slotrow"><button class="chip">Thu 6:00pm</button>
+            <button class="chip">Sat 10:30am</button><button class="chip">Sun 2:00pm</button></div>
+        </div>`:""}
+      </div>
+    </div>
+  </div>`;
+}
+function resetDemo(){ S=structuredClone(DEFAULTS); save(); go("/"); }
+
+function vOffer(code){
+  const ex = Object.values(DATA.cities).flatMap(c=>c.exemplars).find(e=>e.code===code) || C().exemplars[0];
+  const city = DATA.cities[ex.city];
+  const st = S.seller[code]||"new";
+  const head = `<div class="eyebrow">Private offer · ref <span class="mono">${esc(code)}</span></div>`;
+  if(st==="declined") return `<div class="offerhero fadein" style="text-align:center;padding:40px 0">
+    ${head}<h1 style="font-size:29px;margin:14px 0">Understood — we won't write again.</h1>
+    <p style="color:var(--muted)">Your address is now suppressed from every future campaign. Nothing was
+    listed, nothing is public, and no one will follow up. Thank you for telling us.</p>
+    <p class="note">Changed your mind? Your reference stays valid for 30 days.</p>
+    <button class="btn ghost" onclick="S.seller['${esc(code)}']='new';save();render()">Reopen my offer</button></div>`;
+  if(st==="accepted") return `<div class="offerhero fadein" style="padding:26px 0">
+    ${head}<h1 style="font-size:29px;margin:14px 0">Done — the buyer has been told.</h1>
+    <p style="color:var(--muted)">Here's exactly what happens next. No boards, no portal listing, no stream
+    of viewings — one accompanied walkthrough and a managed path to completion.</p>
+    <div class="panel"><div class="steps">
+      <div class="step"><div><b>Today — a real person calls you.</b><br><span class="note">Your progression
+      lead confirms the number and answers anything. You can stop at any point before contracts — no fee, no tie-in.</span></div></div>
+      <div class="step"><div><b>This week — one walkthrough.</b><br><span class="note">The buyer visits once,
+      with us present. If the home matches what the public record says, the range holds; we agree the final
+      figure openly on the day.</span></div></div>
+      <div class="step"><div><b>Weeks 2–8 — we run the paperwork.</b><br><span class="note">Conveyancing,
+      survey, chain (we can find your next home inside Quiet Market too). We chase everyone weekly. You never
+      negotiate directly unless you want to.</span></div></div>
+    </div></div>
+    <p class="note" style="margin-top:14px">Your fee: £0. Buyers fund Quiet Market on completion.</p></div>`;
+
+  return `<div class="offerhero fadein" style="padding:12px 0">
+    ${head}
+    <h1 style="font-size:clamp(27px,4.5vw,39px);margin:12px 0 6px">A vetted buyer is ready to pay</h1>
+    <div class="offerbig num">${GBP(ex.offer_lo)} – ${GBP(ex.offer_hi)}</div>
+    <p style="font-size:17px;margin:10px 0 4px">for a ${PT1[ex.ptype]} like yours in <b>${esc(ex.sector)}█</b>.</p>
+    <p style="color:var(--muted)">That's around <b class="num">${ex.premium_pct.toFixed(0)}% over</b> what homes
+    like yours have been changing hands for. They weren't looking for your street — they were looking for
+    clean air, ${ex.min_centre} minutes from ${city.centre_name}, and a home like yours. Yours fits.</p>
+    <div class="actions">
+      <button class="btn post" onclick="S.seller['${esc(code)}']='accepted';save();render()">I'm interested — start the conversation</button>
+      <button class="btn ghost" onclick="document.getElementById('faqs').scrollIntoView({behavior:'smooth'})">Tell me more first</button>
+      <button class="btn quiet" onclick="S.seller['${esc(code)}']='declined';save();render()">No thanks — don't write again</button>
+    </div>
+    <p class="note">No obligation. Nothing public. Interested ≠ committed — it opens a conversation, through us, never directly.</p>
+    ${(()=>{const v=viewOf(ex.sector, ex.city); if(!v) return ""; const p=v.pano_best, g=v.pano_garden;
+      const seen=(p.lm||[]).filter(l=>l.sees);
+      return `
+    <div class="viewpanel" style="margin-top:30px">
+      <div class="eyebrow">What your home can see</div>
+      <h3 style="margin:6px 0 4px">We looked at your view before we wrote</h3>
+      <p style="color:var(--muted);font-size:15px;margin:0 0 10px">From your upper windows the outlook reaches about <b>${v.best.longest_km} km</b>, opening towards the ${compass(v.best.facing)}.
+        ${seen.length?`You can see ${seen.map(l=>`${esc(l.name)} (${l.km} km)`).join(" and ")}.`:""}
+        That is part of why the buyer chose a home like yours. This is drawn from a 3-D model of the land and every building and tree around you. It is not a photo, and nobody has been near your home.</p>
+      <div class="pano panoscroll">${panoSVG(p,{label:"Drawn view from your upper windows"})}</div>
+      ${HZ_LEGEND}
+      ${g?`<h3 style="margin:22px 0 4px">And where the sun falls in your garden</h3>
+      <p style="color:var(--muted);font-size:15px;margin:0 0 10px">Your garden lies to the <b>${compass(v.garden.bearing)}</b> of the house. The orange lines are the sun's path on three days of the year: solid where the sun reaches the garden, dotted where a roof or a tree is in the way.</p>
+      <div class="pano panoscroll">${panoSVG(g,{sun:true,lat:city.lat,lon:city.lon,label:"Drawn view from your garden with the sun's path"})}</div>
+      ${sunBoxes(g,city)}`:""}
+      <p class="note" style="margin:10px 0 0">In this prototype the drawing is of a representative home in your postcode sector. In the live product it is your own.</p>
+    </div>`;})()}
+    <div id="faqs" style="margin-top:32px">
+      <div class="eyebrow">Fair questions</div>
+      <details class="faq" open><summary>How did you get my address — and what do you know?</summary>
+        <p>Only public records: HM Land Registry's sale history, energy-certificate data, published
+        environmental data and the Environment Agency's aerial laser survey of the ground, addressed to
+        "The Homeowner". We know when homes on your street last sold and for what, and the shape of the roofs
+        and trees around you. We don't know your name, and we haven't looked in your windows.</p></details>
+      <details class="faq"><summary>Who is the buyer?</summary>
+        <p>A private buyer, financially vetted by us (proof of funds or mortgage in principle) before a
+        single card was printed. You'll meet them once before contracts — at the walkthrough, with us there.</p></details>
+      <details class="faq"><summary>What does it cost me?</summary>
+        <p>Nothing. No estate agency fee, no marketing, no listing. The buyer pays us on completion. If you'd
+        normally pay 1.5% to an agent, that's roughly <b class="num">${GBP(ex.est_value*0.015)}</b> staying in your pocket.</p></details>
+      <details class="faq"><summary>Is the number real? What if my home is nicer than average?</summary>
+        <p>The range is a genuine starting commitment based on your street's record, not a teaser. If your
+        home is better than the public record suggests, the walkthrough is where the number moves up —
+        openly, on the day, with us anchoring it.</p></details>
+      <details class="faq"><summary>What if I need somewhere to move to?</summary>
+        <p>Most people do. Tell us what you'd want next and we'll run the same quiet search for you on the
+        buying side — that's the half of this most owners end up loving.</p></details>
+    </div>
+  </div>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  const r=route();
+  document.getElementById("nav").innerHTML = r.v==="offer"
+    ? `<span class="mono" style="font-size:11px;color:var(--muted)">A PRIVATE NOTE FROM A REAL BUYER</span>`
+    : nav(r.v);
+  document.getElementById("citysw").innerHTML = r.v==="offer" ? "" :
+    `<div class="cityswitch" role="group" aria-label="Choose a city">${Object.entries(DATA.cities).map(([k,c])=>
+      `<button class="${S.city===k?"on":""}" aria-pressed="${S.city===k}" onclick="setCity('${k}')">${c.name}</button>`).join("")}</div>`;
+  const fa=document.getElementById("footauc"); if(fa) fa.textContent=DATA.model.auc_oot||"";
+  document.getElementById("app").innerHTML =
+    r.v==="offer"?vOffer(r.code) : r.v==="search"?vSearch() :
+    r.v==="results"?vResults() : r.v==="campaign"?vCampaign() : vHome();
+  window.scrollTo({top:0});
+  for(const id of ["heroQR","cardQR"]){
+    const el=document.getElementById(id);
+    if(el && window.QRCode){ try{
+      new QRCode(el,{text:location.origin+location.pathname+"#/offer/"+C().exemplars[0].code,
+        width:68,height:68,colorDark:"#20282E",colorLight:"#ffffff",
+        correctLevel:QRCode.CorrectLevel.M});
+    }catch(e){ el.textContent="QR"; } }
+  }
+}
+render();
+</script>

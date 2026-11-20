@@ -7,7 +7,16 @@ Runs, on float16 chunk files written by panel2.py:
               all properties — does more data unlock bigger effects?
   rolling     refit each year and predict the next (the deployment
               protocol) against the stale fixed-origin model
-  tenure      where each family helps, by length of ownership
+  ablate      at the largest sample, leave geography or outlook out
+  deploy      the model the prototype scores with (trained to 2018)
+
+Boosting rounds are chosen by early stopping on 2016, a year no
+experiment trains or tests on.
+
+Sales are rare (about 4 home-years in 100). Training keeps every sale
+and one non-sale in four, each weighted by four, which leaves
+probabilities unbiased and makes the largest fits about four times
+cheaper. Test and validation rows are never sampled.
 
 Evaluation is out-of-time. The headline test window is 2017-2018 (the
 2019 file undercounts late registrations); 2017-2019 is reported for
@@ -15,7 +24,7 @@ continuity with earlier documents. Uncertainty is from a block
 bootstrap over properties (2,048 hash blocks, Poisson weights), since
 rows from one property are not independent.
 
-Usage: python model_lab.py <panel_dir> <out_dir> <experiment> [threads]
+Usage: python model_lab.py <panel_dir> <out_dir> <experiment> [threads] [sample_pct]
 """
 
 import json
@@ -27,6 +36,9 @@ import lightgbm as lgb
 import numpy as np
 
 TRAIN = (2001, 2015)
+VALID_YEAR = 2016            # the gap year: used only to decide when to stop boosting
+MAX_ROUNDS = 800
+NEG_KEEP = 4                 # keep every sale and one non-sale home-year in four, weighted back
 N_BLOCKS, BOOT = 2048, 300
 
 
@@ -60,15 +72,17 @@ class Chunks:
 
 
 class Seq(lgb.Sequence):
-    """Out-of-core rows for LightGBM: float16 on disk -> float32 batches."""
+    """Out-of-core rows for LightGBM: float16 on disk -> float64 batches
+    (the library samples rows through this interface and insists on doubles)."""
 
     def __init__(self, X, rows, cols, batch_size=65536):
         self.X, self.rows, self.cols, self.batch_size = X, rows, np.asarray(cols), batch_size
 
     def __getitem__(self, idx):
         r = self.rows[idx]
-        out = np.asarray(self.X[r]).astype(np.float32)
-        return out[..., self.cols] if out.ndim == 2 else out[self.cols]
+        out = np.asarray(self.X[r])
+        out = out[..., self.cols] if out.ndim == 2 else out[self.cols]
+        return out.astype(np.float64)
 
     def __len__(self):
         return len(self.rows)
@@ -81,29 +95,39 @@ def pct_to_chunks(pct):
     return ids, (int(full) * 5 + rem if rem else None)
 
 
-def dataset(ch, pct, families, years):
+def dataset(ch, pct, families, years, neg_keep=None):
+    neg_keep = NEG_KEEP if neg_keep is None else neg_keep
     ids, cap = pct_to_chunks(pct)
     cols, names = ch.cols(families)
     seqs, ys = [], []
     for c in ids:
         rows = ch.rows(c, years, cap if (cap is not None and c == ids[-1]) else None)
-        seqs.append(Seq(ch.X(c), rows, cols)); ys.append(ch.col("y", c)[rows])
+        y = ch.col("y", c)[rows]
+        if neg_keep > 1:                              # deterministic per row, so every model sees the same sample
+            keep = (y == 1) | ((((rows + 1) * 2654435761) >> 9) % neg_keep == 0)
+            rows, y = rows[keep], y[keep]
+        seqs.append(Seq(ch.X(c), rows, cols)); ys.append(y)
     y = np.concatenate(ys)
-    return lgb.Dataset(seqs, label=y, feature_name=names, free_raw_data=True,
+    w = np.where(y == 1, 1.0, float(neg_keep)).astype("float32")
+    return lgb.Dataset(seqs, label=y, weight=w, feature_name=names, free_raw_data=True,
                        params={"max_bin": 63, "min_data_in_bin": 20, "verbose": -1}), len(y)
 
 
 def params(n_rows, threads):
-    leaves = 31 if n_rows < 2e6 else 63 if n_rows < 8e6 else 127 if n_rows < 3e7 else 255
+    leaves = 31 if n_rows < 1e6 else 63 if n_rows < 3e6 else 127 if n_rows < 1e7 else 255
     return dict(objective="binary", learning_rate=0.08, num_leaves=leaves,
-                min_data_in_leaf=int(np.clip(n_rows / 20000, 100, 1500)), max_bin=63,
-                feature_fraction=0.8, bagging_fraction=0.5, bagging_freq=1, lambda_l2=5.0,
+                min_data_in_leaf=int(np.clip(n_rows / 8000, 80, 1200)), max_bin=63,
+                feature_fraction=0.8, bagging_fraction=0.7, bagging_freq=1, lambda_l2=5.0,
                 num_threads=threads, verbose=-1, seed=7)
 
 
-def rounds_for(n_rows):
-    """Boosting rounds: grows gently with data (calibrated by an early-stopping pilot)."""
-    return int(np.clip(140 * (n_rows / 1e6) ** 0.28, 150, 700))
+def valid_set(ch, cols, chunks=(0, 1)):
+    """2016 rows: later than every training year, earlier than every test year."""
+    Xs, ys = [], []
+    for c in chunks:
+        rows = ch.rows(c, (VALID_YEAR, VALID_YEAR))
+        Xs.append(np.asarray(ch.X(c)[rows]).astype(np.float32)[:, cols]); ys.append(ch.col("y", c)[rows])
+    return np.concatenate(Xs), np.concatenate(ys)
 
 
 def test_set(ch, families, years, chunks=(0, 1)):
@@ -168,61 +192,92 @@ def paired_ci(y, pa, pb, blk, mask=None, seed=5):
     return {"d_auc": q(d_auc), "d_lift10": q(d_lift), "p_better": round(float((np.array(d_auc) > 0).mean()), 3)}
 
 
-def fit(ch, pct, families, threads, years=TRAIN, n_rounds=None, tag=""):
+def fit(ch, pct, families, threads, years=TRAIN, n_rounds=None, tag="", neg_keep=None):
+    """Train one model. With n_rounds=None the number of boosting rounds is
+    chosen by early stopping on 2016, which no experiment tests on."""
     t0 = time.time()
-    ds, n = dataset(ch, pct, families, years)
+    ds, n = dataset(ch, pct, families, years, neg_keep)
     pr = params(n, threads)
-    nr = n_rounds or rounds_for(n)
-    bst = lgb.train(pr, ds, num_boost_round=nr)
+    if n_rounds is None:
+        cols, _ = ch.cols(families)
+        Xv, yv = valid_set(ch, cols)
+        dv = lgb.Dataset(Xv, label=yv, reference=ds)
+        bst = lgb.train(pr | {"metric": "auc"}, ds, num_boost_round=MAX_ROUNDS, valid_sets=[dv],
+                        callbacks=[lgb.early_stopping(40, verbose=False)])
+        nr = bst.best_iteration
+    else:
+        bst = lgb.train(pr, ds, num_boost_round=n_rounds); nr = n_rounds
     print(f"  fit {tag or '+'.join(families)} @ {pct}%: {n:,} rows, {nr} rounds, "
           f"{pr['num_leaves']} leaves, {time.time()-t0:.0f}s", flush=True)
+    bst.n_rounds_used = nr
     return bst, n
 
 
+FULL = ["BASE", "HIST", "GEO", "VIEW"]
+_TEST = {}
+
+
+def shared_test(ch):
+    if "t" not in _TEST:
+        _TEST["t"] = test_set(ch, FULL, (2017, 2019))
+    return _TEST["t"]
+
+
+def predict_cached(ch, out, threads, name, pct, fams):
+    """Test-set predictions for one (feature set, sample size), fitted once and
+    kept on disk so that later experiments can compare against it."""
+    cache = out / "preds"; cache.mkdir(exist_ok=True)
+    key = f"{name.replace(' ', '_')}@{pct}"
+    fp, fj = cache / f"{key}.npy", cache / f"{key}.json"
+    if fp.exists() and fj.exists():
+        return np.load(fp), json.load(open(fj))
+    X = shared_test(ch)[0]
+    cols_all, _ = ch.cols(FULL); cols, _ = ch.cols(fams)
+    bst, n = fit(ch, pct, fams, threads)
+    p = bst.predict(X[:, [cols_all.index(c) for c in cols]], num_threads=threads).astype("float32")
+    info = {"train_rows": n, "rounds": bst.n_rounds_used}
+    if fams == FULL:
+        g = bst.feature_importance("gain"); nm = bst.feature_name(); tot = g.sum()
+        info["gain_by_family"] = {f: round(float(sum(g[nm.index(x)] for x in ch.fam[f]) / tot), 3) for f in ch.fam}
+        info["top_features"] = [(nm[i], round(float(g[i] / tot), 4)) for i in np.argsort(-g)[:25]]
+        bst.save_model(str(out / f"model_all_{pct}.txt"))
+    np.save(fp, p); json.dump(info, open(fj, "w"))
+    return p, info
+
+
 # ---------------------------------------------------------------- experiments
-def exp_pilot(ch, out, threads):
-    """Early stopping on 2014-15 to calibrate the round budget."""
-    res = {}
-    for pct in (5, 20):
-        ds, n = dataset(ch, pct, ["BASE", "HIST", "GEO", "VIEW"], (2001, 2013))
-        cols, _ = ch.cols(["BASE", "HIST", "GEO", "VIEW"])
-        rows = ch.rows(0, (2014, 2015))
-        Xv = np.asarray(ch.X(0)[rows]).astype(np.float32)[:, cols]; yv = ch.col("y", 0)[rows]
-        dv = lgb.Dataset(Xv, label=yv, reference=ds)
-        bst = lgb.train(params(n, threads) | {"metric": "auc"}, ds, num_boost_round=1200, valid_sets=[dv],
-                        callbacks=[lgb.early_stopping(60, verbose=False)])
-        res[pct] = {"rows": n, "best_iter": bst.best_iteration, "valid_auc": bst.best_score["valid_0"]["auc"],
-                    "budget": rounds_for(n)}
-        print(f"pilot {pct}%: rows {n:,}, best_iter {bst.best_iteration} (budget {rounds_for(n)}), "
-              f"valid AUC {bst.best_score['valid_0']['auc']:.4f}", flush=True)
-    json.dump(res, open(out / "lab_pilot.json", "w"), indent=1)
+def exp_smoke(ch, out, threads):
+    """Small end-to-end run to check the pipeline and time it."""
+    X, y, yr, ten, blk = test_set(ch, ["BASE", "HIST", "GEO", "VIEW"], (2017, 2019), chunks=(0,))
+    cols_all, _ = ch.cols(["BASE", "HIST", "GEO", "VIEW"])
+    for fams in (["BASE"], ["BASE", "HIST", "GEO", "VIEW"]):
+        bst, n = fit(ch, 1, fams, threads)
+        cols, _ = ch.cols(fams)
+        p = bst.predict(X[:, [cols_all.index(c) for c in cols]], num_threads=threads)
+        r = summarise(y, p, yr, ten)
+        print(f"{'+'.join(fams):22s} AUC {r['auc']:.4f} lift@10 {r['lift10']:.3f} mean pred {r['mean_pred']:.4f} "
+              f"vs {r['base_rate']:.4f}", flush=True)
 
 
 def exp_ladder(ch, out, threads, pct=10):
     rungs = [("BASE", ["BASE"]), ("+HIST", ["BASE", "HIST"]), ("+HIST+GEO", ["BASE", "HIST", "GEO"]),
-             ("+HIST+VIEW", ["BASE", "HIST", "VIEW"]), ("ALL", ["BASE", "HIST", "GEO", "VIEW"])]
-    X, y, yr, ten, blk = test_set(ch, ["BASE", "HIST", "GEO", "VIEW"], (2017, 2019))
-    res, preds = {"pct": pct, "test_rows": int(len(y))}, {}
+             ("+HIST+VIEW", ["BASE", "HIST", "VIEW"]), ("ALL", FULL)]
+    _, y, yr, ten, blk = shared_test(ch)
+    res, preds = {"pct": pct, "test_rows": int(len(y)), "neg_keep": NEG_KEEP}, {}
     for name, fams in rungs:
-        bst, n = fit(ch, pct, fams, threads)
-        cols_all, _ = ch.cols(["BASE", "HIST", "GEO", "VIEW"]); cols, _ = ch.cols(fams)
-        p = bst.predict(X[:, [cols_all.index(c) for c in cols]], num_threads=threads)
-        preds[name] = p; res[name] = summarise(y, p, yr, ten); res[name]["train_rows"] = n
+        p, info = predict_cached(ch, out, threads, name, pct, fams)
+        preds[name] = p; res[name] = summarise(y, p, yr, ten) | {k: info[k] for k in ("train_rows", "rounds")}
         if name == "ALL":
-            g = bst.feature_importance("gain"); nm = bst.feature_name()
-            tot = g.sum()
-            res["gain_by_family"] = {f: round(float(sum(g[nm.index(x)] for x in ch.fam[f]) / tot), 3) for f in ch.fam}
-            res["top_features"] = [(nm[i], round(float(g[i] / tot), 4)) for i in np.argsort(-g)[:25]]
-            bst.save_model(str(out / "model_all.txt"))
+            res["gain_by_family"], res["top_features"] = info["gain_by_family"], info["top_features"]
         print(f"{name:11s} AUC {res[name]['auc']:.4f}  lift@10 {res[name]['lift10']:.3f}  lift@1 {res[name]['lift1']:.2f}  "
               f"20y+ lift {res[name].get('lift10_t20p', float('nan')):.3f}", flush=True)
+        json.dump(res, open(out / "lab_ladder.json", "w"), indent=1)
     m1718 = yr <= 2018
     pairs = [("BASE", "+HIST"), ("+HIST", "+HIST+GEO"), ("+HIST", "+HIST+VIEW"), ("+HIST+GEO", "ALL"), ("BASE", "ALL")]
     res["ci"] = {f"{b} vs {a}": paired_ci(y, preds[a], preds[b], blk, m1718) for a, b in pairs}
     res["ci_t20p"] = {f"{b} vs {a}": paired_ci(y, preds[a], preds[b], blk, m1718 & (ten >= 20)) for a, b in pairs}
     res["ci_t10_19"] = {f"{b} vs {a}": paired_ci(y, preds[a], preds[b], blk, m1718 & (ten >= 10) & (ten < 20))
                         for a, b in pairs}
-    # calibration of ALL: deciles on 2017-18
     p = preds["ALL"][m1718]; yy = y[m1718]
     edges = np.quantile(p, np.linspace(0, 1, 11)); d = np.clip(np.searchsorted(edges, p, side="right") - 1, 0, 9)
     res["calibration_all"] = [[round(float(p[d == i].mean()), 4), round(float(yy[d == i].mean()), 4)] for i in range(10)]
@@ -233,34 +288,31 @@ def exp_ladder(ch, out, threads, pct=10):
         print(f"  [20y+] {k}: dAUC {v['d_auc']}  dLift10 {v['d_lift10']}")
 
 
-def exp_curve(ch, out, threads, sizes=(1, 5, 20, 40)):
-    sets = [("BASE", ["BASE"]), ("BASE+HIST", ["BASE", "HIST"]), ("ALL", ["BASE", "HIST", "GEO", "VIEW"])]
-    X, y, yr, ten, blk = test_set(ch, ["BASE", "HIST", "GEO", "VIEW"], (2017, 2019))
-    cols_all, _ = ch.cols(["BASE", "HIST", "GEO", "VIEW"])
-    res = {}; preds = {}
+def exp_curve(ch, out, threads, sizes=(1, 5, 10, 20, 40)):
+    sets = [("BASE", ["BASE"]), ("ALL", FULL)]
+    _, y, yr, ten, blk = shared_test(ch)
+    res, preds = {"neg_keep": NEG_KEEP}, {}
     f = out / "lab_curve.json"
+    sizes = [s_ for s_ in sizes if s_ <= ch.n_chunks * 5]
     for pct in sizes:
-        if pct > ch.n_chunks * 5:
-            continue
         for name, fams in sets:
-            bst, n = fit(ch, pct, fams, threads)
-            cols, _ = ch.cols(fams)
-            p = bst.predict(X[:, [cols_all.index(c) for c in cols]], num_threads=threads)
-            res[f"{name}@{pct}"] = summarise(y, p, yr, ten) | {"train_rows": n}
+            p, info = predict_cached(ch, out, threads, name, pct, fams)
+            res[f"{name}@{pct}"] = summarise(y, p, yr, ten) | {k: info[k] for k in ("train_rows", "rounds")}
             preds[(name, pct)] = p
             print(f"{name:10s} @ {pct:>2}%  AUC {res[f'{name}@{pct}']['auc']:.4f}  lift@10 {res[f'{name}@{pct}']['lift10']:.3f}  "
                   f"20y+ AUC {res[f'{name}@{pct}'].get('auc_t20p', float('nan')):.4f}", flush=True)
             json.dump(res, open(f, "w"), indent=1)
     m1718 = yr <= 2018
-    big = max(s for s in sizes if ("ALL", s) in preds)
+    big, small = sizes[-1], sizes[0]
     res["ci"] = {}
     for name, _ in sets:
         for a, b in zip(sizes[:-1], sizes[1:]):
-            if (name, b) in preds:
-                res["ci"][f"{name}: {b}% vs {a}%"] = paired_ci(y, preds[(name, a)], preds[(name, b)], blk, m1718)
-    res["ci"][f"ALL vs BASE @ {big}%"] = paired_ci(y, preds[("BASE", big)], preds[("ALL", big)], blk, m1718)
-    res["ci"][f"ALL vs BASE @ {sizes[0]}%"] = paired_ci(y, preds[("BASE", sizes[0])], preds[("ALL", sizes[0])], blk, m1718)
+            res["ci"][f"{name}: {b}% vs {a}%"] = paired_ci(y, preds[(name, a)], preds[(name, b)], blk, m1718)
+        res["ci"][f"{name}: {big}% vs {small}%"] = paired_ci(y, preds[(name, small)], preds[(name, big)], blk, m1718)
+    for s_ in sizes:
+        res["ci"][f"ALL vs BASE @ {s_}%"] = paired_ci(y, preds[("BASE", s_)], preds[("ALL", s_)], blk, m1718)
     res["ci"][f"[20y+] ALL vs BASE @ {big}%"] = paired_ci(y, preds[("BASE", big)], preds[("ALL", big)], blk, m1718 & (ten >= 20))
+    res["ci"][f"[20y+] ALL: {big}% vs {small}%"] = paired_ci(y, preds[("ALL", small)], preds[("ALL", big)], blk, m1718 & (ten >= 20))
     json.dump(res, open(f, "w"), indent=1)
     for k, v in res["ci"].items():
         print(f"  {k}: dAUC {v['d_auc']}  dLift10 {v['d_lift10']}")
@@ -273,7 +325,8 @@ def exp_rolling(ch, out, threads, pct=10):
     frozen, _ = fit(ch, pct, fams, threads, (2001, 2015), tag="frozen<=2015")
     for test_year in (2017, 2018):
         X, y, yr, ten, blk = test_set(ch, fams, (test_year, test_year))
-        fresh, _ = fit(ch, pct, fams, threads, (2001, test_year - 1), tag=f"fresh<={test_year-1}")
+        fresh, _ = fit(ch, pct, fams, threads, (2001, test_year - 1), n_rounds=frozen.n_rounds_used,
+                       tag=f"fresh<={test_year-1}")
         pf, pz = fresh.predict(X, num_threads=threads), frozen.predict(X, num_threads=threads)
         r = {"frozen": {"auc": auc(y, pz), "lift10": lift(y, pz, .1), "mean_pred": float(pz.mean())},
              "fresh": {"auc": auc(y, pf), "lift10": lift(y, pf, .1), "mean_pred": float(pf.mean())},
@@ -287,9 +340,55 @@ def exp_rolling(ch, out, threads, pct=10):
         print(f"{test_year}: frozen AUC {r['frozen']['auc']:.4f} -> fresh {r['fresh']['auc']:.4f}  "
               f"(20y+: {r['t20p']['frozen_auc']:.4f} -> {r['t20p']['fresh_auc']:.4f}); "
               f"mean pred {r['frozen']['mean_pred']:.4f}/{r['fresh']['mean_pred']:.4f} vs actual {r['base_rate']:.4f}", flush=True)
-        if test_year == 2018:
-            fresh.save_model(str(out / "model_fresh_2017.txt"))
+    res["rounds"] = frozen.n_rounds_used
     json.dump(res, open(out / "lab_rolling.json", "w"), indent=1)
+
+
+def exp_ablate(ch, out, threads, pct=40):
+    """At the largest sample: what do geography and outlook each add on top of
+    everything else? (Leave one family out, compare with the full model.)"""
+    _, y, yr, ten, blk = shared_test(ch)
+    res, preds = {"pct": pct}, {}
+    for name, fams in (("ALL", FULL), ("no VIEW", ["BASE", "HIST", "GEO"]), ("no GEO", ["BASE", "HIST", "VIEW"])):
+        preds[name], info = predict_cached(ch, out, threads, name, pct, fams)
+        res[name] = summarise(y, preds[name], yr, ten) | {k: info[k] for k in ("train_rows", "rounds")}
+        print(f"{name:15s} AUC {res[name]['auc']:.4f}  lift@10 {res[name]['lift10']:.3f}  "
+              f"20y+ lift {res[name].get('lift10_t20p', float('nan')):.3f}", flush=True)
+        json.dump(res, open(out / "lab_ablate.json", "w"), indent=1)
+    m = yr <= 2018
+    res["ci"] = {f"ALL vs {k}": paired_ci(y, preds[k], preds["ALL"], blk, m) for k in preds if k != "ALL"}
+    res["ci_t20p"] = {f"ALL vs {k}": paired_ci(y, preds[k], preds["ALL"], blk, m & (ten >= 20)) for k in preds if k != "ALL"}
+    json.dump(res, open(out / "lab_ablate.json", "w"), indent=1)
+    for k, v in res["ci"].items():
+        print(f"  {k}: dAUC {v['d_auc']}  dLift10 {v['d_lift10']}  P(better) {v['p_better']}")
+
+
+def exp_sampling(ch, out, threads, pct=5):
+    """Does keeping one non-sale in four cost anything? Same model, both ways."""
+    _, y, yr, ten, blk = shared_test(ch)
+    X = shared_test(ch)[0]; res = {"pct": pct}
+    preds = {}
+    for name, k in (("every row", 1), ("one non-sale in four", NEG_KEEP)):
+        bst, n = fit(ch, pct, FULL, threads, neg_keep=k, tag=name)
+        preds[name] = bst.predict(X, num_threads=threads)
+        res[name] = summarise(y, preds[name], yr, ten) | {"train_rows": n, "rounds": bst.n_rounds_used}
+        print(f"{name:22s} AUC {res[name]['auc']:.4f} lift@10 {res[name]['lift10']:.3f} mean pred {res[name]['mean_pred']:.4f} "
+              f"vs {res[name]['base_rate']:.4f}", flush=True)
+    res["ci"] = paired_ci(y, preds["every row"], preds["one non-sale in four"], blk, yr <= 2018)
+    print("  sampled minus full:", res["ci"])
+    json.dump(res, open(out / "lab_sampling.json", "w"), indent=1)
+
+
+def exp_deploy(ch, out, threads, pct=20):
+    """The model the prototype scores with: every family, trained on 2001-2018
+    (2019 is left out because its file undercounts late registrations)."""
+    fams = ["BASE", "HIST", "GEO", "VIEW"]
+    ref = out / "preds" / f"ALL@{pct}.json"
+    nr = int((json.load(open(ref))["rounds"] if ref.exists() else 350) * 1.1)
+    bst, n = fit(ch, pct, fams, threads, (2001, 2018), n_rounds=nr, tag="deploy<=2018")
+    bst.save_model(str(out / "model_deploy.txt"))
+    json.dump({"pct": pct, "train_rows": n, "rounds": nr, "features": bst.feature_name()},
+              open(out / "lab_deploy.json", "w"), indent=1)
 
 
 if __name__ == "__main__":
@@ -297,4 +396,9 @@ if __name__ == "__main__":
     threads = int(sys.argv[4]) if len(sys.argv) > 4 else 4
     out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
     ch = Chunks(panel_dir)
-    {"pilot": exp_pilot, "ladder": exp_ladder, "curve": exp_curve, "rolling": exp_rolling}[exp](ch, out, threads)
+    fn = {"smoke": exp_smoke, "ladder": exp_ladder, "curve": exp_curve, "rolling": exp_rolling,
+          "ablate": exp_ablate, "deploy": exp_deploy, "sampling": exp_sampling}[exp]
+    if len(sys.argv) > 5:                             # optional sample percentage
+        fn(ch, out, threads, int(sys.argv[5]))
+    else:
+        fn(ch, out, threads)
