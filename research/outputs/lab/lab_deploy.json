@@ -1,7 +1,7 @@
 {
- "pct": 10,
- "train_rows": 5062637,
- "rounds": 233,
+ "pct": 100,
+ "train_rows": 50694427,
+ "rounds": 581,
  "features": [
   "tenure",
   "log_price_rel",
