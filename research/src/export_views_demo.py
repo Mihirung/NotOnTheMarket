@@ -26,7 +26,7 @@ def bearing_deg(e0, n0, e1, n1):
 
 # Absolute, physically meaningful cut-offs (see docs/05): a home "has" the
 # view if at least this much of the horizon qualifies.
-THRESH = dict(long=0.10, water=0.02, hills=0.02, private=0.50, west=15.0, open=15.0)
+THRESH = dict(long=0.10, water=0.05, hills=0.05, private=0.50, west=15.0, open=15.0)
 
 
 def sector_of(pc):

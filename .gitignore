@@ -2,3 +2,4 @@ research/data/
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+research/outputs/views/views_profiles.json
