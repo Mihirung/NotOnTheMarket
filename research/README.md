@@ -164,6 +164,23 @@ python src/light.py analyse data/transactions.parquet outputs/views2
 python src/transfer_tests.py data/transactions.parquet outputs/views2
 python src/transfer_chart.py outputs/views2 ../docs/img/transfer.png
 
+# 13d. More places. Plymouth and Bristol through the same program, then the
+#      sunlight, garden and outlook tests on all four cities:
+python src/fetch_lidar.py dsm data/terrain/lidar_plymouth 243000 259000 49000 63000
+python src/fetch_lidar.py dtm data/terrain/lidar_plymouth 243000 259000 49000 63000
+python src/fetch_lidar.py dsm data/terrain/lidar_bristol 351000 369000 166000 182000
+python src/fetch_lidar.py dtm data/terrain/lidar_bristol 351000 369000 166000 182000
+python src/city_views.py plymouth outputs/views2 4 && python src/light.py compute plymouth outputs/views2 4
+python src/city_views.py bristol outputs/views2 4 && python src/light.py compute bristol outputs/views2 4
+python src/scale_tests.py data/transactions.parquet outputs/views2
+
+# 13e. Would these measures add to the national model? Score 2017 and 2018
+#      in the four cities with the every-home model, then test on top of it:
+python src/on_top.py score data/transactions.parquet data/geo_postcode.parquet data/view30_postcode.parquet \
+    outputs/lab/model_all_100.txt data/site_cache/national_scores_cities.parquet
+python src/on_top.py test data/site_cache/national_scores_cities.parquet outputs/views2
+python src/scale_chart.py outputs/views2 ../docs/img/more-cities.png
+
 # 14. Data for prototype v4, then inline it into the page:
 python src/export_site_v4.py score data/transactions.parquet data/geo_postcode.parquet \
     data/view30_postcode.parquet outputs/lab/model_deploy.txt data/site_cache
@@ -193,6 +210,10 @@ python ../web/build.py
   one city make a score for every home in the other, and the other
   city's prices and sale timing are tested against it, with and without
   stand-ins for the size of the home. `src/transfer_chart.py` draws it.
+- **`src/scale_tests.py`** repeats the sunlight and view tests on every
+  city that has been computed, pooled and with one city left out.
+  **`src/on_top.py`** asks what the same measures add to the national
+  model's own score. `src/scale_chart.py` draws both.
 - **`src/light.py`** stands one metre outside each house's front and back
   walls at window height, traces the skyline, and counts the hours of
   direct sun on those windows through the year. Its `analyse` step tests

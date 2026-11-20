@@ -44,13 +44,14 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent))
-from city_views import CITIES  # noqa: E402
+from city_views import CITIES as ALL_CITIES  # noqa: E402
 from light import CTRL, postcode_table  # noqa: E402
 from propensity_model import (FEATURES as BASE, TEST_YEARS, TRAIN_YEARS,  # noqa: E402
                               build_panel, district_year_features, featurise)
 from view_ablation2 import compare  # noqa: E402
 
 MAIN = {"exeter": "Exeter Cathedral", "bath": "Bath Abbey"}
+CITIES = {c: ALL_CITIES[c] for c in MAIN}                  # the two cities this test was designed on
 SETS = {"outlook": ["m_u_long", "log_reach", "m_u_hills", "s_has_water", "s_main"],
         "garden_light": ["m_g_overlooked", "m_g_horizon", "m_sun_evening_jun", "m_sun_equinox",
                          "light_front", "light_back"]}
@@ -93,6 +94,14 @@ class Design:
         A, g, _ = self.sums(w)
         idx = list(range(self.k)) + [self.k + j for j in cols]
         return np.linalg.lstsq(A[np.ix_(idx, idx)], g[idx], rcond=None)[0][self.k:]
+
+    def partial(self, w, cols):
+        """The measures in `cols` and the outcome with the controls taken out:
+        what is needed to pool several cities, each with its own controls."""
+        A, g, _ = self.sums(w); k = self.k; vc = [k + j for j in cols]
+        ABV = A[:k][:, vc]
+        sol = np.linalg.lstsq(A[:k, :k], np.column_stack([ABV, g[:k]]), rcond=None)[0]
+        return A[np.ix_(vc, vc)] - ABV.T @ sol[:, :-1], g[vc] - ABV.T @ sol[:, -1]
 
     def slope(self, w, cols, b):
         """Slope on the score (measures in `cols` times weights `b`), fitted

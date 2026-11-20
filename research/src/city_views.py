@@ -58,6 +58,23 @@ CITIES = {
                    ("Sham Castle", "ll", 51.38417, -2.33722, "tower", 0),
                    ("Solsbury Hill", "ll", 51.41000, -2.33440, "summit", 2),
                    ("Kelston Round Hill", "ll", 51.40028, -2.42250, "summit", 8)]),
+    # Added to put the sale-timing and sunlight tests on more than two places.
+    # Landmark positions here are approximate and are not used in those tests.
+    "plymouth": dict(
+        name="Plymouth", grid=(243000, 259000, 49000, 63000), lidar=f"{T}/lidar_plymouth",
+        om=f"{T}/os_openmap", sq="SX", uprn="research/data/uprn/plymouth.csv",
+        outcodes=["PL1", "PL2", "PL3", "PL4", "PL5", "PL6", "PL7", "PL9"], centre=(50.3755, -4.1427),
+        landmarks=[("Smeaton's Tower", "ll", 50.36440, -4.14180, "tower", 0),
+                   ("Tamar Bridge", "ll", 50.40790, -4.20330, "tower", 0),
+                   ("Staddon Heights", "ll", 50.34400, -4.11400, "summit", 2)]),
+    "bristol": dict(
+        name="Bristol", grid=(351000, 369000, 166000, 182000), lidar=f"{T}/lidar_bristol",
+        om=f"{T}/os_openmap_st", sq="ST", uprn="research/data/uprn/bristol.csv",
+        outcodes=[f"BS{i}" for i in range(1, 17)], centre=(51.4545, -2.5879),
+        landmarks=[("Clifton Suspension Bridge", "ll", 51.45490, -2.62790, "tower", 0),
+                   ("Cabot Tower", "ll", 51.45440, -2.60680, "tower", 0),
+                   ("Wills Memorial Tower", "ll", 51.45610, -2.60470, "tower", 0),
+                   ("St Mary Redcliffe", "ll", 51.44840, -2.58950, "tower", 0)]),
 }
 _ll2bng = Transformer.from_crs("EPSG:4326", "EPSG:27700", always_xy=True)
 CITY = None          # views2.City, shared with workers by fork

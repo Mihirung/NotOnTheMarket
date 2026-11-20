@@ -27,7 +27,7 @@ import pandas as pd
 import shapely
 
 sys.path.insert(0, str(Path(__file__).parent))
-from city_views import CITIES  # noqa: E402
+from city_views import CITIES as ALL_CITIES  # noqa: E402
 
 STREETS = {
     "exeter": {"high": ["Barley Lane", "Pennsylvania Road", "Dunsford Road", "Rosebarn Lane", "Higher Kings Avenue"],
@@ -36,6 +36,7 @@ STREETS = {
              "low": ["Lower Bristol Road", "Walcot Street", "Great Pulteney Street", "Livingstone Road", "Upper Bristol Road"]},
 }
 MAIN = {"exeter": "Exeter Cathedral", "bath": "Bath Abbey"}
+CITIES = {c: ALL_CITIES[c] for c in MAIN}                  # the two cities this test was designed on
 MEASURES = [("m_u_long", "share of the horizon with a long view"), ("log_reach", "furthest sight-line"),
             ("m_u_hills", "hills on the skyline"), ("s_main", "the cathedral or the Abbey in sight"),
             ("s_has_water", "water in view"), ("m_sun_evening_jun", "evening sun in the garden"),

@@ -21,7 +21,7 @@ The prototype trades under the working name **Quiet Market**.
 | [`docs/04-does-open-geography-help.md`](docs/04-does-open-geography-help.md) | Does open environmental data make targeting good enough? An honest test with ranges, plus the response economics that decide whether buyers get replies and how much postage is at risk. |
 | [`docs/05-views-without-photos.md`](docs/05-views-without-photos.md) | The first view experiment: the outlook from every Exeter postcode, computed from a 1 metre laser survey and a 3-D model of buildings and trees, searchable without a photograph. |
 | [`docs/06-national-model-review.md`](docs/06-national-model-review.md) | The whole country and a harder look at the model: every home in England and Wales, 190 million home-years, 73 signals, a fairer local yardstick, and a clear answer on whether more data unlocks bigger effects. |
-| [`docs/07-house-level-views.md`](docs/07-house-level-views.md) | House by house in two cities: every home's view and garden sun, "can see the cathedral" as a search, the drawn panorama, Bath as the second city, and whether views or sunlight predict how long people stay. |
+| [`docs/07-house-level-views.md`](docs/07-house-level-views.md) | House by house: every home's view and garden sun, "can see the cathedral" as a search, the drawn panorama, Bath as the second city, and whether views or sunlight predict how long people stay, tested in four cities and on top of the national model. |
 | [`research/`](research/) | The reproducible study behind all of the above. See [`research/README.md`](research/README.md). |
 | [`web/`](web/) | The prototype site. `template.html` is the page, `demo_v4.json` its data, `build.py` joins them into `index.html`. |
 
@@ -69,16 +69,16 @@ The prototype trades under the working name **Quiet Market**.
    reverse holds too.
 9. **A view changes what a home is worth, not when its owner sells.** An
    earlier finding that homes with long views sell less often holds in
-   Exeter and does not carry over to Bath: the same cross-city test
-   that carries prices cleanly gives a flat zero for sale timing. Views
-   are for the buyer's search and for setting the offer, not for
-   choosing doors.
-10. **Lighter homes are kept longer, mostly because of the kind of
-   home.** In both cities the darkest quarter of homes is sold about a
-   fifth more often than the lightest. What is left after a fair
-   comparison is clear in Exeter and weak in Bath, and it does not
-   carry from one city to the other, so it is a lead and not yet a
-   finding.
+   Exeter and nowhere else among four cities. Views are for the buyer's
+   search and for setting the offer, not for choosing doors.
+10. **Lighter homes are kept longer, and the national model already
+   knows.** Two cities left this as a lead. Adding Plymouth and Bristol,
+   401,845 houses in all, made it a finding: more sun on the windows
+   and in the garden goes with fewer sales in every city, like for
+   like. But once the national model's own score is allowed for,
+   nothing is left, and adding these measures does not pick better
+   doors. The model sees the same streets through how often they
+   sell.
 11. **Whether a buyer hears back is a product-design problem, not a
     modelling one.** Break-even is 1 owner in 300 scanning their card.
     The whole model review moved the postage per conversation by £5.

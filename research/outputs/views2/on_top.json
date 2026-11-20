@@ -1,0 +1,271 @@
+{
+ "home_years": {
+  "exeter": 60668,
+  "bath": 46795,
+  "plymouth": 120043,
+  "bristol": 240778
+ },
+ "sales": {
+  "exeter": 2614,
+  "bath": 1701,
+  "plymouth": 5543,
+  "bristol": 10920
+ },
+ "national": {
+  "exeter": {
+   "lift_best_tenth_of_district": 1.686,
+   "auc": 0.6025
+  },
+  "bath": {
+   "lift_best_tenth_of_district": 1.804,
+   "auc": 0.5987
+  },
+  "plymouth": {
+   "lift_best_tenth_of_district": 1.604,
+   "auc": 0.5934
+  },
+  "bristol": {
+   "lift_best_tenth_of_district": 1.812,
+   "auc": 0.6254
+  },
+  "all": {
+   "lift_best_tenth_of_district": 1.74,
+   "auc": 0.6123
+  }
+ },
+ "left_over": {
+  "light_both": {
+   "label": "sun on front and back windows together",
+   "unit": "hour",
+   "est": 0.034,
+   "range": [
+    -0.001,
+    0.074
+   ]
+  },
+  "light_front": {
+   "label": "sun on the front windows",
+   "unit": "hour",
+   "est": 0.019,
+   "range": [
+    -0.025,
+    0.059
+   ]
+  },
+  "light_back": {
+   "label": "sun on the back windows",
+   "unit": "hour",
+   "est": 0.022,
+   "range": [
+    -0.018,
+    0.072
+   ]
+  },
+  "winter_front": {
+   "label": "sun on the front windows at midwinter",
+   "unit": "hour",
+   "est": -0.027,
+   "range": [
+    -0.077,
+    0.025
+   ]
+  },
+  "winter_back": {
+   "label": "sun on the back windows at midwinter",
+   "unit": "hour",
+   "est": -0.027,
+   "range": [
+    -0.08,
+    0.029
+   ]
+  },
+  "m_sun_evening_jun": {
+   "label": "evening sun in the garden",
+   "unit": "hour",
+   "est": 0.111,
+   "range": [
+    0.01,
+    0.191
+   ]
+  },
+  "m_g_overlooked": {
+   "label": "how overlooked the garden is",
+   "unit": "step",
+   "est": 0.017,
+   "range": [
+    -0.054,
+    0.09
+   ]
+  },
+  "m_u_long": {
+   "label": "share of the horizon with a long view",
+   "unit": "step",
+   "est": -0.051,
+   "range": [
+    -0.11,
+    0.007
+   ]
+  }
+ },
+ "picking": {
+  "exeter_outlook": {
+   "lift_national": 1.686,
+   "lift_with": 1.679,
+   "lift_change_range": [
+    -0.052,
+    0.032
+   ],
+   "auc_change": 0.0002,
+   "auc_change_range": [
+    -0.0007,
+    0.001
+   ]
+  },
+  "bath_outlook": {
+   "lift_national": 1.804,
+   "lift_with": 1.751,
+   "lift_change_range": [
+    -0.117,
+    0.002
+   ],
+   "auc_change": -0.001,
+   "auc_change_range": [
+    -0.0024,
+    0.0003
+   ]
+  },
+  "plymouth_outlook": {
+   "lift_national": 1.604,
+   "lift_with": 1.635,
+   "lift_change_range": [
+    -0.003,
+    0.066
+   ],
+   "auc_change": -0.0003,
+   "auc_change_range": [
+    -0.0009,
+    0.0004
+   ]
+  },
+  "bristol_outlook": {
+   "lift_national": 1.812,
+   "lift_with": 1.805,
+   "lift_change_range": [
+    -0.037,
+    0.025
+   ],
+   "auc_change": -0.0007,
+   "auc_change_range": [
+    -0.0014,
+    -0.0
+   ]
+  },
+  "average_outlook": -0.0019,
+  "exeter_garden_light": {
+   "lift_national": 1.686,
+   "lift_with": 1.717,
+   "lift_change_range": [
+    -0.024,
+    0.081
+   ],
+   "auc_change": -0.0008,
+   "auc_change_range": [
+    -0.0018,
+    -0.0
+   ]
+  },
+  "bath_garden_light": {
+   "lift_national": 1.804,
+   "lift_with": 1.787,
+   "lift_change_range": [
+    -0.088,
+    0.058
+   ],
+   "auc_change": 0.0001,
+   "auc_change_range": [
+    -0.001,
+    0.0013
+   ]
+  },
+  "plymouth_garden_light": {
+   "lift_national": 1.604,
+   "lift_with": 1.595,
+   "lift_change_range": [
+    -0.039,
+    0.022
+   ],
+   "auc_change": -0.0002,
+   "auc_change_range": [
+    -0.001,
+    0.0004
+   ]
+  },
+  "bristol_garden_light": {
+   "lift_national": 1.812,
+   "lift_with": 1.802,
+   "lift_change_range": [
+    -0.04,
+    0.019
+   ],
+   "auc_change": -0.0009,
+   "auc_change_range": [
+    -0.0018,
+    -0.0002
+   ]
+  },
+  "average_garden_light": -0.0051,
+  "exeter_all": {
+   "lift_national": 1.686,
+   "lift_with": 1.709,
+   "lift_change_range": [
+    -0.035,
+    0.078
+   ],
+   "auc_change": -0.0005,
+   "auc_change_range": [
+    -0.0017,
+    0.0005
+   ]
+  },
+  "bath_all": {
+   "lift_national": 1.804,
+   "lift_with": 1.787,
+   "lift_change_range": [
+    -0.09,
+    0.068
+   ],
+   "auc_change": -0.0007,
+   "auc_change_range": [
+    -0.0023,
+    0.0009
+   ]
+  },
+  "plymouth_all": {
+   "lift_national": 1.604,
+   "lift_with": 1.606,
+   "lift_change_range": [
+    -0.039,
+    0.038
+   ],
+   "auc_change": -0.0004,
+   "auc_change_range": [
+    -0.0012,
+    0.0004
+   ]
+  },
+  "bristol_all": {
+   "lift_national": 1.812,
+   "lift_with": 1.798,
+   "lift_change_range": [
+    -0.051,
+    0.024
+   ],
+   "auc_change": -0.0015,
+   "auc_change_range": [
+    -0.0024,
+    -0.0004
+   ]
+  },
+  "average_all": -0.0054
+ }
+}

@@ -14,7 +14,8 @@ now done.
 It also re-ran the question from last time, "does the view predict when
 a home sells?", in both cities. The answer changed, and section 6 says
 so plainly. Section 7 asks a new one: do people stay longer in homes with
-more sun on the windows?
+more sun on the windows? Section 8 then takes both questions to four
+cities and asks what these measures would add to the national model.
 
 ## 1. Why house by house matters
 
@@ -398,10 +399,14 @@ length of ownership and the year fixed, was tested on the other city:
 Every range includes zero. These are the same homes, the same measures
 and the same method that carried prices cleanly from one city to the
 other. The test can tell a pattern that travels from one that does not,
-and sale timing is one that does not. Cutting the 20 view signals in
+and with two cities sale timing did not. Cutting the 20 view signals in
 the model down to five or six chosen in advance made no difference:
 neither a short list about the outlook nor one about the garden and
 sunlight improved the ranking in the other city.
+
+Two cities leave wide ranges, though. Section 8 repeats this with four,
+and the answer for the garden and sunlight firms up: it does carry. The
+answer for the outlook does not change.
 
 Why? The table below shows the yearly sale rate for homes in the lowest
 and highest quarter of each measure.
@@ -423,12 +428,11 @@ one says nothing about who you are. The view was standing in for the
 neighbourhood.
 
 **Gardens point the same way in both cities.** Open, sunny, private
-gardens sell less often. Enclosed, overlooked ones sell more often. But
-once property type, price and length of ownership are allowed for, a
-garden-and-sunlight score built in one city no longer predicts the
-other. It is mostly a way of saying "flats and tight terraces change
-hands more than houses with proper gardens", which the model already
-knows.
+gardens sell less often. Enclosed, overlooked ones sell more often. Two
+cities were too few to say whether that survives a fair comparison.
+Four are enough: it does, and section 8 shows it. But it is another way
+of saying "flats and tight terraces change hands more than houses with
+proper gardens", which the national model already knows.
 
 So the honest position is this. **A view changes what a home is worth,
 in both cities. It does not change when its owner sells.** Views are
@@ -505,16 +509,176 @@ averaged away before the test begins. Matching each sale to its own
 house needs licensed address data. With that, this is a one-day test,
 and it is the first thing worth running.
 
-**What to take from it.** Light homes are kept longer. Part of that
-survives a fair comparison in Exeter. In Bath only the front windows
-show it, and a sunlight-and-garden score built in one city does not
-predict sale timing in the other (section 6). So it is a pattern worth
-testing with better data, not yet a finding, and not a rule about front
-or back. It is far too small to help choose which doors to write to. It is exactly the kind of
+**What to take from it.** Light homes are kept longer. With two cities
+that was a lead: clear in Exeter, weak in Bath. Section 8 adds two more
+cities and it becomes a finding. It is still not a rule about front or
+back, and it is far too small to help choose which doors to write to. It is exactly the kind of
 thing a buyer wants to search by, so the prototype now offers "sunny
 back rooms", "sunny front rooms" and "winter sun indoors".
 
-## 8. What it cannot tell you
+## 8. More places, and what this adds to the national model
+
+Everything in sections 6 and 7 rested on two cities, and the national
+model in [06-national-model-review.md](06-national-model-review.md)
+never saw any of it. The house-level measures need the 1 metre laser
+survey, which had only been run for Exeter and Bath. The national model
+had a coarser stand-in: 22 signals per postcode from 30 metre terrain,
+which reproduce a third to a half of the sunlight picture and almost
+nothing about front against back.
+
+So two things were untested. Does the sunlight pattern hold up with
+more data? And if it does, would it improve the national model?
+
+### Two more cities
+
+Plymouth and Bristol were run through the same program, unchanged.
+
+| | Houses | Home-years in the test | Sales |
+|---|---|---|---|
+| Exeter | 51,513 | 468,725 | 25,932 |
+| Bath | 38,026 | 365,339 | 18,894 |
+| Plymouth | 105,157 | 938,634 | 50,640 |
+| Bristol | 207,149 | 1,851,242 | 102,599 |
+| All four | 401,845 | 3,623,940 | 198,065 |
+
+That is four and a half times the houses and the sales.
+
+### The sunlight pattern is real
+
+The table shows the change in the yearly chance of a sale, in
+percentage points, comparing like with like: same kind of home, price,
+length of ownership and year. A minus sign means sold less often. Bold
+means that city's own range excludes zero.
+
+| One more | Exeter | Bath | Plymouth | Bristol | All four, with range |
+|---|---|---|---|---|---|
+| Hour of sun a day on the windows, front and back | **−0.10** | −0.03 | **−0.09** | **−0.04** | −0.06 (−0.08 to −0.04) |
+| Hour of sun on the front windows at midwinter | **−0.08** | **−0.11** | **−0.13** | **−0.14** | −0.12 (−0.14 to −0.10) |
+| Hour of evening sun in the garden | **−0.34** | **−0.18** | **−0.15** | **−0.16** | −0.18 (−0.21 to −0.13) |
+| Step of how overlooked the garden is | +0.06 | +0.03 | **+0.15** | **+0.24** | +0.17 (+0.14 to +0.20) |
+| Step of long views from upstairs | **−0.24** | **+0.10** | **−0.08** | 0.00 | −0.04 (−0.07 to −0.02) |
+
+![Sunlight and sale timing, city by city](img/more-cities.png)
+
+Three things follow.
+
+**More data did what it should.** With two cities the range for sun on
+the windows was −0.10 to −0.03. With four it is −0.08 to −0.04, two
+fifths narrower, and centred in the same place.
+
+**Sun and gardens tell one story everywhere.** Midwinter sun on the
+front windows and evening sun in the garden point the same way in all
+four cities, each on its own. Plymouth and Bristol had not been looked
+at when the pattern was first seen in Exeter, so this is a fair repeat.
+
+**Long views do not.** Exeter says homes with long views sell less
+often, Bath says more often, Bristol says no difference. That is the
+Exeter-only result from section 6 again.
+
+The stricter test agrees. A sunlight-and-garden score was built from
+three cities and tested on the fourth, which it had never seen. A slope
+of 1 means it carries in full, 0 that it does not carry.
+
+| City left out | Garden and sunlight score | Outlook score |
+|---|---|---|
+| Exeter | 0.40 (0.00 to 0.79) | 1.60 (−3.42 to +4.26) |
+| Bath | 0.51 (0.03 to 0.91) | −0.01 (−1.21 to +1.19) |
+| Plymouth | 0.87 (0.57 to 1.13) | 0.20 (−0.56 to +1.28) |
+| Bristol | 0.97 (0.53 to 1.32) | 0.03 (−0.24 to +0.36) |
+
+With two cities this test said "does not carry". With four the garden
+and sunlight score carries clearly to three cities and narrowly to
+Exeter, and the outlook score carries to none.
+
+How big is it? A home with three more hours of sun a day on its windows
+is about 0.2 points less likely to be sold in a year, against a typical
+5.5%. Real, and small.
+
+### The national model already knows
+
+The test that matters for the business is different. The every-home
+national model scores each home using 73 signals. Would it do better
+with these measures added?
+
+We scored every home-year of 2017 and 2018 in the four cities with the
+national model. It was trained on sales up to 2015, so it had not seen
+those years. That is 468,284 home-years and 20,778 sales. On its own it
+finds 1.74 times as many sellers as random in the best tenth of a
+district here: 1.69 in Exeter, 1.80 in Bath, 1.60 in Plymouth and 1.81
+in Bristol.
+
+First, is anything left in each measure once the national model's own
+score is allowed for?
+
+| One more | Like for like | Once the national score is allowed for |
+|---|---|---|
+| Hour of sun a day on the windows, front and back | −0.06 (−0.08 to −0.04) | +0.03 (0.00 to +0.07) |
+| Hour of sun on the front windows at midwinter | −0.12 (−0.14 to −0.10) | −0.03 (−0.08 to +0.02) |
+| Hour of evening sun in the garden | −0.18 (−0.21 to −0.13) | +0.11 (+0.01 to +0.19) |
+| Step of how overlooked the garden is | +0.17 (+0.14 to +0.20) | +0.02 (−0.05 to +0.09) |
+| Step of long views from upstairs | −0.04 (−0.07 to −0.02) | −0.05 (−0.11 to +0.01) |
+
+**Nothing is left.** Four of the five ranges now include zero. The one
+that does not, evening sun in the garden, has changed sign: if
+anything the national model slightly over-allows for it.
+
+Second, does adding the measures pick better doors? The weights for
+combining them with the national score were learned in three cities and
+applied to the fourth.
+
+| City left out | National model alone | With garden and sunlight added | Range of the change |
+|---|---|---|---|
+| Exeter | 1.686 | 1.717 | −0.024 to +0.081 |
+| Bath | 1.804 | 1.787 | −0.088 to +0.058 |
+| Plymouth | 1.604 | 1.595 | −0.039 to +0.022 |
+| Bristol | 1.812 | 1.802 | −0.040 to +0.019 |
+
+**No.** The average change is −0.005. Adding the outlook measures, or
+everything together, does no better.
+
+Why would a real pattern add nothing? Because the national model sees
+the same thing by another route. Dark homes with overlooked gardens sit
+on streets where homes change hands often. The model does not need to
+know why: it is given how often homes on that postcode and in that
+neighbourhood have sold, what kind of home it is, what it cost and how
+long it has been owned. Sunlight explains part of why those streets
+turn over. It does not add to knowing that they do.
+
+### What these measures are worth
+
+The same four-city test for price, holding fixed the stand-ins for size
+from section 5:
+
+| One more | All four cities, with range | Same sign in |
+|---|---|---|
+| Step of long views from upstairs | +2.0% (+1.6 to +2.5) | all four |
+| Step of how overlooked the garden is | −4.5% (−5.2 to −3.9) | all four |
+| Hour of sun on the back windows at midwinter | +1.3% (+0.9 to +1.7) | all four |
+| Hour of sun a day on the windows, front and back | +0.8% (+0.3 to +1.2) | three of four |
+
+A score built from all the measures in any three cities predicts prices
+in the fourth, with every range clear of zero. So the conclusion of section 6 stands, on
+four and a half times the evidence: these measures say what a home is
+worth, and the national model already knows when it will sell.
+
+### Should it be run for the whole country?
+
+For the model, no. For the product, yes, city by city as it launches,
+because the search and the drawn view need it anyway.
+
+The cost is modest. The two new cities took 127 minutes on four
+processors for 312,306 houses. On that footing every house in England
+is roughly 450 processor-hours: a little over a day on one rented
+16-core machine, plus something like 150 gigabytes of survey tiles.
+Wales needs a separate download from Natural Resources Wales.
+
+Two cautions. All four cities are in the South West. And every test
+here matches a sale to its postcode, not its house, so the difference
+between the two sides of one street, which is most of the difference in
+sunlight, never reaches the model. Matching each sale to its own house
+is the one thing that could still change this answer.
+
+## 9. What it cannot tell you
 
 - **Which window.** The view joins what can be seen from just outside
   the front wall and just outside the back wall at top-floor height. It
@@ -542,7 +706,7 @@ back rooms", "sunny front rooms" and "winter sun indoors".
 - **Flats.** One address point can stand for a whole block. Each flat
   gets the top floor's view.
 
-## 9. What to do with it
+## 10. What to do with it
 
 1. **Sell the search, not the forecast.** "Can see the cathedral",
    "evening sun in the garden" and the drawn view are things no
@@ -553,9 +717,9 @@ back rooms", "sunny front rooms" and "winter sun indoors".
 3. **Use the view to set the offer.** A long view is worth 4% to 5% in
    both cities, and an overlooked garden costs 5% to 9%. The proof-of-
    concept pricing rule ignores both.
-4. **Do not pay for views in the targeting model.** Two cities and a
-   national test on every home agree that they do not earn their place
-   there.
+4. **Do not pay for views or sunlight in the targeting model.** Four
+   cities and a national test on every home agree. The sunlight pattern
+   is real, and the national model already has it by another route.
 5. **Roll out city by city.** Each one is roughly an afternoon. The
    order should follow where buyers are, not where the data is: the
    data is everywhere in England.

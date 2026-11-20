@@ -1,0 +1,972 @@
+{
+ "cities": {
+  "exeter": "Exeter",
+  "bath": "Bath",
+  "plymouth": "Plymouth",
+  "bristol": "Bristol"
+ },
+ "houses": {
+  "exeter": 51513,
+  "bath": 38026,
+  "plymouth": 105157,
+  "bristol": 207149
+ },
+ "timing": {
+  "home_years": {
+   "exeter": 468725,
+   "bath": 365339,
+   "plymouth": 938634,
+   "bristol": 1851242
+  },
+  "sales": {
+   "exeter": 25932,
+   "bath": 18894,
+   "plymouth": 50640,
+   "bristol": 102599
+  },
+  "per_unit": {
+   "light_both": {
+    "label": "sun on front and back windows together",
+    "unit": "hour",
+    "Exeter": {
+     "est": -0.096,
+     "range": [
+      -0.143,
+      -0.051
+     ]
+    },
+    "Bath": {
+     "est": -0.026,
+     "range": [
+      -0.082,
+      0.035
+     ]
+    },
+    "Plymouth": {
+     "est": -0.092,
+     "range": [
+      -0.138,
+      -0.046
+     ]
+    },
+    "Bristol": {
+     "est": -0.042,
+     "range": [
+      -0.07,
+      -0.012
+     ]
+    },
+    "First two pooled": {
+     "est": -0.063,
+     "range": [
+      -0.096,
+      -0.028
+     ]
+    },
+    "All 4 pooled": {
+     "est": -0.059,
+     "range": [
+      -0.078,
+      -0.038
+     ]
+    }
+   },
+   "light_front": {
+    "label": "sun on the front windows",
+    "unit": "hour",
+    "Exeter": {
+     "est": -0.009,
+     "range": [
+      -0.06,
+      0.045
+     ]
+    },
+    "Bath": {
+     "est": -0.066,
+     "range": [
+      -0.126,
+      -0.003
+     ]
+    },
+    "Plymouth": {
+     "est": -0.081,
+     "range": [
+      -0.122,
+      -0.036
+     ]
+    },
+    "Bristol": {
+     "est": -0.006,
+     "range": [
+      -0.03,
+      0.019
+     ]
+    },
+    "First two pooled": {
+     "est": -0.036,
+     "range": [
+      -0.08,
+      0.004
+     ]
+    },
+    "All 4 pooled": {
+     "est": -0.031,
+     "range": [
+      -0.049,
+      -0.011
+     ]
+    }
+   },
+   "light_back": {
+    "label": "sun on the back windows",
+    "unit": "hour",
+    "Exeter": {
+     "est": -0.093,
+     "range": [
+      -0.148,
+      -0.042
+     ]
+    },
+    "Bath": {
+     "est": 0.036,
+     "range": [
+      -0.011,
+      0.096
+     ]
+    },
+    "Plymouth": {
+     "est": -0.002,
+     "range": [
+      -0.038,
+      0.039
+     ]
+    },
+    "Bristol": {
+     "est": -0.031,
+     "range": [
+      -0.055,
+      -0.005
+     ]
+    },
+    "First two pooled": {
+     "est": -0.029,
+     "range": [
+      -0.072,
+      0.008
+     ]
+    },
+    "All 4 pooled": {
+     "est": -0.024,
+     "range": [
+      -0.043,
+      -0.006
+     ]
+    }
+   },
+   "winter_front": {
+    "label": "sun on the front windows at midwinter",
+    "unit": "hour",
+    "Exeter": {
+     "est": -0.076,
+     "range": [
+      -0.135,
+      -0.018
+     ]
+    },
+    "Bath": {
+     "est": -0.107,
+     "range": [
+      -0.178,
+      -0.03
+     ]
+    },
+    "Plymouth": {
+     "est": -0.133,
+     "range": [
+      -0.172,
+      -0.088
+     ]
+    },
+    "Bristol": {
+     "est": -0.137,
+     "range": [
+      -0.173,
+      -0.108
+     ]
+    },
+    "First two pooled": {
+     "est": -0.088,
+     "range": [
+      -0.136,
+      -0.041
+     ]
+    },
+    "All 4 pooled": {
+     "est": -0.125,
+     "range": [
+      -0.145,
+      -0.103
+     ]
+    }
+   },
+   "winter_back": {
+    "label": "sun on the back windows at midwinter",
+    "unit": "hour",
+    "Exeter": {
+     "est": -0.14,
+     "range": [
+      -0.209,
+      -0.073
+     ]
+    },
+    "Bath": {
+     "est": 0.033,
+     "range": [
+      -0.026,
+      0.11
+     ]
+    },
+    "Plymouth": {
+     "est": -0.061,
+     "range": [
+      -0.103,
+      -0.017
+     ]
+    },
+    "Bristol": {
+     "est": -0.132,
+     "range": [
+      -0.162,
+      -0.1
+     ]
+    },
+    "First two pooled": {
+     "est": -0.06,
+     "range": [
+      -0.107,
+      -0.013
+     ]
+    },
+    "All 4 pooled": {
+     "est": -0.095,
+     "range": [
+      -0.118,
+      -0.071
+     ]
+    }
+   },
+   "m_sun_evening_jun": {
+    "label": "evening sun in the garden",
+    "unit": "hour",
+    "Exeter": {
+     "est": -0.339,
+     "range": [
+      -0.49,
+      -0.21
+     ]
+    },
+    "Bath": {
+     "est": -0.176,
+     "range": [
+      -0.291,
+      -0.061
+     ]
+    },
+    "Plymouth": {
+     "est": -0.149,
+     "range": [
+      -0.22,
+      -0.07
+     ]
+    },
+    "Bristol": {
+     "est": -0.157,
+     "range": [
+      -0.214,
+      -0.105
+     ]
+    },
+    "First two pooled": {
+     "est": -0.253,
+     "range": [
+      -0.344,
+      -0.164
+     ]
+    },
+    "All 4 pooled": {
+     "est": -0.176,
+     "range": [
+      -0.213,
+      -0.13
+     ]
+    }
+   },
+   "m_g_overlooked": {
+    "label": "how overlooked the garden is",
+    "unit": "step",
+    "Exeter": {
+     "est": 0.057,
+     "range": [
+      -0.021,
+      0.134
+     ]
+    },
+    "Bath": {
+     "est": 0.032,
+     "range": [
+      -0.057,
+      0.108
+     ]
+    },
+    "Plymouth": {
+     "est": 0.153,
+     "range": [
+      0.1,
+      0.207
+     ]
+    },
+    "Bristol": {
+     "est": 0.238,
+     "range": [
+      0.191,
+      0.279
+     ]
+    },
+    "First two pooled": {
+     "est": 0.047,
+     "range": [
+      -0.009,
+      0.1
+     ]
+    },
+    "All 4 pooled": {
+     "est": 0.167,
+     "range": [
+      0.138,
+      0.197
+     ]
+    }
+   },
+   "m_u_long": {
+    "label": "share of the horizon with a long view",
+    "unit": "step",
+    "Exeter": {
+     "est": -0.241,
+     "range": [
+      -0.303,
+      -0.172
+     ]
+    },
+    "Bath": {
+     "est": 0.098,
+     "range": [
+      0.028,
+      0.175
+     ]
+    },
+    "Plymouth": {
+     "est": -0.075,
+     "range": [
+      -0.125,
+      -0.032
+     ]
+    },
+    "Bristol": {
+     "est": -0.001,
+     "range": [
+      -0.035,
+      0.032
+     ]
+    },
+    "First two pooled": {
+     "est": -0.085,
+     "range": [
+      -0.134,
+      -0.035
+     ]
+    },
+    "All 4 pooled": {
+     "est": -0.044,
+     "range": [
+      -0.066,
+      -0.02
+     ]
+    }
+   }
+  },
+  "left_out": {
+   "exeter_outlook": {
+    "slope": 1.6,
+    "range": [
+     -3.42,
+     4.26
+    ],
+    "share_of_own_fit": 0.08
+   },
+   "exeter_garden_light": {
+    "slope": 0.4,
+    "range": [
+     -0.0,
+     0.79
+    ],
+    "share_of_own_fit": 0.08
+   },
+   "exeter_all": {
+    "slope": 0.34,
+    "range": [
+     -0.14,
+     0.75
+    ],
+    "share_of_own_fit": 0.03
+   },
+   "bath_outlook": {
+    "slope": -0.01,
+    "range": [
+     -1.21,
+     1.19
+    ],
+    "share_of_own_fit": 0.0
+   },
+   "bath_garden_light": {
+    "slope": 0.51,
+    "range": [
+     0.03,
+     0.91
+    ],
+    "share_of_own_fit": 0.3
+   },
+   "bath_all": {
+    "slope": 0.58,
+    "range": [
+     0.09,
+     0.97
+    ],
+    "share_of_own_fit": 0.15
+   },
+   "plymouth_outlook": {
+    "slope": 0.2,
+    "range": [
+     -0.56,
+     1.28
+    ],
+    "share_of_own_fit": 0.01
+   },
+   "plymouth_garden_light": {
+    "slope": 0.87,
+    "range": [
+     0.57,
+     1.13
+    ],
+    "share_of_own_fit": 0.74
+   },
+   "plymouth_all": {
+    "slope": 0.54,
+    "range": [
+     0.26,
+     0.83
+    ],
+    "share_of_own_fit": 0.3
+   },
+   "bristol_outlook": {
+    "slope": 0.03,
+    "range": [
+     -0.24,
+     0.36
+    ],
+    "share_of_own_fit": 0.03
+   },
+   "bristol_garden_light": {
+    "slope": 0.97,
+    "range": [
+     0.53,
+     1.32
+    ],
+    "share_of_own_fit": 0.51
+   },
+   "bristol_all": {
+    "slope": 0.61,
+    "range": [
+     0.31,
+     0.84
+    ],
+    "share_of_own_fit": 0.3
+   }
+  }
+ },
+ "price": {
+  "sales": {
+   "exeter": 21196,
+   "bath": 15649,
+   "plymouth": 38970,
+   "bristol": 83409
+  },
+  "per_unit": {
+   "light_both": {
+    "label": "sun on front and back windows together",
+    "unit": "hour",
+    "Exeter": {
+     "est": 0.598,
+     "range": [
+      -1.015,
+      2.042
+     ]
+    },
+    "Bath": {
+     "est": -0.229,
+     "range": [
+      -1.56,
+      1.086
+     ]
+    },
+    "Plymouth": {
+     "est": 1.535,
+     "range": [
+      0.483,
+      2.454
+     ]
+    },
+    "Bristol": {
+     "est": 0.79,
+     "range": [
+      0.195,
+      1.346
+     ]
+    },
+    "First two pooled": {
+     "est": 0.221,
+     "range": [
+      -0.844,
+      1.309
+     ]
+    },
+    "All 4 pooled": {
+     "est": 0.816,
+     "range": [
+      0.306,
+      1.206
+     ]
+    }
+   },
+   "light_front": {
+    "label": "sun on the front windows",
+    "unit": "hour",
+    "Exeter": {
+     "est": 0.048,
+     "range": [
+      -1.135,
+      1.116
+     ]
+    },
+    "Bath": {
+     "est": -1.086,
+     "range": [
+      -2.792,
+      0.26
+     ]
+    },
+    "Plymouth": {
+     "est": 0.298,
+     "range": [
+      -0.35,
+      1.022
+     ]
+    },
+    "Bristol": {
+     "est": -0.535,
+     "range": [
+      -0.942,
+      -0.148
+     ]
+    },
+    "First two pooled": {
+     "est": -0.477,
+     "range": [
+      -1.469,
+      0.491
+     ]
+    },
+    "All 4 pooled": {
+     "est": -0.333,
+     "range": [
+      -0.732,
+      0.034
+     ]
+    }
+   },
+   "light_back": {
+    "label": "sun on the back windows",
+    "unit": "hour",
+    "Exeter": {
+     "est": 0.447,
+     "range": [
+      -0.584,
+      1.512
+     ]
+    },
+    "Bath": {
+     "est": 0.851,
+     "range": [
+      -0.464,
+      2.096
+     ]
+    },
+    "Plymouth": {
+     "est": 0.783,
+     "range": [
+      -0.003,
+      1.414
+     ]
+    },
+    "Bristol": {
+     "est": 1.034,
+     "range": [
+      0.657,
+      1.401
+     ]
+    },
+    "First two pooled": {
+     "est": 0.644,
+     "range": [
+      -0.234,
+      1.494
+     ]
+    },
+    "All 4 pooled": {
+     "est": 0.892,
+     "range": [
+      0.569,
+      1.204
+     ]
+    }
+   },
+   "winter_front": {
+    "label": "sun on the front windows at midwinter",
+    "unit": "hour",
+    "Exeter": {
+     "est": 0.445,
+     "range": [
+      -0.913,
+      1.449
+     ]
+    },
+    "Bath": {
+     "est": 0.221,
+     "range": [
+      -1.484,
+      1.74
+     ]
+    },
+    "Plymouth": {
+     "est": 0.939,
+     "range": [
+      0.209,
+      1.586
+     ]
+    },
+    "Bristol": {
+     "est": -0.673,
+     "range": [
+      -1.258,
+      -0.131
+     ]
+    },
+    "First two pooled": {
+     "est": 0.361,
+     "range": [
+      -0.583,
+      1.221
+     ]
+    },
+    "All 4 pooled": {
+     "est": 0.025,
+     "range": [
+      -0.423,
+      0.393
+     ]
+    }
+   },
+   "winter_back": {
+    "label": "sun on the back windows at midwinter",
+    "unit": "hour",
+    "Exeter": {
+     "est": 1.121,
+     "range": [
+      0.043,
+      2.399
+     ]
+    },
+    "Bath": {
+     "est": 1.771,
+     "range": [
+      0.342,
+      3.418
+     ]
+    },
+    "Plymouth": {
+     "est": 1.274,
+     "range": [
+      0.419,
+      1.972
+     ]
+    },
+    "Bristol": {
+     "est": 1.279,
+     "range": [
+      0.843,
+      1.747
+     ]
+    },
+    "First two pooled": {
+     "est": 1.419,
+     "range": [
+      0.517,
+      2.468
+     ]
+    },
+    "All 4 pooled": {
+     "est": 1.31,
+     "range": [
+      0.942,
+      1.721
+     ]
+    }
+   },
+   "m_sun_evening_jun": {
+    "label": "evening sun in the garden",
+    "unit": "hour",
+    "Exeter": {
+     "est": 3.579,
+     "range": [
+      1.151,
+      6.292
+     ]
+    },
+    "Bath": {
+     "est": 3.372,
+     "range": [
+      0.592,
+      6.085
+     ]
+    },
+    "Plymouth": {
+     "est": -0.457,
+     "range": [
+      -1.985,
+      1.085
+     ]
+    },
+    "Bristol": {
+     "est": -0.482,
+     "range": [
+      -1.5,
+      0.595
+     ]
+    },
+    "First two pooled": {
+     "est": 3.474,
+     "range": [
+      1.713,
+      5.467
+     ]
+    },
+    "All 4 pooled": {
+     "est": 0.424,
+     "range": [
+      -0.365,
+      1.203
+     ]
+    }
+   },
+   "m_g_overlooked": {
+    "label": "how overlooked the garden is",
+    "unit": "step",
+    "Exeter": {
+     "est": -7.842,
+     "range": [
+      -9.656,
+      -5.964
+     ]
+    },
+    "Bath": {
+     "est": -12.21,
+     "range": [
+      -14.464,
+      -10.466
+     ]
+    },
+    "Plymouth": {
+     "est": -3.802,
+     "range": [
+      -5.099,
+      -2.687
+     ]
+    },
+    "Bristol": {
+     "est": -1.908,
+     "range": [
+      -2.788,
+      -1.177
+     ]
+    },
+    "First two pooled": {
+     "est": -9.842,
+     "range": [
+      -11.239,
+      -8.47
+     ]
+    },
+    "All 4 pooled": {
+     "est": -4.458,
+     "range": [
+      -5.2,
+      -3.858
+     ]
+    }
+   },
+   "m_u_long": {
+    "label": "share of the horizon with a long view",
+    "unit": "step",
+    "Exeter": {
+     "est": 2.897,
+     "range": [
+      1.694,
+      4.256
+     ]
+    },
+    "Bath": {
+     "est": 2.713,
+     "range": [
+      1.159,
+      4.355
+     ]
+    },
+    "Plymouth": {
+     "est": 2.726,
+     "range": [
+      1.69,
+      3.555
+     ]
+    },
+    "Bristol": {
+     "est": 1.066,
+     "range": [
+      0.458,
+      1.722
+     ]
+    },
+    "First two pooled": {
+     "est": 2.817,
+     "range": [
+      1.782,
+      3.75
+     ]
+    },
+    "All 4 pooled": {
+     "est": 2.025,
+     "range": [
+      1.562,
+      2.524
+     ]
+    }
+   }
+  },
+  "left_out": {
+   "exeter_outlook": {
+    "slope": 1.29,
+    "range": [
+     0.76,
+     1.94
+    ],
+    "share_of_own_fit": 0.82
+   },
+   "exeter_garden_light": {
+    "slope": 1.74,
+    "range": [
+     1.19,
+     2.18
+    ],
+    "share_of_own_fit": 0.87
+   },
+   "exeter_all": {
+    "slope": 1.39,
+    "range": [
+     0.96,
+     1.8
+    ],
+    "share_of_own_fit": 0.78
+   },
+   "bath_outlook": {
+    "slope": 0.49,
+    "range": [
+     -0.18,
+     1.07
+    ],
+    "share_of_own_fit": 0.07
+   },
+   "bath_garden_light": {
+    "slope": 2.75,
+    "range": [
+     2.08,
+     3.54
+    ],
+    "share_of_own_fit": 0.75
+   },
+   "bath_all": {
+    "slope": 1.58,
+    "range": [
+     1.01,
+     2.16
+    ],
+    "share_of_own_fit": 0.35
+   },
+   "plymouth_outlook": {
+    "slope": 1.24,
+    "range": [
+     0.81,
+     1.86
+    ],
+    "share_of_own_fit": 0.97
+   },
+   "plymouth_garden_light": {
+    "slope": 0.85,
+    "range": [
+     0.56,
+     1.15
+    ],
+    "share_of_own_fit": 0.84
+   },
+   "plymouth_all": {
+    "slope": 1.11,
+    "range": [
+     0.77,
+     1.37
+    ],
+    "share_of_own_fit": 0.82
+   },
+   "bristol_outlook": {
+    "slope": 0.44,
+    "range": [
+     0.21,
+     0.72
+    ],
+    "share_of_own_fit": 0.52
+   },
+   "bristol_garden_light": {
+    "slope": 0.31,
+    "range": [
+     0.2,
+     0.42
+    ],
+    "share_of_own_fit": 0.62
+   },
+   "bristol_all": {
+    "slope": 0.32,
+    "range": [
+     0.21,
+     0.43
+    ],
+    "share_of_own_fit": 0.51
+   }
+  }
+ }
+}
