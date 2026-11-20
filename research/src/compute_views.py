@@ -72,8 +72,10 @@ def main(terrain_dir, pc_path, out_dir):
     # surface model (minimum over a 25 m window — streets and gardens are
     # never further than that from anywhere in a town). Used for the eye
     # height and for telling trees from land, so a proxy is adequate.
-    print("  ground proxy (25 m minimum filter)...", flush=True)
-    proxy = minimum_filter(np.where(np.isnan(dsm), np.inf, dsm), size=25, mode="nearest")
+    print("  ground proxy (11 m minimum filter)...", flush=True)
+    # 11 m, not 25: on a 20% slope a 25 m minimum sits ~2.5 m below true
+    # ground and sinks the eye; at 11 m the bias is about a metre.
+    proxy = minimum_filter(np.where(np.isnan(dsm), np.inf, dsm), size=11, mode="nearest")
     proxy[~np.isfinite(proxy)] = np.nan
     dtm_paths = sorted(T.glob("lidar/dtm_*.tif"))
     if dtm_paths:
@@ -121,7 +123,7 @@ def main(terrain_dir, pc_path, out_dir):
             r1, r2 = max(0, r0 - h), min(local.h, r0 + h + 1)
             c1, c2 = max(0, c0 - h), min(local.w, c0 + h + 1)
             b = bmask[r1:r2, c1:c2]
-            ground = (~b) & ((local.z[r1:r2, c1:c2] - dtm[r1:r2, c1:c2]) < 1.0)
+            ground = (~b) & ((local.z[r1:r2, c1:c2] - dtm[r1:r2, c1:c2]) < 1.5)
             if ground.any():
                 dist = distance_transform_edt(~b)          # metres from a building
                 score = np.where(ground, dist, -1.0)
@@ -158,8 +160,10 @@ def main(terrain_dir, pc_path, out_dir):
             continue
         rr, cc = nearest_open(r0, c0)
         e, n = tr.c + (cc + 0.5) * tr.a, tr.f - (rr + 0.5) * tr.a
-        zg = float(dtm[rr, cc])
-        if not np.isfinite(zg):
+        # The chosen cell is open ground by construction, so the surface
+        # model there *is* the ground: no proxy bias in the eye height.
+        zg = float(local.z[rr, cc])
+        if not np.isfinite(zg) or zg < -5:
             continue
         garden = outlook_metrics(local, distant, e, n, zg, 1.6, LOCAL_DIST, DISTANT_DIST,
                                  hill_min_z=HILL_MIN_Z)
