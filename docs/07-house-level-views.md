@@ -228,9 +228,10 @@ The ranking score is AUC: 0.5 is a coin toss and 1.0 is perfect.
 
 **The Exeter result holds. It does not travel.** Bath shows no reliable
 gain. Worse, what the model learns about views in one city makes it
-slightly *worse* in the other. And across the whole country, a
-lower-resolution version of the view added nothing at all
-([06-national-model-review.md](06-national-model-review.md)).
+slightly *worse* in the other. And across the whole country, tested on every home, a
+lower-resolution version of the view added nothing to choosing between
+homes in the same district
+([06-national-model-review.md](06-national-model-review.md), section 9).
 
 Why? The table below shows the yearly sale rate for homes in the lowest
 and highest quarter of each measure.
