@@ -7,3 +7,4 @@ research/outputs/views2/houses_*.parquet
 research/outputs/views2/profiles_*.npz
 research/outputs/lab/preds/
 research/outputs/lab/model_all_*.txt
+research/outputs/views2/light_*.parquet

@@ -53,6 +53,9 @@ a{color:var(--accent-deep)}
   transform:rotate(-8deg)}
 .brand b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px}
 .topnav{display:flex;gap:6px;flex-wrap:wrap}
+.topright{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:760px){.top{flex-direction:column;align-items:flex-start;gap:10px}
+  .topright{justify-content:flex-start;gap:8px} .tlink{padding:6px 9px;font-size:13.5px}}
 .tlink{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;text-decoration:none;
   color:var(--muted);padding:7px 12px;border-radius:999px;border:1px solid transparent}
 .tlink.on{color:var(--ink);border-color:var(--line);background:var(--card)}
@@ -293,12 +296,11 @@ details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
          onkeydown="if(event.key==='Enter')go('/')">
       <div class="frank">QM</div><b>Quiet&nbsp;Market</b>
     </div>
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end">
-      <div id="citysw"></div><nav class="topnav" id="nav"></nav></div>
+    <div class="topright"><div id="citysw"></div><nav class="topnav" id="nav"></nav></div>
   </header>
   <main id="app"></main>
   <footer class="footer">
-    <div><b style="font-family:'Bricolage Grotesque',sans-serif">Quiet Market</b> — the homes that aren't for sale. Yet.</div>
+    <div><b style="font-family:'Bricolage Grotesque',sans-serif">Quiet Market</b>: the homes that aren't for sale. Yet.</div>
     <div style="margin-top:8px">Prototype v4 for internal review. No postcards are printed or posted from this page.
       Views are computed house by house: one viewpoint at the upper windows and one in the garden of every address point,
       from Environment Agency 1 m LIDAR, OS OpenMap Local buildings, OS Open UPRN and Copernicus terrain. Sale records
@@ -428,6 +430,7 @@ function panoSVG(p, o={}){
       <text x="${i===0?4:i===8?W-4:x}" y="${H+15}" font-size="10.5" fill="var(--muted)" text-anchor="${i===0?"start":i===8?"end":"middle"}" font-family="IBM Plex Mono,monospace">${t}</text>`; });
   return `<svg viewBox="0 0 ${W} ${H+20}" style="width:100%;height:auto;display:block" role="img" aria-label="${esc(o.label||"Drawn panorama, north round to north through east, south and west")}">${out}</svg>`;
 }
+const andList = a => a.length<2 ? a.join("") : a.slice(0,-1).join(", ")+" and "+a[a.length-1];
 const fromWindows = st => st<=1 ? "the windows of a single-storey home" : `the upper windows of a ${st}-storey home`;
 function share10(s){ const n=Math.round(s*10); return n>=10?"nearly every home":n>=1?`${n} in 10 homes`:s>=.02?"a few homes":"no homes"; }
 function lmList(v){ const pos={}; ((v.pano_typical||{}).lm||[]).forEach(l=>pos[l.name]=l);
@@ -452,7 +455,7 @@ function sunBoxes(p, city){
     <div class="sunbox"><b>${f(h.midwinter.tot)}</b><span>of direct sun at midwinter</span></div></div>`;
 }
 const HZ_LEGEND = `<div class="hzlegend"><span><i style="background:var(--v-bld)"></i>buildings</span><span><i style="background:var(--v-tree)"></i>trees</span>
-  <span><i style="background:var(--v-land)"></i>open ground</span><span><i style="background:var(--v-water)"></i>water</span>
+  <span><i style="background:var(--v-land)"></i>ground, walls and hedges</span><span><i style="background:var(--v-water)"></i>water</span>
   <span><i style="background:var(--v-hill);opacity:.45"></i>distant country, paler with distance</span></div>`;
 function vViewPanel(sector){
   const v=viewOf(sector); if(!v) return "";
@@ -610,11 +613,11 @@ function sectorMap(matched){
   const circles = pts.map(([s,p])=>{
     const r = 3 + Math.sqrt(p.n)/7;
     if(!p.on) return `<circle cx="${px(p).toFixed(1)}" cy="${py(p).toFixed(1)}" r="${r.toFixed(1)}"
-      fill="var(--line)" opacity=".85"><title>${esc(s)} — outside your criteria</title></circle>`;
+      fill="var(--line)" opacity=".85"><title>${esc(s)}: outside your criteria</title></circle>`;
     const t = p.top/maxTop;
     const fill = t>.66?"var(--m4)":t>.33?"var(--m3)":"var(--m2)";
     return `<circle cx="${px(p).toFixed(1)}" cy="${py(p).toFixed(1)}" r="${r.toFixed(1)}"
-      fill="${fill}"><title>${esc(s)} — ${p.top} homes we'd write to</title></circle>`;
+      fill="${fill}"><title>${esc(s)}: ${p.top} homes we'd write to</title></circle>`;
   }).join("");
   return `<div class="mapwrap">
     <h3>Where your life fits</h3>
@@ -637,7 +640,7 @@ function vHome(){
       <div class="eyebrow">Buying, beyond the portals · ${city.name} pilot</div>
       <h1 style="margin-top:10px">Describe the life you want. <em>We'll go and ask for it.</em></h1>
       <p class="lede">You don't want a specific house. You want clean air, twenty minutes from town,
-        a doctor nearby, a view, and a budget that works. About 97% of the homes that fit are not for sale —
+        a doctor nearby, a view, and a budget that works. About 97% of the homes that fit are not for sale,
         but nearly all of them would sell at the right price. We find them and ask the owners, privately.</p>
       <a class="btn" href="#/search">Describe where you'd live</a>
       <a class="btn ghost" href="#/results" style="margin-left:8px">See who's already interested</a>
@@ -686,7 +689,7 @@ function vHome(){
         <div class="eyebrow">Why searching this way works</div>
         <h2 style="font-size:25px;margin:8px 0 12px">A street is a tiny market. A life is a big one.</h2>
         <p style="color:var(--muted)">Ask a portal for "three-bed semi, St Leonard's" and you're
-        fishing in a pond of a few dozen homes — most weeks, nothing. Ask us for "clean air, open
+        fishing in a pond of a few dozen homes. Most weeks, nothing. Ask us for "clean air, open
         surroundings, half an hour from the centre, under £475k" and the same requirement covers
         thousands of homes across the city.</p>
         <p style="color:var(--muted)">That's not just a nicer way to search. It's the difference between
@@ -731,13 +734,13 @@ function vSearch(){
       </div>
       <div class="crit">
         <div class="lab"><b>Open, green surroundings</b><span class="val">${b.openMin<=0?"anywhere":b.openMin>=90?"most open only":"top "+(100-b.openMin)+"% most open"}</span></div>
-        <div class="why">How built-up the immediate area is — our stand-in for green space.</div>
+        <div class="why">How built-up the immediate area is: our stand-in for green space.</div>
         <input type="range" min="0" max="100" step="25" value="${b.openMin}"
           aria-label="openness" oninput="S.brief.openMin=+this.value;save();render()">
       </div>
       <div class="crit">
         <div class="lab"><b>Drive to the city centre</b><span class="val">under ${b.minsCentre} min</span></div>
-        <div class="why">Approximate, from straight-line distance — not routed.</div>
+        <div class="why">Approximate, from straight-line distance, not routed.</div>
         <input type="range" min="3" max="20" step="1" value="${b.minsCentre}"
           aria-label="drive time to city centre" oninput="S.brief.minsCentre=+this.value;save();render()">
       </div>
@@ -749,7 +752,7 @@ function vSearch(){
       </div>
       <div class="crit">
         <div class="lab"><b>Budget ceiling</b><span class="val">${GBP(b.max)}</span></div>
-        <div class="why">What you could pay for the <i>right offer</i> — usually 6–20% over today's value.</div>
+        <div class="why">What you could pay for the <i>right offer</i>, usually 6–20% over today's value.</div>
         <input type="range" min="180000" max="900000" step="25000" value="${b.max}"
           aria-label="budget" oninput="S.brief.max=+this.value;save();render()">
       </div>
@@ -789,7 +792,7 @@ function vSearch(){
             background:${wide?"var(--accent)":"var(--warn)"}"></i></div>
           <p>${wide
             ? `About <b>${s.expReplies.toFixed(1)}</b> owners should reply to a first wave.`
-            : `A first wave to ${s.nTop.toLocaleString()} homes has a <b>${Math.round(s.pSilent*100)}%</b> chance of no reply at all. Loosen a slider — or start with the owners already talking to us.`}</p>
+            : `A first wave to ${s.nTop.toLocaleString()} homes has a <b>${Math.round(s.pSilent*100)}%</b> chance of no reply at all. Loosen a slider, or start with the owners already talking to us.`}</p>
         </div>
         <a class="btn" style="width:100%;justify-content:center;margin-top:14px" href="#/results">See what's out there →</a>
       </div>
@@ -863,7 +866,7 @@ function vResults(){
       </div>`;}).join("")}
   </div>
   ${cells.length>12?`<p class="note" style="margin-top:12px">Showing the 12 biggest of ${cells.length} matching pockets.</p>`:""}
-  ${cells.length===0?`<div class="panel">Nothing matches yet — loosen a slider on <a href="#/search">your criteria</a>.</div>`:""}
+  ${cells.length===0?`<div class="panel">Nothing matches yet. Loosen a slider on <a href="#/search">your criteria</a>.</div>`:""}
 
   <div class="tray" role="status">
     <div><b style="font-family:'Bricolage Grotesque',sans-serif">${S.selected.length} selected</b>
@@ -887,7 +890,7 @@ function startCampaign(){
 function vCampaign(){
   if(!S.campaign) return `<div class="panel fadein" style="max-width:640px;margin:40px auto;text-align:center">
     <h2 style="font-size:24px">No campaign yet</h2>
-    <p style="color:var(--muted)">Choose some pockets of the city first — your postcards start there.</p>
+    <p style="color:var(--muted)">Choose some pockets of the city first. Your postcards start there.</p>
     <a class="btn" href="#/results">See what's out there</a></div>`;
   const c=S.campaign, cards=c.cards, ex=C().exemplars[0];
   const replies=cards*REPLY_PER_CARD, scans=Math.max(1,Math.round(cards*SCAN*LIFT));
@@ -904,7 +907,7 @@ function vCampaign(){
         <div class="pc-stamp" id="cardQR"></div>
         <div class="pc-frank">QUIET<br>MARKET<br>· ${C().frank} ·</div>
         <div class="pc-addr">The Homeowner<br>██ ${esc(ex.sector)} ██<br>${C().name}</div>
-        <div class="pc-foot"><span>ref ${esc(ex.code)}</span><span>one card only — we don't chase</span></div>
+        <div class="pc-foot"><span>ref ${esc(ex.code)}</span><span>one card only, we don't chase</span></div>
       </div>
       <div>
         <div class="panel">
@@ -930,22 +933,22 @@ function vCampaign(){
 
   const d=S.day, ex2=C().exemplars[1]||ex, ex3=C().exemplars[2]||ex;
   const events=[[0,"Cards printed & handed to Royal Mail",d>=0],
-    [2,`Delivered — ${Math.round(cards*.96).toLocaleString()} of ${cards.toLocaleString()} doors`,d>=2],
-    [3,"First scans — owners reading their offers",d>=3],
+    [2,`Delivered: ${Math.round(cards*.96).toLocaleString()} of ${cards.toLocaleString()} doors`,d>=2],
+    [3,"First scans: owners reading their offers",d>=3],
     [5,"Replies arriving",d>=5],[6,"An owner accepted your range",d>=6]];
   return `<div class="fadein" style="max-width:920px;margin:0 auto">
     <div class="eyebrow">Your campaign · live</div>
     <h1 style="font-size:31px;margin:8px 0 8px">Cards are out. Day ${d}.</h1>
-    <div class="simbar"><span>⏱ Prototype control — in the live product this plays out over a fortnight.</span>
+    <div class="simbar"><span>⏱ Prototype control. In the live product this plays out over a fortnight.</span>
       <span><button class="btn quiet" ${d>=6?"disabled":""} onclick="S.day=Math.min(6,S.day+1);save();render()">Simulate next day ▸</button>
       <button class="btn quiet" onclick="resetDemo()">Restart demo</button></span></div>
     <div class="grid2">
       <div>
         <div class="panel">
-          <div class="kv"><span class="k">Doors reached</span><span class="v num">${d>=2?Math.round(cards*.96).toLocaleString():"—"}</span></div>
-          <div class="kv"><span class="k">Offers read</span><span class="v num">${d>=3?Math.min(scans,Math.round(scans*(d-2)/4)):"—"}</span></div>
-          <div class="kv"><span class="k">Conversations</span><span class="v num">${d>=5?3:"—"}</span></div>
-          <div class="kv"><span class="k">Accepted</span><span class="v num" style="color:var(--post)">${d>=6?1:"—"}</span></div>
+          <div class="kv"><span class="k">Doors reached</span><span class="v num">${d>=2?Math.round(cards*.96).toLocaleString():"…"}</span></div>
+          <div class="kv"><span class="k">Offers read</span><span class="v num">${d>=3?Math.min(scans,Math.round(scans*(d-2)/4)):"…"}</span></div>
+          <div class="kv"><span class="k">Conversations</span><span class="v num">${d>=5?3:"…"}</span></div>
+          <div class="kv"><span class="k">Accepted</span><span class="v num" style="color:var(--post)">${d>=6?1:"…"}</span></div>
         </div>
         <div class="timeline" style="margin-top:18px">
           ${events.map(([day,label,on])=>`<div class="tl ${on?(day===6?"pulse":"done"):""}">
@@ -955,30 +958,30 @@ function vCampaign(){
       <div>
         ${d<5?`<div class="panel"><h3 style="font-size:18px">While you wait</h3>
           <p style="color:var(--muted);font-size:15px">Owners are opening their post. Most cards are read
-          within 48 hours of landing — then people talk to a partner, sleep on it, scan in the evening.
+          within 48 hours of landing. Then people talk to a partner, sleep on it, scan in the evening.
           We never send a second card; the quiet is the point.</p>
           <p class="note">You'll get one alert per genuine reply. Nothing else.</p></div>`:""}
         ${d>=5?`<h3 style="font-size:18px;margin-bottom:8px">Replies</h3>
         <div class="warm"><div><b>${esc(ex2.sector)}█</b> · ${PT1[ex2.ptype]} · owner ${ex2.tenure} yrs
-          <div class="note">"Curious what this is — tell me more."</div></div><span class="pill cool">exploring</span></div>
+          <div class="note">"Curious what this is. Tell me more."</div></div><span class="pill cool">exploring</span></div>
         <div class="warm"><div><b>${esc(ex3.sector)}█</b> · ${PT1[ex3.ptype]} · owner ${ex3.tenure} yrs
           <div class="note">"Not this year. Ask me again in spring."</div></div><span class="pill cool">later</span></div>
         ${d>=6?`<div class="warm hot"><div><b>${esc(ex.sector)}█</b> · ${PT1[ex.ptype]} · owner ${ex.tenure} yrs
-          <div class="note">Accepted your range <b>${GBPk(ex.offer_mid*0.96)}–${GBPk(ex.offer_mid*1.04)}</b> — wants to proceed.</div></div>
+          <div class="note">Accepted your range <b>${GBPk(ex.offer_mid*0.96)}–${GBPk(ex.offer_mid*1.04)}</b> and wants to proceed.</div></div>
           ${S.connected?`<span class="pill okp">connected</span>`
             :`<button class="btn post" onclick="S.connected=true;save();render()">Review &amp; connect</button>`}</div>`:""}`:""}
         ${S.connected?`<div class="panel" style="margin-top:16px;border-color:var(--accent)">
           <div class="eyebrow">You're connected</div>
-          <h3 style="font-size:19px;margin:6px 0 2px">${PT1[ex.ptype][0].toUpperCase()+PT1[ex.ptype].slice(1)}, ${esc(ex.sector)}█ — agreed at ${GBPk(ex.offer_mid)}</h3>
-          <p class="note">Full address and photos unlock when both sides confirm ID — that protects you both.</p>
+          <h3 style="font-size:19px;margin:6px 0 2px">${PT1[ex.ptype][0].toUpperCase()+PT1[ex.ptype].slice(1)}, ${esc(ex.sector)}█, agreed at ${GBPk(ex.offer_mid)}</h3>
+          <p class="note">Full address and photos unlock when both sides confirm ID. That protects you both.</p>
           <ul class="checklist">
             <li><span class="st done">DONE</span> Both parties verified (AML &amp; ID)</li>
             <li><span class="st done">DONE</span> Your mortgage in principle checked</li>
-            <li><span class="st">TODAY</span> Walkthrough visit — pick a slot, we accompany</li>
+            <li><span class="st">TODAY</span> Walkthrough visit: pick a slot, we accompany</li>
             <li><span class="st">NEXT</span> Conveyancers instructed both sides</li>
             <li><span class="st">WK 2–8</span> Survey → exchange → keys. We chase everyone, weekly.</li>
           </ul>
-          <div class="msg"><div class="who">A</div><div class="bubble">Hello both — I'm Amara, your progression lead.
+          <div class="msg"><div class="who">A</div><div class="bubble">Hello both. I'm Amara, your progression lead.
             You never need to negotiate face to face: anything awkward, tell me and I'll carry it.
             Three walkthrough slots are ready below.</div></div>
           <div class="slotrow"><button class="chip">Thu 6:00pm</button>
@@ -996,22 +999,22 @@ function vOffer(code){
   const st = S.seller[code]||"new";
   const head = `<div class="eyebrow">Private offer · ref <span class="mono">${esc(code)}</span></div>`;
   if(st==="declined") return `<div class="offerhero fadein" style="text-align:center;padding:40px 0">
-    ${head}<h1 style="font-size:29px;margin:14px 0">Understood — we won't write again.</h1>
+    ${head}<h1 style="font-size:29px;margin:14px 0">Understood. We won't write again.</h1>
     <p style="color:var(--muted)">Your address is now suppressed from every future campaign. Nothing was
     listed, nothing is public, and no one will follow up. Thank you for telling us.</p>
     <p class="note">Changed your mind? Your reference stays valid for 30 days.</p>
     <button class="btn ghost" onclick="S.seller['${esc(code)}']='new';save();render()">Reopen my offer</button></div>`;
   if(st==="accepted") return `<div class="offerhero fadein" style="padding:26px 0">
-    ${head}<h1 style="font-size:29px;margin:14px 0">Done — the buyer has been told.</h1>
+    ${head}<h1 style="font-size:29px;margin:14px 0">Done. The buyer has been told.</h1>
     <p style="color:var(--muted)">Here's exactly what happens next. No boards, no portal listing, no stream
-    of viewings — one accompanied walkthrough and a managed path to completion.</p>
+    of viewings. One accompanied walkthrough and a managed path to completion.</p>
     <div class="panel"><div class="steps">
-      <div class="step"><div><b>Today — a real person calls you.</b><br><span class="note">Your progression
-      lead confirms the number and answers anything. You can stop at any point before contracts — no fee, no tie-in.</span></div></div>
-      <div class="step"><div><b>This week — one walkthrough.</b><br><span class="note">The buyer visits once,
+      <div class="step"><div><b>Today: a real person calls you.</b><br><span class="note">Your progression
+      lead confirms the number and answers anything. You can stop at any point before contracts, with no fee and no tie-in.</span></div></div>
+      <div class="step"><div><b>This week: one walkthrough.</b><br><span class="note">The buyer visits once,
       with us present. If the home matches what the public record says, the range holds; we agree the final
       figure openly on the day.</span></div></div>
-      <div class="step"><div><b>Weeks 2–8 — we run the paperwork.</b><br><span class="note">Conveyancing,
+      <div class="step"><div><b>Weeks 2–8: we run the paperwork.</b><br><span class="note">Conveyancing,
       survey, chain (we can find your next home inside Quiet Market too). We chase everyone weekly. You never
       negotiate directly unless you want to.</span></div></div>
     </div></div>
@@ -1023,14 +1026,14 @@ function vOffer(code){
     <div class="offerbig num">${GBP(ex.offer_lo)} – ${GBP(ex.offer_hi)}</div>
     <p style="font-size:17px;margin:10px 0 4px">for a ${PT1[ex.ptype]} like yours in <b>${esc(ex.sector)}█</b>.</p>
     <p style="color:var(--muted)">That's around <b class="num">${ex.premium_pct.toFixed(0)}% over</b> what homes
-    like yours have been changing hands for. They weren't looking for your street — they were looking for
+    like yours have been changing hands for. They weren't looking for your street. They were looking for
     clean air, ${ex.min_centre} minutes from ${city.centre_name}, and a home like yours. Yours fits.</p>
     <div class="actions">
-      <button class="btn post" onclick="S.seller['${esc(code)}']='accepted';save();render()">I'm interested — start the conversation</button>
+      <button class="btn post" onclick="S.seller['${esc(code)}']='accepted';save();render()">I'm interested, start the conversation</button>
       <button class="btn ghost" onclick="document.getElementById('faqs').scrollIntoView({behavior:'smooth'})">Tell me more first</button>
-      <button class="btn quiet" onclick="S.seller['${esc(code)}']='declined';save();render()">No thanks — don't write again</button>
+      <button class="btn quiet" onclick="S.seller['${esc(code)}']='declined';save();render()">No thanks, don't write again</button>
     </div>
-    <p class="note">No obligation. Nothing public. Interested ≠ committed — it opens a conversation, through us, never directly.</p>
+    <p class="note">No obligation. Nothing public. Interested does not mean committed: it opens a conversation, through us, never directly.</p>
     ${(()=>{const v=viewOf(ex.sector, ex.city); if(!v) return ""; const p=v.pano_best, g=v.pano_garden;
       const seen=(p.lm||[]).filter(l=>l.sees);
       return `
@@ -1038,7 +1041,7 @@ function vOffer(code){
       <div class="eyebrow">What your home can see</div>
       <h3 style="margin:6px 0 4px">We looked at your view before we wrote</h3>
       <p style="color:var(--muted);font-size:15px;margin:0 0 10px">From your upper windows the outlook reaches about <b>${v.best.longest_km} km</b>, opening towards the ${compass(v.best.facing)}.
-        ${seen.length?`You can see ${seen.map(l=>`${esc(l.name)} (${l.km} km)`).join(" and ")}.`:""}
+        ${seen.length?`You can see ${andList(seen.map(l=>`${esc(l.name)} (${l.km} km)`))}.`:""}
         That is part of why the buyer chose a home like yours. This is drawn from a 3-D model of the land and every building and tree around you. It is not a photo, and nobody has been near your home.</p>
       <div class="pano panoscroll">${panoSVG(p,{label:"Drawn view from your upper windows"})}</div>
       ${HZ_LEGEND}
@@ -1050,24 +1053,24 @@ function vOffer(code){
     </div>`;})()}
     <div id="faqs" style="margin-top:32px">
       <div class="eyebrow">Fair questions</div>
-      <details class="faq" open><summary>How did you get my address — and what do you know?</summary>
+      <details class="faq" open><summary>How did you get my address, and what do you know?</summary>
         <p>Only public records: HM Land Registry's sale history, energy-certificate data, published
         environmental data and the Environment Agency's aerial laser survey of the ground, addressed to
         "The Homeowner". We know when homes on your street last sold and for what, and the shape of the roofs
         and trees around you. We don't know your name, and we haven't looked in your windows.</p></details>
       <details class="faq"><summary>Who is the buyer?</summary>
         <p>A private buyer, financially vetted by us (proof of funds or mortgage in principle) before a
-        single card was printed. You'll meet them once before contracts — at the walkthrough, with us there.</p></details>
+        single card was printed. You'll meet them once before contracts, at the walkthrough, with us there.</p></details>
       <details class="faq"><summary>What does it cost me?</summary>
         <p>Nothing. No estate agency fee, no marketing, no listing. The buyer pays us on completion. If you'd
         normally pay 1.5% to an agent, that's roughly <b class="num">${GBP(ex.est_value*0.015)}</b> staying in your pocket.</p></details>
       <details class="faq"><summary>Is the number real? What if my home is nicer than average?</summary>
         <p>The range is a genuine starting commitment based on your street's record, not a teaser. If your
-        home is better than the public record suggests, the walkthrough is where the number moves up —
+        home is better than the public record suggests, the walkthrough is where the number moves up,
         openly, on the day, with us anchoring it.</p></details>
       <details class="faq"><summary>What if I need somewhere to move to?</summary>
         <p>Most people do. Tell us what you'd want next and we'll run the same quiet search for you on the
-        buying side — that's the half of this most owners end up loving.</p></details>
+        buying side. That's the half of this most owners end up loving.</p></details>
     </div>
   </div>`;
 }
