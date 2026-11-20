@@ -86,16 +86,25 @@ def main(lab_dir, views_dir=None):
             print(f"    {k:26s} dAUC {v['d_auc']}  dLift@10 {v['d_lift10']}")
         fig, ax = plt.subplots(figsize=(7.6, 3.9), facecolor=SURFACE); style(ax)
         homes = {1: "138 thousand", 5: "690 thousand", 10: "1.4 million", 20: "2.8 million", 40: "5.5 million"}
+        local = load(lab, "lab_local.json") or {}
+        use_local = all(f"{n}@{s}" in local for n in ("BASE", "ALL") for s in sizes)
+        val = (lambda n, s: local[f"{n}@{s}"]["local_lift10"]) if use_local else (lambda n, s: curve[f"{n}@{s}"]["auc"])
+        fmt = "{:.2f}" if use_local else "{:.3f}"
         for name, col, lab_ in (("BASE", S1, "Original 13 signals"), ("ALL", S2, "Reviewed model, 73 signals")):
-            pts = [(s, curve[f"{name}@{s}"]["auc"]) for s in sizes if f"{name}@{s}" in curve]
+            pts = [(s, val(name, s)) for s in sizes if f"{name}@{s}" in curve]
             ax.plot([p[0] for p in pts], [p[1] for p in pts], color=col, lw=2, marker="o", ms=7,
                     markeredgecolor=SURFACE, markeredgewidth=1.5, label=lab_)
-            ax.text(pts[-1][0] * 1.12, pts[-1][1], f"{pts[-1][1]:.3f}", va="center", fontsize=9.5, color=INK)
-            ax.text(pts[0][0] * 0.89, pts[0][1], f"{pts[0][1]:.3f}", va="center", ha="right", fontsize=9.5, color=INK)
+            ax.text(pts[-1][0] * 1.12, pts[-1][1], fmt.format(pts[-1][1]), va="center", fontsize=9.5, color=INK)
+            ax.text(pts[0][0] * 0.89, pts[0][1] + (0.004 if name == "ALL" and use_local else -0.004 if use_local else 0),
+                    fmt.format(pts[0][1]), va="center", ha="right", fontsize=9.5, color=INK)
         ax.set_xscale("log"); ax.set_xlim(0.55, 70)
         ax.set_xticks(sizes); ax.set_xticklabels([f"{s}%\n{homes.get(s, '')}" for s in sizes]); ax.minorticks_off()
         ax.set_xlabel("Share of all homes in England and Wales the model learned from", color=MUTED, fontsize=9.5)
-        ax.set_title("Ranking skill on sales it has never seen (AUC, 2017 and 2018)", fontsize=11.5, color=INK, loc="left")
+        ax.set_title("Sellers reached in the best tenth of each district, against random (2017 and 2018)" if use_local
+                     else "Ranking skill on sales it has never seen (AUC, 2017 and 2018)", fontsize=11.5, color=INK, loc="left")
+        if use_local:
+            ax.set_ylim(1.58, 1.70); ax.set_yticks([1.60, 1.62, 1.64, 1.66, 1.68])
+            ax.set_yticklabels(["1.60 times", "1.62", "1.64", "1.66", "1.68"])
         ax.legend(frameon=False, fontsize=9, loc="center right")
         fig.tight_layout(); fig.savefig(lab / "learning_curve.png", dpi=150); plt.close(fig)
 

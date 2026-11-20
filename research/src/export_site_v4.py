@@ -259,7 +259,10 @@ def export(cache, geo_path, views_dir, lab_dir, out_json):
     curve, deploy, ladder = load("lab_curve.json"), load("lab_deploy.json"), load("lab_ladder.json")
     pct = deploy.get("pct", 10)
     best = curve.get(f"ALL@{pct}") or (ladder.get("ALL") if ladder.get("pct") == pct else None) or {}
-    model = {"auc_oot": round(best.get("auc", 0), 3), "lift_top10": round(best.get("lift10", 0), 2),
+    local = load("lab_local.json").get(f"ALL@{pct}", {})      # ranking inside a district: what a campaign uses
+    model = {"auc_oot": round(best.get("auc", 0), 3),
+             "lift_top10": round(local.get("local_lift10") or best.get("lift10", 0), 2),
+             "lift_top10_national": round(best.get("lift10", 0), 2),
              "lift_top1": round(best.get("lift1", 0), 2), "train_rows": deploy.get("train_rows"),
              "sample_pct": pct, "n_signals": len(deploy.get("features", [])),
              "trained_on": "HM Land Registry Price Paid Data 1995-2019, 24.3M transactions"}

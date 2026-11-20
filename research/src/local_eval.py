@@ -27,8 +27,10 @@ import numpy as np
 
 N_BLOCKS, BOOT = 2048, 300
 PAIRS = [("BASE@10", "+HIST@10"), ("+HIST@10", "+HIST+GEO@10"), ("+HIST@10", "+HIST+VIEW@10"), ("+HIST@10", "ALL@10"),
-         ("BASE@10", "ALL@10"), ("BASE@1", "ALL@1"), ("BASE@40", "ALL@40"), ("ALL@1", "ALL@40"), ("ALL@10", "ALL@40"),
-         ("BASE@1", "BASE@40"), ("no_VIEW@40", "ALL@40"), ("no_GEO@40", "ALL@40")]
+         ("BASE@10", "ALL@10"), ("BASE@1", "ALL@1"), ("BASE@5", "ALL@5"), ("BASE@20", "ALL@20"), ("BASE@40", "ALL@40"),
+         ("BASE@5", "ALL@40"), ("ALL@1", "ALL@5"), ("ALL@5", "ALL@10"), ("ALL@10", "ALL@20"), ("ALL@20", "ALL@40"),
+         ("ALL@1", "ALL@40"), ("ALL@5", "ALL@40"), ("BASE@1", "BASE@40"), ("BASE@5", "BASE@40"),
+         ("no_VIEW@20", "ALL@20"), ("no_GEO@20", "ALL@20")]
 TENURE = [("all", 0, 99), ("t0_9", 0, 10), ("t10_19", 10, 20), ("t20p", 20, 99)]
 
 

@@ -36,14 +36,15 @@ The prototype trades under the working name **Quiet Market**.
    hidden supply the product targets.
 3. **Targeting works on years the model has never seen, and its ceiling
    is now mapped.** Writing to the best tenth of homes in a district
-   reaches 1.66 times as many sellers as writing at random. A national
+   reaches 1.68 times as many sellers as writing at random. A national
    rebuild with eight times the data and 73 signals instead of 13 moved
-   that from 1.62 to 1.66
+   that from 1.61 to 1.68
    ([docs/06](docs/06-national-model-review.md)).
-4. **More data is not the key.** The simple model had learned all it
-   could from 5% of the country. The richer model keeps improving to
-   about a fifth of the country and then flattens. There is no step
-   change waiting at national scale.
+4. **More data helps, but only a richer model, and only slowly.** The
+   original 13 signals had learned all they could from 1% of the
+   country. The 73-signal model is no better at 1%, clearly better at
+   5%, and still gaining about 0.01 with each doubling at 40%. There is
+   no step change waiting at national scale.
 5. **For owners of 20 years or more, nothing in sale records helps.**
    Every version of the model manages about 1.2 times random. The next
    gain has to come from signs of intent: a new energy certificate with
@@ -67,7 +68,7 @@ The prototype trades under the working name **Quiet Market**.
    comparison, and whether front or back matters more is not settled.
 10. **Whether a buyer hears back is a product-design problem, not a
     modelling one.** Break-even is 1 owner in 300 scanning their card.
-    The whole model review moved the postage per conversation by £3.
+    The whole model review moved the postage per conversation by £5.
     What decides the outcome is how wide the buyer's brief is, which is
     why the prototype searches by the life you want rather than by
     street.
