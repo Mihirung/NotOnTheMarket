@@ -23,7 +23,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import rasterio
-from rasterio.merge import merge
 from scipy.ndimage import label, minimum_filter
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -42,13 +41,26 @@ LANDMARKS = {  # BNG eastings/northings, height added above the surface
 
 
 def mosaic(paths):
-    srcs = [rasterio.open(p) for p in paths]
-    arr, tr = merge(srcs, nodata=-3.4028234663852886e+38)
-    for s in srcs:
-        s.close()
-    a = arr[0].astype("float32")
-    a[a < -1000] = np.nan
-    return a, tr
+    """Place aligned tiles into one grid by their bounds. (rasterio.merge
+    mishandles the EA tiles' float32 nodata and silently returns zeros.)"""
+    metas = []
+    for p in paths:
+        with rasterio.open(p) as r:
+            metas.append((p, r.transform, r.width, r.height))
+    res = metas[0][1].a
+    west = min(m[1].c for m in metas); north = max(m[1].f for m in metas)
+    east = max(m[1].c + m[2] * res for m in metas)
+    south = min(m[1].f - m[3] * res for m in metas)
+    H, W = int(round((north - south) / res)), int(round((east - west) / res))
+    out = np.full((H, W), np.nan, dtype="float32")
+    for p, t, w, h in metas:
+        with rasterio.open(p) as r:
+            a = r.read(1).astype("float32")
+        a[a < -1000] = np.nan
+        r0 = int(round((north - t.f) / res)); c0 = int(round((t.c - west) / res))
+        out[r0:r0 + h, c0:c0 + w] = a
+    from rasterio.transform import from_origin
+    return out, from_origin(west, north, res, res)
 
 
 def main(terrain_dir, pc_path, out_dir):
