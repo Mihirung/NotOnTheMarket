@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 import rasterio
 from rasterio.merge import merge
-from scipy.ndimage import distance_transform_edt, label, minimum_filter
+from scipy.ndimage import label, minimum_filter
 
 sys.path.insert(0, str(Path(__file__).parent))
 from viewshed import (BUILDING, Surface, classify, line_of_sight,  # noqa: E402
@@ -73,8 +73,10 @@ def main(terrain_dir, pc_path, out_dir):
         real = np.isfinite(dtm).mean()
         print(f"  real DTM covers {real*100:.0f}% of grid; proxy fills the rest", flush=True)
         dtm = np.where(np.isnan(dtm), proxy, dtm)
+        del dtm_part
     else:
         dtm = proxy
+    del proxy
     dsm = np.where(np.isnan(dsm), dtm, dsm)
     dtm = np.where(np.isnan(dtm), dsm, dtm)
     masks = {}
@@ -92,10 +94,35 @@ def main(terrain_dir, pc_path, out_dir):
     with rasterio.open(T / "cop30_exeter_bng.tif") as r:
         distant = Surface(r.read(1), r.transform)
 
-    # Nearest non-building cell lookup (indices of nearest open cell).
-    print("computing nearest open cell map...", flush=True)
-    _, idx = distance_transform_edt(masks["building"] == 1, return_indices=True)
-    bld_lab, _ = label(masks["building"] == 1)
+    bmask = masks["building"] == 1
+    del masks, cls
+    # Local helpers: the grid is 252M cells, so nearest-open-cell and
+    # building labelling are done in a window round each postcode rather
+    # than once for the whole city (a full distance transform needs ~4 GB).
+    def nearest_open(r0, c0, half=20):
+        for h in (half, half * 3, half * 8):
+            r1, r2 = max(0, r0 - h), min(local.h, r0 + h + 1)
+            c1, c2 = max(0, c0 - h), min(local.w, c0 + h + 1)
+            sub = ~bmask[r1:r2, c1:c2]
+            if sub.any():
+                ys, xs = np.nonzero(sub)
+                k = np.argmin((ys + r1 - r0) ** 2 + (xs + c1 - c0) ** 2)
+                return int(ys[k] + r1), int(xs[k] + c1)
+        return r0, c0
+
+    def own_building(r0, c0, half=80):
+        r1, r2 = max(0, r0 - half), min(local.h, r0 + half + 1)
+        c1, c2 = max(0, c0 - half), min(local.w, c0 + half + 1)
+        lab, _ = label(bmask[r1:r2, c1:c2])
+        own = lab[r0 - r1, c0 - c1]
+        if own == 0:   # nearest labelled building within 20 m
+            win = lab[max(0, r0-r1-20):r0-r1+21, max(0, c0-c1-20):c0-c1+21]
+            vals = win[win > 0]
+            own = int(np.bincount(vals).argmax()) if vals.size else 0
+        if own == 0:
+            return None
+        ys, xs = np.nonzero(lab == own)
+        return ys + r1, xs + c1
 
     pcs = pd.read_parquet(pc_path)
     rows, profiles = [], {}
@@ -105,7 +132,7 @@ def main(terrain_dir, pc_path, out_dir):
         r0, c0 = int(r0[0]), int(c0[0])
         if not (0 <= r0 < local.h and 0 <= c0 < local.w):
             continue
-        rr, cc = int(idx[0, r0, c0]), int(idx[1, r0, c0])   # nearest open cell
+        rr, cc = nearest_open(r0, c0)
         e, n = tr.c + (cc + 0.5) * tr.a, tr.f - (rr + 0.5) * tr.a
         zg = float(dtm[rr, cc])
         if not np.isfinite(zg):
@@ -114,14 +141,9 @@ def main(terrain_dir, pc_path, out_dir):
 
         # Upstairs: flatten the owner's own building (the one containing the
         # centroid, or nearest within 20 m) and look from 5 m.
-        own = bld_lab[r0, c0]
-        if own == 0:
-            sub = bld_lab[max(0, r0-20):r0+21, max(0, c0-20):c0+21]
-            vals = sub[sub > 0]
-            own = int(np.bincount(vals).argmax()) if vals.size else 0
-        if own:
-            ys, xs = np.where(bld_lab[max(0, r0-80):r0+81, max(0, c0-80):c0+81] == own)
-            ys += max(0, r0-80); xs += max(0, c0-80)
+        own = own_building(r0, c0)
+        if own is not None:
+            ys, xs = own
             saved = local.z[ys, xs].copy()
             local.z[ys, xs] = dtm[ys, xs] + 0.3
         upstairs = outlook_metrics(local, distant, e, n, zg, 5.0, LOCAL_DIST, DISTANT_DIST)
@@ -130,11 +152,11 @@ def main(terrain_dir, pc_path, out_dir):
             ok, dist = line_of_sight(distant, e, n, zg + 5.0, le, ln, extra,
                                      local=local, local_max_dist=LOCAL_DIST)
             lm[name] = bool(ok)
-        if own:
+        if own is not None:
             local.z[ys, xs] = saved
 
         rec = dict(postcode=p.postcode, e=round(e), n=round(n), ground_m=round(zg, 1),
-                   own_building=bool(own))
+                   own_building=own is not None)
         for k, v in garden.items():
             if not isinstance(v, np.ndarray):
                 rec["g_" + k] = round(v, 4)
