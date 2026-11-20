@@ -75,7 +75,7 @@ def bearings(step_deg=1.0):
 
 
 def cast(surface, e0, n0, z_eye, max_dist, step=None, curvature=False,
-         seed_slope=None, bearing_step=1.0):
+         seed_slope=None, bearing_step=1.0, min_dist=0.0):
     """Cast rays on every bearing; return per-ray horizon information.
 
     Returns dict of arrays (n_bearings,): horizon_slope, horizon_dist,
@@ -92,6 +92,10 @@ def cast(surface, e0, n0, z_eye, max_dist, step=None, curvature=False,
     z = z.astype("float64")
     if curvature:
         z = z - (d[None, :] ** 2) / (2 * R_EARTH) * (1 - REFRACTION)
+    if min_dist > 0:
+        # Samples inside the near field belong to the finer local pass;
+        # a coarse surface model there would register spurious walls.
+        ok = ok & (d[None, :] >= min_dist)
     slope = (z - z_eye) / d[None, :]
     slope[~ok] = -np.inf
     run = np.maximum.accumulate(slope, axis=1)
@@ -140,6 +144,7 @@ def line_of_sight(surface, e0, n0, z_eye, e1, n1, z_target_extra=0.0,
     blocked = (z - z_eye) / d
     blocked[~ok] = -np.inf
     if local is not None and local_max_dist > 0:
+        blocked[d < local_max_dist] = -np.inf   # near field judged on the local surface
         dl = np.arange(local.res, min(dist, local_max_dist), local.res)
         zl, _, okl = local.sample(e0 + ux * dl, n0 + uy * dl)
         bl = (zl.astype("float64") - z_eye) / dl
@@ -173,7 +178,7 @@ def outlook_metrics(local, distant, e, n, z_ground, eye_height, local_dist,
     z_eye = z_ground + eye_height
     L = cast(local, e, n, z_eye, local_dist)
     D = cast(distant, e, n, z_eye, distant_dist, curvature=True,
-             seed_slope=L["horizon_slope"])
+             seed_slope=L["horizon_slope"], min_dist=local_dist)
 
     # Combined horizon per bearing: distant wins only if it rises above local.
     use_far = D["horizon_slope"] > L["horizon_slope"] + 1e-9
@@ -187,7 +192,7 @@ def outlook_metrics(local, distant, e, n, z_ground, eye_height, local_dist,
     hz_cls = np.where(at_edge & (hz_cls == TERRAIN), SKY, hz_cls)
     hz_deg = np.degrees(np.arctan(hz_slope))
 
-    far_dist = np.where(D["far_dist"] > 0, D["far_dist"], L["far_dist"])
+    far_dist = np.maximum(D["far_dist"], L["far_dist"])
     vis_water_local = (L["visible"] & (L["cls"] == water_cls)).any(axis=1)
     vis_sea = (D["visible"] & (D["z"] <= 0.5) & (D["z"] > -10) & D["ok"]).any(axis=1)
     vis_hill = (D["visible"] & (D["z"] >= hill_min_z)).any(axis=1)
