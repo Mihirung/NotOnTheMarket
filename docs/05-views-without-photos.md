@@ -8,6 +8,12 @@ viewshed experiment: what we built from open 3-D data, what it can and
 cannot say about a home's outlook, how it validated against places
 anyone from Exeter knows, and how it now appears in the prototype.
 
+> **Update.** This was the first, postcode-level version. It has been
+> superseded by [07-house-level-views.md](07-house-level-views.md),
+> which works house by house, adds Bath, and corrects section 4 below:
+> the link between views and sale timing holds in Exeter but does not
+> carry over to a second city.
+
 ## 1. Why this matters for a photo-less product
 
 Every other property site is organised around photographs. We cannot
@@ -129,6 +135,10 @@ worth recording for whoever builds the production version:
    radius. Pinhoe went from "blocked at 30 m" to a 12 km sight-line.
 
 ## 4. Does the view predict when a home sells?
+
+*Read with the correction in
+[07-house-level-views.md](07-house-level-views.md), section 6: this
+result is real for Exeter and did not repeat in Bath.*
 
 Yes, modestly, and in the direction you would guess. Within Exeter,
 every property with sale history (469,627 property-years; 18,486 sales

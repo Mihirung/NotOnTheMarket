@@ -1,59 +1,94 @@
 # Not On The Market
 
-A consumer platform built on one observation: at any moment only ~3% of
-the UK's 29.9 million homes are visibly for sale, yet essentially all of
-them would sell at some price. Not On The Market predicts which
-properties would sell if made the right offer, describes those latent
-cohorts to registered buyers, and reaches the owners directly by
-postcard (QR code to a private offer page) — then acts as the
+A consumer platform built on one observation: at any moment only about
+3% of the UK's 29.9 million homes are visibly for sale, yet almost all
+of them would sell at some price. Not On The Market predicts which
+homes would sell if made the right offer, describes those hidden groups
+of homes to registered buyers, and reaches the owners directly by
+postcard, with a QR code to a private offer page. It then acts as the
 transaction's admin layer and emotional circuit breaker in place of a
 traditional estate agent.
+
+The prototype trades under the working name **Quiet Market**.
 
 ## What is in this repository
 
 | Path | Contents |
 |---|---|
-| [`docs/01-concept-assessment.md`](docs/01-concept-assessment.md) | Honest evaluation of the concept: premise reality-check, what is strong, the problems most likely to kill it, regulation, business model, recommended wedge and go/no-go metrics. |
-| [`docs/02-prediction-problem.md`](docs/02-prediction-problem.md) | The machine learning deep dive: formal framing, empirical results from 25 years of Land Registry data, the boundary map of what is and is not predictable, and the modelling roadmap. |
-| [`docs/03-data-sources.md`](docs/03-data-sources.md) | Full inventory of usable UK data sources, their licences and gotchas, and the linkage plan. |
-| [`docs/04-does-open-geography-help.md`](docs/04-does-open-geography-help.md) | The AHAH experiment: does open environmental data make targeting good enough? Honest ablation with confidence intervals, plus the response economics that decide whether buyers get replies and how much postage is at risk. |
-| [`docs/05-views-without-photos.md`](docs/05-views-without-photos.md) | The viewshed experiment: the view from every Exeter postcode, computed from 1 m LIDAR and a 3-D model of buildings and trees, searchable without a photograph; validated against known places; and shown to predict sale timing. |
-| [`research/`](research/) | Reproducible feasibility study: pipeline that links 24.25M Land Registry transactions into 13.8M property histories, survival analysis of ownership spells, and an out-of-time sale-propensity model with honest performance numbers. |
+| [`docs/01-concept-assessment.md`](docs/01-concept-assessment.md) | Honest evaluation of the concept: reality check on the premise, what is strong, the problems most likely to kill it, regulation, business model, where to start and the numbers that decide go or no-go. |
+| [`docs/02-prediction-problem.md`](docs/02-prediction-problem.md) | The prediction problem in depth: how it is framed, results from 25 years of Land Registry data, a map of what is and is not predictable, and the modelling roadmap. |
+| [`docs/03-data-sources.md`](docs/03-data-sources.md) | Inventory of usable UK data sources, their licences and catches, and the plan for linking them. |
+| [`docs/04-does-open-geography-help.md`](docs/04-does-open-geography-help.md) | Does open environmental data make targeting good enough? An honest test with ranges, plus the response economics that decide whether buyers get replies and how much postage is at risk. |
+| [`docs/05-views-without-photos.md`](docs/05-views-without-photos.md) | The first view experiment: the outlook from every Exeter postcode, computed from a 1 metre laser survey and a 3-D model of buildings and trees, searchable without a photograph. |
+| [`docs/06-national-model-review.md`](docs/06-national-model-review.md) | The whole country and a harder look at the model: 76 million home-years, 73 signals, a fairer local yardstick, and a clear answer on whether more data unlocks bigger effects. |
+| [`docs/07-house-level-views.md`](docs/07-house-level-views.md) | House by house in two cities: every home's view and garden sun, "can see the cathedral" as a search, the drawn panorama, Bath as the second city, and whether views or sunlight predict how long people stay. |
+| [`research/`](research/) | The reproducible study behind all of the above. See [`research/README.md`](research/README.md). |
+| [`web/`](web/) | The prototype site. `template.html` is the page, `demo_v4.json` its data, `build.py` joins them into `index.html`. |
 
-## Headline findings from the feasibility study
+## Headline findings
 
-1. **Sale timing has strong learnable structure.** The annual sale
-   hazard peaks at ~6.5% in years 3-4 of ownership and declines to
-   ~2.4% by year 24, with large systematic differences by property
-   type and price band.
-2. **The long-tenure cohort is the volume.** Nearly 4 in 10 sales now
-   come from owners who bought 24+ years ago — exactly the latent
-   supply the product targets, and the cohort where enrichment beyond
-   transaction data (EPC, demographics) matters most.
-3. **Targeting works out-of-time, and its limits are mapped.** A model
-   trained on 2001-2015 and tested on 2017-2019 delivers a stable AUC
-   of 0.588 and 1.6x-1.9x mail efficiency in its top deciles from
-   open transaction data alone; the analysis shows trigger signals
-   (withdrawn listings, EPC-without-sale, landlord exits) are what
-   buy the next multiple (full metrics in
-   [`docs/02-prediction-problem.md`](docs/02-prediction-problem.md)).
-4. **The moat is the model nobody can pre-build.** Offer-acceptance
-   data (which premium unlocks which owner) exists nowhere publicly;
-   the postcard campaigns generate it as a by-product from wave one.
-5. **Open environmental data (AHAH) barely improves targeting overall
-   — 1.5% — but helps where nothing else does.** For owners of 20+
-   years, who supply nearly 4 in 10 of today's sellers and where
-   transaction history is close to useless, it lifts targeting 9%
-   (96% probability of a real gain, interval still touching zero).
-6. **The view can be computed, searched and it predicts selling.** From
-   1 m LIDAR and building footprints, every Exeter postcode now has a
-   garden and upstairs skyline, classified by what forms it. Homes with
-   long views or water in view sell about 12% less often per year;
-   enclosed and overlooked homes sell up to 22% more often. Adding
-   outlook to the model lifts out-of-time AUC by +0.0065 (interval
-   +0.0024 to +0.0101).
-7. **Response risk is a product-design problem, not a modelling one.**
-   Break-even is a 0.34% scan rate; the model moved cost per
-   conversation by £1. What decides whether a buyer hears anything is
-   how wide their brief is — which is why the prototype now searches
-   by liveability rather than by street.
+1. **When a home sells has strong, learnable structure.** The yearly
+   chance of a sale peaks at about 6.5% in years 3 and 4 of ownership
+   and falls to about 2.4% by year 24, with large, steady differences by
+   property type and price band.
+2. **Long-held homes are the volume.** Nearly 4 in 10 sales now come
+   from owners who bought 24 or more years ago. That is exactly the
+   hidden supply the product targets.
+3. **Targeting works on years the model has never seen, and its ceiling
+   is now mapped.** Writing to the best tenth of homes in a district
+   reaches 1.66 times as many sellers as writing at random. A national
+   rebuild with eight times the data and 73 signals instead of 13 moved
+   that from 1.62 to 1.66
+   ([docs/06](docs/06-national-model-review.md)).
+4. **More data is not the key.** The simple model had learned all it
+   could from 5% of the country. The richer model keeps improving to
+   about a fifth of the country and then flattens. There is no step
+   change waiting at national scale.
+5. **For owners of 20 years or more, nothing in sale records helps.**
+   Every version of the model manages about 1.2 times random. The next
+   gain has to come from signs of intent: a new energy certificate with
+   no sale, a withdrawn listing, a planning application, a probate
+   notice.
+6. **Fixed facts about a place do not predict who sells.** Air quality,
+   distances and a national view layer add nothing once local sale
+   history is in the model, and can mislead when regional markets shift.
+7. **The view can be computed for every house and searched, without a
+   photograph.** In Exeter 22% of addresses can see the cathedral, and
+   in Bath 26% can see the Abbey. On half of Exeter's postcodes some
+   homes have the cathedral in sight and their neighbours do not, which
+   is why it has to be done house by house
+   ([docs/07](docs/07-house-level-views.md)).
+8. **Views are for the buyer's search, not for the prediction.** An
+   earlier finding that homes with long views sell less often holds in
+   Exeter and does not carry over to Bath.
+9. **Lighter homes are kept longer.** In both cities the darkest quarter
+   of homes is sold about a fifth more often than the lightest. Most of
+   that is the kind of home, a smaller effect survives a fair
+   comparison, and whether front or back matters more is not settled.
+10. **Whether a buyer hears back is a product-design problem, not a
+    modelling one.** Break-even is 1 owner in 300 scanning their card.
+    The whole model review moved the postage per conversation by £3.
+    What decides the outcome is how wide the buyer's brief is, which is
+    why the prototype searches by the life you want rather than by
+    street.
+
+## The prototype
+
+Open `web/index.html` in a browser. It covers two cities, Exeter and
+Bath:
+
+- **Describe the life you want**: clean air, open surroundings, minutes
+  from the centre, a GP nearby, a budget.
+- **Say what you would like to see**: long views, water, hills, a garden
+  that is not overlooked, evening sun, sunny back rooms, and whether you
+  can see the cathedral or the Abbey. Homes are counted only if they
+  have everything you asked for.
+- **See the view drawn** for each neighbourhood, with the sun's path
+  over a typical garden.
+- **Send postcards** (simulated: nothing is printed or posted) and
+  follow the replies.
+- **The owner's side**: a private offer page reached from the card,
+  showing the offer and the owner's own view, drawn.
+
+No address, postcode or coordinate of any individual home is in the
+site's data.

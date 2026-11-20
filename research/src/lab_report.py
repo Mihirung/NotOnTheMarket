@@ -56,19 +56,19 @@ def main(lab_dir, views_dir=None):
 
         fig, ax = plt.subplots(figsize=(7.6, 3.9), facecolor=SURFACE); style(ax)
         x = range(len(BANDS)); w = 0.36
-        old = [ladder["BASE"].get(f"lift10_{b}") for b, _ in BANDS]
-        new = [ladder["ALL"].get(f"lift10_{b}") for b, _ in BANDS]
-        ax.bar([i - w / 2 - .01 for i in x], old, w, color=S1, label="Original 13 signals")
-        ax.bar([i + w / 2 + .01 for i in x], new, w, color=S2, label="Reviewed model, 73 signals")
+        old = [100 * (ladder["BASE"].get(f"lift10_{b}") - 1) for b, _ in BANDS]
+        new = [100 * (ladder["ALL"].get(f"lift10_{b}") - 1) for b, _ in BANDS]
+        ax.bar([i - w / 2 - .012 for i in x], old, w, color=S1, label="Original 13 signals")
+        ax.bar([i + w / 2 + .012 for i in x], new, w, color=S2, label="Reviewed model, 73 signals")
         for i in x:
-            ax.text(i - w / 2 - .01, old[i] + .02, f"{old[i]:.2f}", ha="center", fontsize=9, color=INK)
-            ax.text(i + w / 2 + .01, new[i] + .02, f"{new[i]:.2f}", ha="center", fontsize=9, color=INK)
-        ax.axhline(1, color=AXIS, lw=1)
-        ax.text(len(BANDS) - .5, 1.015, "random mailing = 1.0", ha="right", fontsize=8.5, color=MUTED)
+            ax.text(i - w / 2 - .012, old[i] + 1.5, f"+{old[i]:.0f}%", ha="center", fontsize=9, color=INK)
+            ax.text(i + w / 2 + .012, new[i] + 1.5, f"+{new[i]:.0f}%", ha="center", fontsize=9, color=INK)
         ax.set_xticks(list(x)); ax.set_xticklabels([l for _, l in BANDS])
-        ax.set_ylim(0.9, max(new + old) * 1.12)
+        ax.set_ylim(0, max(new + old) * 1.18)
+        ax.set_yticks([0, 25, 50, 75, 100]); ax.set_yticklabels(["0", "+25%", "+50%", "+75%", "+100%"])
         ax.set_xlabel("How long the owner has been there", color=MUTED, fontsize=9.5)
-        ax.set_title("Sellers found per card in the best tenth, against random mailing", fontsize=11.5, color=INK, loc="left")
+        ax.set_title("Extra sellers found in the best tenth of homes, against mailing at random",
+                     fontsize=11.5, color=INK, loc="left")
         ax.legend(frameon=False, fontsize=9, loc="upper right")
         fig.tight_layout(); fig.savefig(lab / "lift_by_tenure.png", dpi=150); plt.close(fig)
 
@@ -85,14 +85,16 @@ def main(lab_dir, views_dir=None):
         for k, v in curve.get("ci", {}).items():
             print(f"    {k:26s} dAUC {v['d_auc']}  dLift@10 {v['d_lift10']}")
         fig, ax = plt.subplots(figsize=(7.6, 3.9), facecolor=SURFACE); style(ax)
+        homes = {1: "138 thousand", 5: "690 thousand", 10: "1.4 million", 20: "2.8 million", 40: "5.5 million"}
         for name, col, lab_ in (("BASE", S1, "Original 13 signals"), ("ALL", S2, "Reviewed model, 73 signals")):
-            pts = [(curve[f"{name}@{s}"]["train_rows"] / 1e6, curve[f"{name}@{s}"]["auc"]) for s in sizes if f"{name}@{s}" in curve]
-            ax.plot([p[0] for p in pts], [p[1] for p in pts], color=col, lw=2, marker="o", ms=6, label=lab_)
-            ax.text(pts[-1][0] * 1.06, pts[-1][1], f"{pts[-1][1]:.3f}", va="center", fontsize=9.5, color=INK)
-            ax.text(pts[0][0] * 0.94, pts[0][1], f"{pts[0][1]:.3f}", va="center", ha="right", fontsize=9.5, color=INK)
-        ax.set_xscale("log"); ax.set_xlim(0.6, 130)
-        ax.set_xticks([1, 3, 10, 30, 100]); ax.set_xticklabels(["1M", "3M", "10M", "30M", "100M"])
-        ax.set_xlabel("Home-years of history the model learned from", color=MUTED, fontsize=9.5)
+            pts = [(s, curve[f"{name}@{s}"]["auc"]) for s in sizes if f"{name}@{s}" in curve]
+            ax.plot([p[0] for p in pts], [p[1] for p in pts], color=col, lw=2, marker="o", ms=7,
+                    markeredgecolor=SURFACE, markeredgewidth=1.5, label=lab_)
+            ax.text(pts[-1][0] * 1.12, pts[-1][1], f"{pts[-1][1]:.3f}", va="center", fontsize=9.5, color=INK)
+            ax.text(pts[0][0] * 0.89, pts[0][1], f"{pts[0][1]:.3f}", va="center", ha="right", fontsize=9.5, color=INK)
+        ax.set_xscale("log"); ax.set_xlim(0.55, 70)
+        ax.set_xticks(sizes); ax.set_xticklabels([f"{s}%\n{homes.get(s, '')}" for s in sizes]); ax.minorticks_off()
+        ax.set_xlabel("Share of all homes in England and Wales the model learned from", color=MUTED, fontsize=9.5)
         ax.set_title("Ranking skill on sales it has never seen (AUC, 2017 and 2018)", fontsize=11.5, color=INK, loc="left")
         ax.legend(frameon=False, fontsize=9, loc="center right")
         fig.tight_layout(); fig.savefig(lab / "learning_curve.png", dpi=150); plt.close(fig)
