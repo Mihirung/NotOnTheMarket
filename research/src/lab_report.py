@@ -37,7 +37,8 @@ def load(d, name):
 
 def main(lab_dir, views_dir=None):
     lab = Path(lab_dir)
-    ladder, curve, rolling, ablate = (load(lab, f"lab_{k}.json") for k in ("ladder", "curve", "rolling", "ablate"))
+    ladder, curve, rolling = (load(lab, f"lab_{k}.json") for k in ("ladder", "curve", "rolling"))
+    ablates = [json.load(open(f)) for f in sorted(lab.glob("lab_ablate_*.json"))]
 
     if ladder:
         print(f"\nLADDER at {ladder['pct']}% of properties ({ladder['test_rows']:,} test rows)")
@@ -85,7 +86,8 @@ def main(lab_dir, views_dir=None):
         for k, v in curve.get("ci", {}).items():
             print(f"    {k:26s} dAUC {v['d_auc']}  dLift@10 {v['d_lift10']}")
         fig, ax = plt.subplots(figsize=(7.6, 3.9), facecolor=SURFACE); style(ax)
-        homes = {1: "138 thousand", 5: "690 thousand", 10: "1.4 million", 20: "2.8 million", 40: "5.5 million"}
+        homes = {1: "138 thousand", 5: "690 thousand", 10: "1.4 million", 20: "2.8 million", 40: "5.5 million",
+                 100: "13.8 million"}
         local = load(lab, "lab_local.json") or {}
         use_local = all(f"{n}@{s}" in local for n in ("BASE", "ALL") for s in sizes)
         val = (lambda n, s: local[f"{n}@{s}"]["local_lift10"]) if use_local else (lambda n, s: curve[f"{n}@{s}"]["auc"])
@@ -97,7 +99,7 @@ def main(lab_dir, views_dir=None):
             ax.text(pts[-1][0] * 1.12, pts[-1][1], fmt.format(pts[-1][1]), va="center", fontsize=9.5, color=INK)
             ax.text(pts[0][0] * 0.89, pts[0][1] + (0.004 if name == "ALL" and use_local else -0.004 if use_local else 0),
                     fmt.format(pts[0][1]), va="center", ha="right", fontsize=9.5, color=INK)
-        ax.set_xscale("log"); ax.set_xlim(0.55, 70)
+        ax.set_xscale("log"); ax.set_xlim(0.55, 190)
         ax.set_xticks(sizes); ax.set_xticklabels([f"{s}%\n{homes.get(s, '')}" for s in sizes]); ax.minorticks_off()
         ax.set_xlabel("Share of all homes in England and Wales the model learned from", color=MUTED, fontsize=9.5)
         ax.set_title("Sellers reached in the best tenth of each district, against random (2017 and 2018)" if use_local
@@ -120,9 +122,9 @@ def main(lab_dir, views_dir=None):
                       f"{r[b]['frozen_lift10']:.3f} -> {r[b]['fresh_lift10']:.3f}")
             print(f"      20y+ interval: {r['ci_t20p']}")
 
-    if ablate:
+    for ablate in ablates:
         print(f"\nLEAVE ONE FAMILY OUT at {ablate['pct']}%")
-        for k in ("ALL", "no VIEW", "no GEO", "no GEO or VIEW"):
+        for k in ("ALL", "no VIEW", "no GEO"):
             if k in ablate:
                 r = ablate[k]
                 print(f"  {k:15s} AUC {r['auc']:.4f} lift@10 {r['lift10']:.3f} 20y+ lift {r.get('lift10_t20p', float('nan')):.3f}")

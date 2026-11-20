@@ -3,8 +3,8 @@
 Runs, on float16 chunk files written by panel2.py:
 
   ladder      feature families added one at a time, fixed sample size
-  curve       learning curve: the same models at 1%, 5%, 20%, 40% of
-              all properties — does more data unlock bigger effects?
+  curve       learning curve: the same models at 1%, 5%, 10%, 20%, 40%
+              and 100% of all homes: does more data unlock bigger effects?
   rolling     refit each year and predict the next (the deployment
               protocol) against the stale fixed-origin model
   ablate      at the largest sample, leave geography or outlook out
@@ -288,7 +288,7 @@ def exp_ladder(ch, out, threads, pct=10):
         print(f"  [20y+] {k}: dAUC {v['d_auc']}  dLift10 {v['d_lift10']}")
 
 
-def exp_curve(ch, out, threads, sizes=(1, 5, 10, 20, 40)):
+def exp_curve(ch, out, threads, sizes=(1, 5, 10, 20, 40, 100)):
     sets = [("BASE", ["BASE"]), ("ALL", FULL)]
     _, y, yr, ten, blk = shared_test(ch)
     res, preds = {"neg_keep": NEG_KEEP}, {}
@@ -344,21 +344,22 @@ def exp_rolling(ch, out, threads, pct=10):
     json.dump(res, open(out / "lab_rolling.json", "w"), indent=1)
 
 
-def exp_ablate(ch, out, threads, pct=40):
-    """At the largest sample: what do geography and outlook each add on top of
+def exp_ablate(ch, out, threads, pct=40, drop=("VIEW", "GEO")):
+    """At a large sample: what do geography and outlook each add on top of
     everything else? (Leave one family out, compare with the full model.)"""
     _, y, yr, ten, blk = shared_test(ch)
     res, preds = {"pct": pct}, {}
-    for name, fams in (("ALL", FULL), ("no VIEW", ["BASE", "HIST", "GEO"]), ("no GEO", ["BASE", "HIST", "VIEW"])):
+    rungs = [("ALL", FULL)] + [(f"no {d}", [f for f in FULL if f != d]) for d in drop]
+    for name, fams in rungs:
         preds[name], info = predict_cached(ch, out, threads, name, pct, fams)
         res[name] = summarise(y, preds[name], yr, ten) | {k: info[k] for k in ("train_rows", "rounds")}
         print(f"{name:15s} AUC {res[name]['auc']:.4f}  lift@10 {res[name]['lift10']:.3f}  "
               f"20y+ lift {res[name].get('lift10_t20p', float('nan')):.3f}", flush=True)
-        json.dump(res, open(out / "lab_ablate.json", "w"), indent=1)
+        json.dump(res, open(out / f"lab_ablate_{pct}.json", "w"), indent=1)
     m = yr <= 2018
     res["ci"] = {f"ALL vs {k}": paired_ci(y, preds[k], preds["ALL"], blk, m) for k in preds if k != "ALL"}
     res["ci_t20p"] = {f"ALL vs {k}": paired_ci(y, preds[k], preds["ALL"], blk, m & (ten >= 20)) for k in preds if k != "ALL"}
-    json.dump(res, open(out / "lab_ablate.json", "w"), indent=1)
+    json.dump(res, open(out / f"lab_ablate_{pct}.json", "w"), indent=1)
     for k, v in res["ci"].items():
         print(f"  {k}: dAUC {v['d_auc']}  dLift10 {v['d_lift10']}  P(better) {v['p_better']}")
 
@@ -397,7 +398,8 @@ if __name__ == "__main__":
     out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
     ch = Chunks(panel_dir)
     fn = {"smoke": exp_smoke, "ladder": exp_ladder, "curve": exp_curve, "rolling": exp_rolling,
-          "ablate": exp_ablate, "deploy": exp_deploy, "sampling": exp_sampling}[exp]
+          "ablate": exp_ablate, "deploy": exp_deploy, "sampling": exp_sampling,
+          "ablate_view": lambda c, o, t, pct=100: exp_ablate(c, o, t, pct, drop=("VIEW",))}[exp]
     if len(sys.argv) > 5:                             # optional sample percentage
         fn(ch, out, threads, int(sys.argv[5]))
     else:

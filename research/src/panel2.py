@@ -19,7 +19,9 @@ Feature families: BASE (the published 13), HIST (history, equity,
 local rates, market cycle), GEO (AHAH environment), VIEW (national
 30 m outlook).
 
-Usage: python panel2.py <transactions.parquet> <geo.parquet> <view30.parquet|-> <out_dir> <n_chunks>
+Usage: python panel2.py <transactions.parquet> <geo.parquet> <view30.parquet|-> <out_dir> <n_chunks> [start_chunk]
+
+20 chunks is every home in England and Wales.
 """
 
 import json
@@ -242,10 +244,14 @@ class Panel:
         return X
 
 
-def write_chunks(panel, out_dir, n_chunks):
+def write_chunks(panel, out_dir, n_chunks, start=0):
+    """Write chunks start..n_chunks-1. Chunks already on disk are kept, so a
+    table built for part of the country can be extended to all of it."""
     out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
     meta = {"features": ALL, "families": FAMILIES, "chunks": []}
-    for c in range(n_chunks):
+    if start and (out / "meta.json").exists():
+        meta["chunks"] = [c for c in json.load(open(out / "meta.json"))["chunks"] if c["id"] < start]
+    for c in range(start, n_chunks):
         lo, hi = c * CHUNK_BUCKETS, (c + 1) * CHUNK_BUCKETS
         spells = np.nonzero((panel.bucket >= lo) & (panel.bucket < hi))[0]
         rows, years, label = panel.expand(spells)
@@ -268,4 +274,4 @@ def write_chunks(panel, out_dir, n_chunks):
 if __name__ == "__main__":
     tx, geo, view, out_dir, n_chunks = sys.argv[1:6]
     panel = Panel(tx, geo, None if view == "-" else view)
-    write_chunks(panel, out_dir, int(n_chunks))
+    write_chunks(panel, out_dir, int(n_chunks), int(sys.argv[6]) if len(sys.argv) > 6 else 0)

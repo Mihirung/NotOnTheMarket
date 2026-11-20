@@ -30,7 +30,9 @@ PAIRS = [("BASE@10", "+HIST@10"), ("+HIST@10", "+HIST+GEO@10"), ("+HIST@10", "+H
          ("BASE@10", "ALL@10"), ("BASE@1", "ALL@1"), ("BASE@5", "ALL@5"), ("BASE@20", "ALL@20"), ("BASE@40", "ALL@40"),
          ("BASE@5", "ALL@40"), ("ALL@1", "ALL@5"), ("ALL@5", "ALL@10"), ("ALL@10", "ALL@20"), ("ALL@20", "ALL@40"),
          ("ALL@1", "ALL@40"), ("ALL@5", "ALL@40"), ("BASE@1", "BASE@40"), ("BASE@5", "BASE@40"),
-         ("no_VIEW@20", "ALL@20"), ("no_GEO@20", "ALL@20")]
+         ("no_VIEW@20", "ALL@20"), ("no_GEO@20", "ALL@20"),
+         ("BASE@100", "ALL@100"), ("BASE@5", "ALL@100"), ("ALL@40", "ALL@100"), ("ALL@5", "ALL@100"),
+         ("ALL@1", "ALL@100"), ("BASE@1", "BASE@100"), ("no_VIEW@100", "ALL@100")]
 TENURE = [("all", 0, 99), ("t0_9", 0, 10), ("t10_19", 10, 20), ("t20p", 20, 99)]
 
 
