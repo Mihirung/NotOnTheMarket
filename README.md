@@ -54,20 +54,26 @@ The prototype trades under the working name **Quiet Market**.
    to.** Air quality, distances and a national view layer add nothing
    inside a district once local sale history is in the model. For views
    this was tested on every home in the country.
-7. **The view can be computed for every house and searched, without a
-   photograph.** In Exeter 22% of addresses can see the cathedral, and
-   in Bath 26% can see the Abbey. On half of Exeter's postcodes some
-   homes have the cathedral in sight and their neighbours do not, which
-   is why it has to be done house by house
+7. **The view can be computed, drawn and searched for every house,
+   without a photograph.** All 89,539 houses in Exeter and Bath have
+   their own drawn panorama. In Exeter 22% of addresses can see the
+   cathedral, and in Bath 28% can see the Abbey. On nearly half of
+   Exeter's postcodes some homes have the cathedral in sight and their
+   neighbours do not, which is why it has to be done house by house
    ([docs/07](docs/07-house-level-views.md)).
-8. **Views are for the buyer's search, not for the prediction.** An
+8. **The method travels, and a view is worth the same in both cities.**
+   Built in Exeter and run unchanged in Bath, it puts the long views on
+   the hillside streets and not the valley floor, and buyers pay 4% to
+   5% more for a long view in both places.
+9. **A view changes what a home is worth, not when its owner sells.** An
    earlier finding that homes with long views sell less often holds in
-   Exeter and does not carry over to Bath.
-9. **Lighter homes are kept longer.** In both cities the darkest quarter
+   Exeter and does not carry over to Bath. Views are for the buyer's
+   search and for setting the offer, not for choosing doors.
+10. **Lighter homes are kept longer.** In both cities the darkest quarter
    of homes is sold about a fifth more often than the lightest. Most of
    that is the kind of home, a smaller effect survives a fair
    comparison, and whether front or back matters more is not settled.
-10. **Whether a buyer hears back is a product-design problem, not a
+11. **Whether a buyer hears back is a product-design problem, not a
     modelling one.** Break-even is 1 owner in 300 scanning their card.
     The whole model review moved the postage per conversation by £5.
     What decides the outcome is how wide the buyer's brief is, which is
@@ -85,12 +91,14 @@ Bath:
   that is not overlooked, evening sun, sunny back rooms, and whether you
   can see the cathedral or the Abbey. Homes are counted only if they
   have everything you asked for.
-- **See the view drawn** for each neighbourhood, with the sun's path
-  over a typical garden.
+- **See the view drawn**: page through six real houses in each
+  neighbourhood, each with its upstairs view and its garden with the
+  sun's path.
 - **Send postcards** (simulated: nothing is printed or posted) and
   follow the replies.
 - **The owner's side**: a private offer page reached from the card,
-  showing the offer and the owner's own view, drawn.
+  showing the offer and the drawn view of a house on the owner's
+  postcode.
 
 No address, postcode or coordinate of any individual home is in the
 site's data.

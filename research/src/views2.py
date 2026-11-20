@@ -202,13 +202,15 @@ def landmark_top(city, e, n, kind, extra):
     return float(city.far_z[max(fr - 3, 0):fr + 4, max(fc - 3, 0):fc + 4].max()) + extra
 
 
-def sees(city, e, n, z_eye, te, tn, tz, K=700):
+def sees(city, e, n, z_eye, te, tn, tz, K=700, start=OWN_CAP):
     """Can each viewpoint see the target point? Judged on the 1 m surface
-    wherever the sight-line is inside the city, on 30 m terrain beyond."""
+    wherever the sight-line is inside the city, on 30 m terrain beyond.
+    `start` is how far out the sight-line begins: OWN_CAP when the viewpoint
+    is inside the house, a metre or two when it already stands outside the wall."""
     dist = np.hypot(te - e, tn - n)
     ux, uy = (te - e) / np.maximum(dist, 1), (tn - n) / np.maximum(dist, 1)
-    span = np.maximum(dist - 60.0 - OWN_CAP, 1.0)
-    d = OWN_CAP + span[:, None] * np.linspace(0, 1, K)[None, :]
+    span = np.maximum(dist - 60.0 - start, 1.0)
+    d = start + span[:, None] * np.linspace(0, 1, K)[None, :]
     z, _, ok = city.sample(e[:, None] + ux[:, None] * d, n[:, None] + uy[:, None] * d, True)
     curv = d ** 2 / (2 * R_EARTH) * (1 - REFRACTION)
     path = np.where(ok, (z - curv - z_eye[:, None]) / d, -np.inf).max(axis=1)
@@ -216,17 +218,81 @@ def sees(city, e, n, z_eye, te, tn, tz, K=700):
     return (path < target) | (dist < 150)
 
 
-def near_clear(slope, bearing, e, n, z_eye, te, tn, tz):
-    """Is the target clear of everything in the first few metres beyond the
-    house's own walls (a hedge, a neighbour's gable)? sees() starts its
-    sight-line OWN_CAP metres out so that the house cannot block itself; this
-    closes the gap using the ray already cast in the target's direction."""
+def near_clear(slope, bearing, e, n, z_eye, te, tn, tz, reach=OWN_CAP):
+    """Is the target clear of everything close by (a hedge, a neighbour's
+    gable)? sees() samples its sight-line every several metres, which can step
+    over something thin and near; this closes the gap using the ray already
+    cast in the target's direction, which is sampled every metre. `reach` is
+    how many metres out to check."""
     dist = np.hypot(te - e, tn - n)
     target = (tz - dist ** 2 / (2 * R_EARTH) * (1 - REFRACTION) - z_eye) / np.maximum(dist, 1)
     step = bearing[1] - bearing[0]
     j = np.round((np.degrees(np.arctan2(te - e, tn - n)) % 360) / step).astype(int) % len(bearing)
-    near = slope[np.arange(len(e)), j, :OWN_CAP].max(axis=1)
-    return (near < target) | (dist < 150)
+    k = int(np.searchsorted(D_LOC, reach, side="right"))
+    ray = slope[np.arange(len(e)), j, :k]
+    ray = np.where(D_LOC[None, :k] < (dist[:, None] - 60.0), ray, -np.inf)     # never judge beyond the target
+    return (ray.max(axis=1) < target) | (dist < 150)
+
+
+# ---------------------------------------------------------------- front and back walls
+def compose(front, back, bearing, normal):
+    """Join two casts into one all-round view: the front-wall cast for
+    directions within 90 degrees of the way the front faces, the back-wall
+    cast for the rest. `front` and `back` are (out, (slope, vis, cls)) from
+    cast(); `normal` is each house's front bearing in degrees."""
+    use_front = np.abs(((bearing[None, :] - normal[:, None] + 180) % 360) - 180) < 90      # (B, R)
+    of, (sf, vf, cf) = front; ob, (sb, vb, cb) = back
+    out = {"bearing": bearing}
+    for k in of:
+        if k != "bearing":
+            out[k] = np.where(use_front, of[k], ob[k])
+    m = use_front[:, :, None]
+    return out, (np.where(m, sf, sb), np.where(m, vf, vb), np.where(m, cf, cb))
+
+
+# ---------------------------------------------------------------- drawing bands for every house
+A_LO, A_SPAN, A_LEVELS = -np.sqrt(8.0), np.sqrt(8.0) + np.sqrt(50.0), 87
+# 87 characters that are safe inside JSON inside a <script> block: one per angle code.
+ALPH = ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+        "!#$%()*+,-./:;=?@[]^_{|}~")
+
+
+def encode_angles(a_deg):
+    """Angles in degrees -> codes 0..86 on a square-root scale: fine near the
+    horizon, where distant hills live, coarse high up. One byte per value."""
+    a = np.clip(a_deg, -8.0, 50.0)
+    v = np.sign(a) * np.sqrt(np.abs(a))
+    return np.round((v - A_LO) / A_SPAN * (A_LEVELS - 1)).astype("uint8")
+
+
+def decode_angles(code):
+    v = code.astype("float32") / (A_LEVELS - 1) * A_SPAN + A_LO
+    return np.sign(v) * v * v
+
+
+def bands_from_cast(slope, vis, cls, n_cls_bands=4):
+    """The layered panorama for a whole batch at once, from casts already made.
+    Returns (angles, classes, water): angle codes for each of the seven
+    distance bands (B, 7, R); what tops each of the nearest bands (B, 4, R);
+    and the angle range of visible water (B, 2, R), 255 where there is none."""
+    ang = np.degrees(np.arctan(np.where(np.isfinite(slope), slope, -10.0)))                # (B, R, D)
+    B, R, _ = ang.shape
+    angles = np.empty((B, len(PANO_EDGES) - 1, R), dtype="uint8")
+    classes = np.zeros((B, n_cls_bands, R), dtype="uint8")
+    for k, (lo, hi) in enumerate(zip(PANO_EDGES[:-1], PANO_EDGES[1:])):
+        m = (D_ALL >= max(lo, 1)) & (D_ALL < hi)
+        a = ang[:, :, m]
+        i = np.argmax(a, axis=2)
+        angles[:, k, :] = encode_angles(np.take_along_axis(a, i[:, :, None], axis=2)[:, :, 0])
+        if k < n_cls_bands:
+            classes[:, k, :] = np.take_along_axis(cls[:, :, m], i[:, :, None], axis=2)[:, :, 0]
+    wat = vis & ((cls == WATER) | (cls == TIDAL))
+    any_w = wat.any(axis=2)
+    lo = np.where(wat, ang, 90.0).min(axis=2); hi = np.where(wat, ang, -90.0).max(axis=2)
+    water = np.full((B, 2, R), 255, dtype="uint8")
+    water[:, 0, :] = np.where(any_w, encode_angles(lo), 255)
+    water[:, 1, :] = np.where(any_w, encode_angles(hi), 255)
+    return angles, classes, water
 
 
 # ---------------------------------------------------------------- per-house geometry

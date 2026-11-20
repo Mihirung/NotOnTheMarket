@@ -33,7 +33,6 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent))
-
 SCORE_YEAR = 2020
 KMH_URBAN = 30.0
 BANDS = [(0, 250_000, "under250"), (250_000, 400_000, "250to400"),
@@ -73,29 +72,8 @@ LIGHT = [("lightback", "Sunny back rooms", "Five hours or more of direct sun a d
          ("wintersun", "Winter sun indoors", "Two hours or more of direct sun on the downstairs windows, front or back, on the shortest day.",
           lambda L: np.maximum(L.winter_front, L.winter_back) >= 2.0)]
 
-# 87 characters that are safe inside JSON inside a <script> block.
-ALPH = ("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-        "!#$%()*+,-./:;=?@[]^_{|}~")
-A_LO, A_SPAN = -np.sqrt(8.0), np.sqrt(8.0) + np.sqrt(50.0)
-
-
-def enc_angles(a10):
-    """Angles (tenths of a degree) -> one character each on a square-root scale,
-    fine near the horizon where distant hills live, coarse high up."""
-    a = np.clip(np.asarray(a10, dtype="float64") / 10.0, -8, 50)
-    v = np.sign(a) * np.sqrt(np.abs(a))
-    i = np.round((v - A_LO) / A_SPAN * (len(ALPH) - 1)).astype(int)
-    return "".join(ALPH[k] for k in i)
-
-
-def enc_pano(p):
-    lo = [w[0] if w else None for w in p["water"]]
-    hi = [w[1] if w else None for w in p["water"]]
-    wat = lambda v: "".join(" " if x is None else enc_angles([x]) for x in v)
-    return {"step": p["step"], "edges": p["edges"],
-            "a": [enc_angles(b) for b in p["bands"]],
-            "c": ["".join(str(int(x)) for x in c) for c in p["cls"][:4]],     # far bands are drawn as country
-            "wl": wat(lo), "wh": wat(hi), "lm": p.get("lm", [])}
+import city_views as CV  # noqa: E402
+from views2 import ALPH, A_LO, A_SPAN  # noqa: E402
 
 
 def band_of(v):
@@ -217,20 +195,19 @@ def export_city(key, cfg, cache, geo, views_dir, model_meta):
 
     views = {}
     for sec, e in sec_json["sectors"].items():
-        v = {k: e[k] for k in ("n_houses", "n_addr", "shares", "landmarks", "typical", "best", "typ") if k in e}
+        v = {k: e[k] for k in ("n_houses", "n_addr", "landmarks", "typical", "homes")}
         v["shares"] = {k: round(float(sv.get(sec, 0.0)), 2) for k, sv in sec_share.items()}
-        v["garden"] = e.get("garden")
-        for k in ("pano_typical", "pano_best", "pano_garden"):
-            if k in e:
-                v[k] = enc_pano(e[k])
         views[sec] = v
+    P = dict(np.load(Path(views_dir) / f"panos_{key}.npz"))          # every house's drawing
+    lmk = [(l["name"], l["e"], l["n"], l["top_m"]) for l in sec_json["meta"]["landmarks"]]
+    by_pc = houses[houses.has_garden].groupby("postcode").head(1).reset_index().set_index("postcode")["index"]
 
     rng = np.random.RandomState(42 if key == "exeter" else 7)
     pool = d[d.top & d.ptype.isin(["S", "T", "D"]) & d.est_value.between(240_000, 650_000)
              & d.sector.isin(list(views))].nlargest(400, "p_sale")
     exemplars, seen = [], set()
     for _, r in pool.iterrows():
-        if r.sector in seen or len(exemplars) >= 3 or "pano_garden" not in views[r.sector]:
+        if r.sector in seen or len(exemplars) >= 3 or r.postcode not in by_pc.index:
             continue
         seen.add(r.sector)
         exemplars.append({
@@ -239,7 +216,9 @@ def export_city(key, cfg, cache, geo, views_dir, model_meta):
             "est_value": int(round(r.est_value, -4)), "offer_lo": int(round(r.offer_mid * 0.96, -3)),
             "offer_mid": int(round(r.offer_mid, -3)), "offer_hi": int(round(r.offer_mid * 1.04, -3)),
             "premium_pct": round(float(r.premium) * 100, 1), "nox": round(float(r.nox), 1),
-            "min_centre": int(round(r.mins))})
+            "min_centre": int(round(r.mins)),
+            # a real house on this owner's postcode, drawn; no address or position is exported
+            "home": CV.home_entry(P, int(by_pc[r.postcode]), houses.loc[int(by_pc[r.postcode])], lmk, "yours")})
 
     return {
         "name": cfg["name"], "centre_name": cfg["centre_name"], "frank": cfg["frank"], "areas": cfg["areas"],

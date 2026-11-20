@@ -1,0 +1,352 @@
+{
+ "known_places": {
+  "exeter": [
+   {
+    "street": "Barley Lane",
+    "group": "high",
+    "houses": 59,
+    "ground_m": 67,
+    "reach_km": 28.8,
+    "long_views": 0.95,
+    "landmark": 0.84,
+    "any_landmark": 0.92
+   },
+   {
+    "street": "Pennsylvania Road",
+    "group": "high",
+    "houses": 180,
+    "ground_m": 64,
+    "reach_km": 22.5,
+    "long_views": 0.41,
+    "landmark": 0.5,
+    "any_landmark": 0.67
+   },
+   {
+    "street": "Dunsford Road",
+    "group": "high",
+    "houses": 84,
+    "ground_m": 24,
+    "reach_km": 22.1,
+    "long_views": 0.71,
+    "landmark": 0.62,
+    "any_landmark": 0.72
+   },
+   {
+    "street": "Rosebarn Lane",
+    "group": "high",
+    "houses": 110,
+    "ground_m": 105,
+    "reach_km": 30.0,
+    "long_views": 0.83,
+    "landmark": 0.25,
+    "any_landmark": 0.72
+   },
+   {
+    "street": "Okehampton Street",
+    "group": "low",
+    "houses": 41,
+    "ground_m": 8,
+    "reach_km": 13.0,
+    "long_views": 0.48,
+    "landmark": 0.76,
+    "any_landmark": 0.88
+   },
+   {
+    "street": "Sidwell Street",
+    "group": "low",
+    "houses": 138,
+    "ground_m": 47,
+    "reach_km": 7.6,
+    "long_views": 0.23,
+    "landmark": 0.54,
+    "any_landmark": 0.62
+   },
+   {
+    "street": "Clifton Road",
+    "group": "low",
+    "houses": 100,
+    "ground_m": 36,
+    "reach_km": 1.7,
+    "long_views": 0.07,
+    "landmark": 0.2,
+    "any_landmark": 0.37
+   },
+   {
+    "street": "Cowick Street",
+    "group": "low",
+    "houses": 175,
+    "ground_m": 8,
+    "reach_km": 4.9,
+    "long_views": 0.22,
+    "landmark": 0.52,
+    "any_landmark": 0.57
+   },
+   {
+    "street": "Alphington Road",
+    "group": "low",
+    "houses": 136,
+    "ground_m": 7,
+    "reach_km": 12.2,
+    "long_views": 0.71,
+    "landmark": 0.61,
+    "any_landmark": 0.69
+   }
+  ],
+  "bath": [
+   {
+    "street": "Camden Crescent",
+    "group": "high",
+    "houses": 57,
+    "ground_m": 80,
+    "reach_km": 10.8,
+    "long_views": 0.98,
+    "landmark": 0.76,
+    "any_landmark": 0.98
+   },
+   {
+    "street": "Lansdown Crescent",
+    "group": "high",
+    "houses": 26,
+    "ground_m": 112,
+    "reach_km": 28.5,
+    "long_views": 0.87,
+    "landmark": 0.31,
+    "any_landmark": 0.97
+   },
+   {
+    "street": "Sion Hill",
+    "group": "high",
+    "houses": 70,
+    "ground_m": 106,
+    "reach_km": 25.7,
+    "long_views": 0.91,
+    "landmark": 0.57,
+    "any_landmark": 0.78
+   },
+   {
+    "street": "Bathwick Hill",
+    "group": "high",
+    "houses": 143,
+    "ground_m": 60,
+    "reach_km": 25.5,
+    "long_views": 0.89,
+    "landmark": 0.75,
+    "any_landmark": 0.88
+   },
+   {
+    "street": "Widcombe Hill",
+    "group": "high",
+    "houses": 103,
+    "ground_m": 52,
+    "reach_km": 23.0,
+    "long_views": 0.55,
+    "landmark": 0.53,
+    "any_landmark": 0.76
+   },
+   {
+    "street": "Lower Bristol Road",
+    "group": "low",
+    "houses": 340,
+    "ground_m": 19,
+    "reach_km": 4.1,
+    "long_views": 0.75,
+    "landmark": 0.5,
+    "any_landmark": 0.85
+   },
+   {
+    "street": "Walcot Street",
+    "group": "low",
+    "houses": 167,
+    "ground_m": 30,
+    "reach_km": 6.8,
+    "long_views": 0.68,
+    "landmark": 0.63,
+    "any_landmark": 0.82
+   },
+   {
+    "street": "Great Pulteney Street",
+    "group": "low",
+    "houses": 82,
+    "ground_m": 23,
+    "reach_km": 4.7,
+    "long_views": 0.33,
+    "landmark": 0.65,
+    "any_landmark": 0.83
+   },
+   {
+    "street": "Livingstone Road",
+    "group": "low",
+    "houses": 83,
+    "ground_m": 27,
+    "reach_km": 4.6,
+    "long_views": 0.53,
+    "landmark": 0.04,
+    "any_landmark": 0.59
+   },
+   {
+    "street": "Upper Bristol Road",
+    "group": "low",
+    "houses": 296,
+    "ground_m": 22,
+    "reach_km": 3.7,
+    "long_views": 0.59,
+    "landmark": 0.28,
+    "any_landmark": 0.65
+   }
+  ]
+ },
+ "price": {
+  "exeter": {
+   "sales": 21196,
+   "postcodes": 2613,
+   "m_u_long": {
+    "label": "share of the horizon with a long view",
+    "premium_pct_per_sd": 4.3,
+    "range": [
+     2.9,
+     5.6
+    ]
+   },
+   "log_reach": {
+    "label": "furthest sight-line",
+    "premium_pct_per_sd": 3.9,
+    "range": [
+     2.8,
+     5.2
+    ]
+   },
+   "m_u_hills": {
+    "label": "hills on the skyline",
+    "premium_pct_per_sd": 3.7,
+    "range": [
+     2.2,
+     5.3
+    ]
+   },
+   "s_main": {
+    "label": "the cathedral or the Abbey in sight",
+    "premium_pct_per_sd": 2.7,
+    "range": [
+     0.9,
+     4.6
+    ]
+   },
+   "s_has_water": {
+    "label": "water in view",
+    "premium_pct_per_sd": 4.4,
+    "range": [
+     2.9,
+     6.0
+    ]
+   },
+   "m_sun_evening_jun": {
+    "label": "evening sun in the garden",
+    "premium_pct_per_sd": 0.3,
+    "range": [
+     -1.0,
+     2.0
+    ]
+   },
+   "m_g_overlooked": {
+    "label": "how overlooked the garden is",
+    "premium_pct_per_sd": -5.5,
+    "range": [
+     -7.0,
+     -4.1
+    ]
+   },
+   "m_g_horizon": {
+    "label": "how enclosed the garden is",
+    "premium_pct_per_sd": 0.3,
+    "range": [
+     -1.7,
+     2.8
+    ]
+   },
+   "light_best": {
+    "label": "sun on the sunnier side of the house",
+    "premium_pct_per_sd": -0.7,
+    "range": [
+     -2.5,
+     0.9
+    ]
+   }
+  },
+  "bath": {
+   "sales": 15649,
+   "postcodes": 2111,
+   "m_u_long": {
+    "label": "share of the horizon with a long view",
+    "premium_pct_per_sd": 4.7,
+    "range": [
+     2.7,
+     6.6
+    ]
+   },
+   "log_reach": {
+    "label": "furthest sight-line",
+    "premium_pct_per_sd": 6.6,
+    "range": [
+     4.3,
+     8.7
+    ]
+   },
+   "m_u_hills": {
+    "label": "hills on the skyline",
+    "premium_pct_per_sd": 2.8,
+    "range": [
+     1.0,
+     4.8
+    ]
+   },
+   "s_main": {
+    "label": "the cathedral or the Abbey in sight",
+    "premium_pct_per_sd": 4.8,
+    "range": [
+     3.0,
+     6.6
+    ]
+   },
+   "s_has_water": {
+    "label": "water in view",
+    "premium_pct_per_sd": 3.4,
+    "range": [
+     1.2,
+     5.7
+    ]
+   },
+   "m_sun_evening_jun": {
+    "label": "evening sun in the garden",
+    "premium_pct_per_sd": -1.8,
+    "range": [
+     -3.9,
+     0.3
+    ]
+   },
+   "m_g_overlooked": {
+    "label": "how overlooked the garden is",
+    "premium_pct_per_sd": -8.6,
+    "range": [
+     -10.5,
+     -6.2
+    ]
+   },
+   "m_g_horizon": {
+    "label": "how enclosed the garden is",
+    "premium_pct_per_sd": 3.7,
+    "range": [
+     0.8,
+     6.5
+    ]
+   },
+   "light_best": {
+    "label": "sun on the sunnier side of the house",
+    "premium_pct_per_sd": -4.8,
+    "range": [
+     -6.7,
+     -2.8
+    ]
+   }
+  }
+ }
+}

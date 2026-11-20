@@ -26,20 +26,17 @@ Usage:
   python light.py compute <exeter|bath> <views2_dir> [workers]
   python light.py analyse <transactions.parquet> <views2_dir>
 """
-import glob
 import json
 import sys
 from pathlib import Path
 
-import geopandas as gpd
 import numpy as np
 import pandas as pd
-import shapely
 
 sys.path.insert(0, str(Path(__file__).parent))
 import views2 as V  # noqa: E402
 import city_views as CV  # noqa: E402
-from city_views import CITIES  # noqa: E402
+from city_views import CITIES, facade_points, front_bearing  # noqa: E402
 from propensity_model import build_panel, district_year_features, featurise  # noqa: E402
 
 DAYS = (("jun", 172, 1), ("equinox", 80, 2), ("dec", 355, 1))
@@ -52,24 +49,6 @@ LABEL = {"light_front": "downstairs front windows, yearly average", "light_back"
          "top_front": "top-floor front windows, yearly average", "top_back": "top-floor back windows, yearly average"}
 CTRL = ["tenure", "log_price_rel", "leasehold", "is_new", "n_prior", "turnover_3y", "price_rel_nat",
         "ptype_D", "ptype_S", "ptype_T", "ptype_F"]
-
-
-def front_bearing(h, cfg):
-    """Bearing from each house to the nearest road, in degrees from north."""
-    E0, E1, N0, N1 = cfg["grid"]
-    base = glob.glob(f"{cfg['om']}/*/data/")[0]
-    roads = gpd.read_file(f"{base}{cfg['sq']}_Road.shp", bbox=(E0, N0, E1, N1), engine="pyogrio")
-    tree = shapely.STRtree(roads.geometry.values)
-    pts = shapely.points(h.e.to_numpy(), h.n.to_numpy())
-    near = roads.geometry.values[tree.nearest(pts)]
-    link = shapely.shortest_line(pts, near)
-    xy = shapely.get_coordinates(link).reshape(-1, 2, 2)
-    de, dn = xy[:, 1, 0] - xy[:, 0, 0], xy[:, 1, 1] - xy[:, 0, 1]
-    dist = np.hypot(de, dn)
-    front = np.degrees(np.arctan2(de, dn)) % 360
-    from_garden = (h.garden_bearing.to_numpy() + 180) % 360
-    use_garden = (dist > 60) | (dist < 1)
-    return np.where(use_garden & np.isfinite(from_garden), from_garden, front), dist
 
 
 def facade_sun(hz, normal, lat):
@@ -86,29 +65,6 @@ def facade_sun(hz, normal, lat):
             out["evening_jun"] = (lit & (t[None, :] >= 16.0)).sum(1) / 6.0
     out["year"] = sum(w * out[n] for n, _, w in DAYS) / sum(w for *_, w in DAYS)
     return out
-
-
-def facade_points(h, front, bld, city):
-    """One metre outside the front wall and the back wall of each house."""
-    e, n = h.e.to_numpy(), h.n.to_numpy()
-    pts = {}
-    for side, brg in (("front", front), ("back", (front + 180) % 360)):
-        dx, dy = np.sin(np.radians(brg)), np.cos(np.radians(brg))
-        k = np.arange(0, 21)
-        E = e[:, None] + dx[:, None] * k[None, :]; N = n[:, None] + dy[:, None] * k[None, :]
-        r, c = city.rc(E, N)
-        np.clip(r, 0, city.h - 1, out=r); np.clip(c, 0, city.w - 1, out=c)
-        inside = bld[r, c]
-        entered = np.maximum.accumulate(inside, axis=1)            # address points can sit just off the footprint
-        out_after = entered & ~inside
-        # still inside after 20 m: a long building, stop at 12 m; never inside: the point is already outside
-        first = np.where(out_after.any(axis=1), np.argmax(out_after, axis=1), np.where(inside[:, -1], 12, 0))
-        d = first + 1.0
-        fe, fn = e + dx * d, n + dy * d
-        rr, cc = city.rc(fe, fn)
-        np.clip(rr, 0, city.h - 1, out=rr); np.clip(cc, 0, city.w - 1, out=cc)
-        pts[side] = (fe, fn, city.ground[rr, cc].astype("float64"), d)
-    return pts
 
 
 def _cast(batch):

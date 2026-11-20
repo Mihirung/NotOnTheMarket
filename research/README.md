@@ -136,13 +136,21 @@ python src/fetch_lidar.py dtm data/terrain/lidar_bath 368000 382000 160000 17000
 #     sight-lines to landmarks, and drawn panoramas per postcode sector:
 python src/city_views.py exeter outputs/views2 3
 python src/city_views.py bath outputs/views2 3
-python src/city_views.py bath outputs/views2 3 sectors   # redraw panoramas only
+python src/city_views.py bath outputs/views2 3 sectors   # rebuild sector summaries only
+
+# 12b. Draw any one house from the stored arrays (no terrain data needed),
+#      by its row in the house table or by easting and northing:
+python src/house_view.py exeter outputs/views2 one_house.html 4216
 
 # 13. Do the views predict sale timing in both cities, and does the effect
 #     carry from one city to the other? How well does the national 30 m
 #     layer track the 1 m truth?
 python src/view_ablation2.py data/transactions.parquet outputs/views2 outputs/views2
 python src/view_fidelity.py data/view30_postcode.parquet outputs/views2 outputs/views2/view_fidelity.json
+
+# 13a. Does the method travel? Known streets in each city, and whether a
+#      view is worth the same price premium in both:
+python src/travel_tests.py data/transactions.parquet outputs/views2
 
 # 13b. Sun on the windows, front and back, downstairs and at the top floor,
 #      for every house; then whether lighter homes are sold less often:
@@ -158,17 +166,23 @@ python src/export_site_v4.py export data/site_cache data/geo_postcode.parquet \
 python ../web/build.py
 ```
 
-- **`src/views2.py`** is the house-level engine: one viewpoint at the
-  upper windows and one in the garden of each address point, 240 rays
-  each, 1 m surface to 1 km and 30 m terrain to 30 km in one pass; hours
+- **`src/views2.py`** is the house-level engine: viewpoints one metre
+  outside the front and back walls at top-floor height, joined into one
+  all-round view, and one in the garden; 240 rays each, 1 m surface to
+  1 km and 30 m terrain to 30 km in one pass; hours
   of direct sun in the garden from the horizon profile and the sun's
   path; sight-lines to named landmarks; and the layered panorama used to
   draw the view.
 - **`src/city_views.py`** runs it for a whole city and writes per-house,
   per-postcode and per-sector tables. Exeter and Bath are configured;
   adding a city is a grid, a list of outcodes and a list of landmarks.
-- **`src/view_ablation2.py`** and **`src/view_fidelity.py`** are the two
+- **`src/house_view.py`** draws any single house from the drawing stored
+  for it: every house in both cities has one.
+- **`src/view_ablation2.py`** and **`src/view_fidelity.py`** are two
   checks: sale timing, and national-layer fidelity.
+- **`src/travel_tests.py`** is the proof that the method travels: named
+  hillside and valley streets in each city, and the price premium for
+  each view measure in each city.
 - **`src/light.py`** stands one metre outside each house's front and back
   walls at window height, traces the skyline, and counts the hours of
   direct sun on those windows through the year. Its `analyse` step tests

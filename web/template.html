@@ -434,7 +434,7 @@ function panoSVG(p, o={}){
 const andList = a => a.length<2 ? a.join("") : a.slice(0,-1).join(", ")+" and "+a[a.length-1];
 const fromWindows = st => st<=1 ? "the windows of a single-storey home" : `the upper windows of a ${st}-storey home`;
 function share10(s){ const n=Math.round(s*10); return n>=10?"nearly every home":n>=1?`${n} in 10 homes`:s>=.02?"a few homes":"no homes"; }
-function lmList(v){ const pos={}; ((v.pano_typical||{}).lm||[]).forEach(l=>pos[l.name]=l);
+function lmList(v){ const pos={}; ((v.homes[0].up||{}).lm||[]).forEach(l=>pos[l.name]=l);
   return Object.entries(v.landmarks||{}).map(([name,s])=>({name, s, b:(pos[name]||{}).b, km:(pos[name]||{}).km})); }
 function viewTags(v){
   const gen=FLAGS().filter(f=>!f.lm && (v.shares[f.key]||0)>=.3).map(f=>
@@ -458,36 +458,40 @@ function sunBoxes(p, city){
 const HZ_LEGEND = `<div class="hzlegend"><span><i style="background:var(--v-bld)"></i>buildings</span><span><i style="background:var(--v-tree)"></i>trees</span>
   <span><i style="background:var(--v-land)"></i>ground, walls and hedges</span><span><i style="background:var(--v-water)"></i>water</span>
   <span><i style="background:var(--v-hill);opacity:.45"></i>distant country, paler with distance</span></div>`;
+const HOME_TITLE = {typical:"A typical home here", best:"The best outlook here", other:"Another home here", yours:"Your home"};
 function vViewPanel(sector){
   const v=viewOf(sector); if(!v) return "";
-  const city=C(), mode=(S.viewMode==="garden"&&v.pano_garden)?"garden":S.viewMode==="best"?"best":"typical";
-  const p=mode==="garden"?v.pano_garden:mode==="best"?v.pano_best:v.pano_typical;
-  const seen=(p.lm||[]).filter(l=>l.sees);
-  const inSight=seen.length?`In sight from this one: ${seen.map(l=>`${l.name} (${l.km} km, ${compass(l.b)})`).join(", ")}.`:"None of the landmarks is in sight from this one.";
-  const intro = mode==="garden"
-    ? `A typical garden in this pocket, drawn from where you would stand in it. It lies to the <b>${compass(v.garden.bearing)}</b> of its house. The orange lines are the sun's path on three days of the year: solid where the sun reaches the garden, dotted where a roof or a tree is in the way.`
-    : mode==="best"
-    ? `The widest outlook we found in this pocket, from ${fromWindows(v.best.storeys)}. It reaches <b>${v.best.longest_km} km</b> and opens towards the ${compass(v.best.facing)}. ${inSight}`
-    : `A typical home in this pocket, seen from ${fromWindows(v.typ.storeys)}. It looks out about ${v.typ.longest_km} km at its furthest. ${inSight}`;
-  const btn=(k,l)=>`<button class="chip ${mode===k?"on":""}" onclick="S.viewMode='${k}';save();render()">${l}</button>`;
+  const city=C(), n=v.homes.length, hi=Math.min(Math.max(0,S.viewHome||0), n-1), h=v.homes[hi];
+  const garden=S.viewMode==="garden" && h.garden, p=garden?h.garden:h.up;
+  const seen=(h.up.lm||[]).filter(l=>l.sees);
+  const inSight=seen.length?`In sight from this one: ${andList(seen.map(l=>`${esc(l.name)} (${l.km} km, ${compass(l.b)})`))}.`:"None of the landmarks is in sight from this one.";
+  const intro = garden
+    ? `The garden of this house, drawn from where you would stand in it. It lies to the <b>${compass(h.garden_bearing)}</b> of the house. The orange lines are the sun's path on three days of the year: solid where the sun reaches the garden, dotted where a roof or a tree is in the way.`
+    : `${h.kind==="best"?"The widest outlook we found in this pocket":h.kind==="typical"?"A typical home in this pocket":"Another real home in this pocket"}, seen from ${fromWindows(h.storeys)}, front and back together. It looks out <b>${h.reach_km} km</b> at its furthest and opens towards the ${compass(h.facing)}. ${inSight}`;
+  const go=d=>`S.viewHome=${(hi+d+n)%n};save();render()`;
   return `<div class="viewpanel fadein">
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
-      <div><div class="eyebrow">The view · ${esc(sector)} · ${v.n_houses.toLocaleString()} houses measured</div>
-        <h3>${mode==="garden"?"Standing in the garden":mode==="best"?"The best outlook here":"A typical upstairs view"}</h3></div>
-      <div class="chiprow" style="margin:0">${btn("typical","Typical upstairs")}${btn("best","Best here")}${v.pano_garden?btn("garden","Garden and sun"):""}
+      <div><div class="eyebrow">The view · ${esc(sector)} · ${v.n_houses.toLocaleString()} houses measured, each with its own drawing</div>
+        <h3>${HOME_TITLE[h.kind]}${garden?": the garden":""}</h3></div>
+      <div class="chiprow" style="margin:0">
+        <button class="chip" aria-label="Previous home" onclick="${go(-1)}">‹</button>
+        <span class="mono" style="font-size:12px;color:var(--muted);align-self:center">home ${hi+1} of ${n}</span>
+        <button class="chip" aria-label="Next home" onclick="${go(1)}">›</button>
+        <button class="chip ${garden?"":"on"}" onclick="S.viewMode='up';save();render()">Upstairs</button>
+        ${h.garden?`<button class="chip ${garden?"on":""}" onclick="S.viewMode='garden';save();render()">Garden and sun</button>`:""}
         <button class="chip" onclick="S.viewSector=null;save();render()">Close</button></div>
     </div>
     <p style="color:var(--muted);font-size:15px;margin:8px 0 10px">${intro}</p>
-    <div class="pano panoscroll">${panoSVG(p,{sun:mode==="garden",lat:city.lat,lon:city.lon,label:"Drawn view for "+sector})}</div>
+    <div class="pano panoscroll">${panoSVG(p,{sun:!!garden,lat:city.lat,lon:city.lon,label:"Drawn view for a home in "+sector})}</div>
     ${HZ_LEGEND}
-    ${mode==="garden"?sunBoxes(p,city):""}
+    ${garden?sunBoxes(p,city):""}
     <p class="panocap">${esc(viewSentence(v,"in this pocket"))}</p>
     <div class="lmrow">${lmList(v).map(l=>`<span class="lm ${l.s>=.3?"yes":""}">${esc(l.name)} · ${share10(l.s)}</span>`).join("")}</div>
     <div class="lmrow">${FLAGS().filter(f=>!f.lm).map(f=>`<span class="lm" title="${esc(f.why)}">${f.label} · ${Math.round((v.shares[f.key]||0)*10)} in 10</span>`).join("")}</div>
-    <p class="note" style="margin:8px 0 0">Drawn from a 3-D model of the ground, every building and every tree, measured by laser from the air. Not a photograph, and nobody has visited.</p>
+    <p class="note" style="margin:8px 0 0">Every house in ${city.name} has a drawing like this. These are real houses from this pocket, shown without their address. Drawn from a 3-D model of the ground, every building and every tree, measured by laser from the air. Not a photograph, and nobody has visited.</p>
   </div>`;
 }
-function openView(sector){ S.viewSector=sector; if(!["typical","best","garden"].includes(S.viewMode)) S.viewMode="typical"; save(); render(); }
+function openView(sector){ S.viewSector=sector; S.viewHome=0; if(!["up","garden"].includes(S.viewMode)) S.viewMode="up"; save(); render(); }
 
 const PT = {D:"Detached houses",S:"Semi-detached houses",T:"Terraced houses",F:"Flats & maisonettes"};
 const PT1 = {D:"detached house",S:"semi-detached house",T:"terraced house",F:"flat"};
@@ -502,7 +506,7 @@ const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&g
 
 const DEFAULTS = {brief:{max:475000, types:["S","T","D"], airMax:100, openMin:0,
     minsCentre:12, gpKm:3, views:[]}, selected:[], campaign:null, day:0, connected:false, seller:{},
-    viewSector:null, viewMode:"typical", city:"exeter"};
+    viewSector:null, viewMode:"up", viewHome:0, city:"exeter"};
 let S = load();
 function load(){ try{const r=localStorage.getItem("qm4");
   if(r) return {...structuredClone(DEFAULTS), ...JSON.parse(r)};}catch(e){}
@@ -864,7 +868,7 @@ function vResults(){
         <div class="tags"><span class="tag">NOx ${c.nox}</span><span class="tag">${c.min_centre} min to centre</span>
           <span class="tag">GP ${c.km_gp} km</span><span class="tag">${Math.round(c.tenure_med)} yrs owned</span></div>
         ${(()=>{const v=viewOf(c.sector); if(!v) return ""; return `
-        <div class="panomini">${panoSVG(v.pano_typical,{mini:true,label:"Typical upstairs view in "+c.sector})}</div>
+        <div class="panomini">${panoSVG(v.homes[0].up,{mini:true,label:"Typical upstairs view in "+c.sector})}</div>
         <div class="viewtags">${viewTags(v)}<button class="seeview" onclick="event.stopPropagation();openView('${esc(c.sector)}')">See the view →</button></div>`;})()}
         <div class="note" style="margin-top:2px">${c.n_top} cards · premium ≈ ${(c.premium_med*100).toFixed(0)}%</div>
       </div>`;}).join("")}
@@ -1038,22 +1042,22 @@ function vOffer(code){
       <button class="btn quiet" onclick="S.seller['${esc(code)}']='declined';save();render()">No thanks, don't write again</button>
     </div>
     <p class="note">No obligation. Nothing public. Interested does not mean committed: it opens a conversation, through us, never directly.</p>
-    ${(()=>{const v=viewOf(ex.sector, ex.city); if(!v) return ""; const p=v.pano_best, g=v.pano_garden;
+    ${(()=>{const h=ex.home; if(!h) return ""; const p=h.up, g=h.garden;
       const seen=(p.lm||[]).filter(l=>l.sees);
       return `
     <div class="viewpanel" style="margin-top:30px">
       <div class="eyebrow">What your home can see</div>
       <h3 style="margin:6px 0 4px">We looked at your view before we wrote</h3>
-      <p style="color:var(--muted);font-size:15px;margin:0 0 10px">From your upper windows the outlook reaches about <b>${v.best.longest_km} km</b>, opening towards the ${compass(v.best.facing)}.
+      <p style="color:var(--muted);font-size:15px;margin:0 0 10px">From your ${h.storeys<=1?"windows":"upper windows"}, front and back together, the outlook reaches about <b>${h.reach_km} km</b>, opening towards the ${compass(h.facing)}.
         ${seen.length?`You can see ${andList(seen.map(l=>`${esc(l.name)} (${l.km} km)`))}.`:""}
         That is part of why the buyer chose a home like yours. This is drawn from a 3-D model of the land and every building and tree around you. It is not a photo, and nobody has been near your home.</p>
       <div class="pano panoscroll">${panoSVG(p,{label:"Drawn view from your upper windows"})}</div>
       ${HZ_LEGEND}
       ${g?`<h3 style="margin:22px 0 4px">And where the sun falls in your garden</h3>
-      <p style="color:var(--muted);font-size:15px;margin:0 0 10px">Your garden lies to the <b>${compass(v.garden.bearing)}</b> of the house. The orange lines are the sun's path on three days of the year: solid where the sun reaches the garden, dotted where a roof or a tree is in the way.</p>
+      <p style="color:var(--muted);font-size:15px;margin:0 0 10px">Your garden lies to the <b>${compass(h.garden_bearing)}</b> of the house. The orange lines are the sun's path on three days of the year: solid where the sun reaches the garden, dotted where a roof or a tree is in the way.</p>
       <div class="pano panoscroll">${panoSVG(g,{sun:true,lat:city.lat,lon:city.lon,label:"Drawn view from your garden with the sun's path"})}</div>
       ${sunBoxes(g,city)}`:""}
-      <p class="note" style="margin:10px 0 0">In this prototype the drawing is of a representative home in your postcode sector. In the live product it is your own.</p>
+      <p class="note" style="margin:10px 0 0">In this prototype the owner is fictional, so the drawing is of a real house on the same postcode. In the live product it is your own.</p>
     </div>`;})()}
     <div id="faqs" style="margin-top:32px">
       <div class="eyebrow">Fair questions</div>

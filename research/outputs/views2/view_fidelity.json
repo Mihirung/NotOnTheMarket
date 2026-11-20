@@ -2,11 +2,11 @@
  "exeter": {
   "n_postcodes": 3667,
   "spearman": {
-   "long views (2 km+)": 0.36,
+   "long views (2 km+)": 0.37,
    "longest sight-line": 0.67,
-   "water in view": 0.58,
+   "water in view": 0.59,
    "hills on the skyline": 0.48,
-   "skyline height, upstairs": 0.41,
+   "skyline height, upstairs": 0.21,
    "skyline height, garden": 0.11,
    "roughness vs overlooked": -0.19,
    "west horizon vs evening sun": -0.16,
@@ -17,11 +17,11 @@
  "bath": {
   "n_postcodes": 2878,
   "spearman": {
-   "long views (2 km+)": 0.25,
+   "long views (2 km+)": 0.23,
    "longest sight-line": 0.73,
-   "water in view": 0.11,
-   "hills on the skyline": 0.69,
-   "skyline height, upstairs": 0.57,
+   "water in view": 0.12,
+   "hills on the skyline": 0.68,
+   "skyline height, upstairs": 0.37,
    "skyline height, garden": 0.29,
    "roughness vs overlooked": -0.15,
    "west horizon vs evening sun": -0.23,
