@@ -24,7 +24,9 @@ from compute_views import LANDMARKS  # noqa: E402
 def bearing_deg(e0, n0, e1, n1):
     return float(np.degrees(np.arctan2(e1 - e0, n1 - n0)) % 360)
 
-THRESH = dict(long=0.25, water=0.03, hills=0.08, private=0.15, west=6.0, open=6.0)
+# Absolute, physically meaningful cut-offs (see docs/05): a home "has" the
+# view if at least this much of the horizon qualifies.
+THRESH = dict(long=0.10, water=0.02, hills=0.02, private=0.50, west=25.0, open=30.0)
 
 
 def sector_of(pc):

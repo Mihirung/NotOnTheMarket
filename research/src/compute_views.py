@@ -23,13 +23,14 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import rasterio
-from scipy.ndimage import label, minimum_filter
+from scipy.ndimage import distance_transform_edt, label, minimum_filter
 
 sys.path.insert(0, str(Path(__file__).parent))
 from viewshed import (BUILDING, Surface, classify, line_of_sight,  # noqa: E402
                       outlook_metrics)
 
 LOCAL_DIST, DISTANT_DIST = 1000, 30000
+HILL_MIN_Z = 180.0   # Haldon ridge ~200-250 m, Woodbury Common ~180 m, Dartmoor higher
 LANDMARKS = {  # BNG eastings/northings, height added above the surface
     "Exe estuary":      (297300, 86800, 0.5),
     "the sea at Exmouth": (300200, 80200, 0.5),
@@ -111,15 +112,26 @@ def main(terrain_dir, pc_path, out_dir):
     # Local helpers: the grid is 252M cells, so nearest-open-cell and
     # building labelling are done in a window round each postcode rather
     # than once for the whole city (a full distance transform needs ~4 GB).
-    def nearest_open(r0, c0, half=20):
+    def nearest_open(r0, c0, half=25):
+        """The middle of the nearest open space: within 25 m of the postcode
+        centre, the ground-level cell (not building, not under canopy)
+        furthest from any building — a garden or street centre, not the
+        pavement against a wall."""
         for h in (half, half * 3, half * 8):
             r1, r2 = max(0, r0 - h), min(local.h, r0 + h + 1)
             c1, c2 = max(0, c0 - h), min(local.w, c0 + h + 1)
-            sub = ~bmask[r1:r2, c1:c2]
-            if sub.any():
-                ys, xs = np.nonzero(sub)
-                k = np.argmin((ys + r1 - r0) ** 2 + (xs + c1 - c0) ** 2)
-                return int(ys[k] + r1), int(xs[k] + c1)
+            b = bmask[r1:r2, c1:c2]
+            ground = (~b) & ((local.z[r1:r2, c1:c2] - dtm[r1:r2, c1:c2]) < 1.0)
+            if ground.any():
+                dist = distance_transform_edt(~b)          # metres from a building
+                score = np.where(ground, dist, -1.0)
+                # prefer open space, but not so far that it is a different street
+                near = (np.add.outer((np.arange(r1, r2) - r0) ** 2,
+                                     (np.arange(c1, c2) - c0) ** 2) <= h * h)
+                score = np.where(near, score, -1.0)
+                k = np.argmax(score)
+                if score.flat[k] >= 0:
+                    return int(r1 + k // b.shape[1]), int(c1 + k % b.shape[1])
         return r0, c0
 
     def own_building(r0, c0, half=80):
@@ -149,7 +161,8 @@ def main(terrain_dir, pc_path, out_dir):
         zg = float(dtm[rr, cc])
         if not np.isfinite(zg):
             continue
-        garden = outlook_metrics(local, distant, e, n, zg, 1.6, LOCAL_DIST, DISTANT_DIST)
+        garden = outlook_metrics(local, distant, e, n, zg, 1.6, LOCAL_DIST, DISTANT_DIST,
+                                 hill_min_z=HILL_MIN_Z)
 
         # Upstairs: flatten the owner's own building (the one containing the
         # centroid, or nearest within 20 m) and look from 5 m.
@@ -158,7 +171,8 @@ def main(terrain_dir, pc_path, out_dir):
             ys, xs = own
             saved = local.z[ys, xs].copy()
             local.z[ys, xs] = dtm[ys, xs] + 0.3
-        upstairs = outlook_metrics(local, distant, e, n, zg, 5.0, LOCAL_DIST, DISTANT_DIST)
+        upstairs = outlook_metrics(local, distant, e, n, zg, 5.0, LOCAL_DIST, DISTANT_DIST,
+                                   hill_min_z=HILL_MIN_Z)
         lm = {}
         for name, (le, ln, extra) in LANDMARKS.items():
             ok, dist = line_of_sight(distant, e, n, zg + 5.0, le, ln, extra,
