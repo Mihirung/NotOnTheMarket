@@ -189,7 +189,7 @@ def outlook_metrics(local, distant, e, n, z_ground, eye_height, local_dist,
 
     far_dist = np.where(D["far_dist"] > 0, D["far_dist"], L["far_dist"])
     vis_water_local = (L["visible"] & (L["cls"] == water_cls)).any(axis=1)
-    vis_sea = (D["visible"] & (D["z"] <= 0.5) & (D["ok"])).any(axis=1)
+    vis_sea = (D["visible"] & (D["z"] <= 0.5) & (D["z"] > -10) & D["ok"]).any(axis=1)
     vis_hill = (D["visible"] & (D["z"] >= hill_min_z)).any(axis=1)
 
     # Enclosure within 40 m by buildings (privacy / overlooked proxy).

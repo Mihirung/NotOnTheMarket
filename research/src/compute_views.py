@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 import rasterio
 from rasterio.merge import merge
-from scipy.ndimage import distance_transform_edt, label
+from scipy.ndimage import distance_transform_edt, label, minimum_filter
 
 sys.path.insert(0, str(Path(__file__).parent))
 from viewshed import (BUILDING, Surface, classify, line_of_sight,  # noqa: E402
@@ -55,9 +55,26 @@ def main(terrain_dir, pc_path, out_dir):
     T, out = Path(terrain_dir), Path(out_dir); out.mkdir(parents=True, exist_ok=True)
     print("mosaicking LIDAR...", flush=True)
     dsm, tr = mosaic(sorted(T.glob("lidar/dsm_*.tif")))
-    dtm, tr2 = mosaic(sorted(T.glob("lidar/dtm_*.tif")))
-    assert tr == tr2 and dsm.shape == dtm.shape, "DSM/DTM grids differ"
-    # Fill the few nodata holes from the other layer / terrain so rays never fall through.
+    # Ground: the EA DTM where we have it; elsewhere a ground proxy from the
+    # surface model (minimum over a 25 m window — streets and gardens are
+    # never further than that from anywhere in a town). Used for the eye
+    # height and for telling trees from land, so a proxy is adequate.
+    print("  ground proxy (25 m minimum filter)...", flush=True)
+    proxy = minimum_filter(np.where(np.isnan(dsm), np.inf, dsm), size=25, mode="nearest")
+    proxy[~np.isfinite(proxy)] = np.nan
+    dtm_paths = sorted(T.glob("lidar/dtm_*.tif"))
+    if dtm_paths:
+        dtm_part, tr2 = mosaic(dtm_paths)
+        dtm = np.full_like(dsm, np.nan)
+        # place the partial DTM mosaic into the DSM grid
+        r0 = int(round((tr.f - tr2.f) / tr.a)); c0 = int(round((tr2.c - tr.c) / tr.a))
+        hh = min(dtm_part.shape[0], dsm.shape[0] - r0); ww = min(dtm_part.shape[1], dsm.shape[1] - c0)
+        dtm[r0:r0+hh, c0:c0+ww] = dtm_part[:hh, :ww]
+        real = np.isfinite(dtm).mean()
+        print(f"  real DTM covers {real*100:.0f}% of grid; proxy fills the rest", flush=True)
+        dtm = np.where(np.isnan(dtm), proxy, dtm)
+    else:
+        dtm = proxy
     dsm = np.where(np.isnan(dsm), dtm, dsm)
     dtm = np.where(np.isnan(dtm), dsm, dtm)
     masks = {}
