@@ -15,11 +15,23 @@ Everything is computed with dense [code, year] lookup tables and array
 indexing, so the full 24M-transaction history fits comfortably in
 memory and any sample size can be written to disk as float16 chunks.
 
-Feature families: BASE (the published 13), HIST (history, equity,
-local rates, market cycle), GEO (AHAH environment), VIEW (national
-30 m outlook).
+Feature families: BASE (the published 13) and HIST (history, equity,
+local rates, market cycle) change from year to year and are stored row
+by row. Place signals (GEO, VIEW, HOUSE, AREA and any added later) are
+looked up from each row's postcode when a model is trained, so they are
+not stored here: see signals.py.
 
-Usage: python panel2.py <transactions.parquet> <geo.parquet> <view30.parquet|-> <out_dir> <n_chunks> [start_chunk]
+What is written for each chunk c:
+  T_c       the year-by-year features, float16
+  pc_c      each row's postcode (an index into postcodes.parquet)
+  y_c, year_c, tenure_c, block_c, bucket_c, district_c, sector_c
+  w_c       row weights, for chunks stored pre-sampled
+Chunks 0 and 1 hold every row (they supply the 2016 stopping year and the
+2017-2019 test years). Later chunks are only ever used for training,
+which keeps every sale and one non-sale in four (model_lab.NEG_KEEP), so
+they are stored that way already, with weight 4 on the non-sales kept.
+
+Usage: python panel2.py <transactions.parquet> <out_dir> <n_chunks> [start_chunk]
 
 20 chunks is every home in England and Wales.
 """
@@ -44,14 +56,10 @@ HIST = ["equity_gain", "gain_ann", "prev_gap", "mean_prev_gap", "prev_ann_ret", 
         "pc_new_share", "sec_rate_5y", "sec_rate_1y", "sec_accel", "sec_price_rel",
         "sec_gentrify", "dist_rate_1y", "dist_yoy", "dist_new_share_2y",
         "nat_yoy", "nat_vol_rel5", "nat_price_g1", "buy_price_g1"]
-GEO = ["nox", "pm10", "so2", "km_gp", "km_hospital", "km_dentist", "km_pharmacy",
-       "pc_within_1km", "pc_within_5km", "km_town", "km_regional", "km_major", "aq_rel_region"]
-VIEW = ["v30_elev", "v30_horizon", "v30_hz_s", "v30_hz_w", "v30_hz_e", "v30_hz_n",
-        "v30_long2", "v30_long5", "v30_long10", "v30_longest_km", "v30_logreach",
-        "v30_sea", "v30_water", "v30_water_near", "v30_hills", "v30_skyview",
-        "v30_rough", "v30_tpi1k", "v30_slope", "v30_south", "v30_west", "v30_km_coast"]
-FAMILIES = {"BASE": BASE, "HIST": HIST, "GEO": GEO, "VIEW": VIEW}
-ALL = BASE + HIST + GEO + VIEW
+FAMILIES = {"BASE": BASE, "HIST": HIST}
+ALL = BASE + HIST                                    # the year-by-year features; place signals are in signals.py
+PRESAMPLE_FROM = 2                                   # chunks from here on are stored with every sale + 1 non-sale in NEG_KEEP
+NEG_KEEP = 4
 
 
 def _dense(code, yi, n_codes, weights=None, dtype="int32"):
@@ -80,7 +88,7 @@ def _median_table(codes, yi, price, n_codes):
 
 
 class Panel:
-    def __init__(self, tx_path, geo_path=None, view_path=None, verbose=True):
+    def __init__(self, tx_path, verbose=True):
         say = (lambda *a: print(*a, flush=True)) if verbose else (lambda *a: None)
         tx = pd.read_parquet(tx_path, columns=["key", "year", "month", "price", "ptype", "is_new",
                                                "leasehold", "outcode", "postcode"])
@@ -147,18 +155,6 @@ class Panel:
         self.price_pct = (pd.DataFrame({"d": self.oc, "y": yi, "p": self.price})
                           .groupby(["d", "y"], sort=False)["p"].rank(pct=True).to_numpy().astype("float32"))
 
-        # ---- postcode-level geography and outlook --------------------------
-        self.G = self.V = None
-        if geo_path:
-            g = pd.read_parquet(geo_path).set_index("postcode").reindex(pd.Index(self.pc_names))
-            oc_str = pd.Series(self.pc_names).str.split(" ").str[0].to_numpy()
-            g["aq_rel_region"] = g["nox"].to_numpy() - g.groupby(oc_str)["nox"].transform("median").to_numpy()
-            self.G = g[GEO].to_numpy(dtype="float32")
-            say(f"geo matched {np.isfinite(self.G[:, 0]).mean():.1%} of postcodes")
-        if view_path:
-            v = pd.read_parquet(view_path).set_index("postcode").reindex(pd.Index(self.pc_names))
-            self.V = v[VIEW].to_numpy(dtype="float32")
-            say(f"view30 matched {np.isfinite(self.V[:, 0]).mean():.1%} of postcodes")
         self.bucket = (np.abs(self.key) % 100).astype("int8")
         self.block = ((np.abs(self.key) // 100) % 2048).astype("int16")
 
@@ -234,44 +230,69 @@ class Panel:
         for j, nm in enumerate(names):
             if nm in f:
                 X[:, j] = f[nm]
-            elif nm in GEO:
-                X[:, j] = self.G[pc, GEO.index(nm)] if self.G is not None else np.nan
-            elif nm in VIEW:
-                X[:, j] = self.V[pc, VIEW.index(nm)] if self.V is not None else np.nan
             else:
                 raise KeyError(nm)
         X[~np.isfinite(X)] = np.nan
         return X
 
 
+def full_features(panel, s, t, families, lookups=None):
+    """Year-by-year features followed by the place families' signals, looked
+    up from each spell's postcode: what a model trained on `families` expects."""
+    import signals as SG
+    tv = [f for f in families if f in SG.TIME_VARYING]
+    X = panel.features(s, t, SG.columns(tv)) if tv else np.zeros((len(s), 0), np.float32)
+    parts = [X]
+    for f in families:
+        if f in SG.TIME_VARYING:
+            continue
+        if lookups is None or f not in lookups:
+            lookups = dict(lookups or {}); lookups[f] = SG.lookup(f, panel.pc_names)
+        parts.append(lookups[f][panel.pc[s]])
+    return np.hstack(parts)
+
+
 def write_chunks(panel, out_dir, n_chunks, start=0):
     """Write chunks start..n_chunks-1. Chunks already on disk are kept, so a
     table built for part of the country can be extended to all of it."""
     out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
-    meta = {"features": ALL, "families": FAMILIES, "chunks": []}
+    pd.DataFrame({"postcode": pd.Series(panel.pc_names, dtype="string")}).to_parquet(out / "postcodes.parquet", index=False)
+    meta = {"features": ALL, "families": FAMILIES, "chunks": [], "neg_keep": NEG_KEEP, "presample_from": PRESAMPLE_FROM}
     if start and (out / "meta.json").exists():
         meta["chunks"] = [c for c in json.load(open(out / "meta.json"))["chunks"] if c["id"] < start]
     for c in range(start, n_chunks):
         lo, hi = c * CHUNK_BUCKETS, (c + 1) * CHUNK_BUCKETS
         spells = np.nonzero((panel.bucket >= lo) & (panel.bucket < hi))[0]
         rows, years, label = panel.expand(spells)
+        n_all = len(rows)
+        w = np.ones(n_all, np.float32)
+        if c >= PRESAMPLE_FROM:                       # the same rule model_lab.dataset() applies, on the full row index
+            idx = np.arange(n_all, dtype=np.int64)
+            keep = (label == 1) | ((((idx + 1) * 2654435761) >> 9) % NEG_KEEP == 0)
+            rows, years, label = rows[keep], years[keep], label[keep]
+            w = np.where(label == 1, 1.0, float(NEG_KEEP)).astype(np.float32)
         n = len(rows)
-        X = np.lib.format.open_memmap(out / f"X_{c}.npy", mode="w+", dtype="float16", shape=(n, len(ALL)))
+        X = np.lib.format.open_memmap(out / f"T_{c}.npy", mode="w+", dtype="float16", shape=(n, len(ALL)))
         for a in range(0, n, 2_000_000):
             b = min(a + 2_000_000, n)
             X[a:b] = np.clip(panel.features(rows[a:b], years[a:b]), -6e4, 6e4)
         X.flush(); del X
+        np.save(out / f"pc_{c}.npy", panel.pc[rows].astype(np.int32))
         np.save(out / f"y_{c}.npy", label)
+        np.save(out / f"w_{c}.npy", w)
         np.save(out / f"year_{c}.npy", years.astype("int16"))
         np.save(out / f"tenure_{c}.npy", (years - panel.year[rows]).astype("int8"))
         np.save(out / f"block_{c}.npy", panel.block[rows])
         np.save(out / f"bucket_{c}.npy", panel.bucket[rows])
-        meta["chunks"].append({"id": c, "rows": int(n), "sales": int(label.sum())})
-        print(f"chunk {c}: buckets {lo}-{hi-1}, {n:,} rows, {int(label.sum()):,} sales", flush=True)
+        np.save(out / f"district_{c}.npy", panel.oc[rows].astype("int16"))
+        np.save(out / f"sector_{c}.npy", panel.pc2sec[panel.pc[rows]].astype("int32"))
+        meta["chunks"].append({"id": c, "rows": int(n), "rows_before_sampling": int(n_all), "sales": int(label.sum()),
+                               "presampled": bool(c >= PRESAMPLE_FROM)})
+        print(f"chunk {c}: buckets {lo}-{hi-1}, {n:,} rows stored of {n_all:,}, {int(label.sum()):,} sales", flush=True)
     json.dump(meta, open(out / "meta.json", "w"))
 
 
 if __name__ == "__main__":
-    tx, geo, view, out_dir, n_chunks = sys.argv[1:6]
-    panel = Panel(tx, geo, None if view == "-" else view)
-    write_chunks(panel, out_dir, int(n_chunks), int(sys.argv[6]) if len(sys.argv) > 6 else 0)
+    tx, out_dir, n_chunks = sys.argv[1:4]
+    panel = Panel(tx)
+    write_chunks(panel, out_dir, int(n_chunks), int(sys.argv[4]) if len(sys.argv) > 4 else 0)

@@ -11,3 +11,7 @@ research/outputs/views2/light_*.parquet
 research/outputs/views2/panos_*.npz
 research/outputs/views2/sectors_bristol.json
 research/outputs/views2/sectors_plymouth.json
+research/outputs/national/cells/
+research/outputs/national/panos/
+research/outputs/national/best*.csv
+research/outputs/lab/models/

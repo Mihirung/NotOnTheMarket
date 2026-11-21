@@ -43,12 +43,31 @@ N_BLOCKS, BOOT = 2048, 300
 
 
 class Chunks:
+    """The training table: year-by-year features stored per row, place
+    signals looked up from each row's postcode (signals.py)."""
+
     def __init__(self, panel_dir):
+        import pandas as pd
+        import signals as SG
         self.dir = Path(panel_dir)
         self.meta = json.load(open(self.dir / "meta.json"))
-        self.names = self.meta["features"]; self.fam = self.meta["families"]
+        self.tv = self.meta["features"]
+        self.place = SG.available()
+        self.fam = {k: v for k, v in self.meta["families"].items()}
+        for f in self.place:
+            self.fam[f] = SG.FAMILIES[f]["columns"]
+        self.names = self.tv + [c for f in self.place for c in self.fam[f]]
         self.n_chunks = len(self.meta["chunks"])
+        self.presampled = {c["id"]: c.get("presampled", False) for c in self.meta["chunks"]}
+        self.postcodes = pd.read_parquet(self.dir / "postcodes.parquet").postcode.to_numpy()
+        self._L = {}
         self._cache = {}
+
+    def lookup(self, f):
+        if f not in self._L:
+            import signals as SG
+            self._L[f] = SG.lookup(f, self.postcodes)
+        return self._L[f]
 
     def col(self, kind, c):
         k = (kind, c)
@@ -57,7 +76,7 @@ class Chunks:
         return self._cache[k]
 
     def X(self, c):
-        return np.load(self.dir / f"X_{c}.npy", mmap_mode="r")
+        return View(self, c)
 
     def rows(self, c, years, max_bucket=None):
         yr = self.col("year", c)
@@ -71,18 +90,47 @@ class Chunks:
         return [self.names.index(f) for f in want], want
 
 
+class View:
+    """Rows of one chunk with every feature, in Chunks.names order."""
+
+    def __init__(self, ch, c):
+        self.ch, self.c = ch, c
+        self.T = np.load(ch.dir / f"T_{c}.npy", mmap_mode="r")
+        self.pc = ch.col("pc", c)
+
+    def take(self, r, cols):
+        cols = np.asarray(cols); ntv = len(self.ch.tv)
+        out = np.empty((len(r), len(cols)), np.float64)
+        tvc = cols < ntv
+        if tvc.any():
+            out[:, tvc] = np.asarray(self.T[r])[:, cols[tvc]]
+        if (~tvc).any():
+            pc = self.pc[r]; off = ntv
+            for f in self.ch.place:
+                k = len(self.ch.fam[f])
+                sel = (cols >= off) & (cols < off + k)
+                if sel.any():
+                    out[:, sel] = self.ch.lookup(f)[pc][:, cols[sel] - off]
+                off += k
+        return out
+
+    def __getitem__(self, r):
+        return self.take(np.asarray(r), np.arange(len(self.ch.names))).astype(np.float32)
+
+
 class Seq(lgb.Sequence):
-    """Out-of-core rows for LightGBM: float16 on disk -> float64 batches
-    (the library samples rows through this interface and insists on doubles)."""
+    """Out-of-core rows for LightGBM: float16 on disk plus place lookups ->
+    float64 batches (the library samples rows through this interface and
+    insists on doubles)."""
 
     def __init__(self, X, rows, cols, batch_size=65536):
         self.X, self.rows, self.cols, self.batch_size = X, rows, np.asarray(cols), batch_size
 
     def __getitem__(self, idx):
         r = self.rows[idx]
-        out = np.asarray(self.X[r])
-        out = out[..., self.cols] if out.ndim == 2 else out[self.cols]
-        return out.astype(np.float64)
+        if np.ndim(r) == 0:
+            return self.X.take(np.array([r]), self.cols)[0]
+        return self.X.take(np.asarray(r), self.cols)
 
     def __len__(self):
         return len(self.rows)
@@ -99,16 +147,19 @@ def dataset(ch, pct, families, years, neg_keep=None):
     neg_keep = NEG_KEEP if neg_keep is None else neg_keep
     ids, cap = pct_to_chunks(pct)
     cols, names = ch.cols(families)
-    seqs, ys = [], []
+    seqs, ys, ws = [], [], []
     for c in ids:
         rows = ch.rows(c, years, cap if (cap is not None and c == ids[-1]) else None)
         y = ch.col("y", c)[rows]
-        if neg_keep > 1:                              # deterministic per row, so every model sees the same sample
-            keep = (y == 1) | ((((rows + 1) * 2654435761) >> 9) % neg_keep == 0)
-            rows, y = rows[keep], y[keep]
-        seqs.append(Seq(ch.X(c), rows, cols)); ys.append(y)
-    y = np.concatenate(ys)
-    w = np.where(y == 1, 1.0, float(neg_keep)).astype("float32")
+        if ch.presampled.get(c):                      # stored already sampled by the same rule, with its weights
+            w = ch.col("w", c)[rows]
+        else:
+            if neg_keep > 1:                          # deterministic per row, so every model sees the same sample
+                keep = (y == 1) | ((((rows + 1) * 2654435761) >> 9) % neg_keep == 0)
+                rows, y = rows[keep], y[keep]
+            w = np.where(y == 1, 1.0, float(neg_keep)).astype("float32")
+        seqs.append(Seq(ch.X(c), rows, cols)); ys.append(y); ws.append(w)
+    y = np.concatenate(ys); w = np.concatenate(ws).astype("float32")
     return lgb.Dataset(seqs, label=y, weight=w, feature_name=names, free_raw_data=True,
                        params={"max_bin": 63, "min_data_in_bin": 20, "verbose": -1}), len(y)
 
@@ -126,7 +177,7 @@ def valid_set(ch, cols, chunks=(0, 1)):
     Xs, ys = [], []
     for c in chunks:
         rows = ch.rows(c, (VALID_YEAR, VALID_YEAR))
-        Xs.append(np.asarray(ch.X(c)[rows]).astype(np.float32)[:, cols]); ys.append(ch.col("y", c)[rows])
+        Xs.append(ch.X(c).take(rows, cols).astype(np.float32)); ys.append(ch.col("y", c)[rows])
     return np.concatenate(Xs), np.concatenate(ys)
 
 
@@ -135,7 +186,7 @@ def test_set(ch, families, years, chunks=(0, 1)):
     Xs, ys, yrs, ten, blk = [], [], [], [], []
     for c in chunks:
         rows = ch.rows(c, years)
-        Xs.append(np.asarray(ch.X(c)[rows]).astype(np.float32)[:, cols])
+        Xs.append(ch.X(c).take(rows, cols).astype(np.float32))
         ys.append(ch.col("y", c)[rows]); yrs.append(ch.col("year", c)[rows])
         ten.append(ch.col("tenure", c)[rows]); blk.append(ch.col("block", c)[rows])
     return np.concatenate(Xs), np.concatenate(ys), np.concatenate(yrs), np.concatenate(ten), np.concatenate(blk)
@@ -213,13 +264,18 @@ def fit(ch, pct, families, threads, years=TRAIN, n_rounds=None, tag="", neg_keep
     return bst, n
 
 
-FULL = ["BASE", "HIST", "GEO", "VIEW"]
+FULL = ["BASE", "HIST", "GEO", "VIEW"]                  # the model as it stood before the house-level signals
+
+
+def everything(ch):
+    """Every family the table and the register can supply."""
+    return ["BASE", "HIST"] + ch.place
 _TEST = {}
 
 
 def shared_test(ch):
     if "t" not in _TEST:
-        _TEST["t"] = test_set(ch, FULL, (2017, 2019))
+        _TEST["t"] = test_set(ch, everything(ch), (2017, 2019))
     return _TEST["t"]
 
 
@@ -232,13 +288,14 @@ def predict_cached(ch, out, threads, name, pct, fams):
     if fp.exists() and fj.exists():
         return np.load(fp), json.load(open(fj))
     X = shared_test(ch)[0]
-    cols_all, _ = ch.cols(FULL); cols, _ = ch.cols(fams)
+    cols_all, _ = ch.cols(everything(ch)); cols, _ = ch.cols(fams)
     bst, n = fit(ch, pct, fams, threads)
     p = bst.predict(X[:, [cols_all.index(c) for c in cols]], num_threads=threads).astype("float32")
-    info = {"train_rows": n, "rounds": bst.n_rounds_used}
+    info = {"train_rows": n, "rounds": bst.n_rounds_used, "families": list(fams)}
+    (out / "models").mkdir(exist_ok=True); bst.save_model(str(out / "models" / f"{key}.txt"))
+    g = bst.feature_importance("gain"); nm = bst.feature_name(); tot = g.sum()
+    info["gain_by_family"] = {f: round(float(sum(g[nm.index(x)] for x in ch.fam[f]) / tot), 3) for f in fams}
     if fams == FULL:
-        g = bst.feature_importance("gain"); nm = bst.feature_name(); tot = g.sum()
-        info["gain_by_family"] = {f: round(float(sum(g[nm.index(x)] for x in ch.fam[f]) / tot), 3) for f in ch.fam}
         info["top_features"] = [(nm[i], round(float(g[i] / tot), 4)) for i in np.argsort(-g)[:25]]
         bst.save_model(str(out / f"model_all_{pct}.txt"))
     np.save(fp, p); json.dump(info, open(fj, "w"))
@@ -380,15 +437,24 @@ def exp_sampling(ch, out, threads, pct=5):
     json.dump(res, open(out / "lab_sampling.json", "w"), indent=1)
 
 
-def exp_deploy(ch, out, threads, pct=20):
-    """The model the prototype scores with: every family, trained on 2001-2018
-    (2019 is left out because its file undercounts late registrations)."""
-    fams = ["BASE", "HIST", "GEO", "VIEW"]
-    ref = out / "preds" / f"ALL@{pct}.json"
+def exp_fitset(ch, out, threads, name, fams, pct=100):
+    """Fit one named set of families (e.g. CURRENT, +HOUSE) and report it on 2017-2019."""
+    _, y, yr, ten, blk = shared_test(ch)
+    p, info = predict_cached(ch, out, threads, name, pct, fams)
+    r = summarise(y, p, yr, ten) | info
+    json.dump(r, open(out / f"lab_fit_{name.replace(' ', '_')}@{pct}.json", "w"), indent=1)
+    print(f"{name}@{pct}: AUC {r['auc']:.4f}  lift@10 {r['lift10']:.3f}  20y+ lift {r.get('lift10_t20p', float('nan')):.3f}", flush=True)
+
+
+def exp_deploy(ch, out, threads, pct=20, fams=None, ref_name="ALL"):
+    """The model the prototype scores with, trained on 2001-2018 (2019 is
+    left out because its file undercounts late registrations)."""
+    fams = fams or ["BASE", "HIST", "GEO", "VIEW"]
+    ref = out / "preds" / f"{ref_name}@{pct}.json"
     nr = int((json.load(open(ref))["rounds"] if ref.exists() else 350) * 1.1)
     bst, n = fit(ch, pct, fams, threads, (2001, 2018), n_rounds=nr, tag="deploy<=2018")
     bst.save_model(str(out / "model_deploy.txt"))
-    json.dump({"pct": pct, "train_rows": n, "rounds": nr, "features": bst.feature_name()},
+    json.dump({"name": ref_name, "pct": pct, "train_rows": n, "rounds": nr, "families": fams, "features": bst.feature_name()},
               open(out / "lab_deploy.json", "w"), indent=1)
 
 
@@ -397,6 +463,14 @@ if __name__ == "__main__":
     threads = int(sys.argv[4]) if len(sys.argv) > 4 else 4
     out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
     ch = Chunks(panel_dir)
+    if exp in ("fitset", "deploy_set"):               # <name> <FAM+FAM+...> [pct]
+        name, fams = sys.argv[5], sys.argv[6].split("+")
+        pct = int(sys.argv[7]) if len(sys.argv) > 7 else 100
+        if exp == "fitset":
+            exp_fitset(ch, out, threads, name, fams, pct)
+        else:
+            exp_deploy(ch, out, threads, pct, fams, ref_name=name)
+        sys.exit(0)
     fn = {"smoke": exp_smoke, "ladder": exp_ladder, "curve": exp_curve, "rolling": exp_rolling,
           "ablate": exp_ablate, "deploy": exp_deploy, "sampling": exp_sampling,
           "ablate_view": lambda c, o, t, pct=100: exp_ablate(c, o, t, pct, drop=("VIEW",))}[exp]

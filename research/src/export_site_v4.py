@@ -21,7 +21,7 @@ Privacy: no address, postcode or coordinate of an individual home is
 exported. Panoramas are drawn from unnamed positions inside a sector.
 
 Usage:
-  python export_site_v4.py score  <transactions.parquet> <geo.parquet> <view30.parquet> <model.txt> <cache_dir>
+  python export_site_v4.py score  <transactions.parquet> <model.txt> <lab_deploy.json> <cache_dir>
   python export_site_v4.py export <cache_dir> <geo.parquet> <views2_dir> <lab_dir> <out_json>
 """
 
@@ -84,18 +84,23 @@ def band_of(v):
 
 
 # ---------------------------------------------------------------- stage 1
-def score(tx_path, geo_path, view_path, model_path, cache_dir):
+def score(tx_path, model_path, deploy_json, cache_dir):
+    """Score every owned home in each city with the deployed model, building
+    its features from whichever families that model was trained on."""
     import lightgbm as lgb
-    from panel2 import ALL, Panel, Y0, NY
+    import signals as SG
+    from panel2 import NY, Panel, Y0, full_features
     cache = Path(cache_dir); cache.mkdir(parents=True, exist_ok=True)
-    panel = Panel(tx_path, geo_path, view_path)
+    fams = json.load(open(deploy_json))["families"]
+    panel = Panel(tx_path)
     bst = lgb.Booster(model_file=model_path)
-    assert bst.feature_name() == ALL, "model features do not match the panel"
+    assert bst.feature_name() == SG.columns(fams), "model features do not match its families"
+    lookups = {f: SG.lookup(f, panel.pc_names) for f in fams if f not in SG.TIME_VARYING}
     oc_of = panel.oc_names[panel.oc]
     for key, cfg in CITIES.items():
         s = np.nonzero(~panel.sold & np.isin(oc_of, cfg["outcodes"]))[0]
         t = np.full(len(s), SCORE_YEAR, dtype="int32")
-        X = panel.features(s, t)
+        X = full_features(panel, s, t, fams, lookups)
         p = bst.predict(X, num_threads=3)
         d, byi = panel.oc[s], panel.year[s] - Y0
         est = panel.price[s] * panel.d_med[d, NY - 1] / np.maximum(panel.d_med[d, byi], 1)
@@ -237,8 +242,9 @@ def export(cache, geo_path, views_dir, lab_dir, out_json):
     load = lambda f: json.load(open(lab / f)) if (lab / f).exists() else {}
     curve, deploy, ladder = load("lab_curve.json"), load("lab_deploy.json"), load("lab_ladder.json")
     pct = deploy.get("pct", 10)
-    best = curve.get(f"ALL@{pct}") or (ladder.get("ALL") if ladder.get("pct") == pct else None) or {}
-    local = load("lab_local.json").get(f"ALL@{pct}", {})      # ranking inside a district: what a campaign uses
+    name = deploy.get("name", "ALL")
+    best = load(f"lab_fit_{name}@{pct}.json") or curve.get(f"ALL@{pct}") or (ladder.get("ALL") if ladder.get("pct") == pct else None) or {}
+    local = load("lab_local.json").get(f"{name}@{pct}", {})   # ranking inside a district: what a campaign uses
     model = {"auc_oot": round(best.get("auc", 0), 3),
              "lift_top10": round(local.get("local_lift10") or best.get("lift10", 0), 2),
              "lift_top10_national": round(best.get("lift10", 0), 2),
