@@ -18,3 +18,5 @@ research/outputs/lab/models/
 research/outputs/site5_cache/
 research/outputs/site5/
 research/outputs/national/best_homes*
+research/outputs/national/.memory_ledger
+research/outputs/national/.memory.lock
