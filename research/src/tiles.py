@@ -83,7 +83,7 @@ def _download(url, timeout=300):
         except subprocess.TimeoutExpired:
             return None
         code = r.stdout.strip()
-        if r.returncode == 0 and code.startswith("4"):
+        if r.returncode == 0 and code in ("400", "404"):     # outside the service's extent; busy (429) or blocked is retried
             raise Refused(code)
         if r.returncode != 0 or not code.startswith("2"):
             return None
@@ -105,9 +105,22 @@ def wa_path(kind, e0, n0):
     return ROOT / f"wa_{kind}" / f"{e0}_{n0}.tif"
 
 
-def fetch_ea(kind, e0, n0, tries=5):
+class Unavailable(Exception):
+    """The service did not answer properly after every retry. Nothing is marked
+    as missing: the caller tries the whole window again later."""
+
+
+def _backoff(attempt):
+    import time
+    time.sleep(min(60, 5 * 2 ** attempt))
+
+
+def fetch_ea(kind, e0, n0, tries=7):
     """One 2 km England tile. Writes the tile, or an empty marker when the
-    service has nothing there."""
+    service says it has nothing there. A tile is only ever marked missing on
+    a definite answer (outside the service's extent); a busy, failing or
+    silent service raises Unavailable instead, so a short outage can never
+    pass for a gap in the survey."""
     p = ea_path(kind, e0, n0)
     if p.exists() or p.with_suffix(".none").exists():
         return "skip"
@@ -117,7 +130,8 @@ def fetch_ea(kind, e0, n0, tries=5):
         try:
             got = _download(url)
         except Refused:
-            break
+            p.with_suffix(".none").touch()
+            return "none"
         if got is not None:
             a, tr, nd = got
             if a.shape == (EA_TILE, EA_TILE):
@@ -125,13 +139,11 @@ def fetch_ea(kind, e0, n0, tries=5):
                     a[a == nd] = np.nan
                 _store(a, p, e0, n0 + EA_TILE)
                 return "ok"
-        import time
-        time.sleep(3 * (attempt + 1))
-    p.with_suffix(".none").touch()
-    return "none"
+        _backoff(attempt)
+    raise Unavailable(f"England {kind} tile {e0},{n0}")
 
 
-def fetch_wa(kind, e0, n0, tries=5):
+def fetch_wa(kind, e0, n0, tries=7):
     p = wa_path(kind, e0, n0)
     cat = wales_catalogue()
     if p.exists() or p.with_suffix(".none").exists() or (e0, n0) not in cat.index:
@@ -141,7 +153,8 @@ def fetch_wa(kind, e0, n0, tries=5):
         try:
             got = _download(url)
         except Refused:                               # listed in the catalogue but not there
-            break
+            p.with_suffix(".none").touch()
+            return "none"
         if got is not None:
             a, tr, nd = got
             if nd is not None:
@@ -153,10 +166,8 @@ def fetch_wa(kind, e0, n0, tries=5):
                 full[r0:r0 + h, c0:c0 + w] = a[:h, :w]
             _store(full, p, e0, n0 + WA_TILE)
             return "ok"
-        import time
-        time.sleep(3 * (attempt + 1))
-    p.with_suffix(".none").touch()
-    return "none"
+        _backoff(attempt)
+    raise Unavailable(f"Wales {kind} tile {e0},{n0}")
 
 
 def tiles_for(E0, N0, E1, N1):
@@ -169,13 +180,22 @@ def tiles_for(E0, N0, E1, N1):
     return ea, wa
 
 
-def fetch_window(E0, N0, E1, N1, kinds=("dsm", "dtm"), workers=24):
+def fetch_window(E0, N0, E1, N1, kinds=("dsm", "dtm"), workers=None, ea_workers=12, wa_workers=48):
+    """Fetch every tile a window needs. England's service is asked a dozen
+    tiles at a time (more makes it fail); Wales's cloud storage takes more.
+    Raises Unavailable if any tile could not be fetched or definitely ruled out."""
     for d in ["tmp"] + [f"{s}_{k}" for s in ("ea", "wa") for k in kinds]:
         (ROOT / d).mkdir(parents=True, exist_ok=True)
+    if workers is not None:
+        ea_workers = wa_workers = workers
     ea, wa = tiles_for(E0, N0, E1, N1)
-    jobs = [(fetch_ea, k, e, n) for k in kinds for e, n in ea] + [(fetch_wa, k, e, n) for k in kinds for e, n in wa]
-    with ThreadPoolExecutor(workers) as ex:
-        return list(ex.map(lambda j: j[0](*j[1:]), jobs))
+    out = []
+    for fn, tiles, w in ((fetch_ea, ea, ea_workers), (fetch_wa, wa, wa_workers)):
+        jobs = [(k, e, n) for k in kinds for e, n in tiles]
+        if jobs:
+            with ThreadPoolExecutor(max(1, min(w, len(jobs)))) as ex:
+                out += list(ex.map(lambda j: fn(*j), jobs))
+    return out
 
 
 def _paste(out, path, e0, n0, size, E0, N1):

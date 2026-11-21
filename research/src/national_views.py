@@ -240,6 +240,9 @@ def _run_cell(cid, pos, lmk, out):
     t0 = time.time()
     E0, N0, WE0, WN0, WE1, WN1 = bounds(cid)
     city, bld, imp, roads, surveyed = load_cell(cid)
+    ea_t, wa_t = T.tiles_for(WE0, WN0, WE1, WN1)          # tiles the service definitely has nothing for, kept for audit
+    none_tiles = sum(T.ea_path(k, e, n).with_suffix(".none").exists() for k in ("dsm", "dtm") for e, n in ea_t) \
+        + sum(T.wa_path(k, e, n).with_suffix(".none").exists() for k in ("dsm", "dtm") for e, n in wa_t)
     t_load = time.time() - t0
 
     # houses: address positions on buildings, not on important buildings (as the city runs)
@@ -255,7 +258,7 @@ def _run_cell(cid, pos, lmk, out):
     h = pd.concat([pos[keep].reset_index(drop=True), gdf], axis=1)
     del gdf
     if not len(h):
-        _write(out, cid, h, None, None, {"houses": 0, "load_s": t_load, "surveyed": surveyed})
+        _write(out, cid, h, None, None, {"houses": 0, "load_s": t_load, "surveyed": surveyed, "tiles_none": none_tiles})
         return cid, 0, time.time() - t0
     h = h.iloc[np.argsort(morton(h.x.to_numpy() // 16, h.y.to_numpy() // 16), kind="stable")].reset_index(drop=True)
     t_geo = time.time() - t0 - t_load
@@ -366,7 +369,7 @@ def _run_cell(cid, pos, lmk, out):
                          "dist_m": np.round(ds).astype(np.int32)})
     import resource
     _write(out, cid, h, seen, pano, {"houses": int(len(h)), "positions": int(len(pos)), "pairs": int(n_pairs),
-                                     "in_sight": int(len(hs)), "surveyed": surveyed, "load_s": round(t_load, 1),
+                                     "in_sight": int(len(hs)), "surveyed": surveyed, "tiles_none": none_tiles, "load_s": round(t_load, 1),
                                      "geometry_s": round(t_geo, 1), "views_s": round(t_views, 1),
                                      "peak_rss_gb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6, 2)})
     return cid, len(h), time.time() - t0
@@ -477,13 +480,15 @@ def main(pos_path, lmk_path, out_dir, workers=4, *only):
             if stop.is_set():
                 return
             _, _, a, b, c1, d = bounds(c)
-            for attempt in range(5):                  # never let one bad download stop the downloads for every later cell
-                try:
-                    T.fetch_window(a, b, c1, d, workers=64)   # Wales comes in 1 km tiles: many small downloads
+            attempt = 0
+            while not stop.is_set():                  # a cell only runs once every tile it needs is fetched or ruled out:
+                try:                                  # during an outage the run waits rather than fill gaps with 30 m terrain
+                    T.fetch_window(a, b, c1, d)
                     break
                 except Exception as err:
-                    print(f"download problem for cell {cell_name(c)}: {err!r}; retrying", flush=True)
-                    time.sleep(30)
+                    wait = min(600, 30 * 2 ** attempt); attempt += 1
+                    print(f"download problem for cell {cell_name(c)}: {err!r}; trying again in {wait}s", flush=True)
+                    time.sleep(wait)
             (T.ROOT / "ready").mkdir(exist_ok=True); (T.ROOT / "ready" / str(c)).touch()
 
     # Workers come from a fork server started now, before any download: a worker forked from this process

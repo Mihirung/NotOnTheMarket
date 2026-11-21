@@ -223,3 +223,87 @@ python ../web/build.py
   the deployed national model and joins house-level views at the
   postcode. No address, postcode or coordinate of an individual home is
   exported.
+
+## Every house in England and Wales (docs/08)
+
+Everything the city runs did, done for every house in the country with
+the same method, and a national model that can take any new signal.
+
+```bash
+# 15. National inputs (all open data): OS OpenMap Local for every 100 km square,
+#     cut into 10 km cells; every house position from OS Open UPRN; the Wales
+#     survey's tile list; a national 30 m terrain grid; the national landmark
+#     list (Wikidata structures, Database of British and Irish Hills); and each
+#     address's exact postcode and small-area codes from the ONS UPRN Directory.
+python src/osmap_national.py data/ew_positions_raw.npz data/osmap/cells 4
+python src/national_positions.py data/uprn/osopenuprn.zip data/geo_postcode.parquet data/ew_positions.parquet
+python src/tiles.py wales-catalogue <wales_wfs.json> data/wales_lidar_tiles.parquet
+python src/far_national.py data/cop30 data/far30
+python src/build_landmarks.py data/landmarks/DoBIH_v18_6.csv data/geo_postcode.parquet data/landmarks/national_landmarks.parquet
+python src/onsud_extract.py data/onsud/onsud.zip data/onsud/parts
+python src/area_signals.py data/onsud/parts data/signals/area_postcode.parquet data/onsud/uprn_postcode.parquet
+
+# 16. The compiled engine reproduces the city engine (run on any city cache):
+python src/check_fastviews.py bath outputs/views2 400
+
+# 17. Every house: resumable, 10 km cell by cell, survey tiles fetched ahead
+#     and deleted behind. About 30 hours on 4 cores.
+python src/national_views.py data/ew_positions.parquet data/landmarks/national_landmarks.parquet outputs/national 4
+
+# 18. Exact postcodes, HOUSE signals by postcode, sector summaries, checks:
+python src/national_tables.py outputs/national data/onsud/uprn_postcode.parquet data/signals/house_postcode.parquet
+python src/national_checks.py outputs/national outputs/views2 data/panel3 outputs/national/checks.json
+
+# 19. The training table, year-by-year features only (place signals attach by
+#     postcode), then the national model with and without each family:
+python src/panel2.py data/transactions.parquet data/panel3 20
+python src/model_lab.py data/panel3 outputs/lab fitset 4 CURRENT BASE+HIST+GEO+VIEW 100
+python src/assess_signal.py HOUSE
+python src/assess_signal.py AREA
+python src/model_lab.py data/panel3 outputs/lab fitset 4 +HOUSE+AREA BASE+HIST+GEO+VIEW+HOUSE+AREA 100
+python src/model_lab.py data/panel3 outputs/lab fitset 4 NOVIEW30+HOUSE BASE+HIST+GEO+HOUSE 100
+python src/local_eval.py data/panel3 outputs/lab
+
+# 20. Find the best houses in the country, and draw them:
+python src/find_best.py --all --top 20 --draw best.html
+python src/find_best.py --want views water quiet_garden evening_sun --region "South West"
+python src/find_best.py --want views --sees "Salisbury Cathedral"
+python src/national_house_view.py <easting> <northing> one_house.html
+
+# 21. The site for every postcode area: score every owned home, split the
+#     national run by area, write one file per area plus the page's own data.
+python src/model_lab.py data/panel3 outputs/lab deploy_set <NAME> <FAM+FAM> 100
+python src/export_site_v5.py score data/transactions.parquet outputs/lab/model_deploy.txt outputs/lab/lab_deploy.json outputs/site5_cache
+python src/export_site_v5.py houses outputs/national outputs/site5_cache
+python src/export_site_v5.py export outputs/site5_cache data/geo_postcode.parquet outputs/national outputs/lab outputs/site5
+python ../web/build.py outputs/site5/site_data.json ../web/template_v5.html outputs/site5/index.html
+```
+
+**Adding a signal.** Write a table with one row per postcode, add an entry
+to `FAMILIES` in `src/signals.py`, and run `python src/assess_signal.py
+<NAME>`. It reports coverage; each column's link with sale timing like for
+like, nationally and region by region; what is left once the current
+model's score is allowed for; whether the model finds more sellers in the
+best tenth of each district with the family added, with a range; and the
+price premium. The training table never needs rebuilding: place signals
+are looked up by postcode when a model is trained or scored.
+
+- **`src/fastviews.py`** is the compiled engine. It walks each ray once
+  for a whole batch of neighbouring houses and keeps only what the
+  measures and drawings need; `check_fastviews.py` shows it gives the same
+  answers as `views2.py`.
+- **`src/national_views.py`** runs it for every house, 10 km cell by cell:
+  house geometry, the upstairs view from the front and back walls, the
+  garden and its sun, sun on the windows, landmark sight-lines and a
+  drawing for every house (3 degree steps).
+- **`src/tiles.py`** fetches and stores the 1 m surveys for England
+  (Environment Agency) and Wales (Natural Resources Wales).
+- **`src/signals.py`**, **`src/assess_signal.py`**: the register of signal
+  families and the one-command test of what a family is worth.
+- **`src/find_best.py`**, **`src/national_house_view.py`**: search every
+  house in the country on any mix of characteristics and draw the result.
+- **`src/export_site_v5.py`**, **`web/template_v5.html`**: the prototype for
+  every postcode area. Each area is a file the page loads when chosen; the
+  page carries every postcode sector's share of each outlook, so a brief
+  can be matched against the whole country first. No address, postcode or
+  position of an individual home is exported.
