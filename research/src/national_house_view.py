@@ -99,8 +99,9 @@ const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&g
 document.getElementById("app").innerHTML = `
   <div class="eyebrow" style="margin-top:26px">Quiet Market · every house in England and Wales</div>
   <h1 style="font-size:34px;margin:8px 0 10px">${esc(DATA.title)}</h1>
-  ${DATA.items.map((h,k)=>`
-  <h2>${k+1}. ${esc(h.headline)}</h2>
+  ${DATA.items.map((h,k)=>`${h.section?`<div class="eyebrow" style="margin-top:52px">${esc(h.section)}</div>
+  ${h.blurb?`<p class="note" style="margin:6px 0 0">${esc(h.blurb)}</p>`:""}`:""}
+  <h2>${h.rank||k+1}. ${esc(h.headline)}</h2>
   <div class="panel">${h.facts.map(f=>`<div class="kv"><span class="k">${esc(f[0])}</span><span class="v">${esc(f[1])}</span></div>`).join("")}</div>
   <h3>The view from the top floor</h3>
   <div class="pano panoscroll">${panoSVG(h.up,{label:"Drawn view from the top floor"})}</div>

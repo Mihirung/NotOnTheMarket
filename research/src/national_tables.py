@@ -34,10 +34,22 @@ def cells(nat):
     return sorted(p for p in (Path(nat) / "cells").glob("*.parquet") if not p.stem.endswith("_sight"))
 
 
+FAR_M = 2_000                                        # an exact postcode whose centre is further than this is not trusted
+
+
+def postcode_centres():
+    """Every postcode's centre on the national grid, from the postcode table."""
+    from pyproj import Transformer
+    g = pd.read_parquet("research/data/geo_postcode.parquet", columns=["postcode", "lat", "lon"]).dropna()
+    e, n = Transformer.from_crs("EPSG:4326", "EPSG:27700", always_xy=True).transform(g.lon.to_numpy(), g.lat.to_numpy())
+    return pd.DataFrame({"e": e, "n": n}, index=g.postcode.astype(str).to_numpy())
+
+
 def exact_postcodes(nat, map_path):
     m = pd.read_parquet(map_path)
     up = m.uprn.to_numpy(); pcs = m.postcode.cat.categories.to_numpy(); code = m.postcode.cat.codes.to_numpy()
-    n_exact = n_all = 0
+    cen = postcode_centres()
+    n_exact = n_all = n_far = 0
     for p in cells(nat):
         h = pd.read_parquet(p)
         if "postcode_nearest" in h.columns:
@@ -46,7 +58,13 @@ def exact_postcodes(nat, map_path):
         i = np.searchsorted(up, h.uprn.to_numpy())
         i = np.clip(i, 0, len(up) - 1)
         hit = up[i] == h.uprn.to_numpy()
-        exact = np.where(hit, pcs[code[i]], h.postcode.to_numpy())
+        cand = pcs[code[i]]
+        # a few addresses carry a postcode far from where they stand (a utility asset filed under its owner's
+        # office, say): keep the nearest centre for those
+        c = cen.reindex(cand)
+        far = hit & (np.hypot(c.e.to_numpy() - h.x.to_numpy(), c.n.to_numpy() - h.y.to_numpy()) > FAR_M)
+        hit &= ~far; n_far += int(far.sum())
+        exact = np.where(hit, cand, h.postcode.to_numpy())
         h["postcode_nearest"] = h.postcode
         h["postcode"] = exact
         part = h.postcode.str.rsplit(" ", n=1)
@@ -55,8 +73,8 @@ def exact_postcodes(nat, map_path):
         h.to_parquet(str(p) + ".tmp", index=False)
         Path(str(p) + ".tmp").replace(p)
         n_exact += int((h.postcode != h.postcode_nearest).sum()); n_all += len(h)
-    print(f"exact postcodes: {n_all:,} houses, {n_exact:,} ({n_exact / max(n_all, 1):.1%}) moved off the nearest postcode centre",
-          flush=True)
+    print(f"exact postcodes: {n_all:,} houses, {n_exact:,} ({n_exact / max(n_all, 1):.1%}) moved off the nearest postcode centre; "
+          f"{n_far:,} directory postcodes more than {FAR_M:,} m away were not used", flush=True)
 
 
 def house_signals(nat, out):

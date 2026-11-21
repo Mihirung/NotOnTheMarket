@@ -56,46 +56,59 @@ REGION_AREAS = {
     "Yorkshire and North East": "BD DH DL DN HD HG HU HX LS S TS WF YO NE SR",
     "Wales": "CF LD LL NP SA SY",
 }
-KEEP = ["postcode", "sector", "x", "y", "h3", "storeys", "has_garden", "garden_bearing", "front_bearing", "n_uprn"]
+KEEP = ["postcode", "x", "y", "h3", "storeys", "has_garden", "garden_bearing", "front_bearing", "n_uprn"]
 
 
 def load(cols):
+    """The asked-for columns of every house, read cell by cell into compact
+    columns (single precision, postcodes as codes): 28 million houses in a
+    few gigabytes."""
+    from pandas.api.types import union_categoricals
     files = sorted(str(p) for p in (NAT / "cells").glob("*.parquet") if not p.stem.endswith("_sight"))
-    t = ds.dataset(files, format="parquet").to_table(columns=sorted(set(cols + KEEP)))
-    df = t.to_pandas(strings_to_categorical=True)      # postcodes as codes: 28 million strings would not fit
+    parts, pcs = [], []
+    for f in files:
+        t = pd.read_parquet(f, columns=sorted(set(cols + KEEP)))
+        if not len(t):
+            continue
+        for c in t.columns:
+            if t[c].dtype == "float64":
+                t[c] = t[c].astype("float32")
+        pcs.append(t.pop("postcode").astype("category"))
+        parts.append(t)
+    df = pd.concat(parts, ignore_index=True); del parts
+    df["postcode"] = union_categoricals(pcs); del pcs
     df["cell"] = (df.x // 10_000) * 1000 + df.y // 10_000
     return df
 
 
 def score(df, want):
-    """Score every house; keep the per-characteristic percentiles compact
-    (float32, outside the frame) so 28 million houses fit in memory."""
-    ranks, sorted_vals = {}, {}
+    """Every house's national percentile on each characteristic, kept compact
+    (half-precision, about 0.06 of a point near the top) so 28 million
+    houses fit in memory: the fair middle rank, used for scoring, and the
+    share of homes strictly worse, used for display."""
+    ranks, below = {}, {}
     total = np.zeros(len(df), np.float32); weakest = np.full(len(df), np.inf, np.float32)
+    n = len(df)
     for w in want:
         col, up, _ = CHAR[w]
         v = df[col].to_numpy(dtype="float32")
         s_ = pd.Series(v if up else -v)
-        r = (s_.rank(pct=True, na_option="bottom").to_numpy() * 100).astype("float32")   # ties share the middle rank
-        ranks[w] = r
-        sv = s_.to_numpy(); sorted_vals[w] = np.sort(np.where(np.isfinite(sv), sv, -np.inf))
+        r = (s_.rank(pct=True, na_option="bottom").to_numpy() * 100).astype("float16")     # ties share the middle rank
+        lo = ((s_.rank(method="min", na_option="bottom").to_numpy() - 1) / n * 100).astype("float16")
+        ranks[w], below[w] = r, lo
         total += r; weakest = np.minimum(weakest, r)
-        if col not in KEEP:
-            del df[col]
+        del s_
     df["score"] = (total / len(want)).astype("float64").round(2)
     df["weakest"] = weakest.astype("float64").round(1)
-    return df, ranks, sorted_vals
+    return df, ranks, below
 
 
-def describe(top, want, ranks, sorted_vals, n):
-    """Percentiles for the chosen houses only: the fair middle rank used for
-    scoring, and the share of homes strictly worse, used for display."""
+def describe(top, want, ranks, below):
+    """Percentiles for the chosen houses only."""
+    rows = top["_row"].to_numpy()
     for w in want:
-        col, up, _ = CHAR[w]
-        top[f"pct_{w}"] = ranks[w][top["_row"].to_numpy()].astype("float64").round(1)
-        v = top[f"_v_{w}"].to_numpy(dtype="float32"); v = v if up else -v
-        v = np.where(np.isfinite(v), v, -np.inf)
-        top[f"below_{w}"] = np.minimum(np.searchsorted(sorted_vals[w], v, side="left") / n * 100, 99.9).round(1)
+        top[f"pct_{w}"] = ranks[w][rows].astype("float64").round(1)
+        top[f"below_{w}"] = np.minimum(below[w][rows].astype("float64"), 99.9).round(1)
     return top
 
 
@@ -118,8 +131,7 @@ def main():
         sys.exit(f"choose from: {', '.join(CHAR)}" + (f" (unknown: {bad})" if bad else ""))
     df = load([CHAR[w][0] for w in want])
     df["_row"] = np.arange(len(df))
-    raw = {w: df[CHAR[w][0]].to_numpy(dtype="float32") for w in want}
-    df, ranks, sorted_vals = score(df, want)          # percentiles are national, whatever area is searched
+    df, ranks, below = score(df, want)                # percentiles are national, whatever area is searched
     cats = df.postcode.cat.categories.str.extract(r"^([A-Z]+)")[0].to_numpy()
     codes = df.postcode.cat.codes.to_numpy()
     area = pd.Series(np.where(codes >= 0, cats[np.clip(codes, 0, None)], ""))
@@ -153,11 +165,7 @@ def main():
     if not a.every_house:                             # one home per postcode, so one block of flats cannot fill the list
         top = top.drop_duplicates("postcode")
     top = top.head(a.top).reset_index(drop=True)
-    for w in want:
-        top[f"_v_{w}"] = raw[w][top["_row"].to_numpy()]
-        top[CHAR[w][0]] = top[f"_v_{w}"]
-    top = describe(top, want, ranks, sorted_vals, len(df))
-    top = top.drop(columns=[c for c in top.columns if c.startswith("_v_")] + ["_row"])
+    top = describe(top, want, ranks, below).drop(columns=["_row"])
     cols = ["postcode", "storeys", "score", "weakest"] + [f"pct_{w}" for w in want]
     print(f"{int(keep.sum()):,} houses searched of {len(df):,} in England and Wales; asked for: {', '.join(want)}")
     print("Score = average national percentile of what was asked for; weakest = its lowest one.")
