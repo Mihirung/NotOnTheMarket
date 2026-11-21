@@ -198,13 +198,21 @@ def closest_to_typical(g, cols):
     return z.idxmin()
 
 
-def lad_names():
-    """Postcode to local authority name, from the ONS UPRN Directory."""
-    names = pd.read_csv("research/data/onsud/lad_names.csv", encoding="utf-8-sig").set_index("LAD25CD").LAD25NM
-    t = pd.concat([pd.read_parquet(p, columns=["postcode", "lad26cd"])
-                   for p in sorted(Path("research/data/onsud/parts").glob("*.parquet"))])
-    t = t.dropna().drop_duplicates("postcode")
-    return pd.Series(names.reindex(t.lad26cd).to_numpy(), index=t.postcode.astype(str).to_numpy())
+def lad_names(cache="research/data/onsud/postcode_lad.parquet"):
+    """Postcode to local authority name, from the ONS UPRN Directory, read one
+    part at a time and kept as a small table."""
+    if not Path(cache).exists():
+        parts = []
+        for p in sorted(Path("research/data/onsud/parts").glob("*.parquet")):
+            t = pd.read_parquet(p, columns=["postcode", "lad26cd"]).dropna()
+            parts.append(t.drop_duplicates("postcode"))
+        t = pd.concat(parts).drop_duplicates("postcode")
+        names = pd.read_csv("research/data/onsud/lad_names.csv", encoding="utf-8-sig").set_index("LAD25CD").LAD25NM
+        t["lad"] = names.reindex(t.lad26cd).to_numpy()
+        t[["postcode", "lad"]].astype(str).to_parquet(cache, index=False)
+    t = pd.read_parquet(cache)
+    tidy = t.lad.str.replace(r"^(.*), (City of|County of)$", r"\2 \1", regex=True)   # "Bristol, City of" -> "City of Bristol"
+    return pd.Series(tidy.to_numpy(), index=t.postcode.to_numpy())
 
 
 def place(sub, lad, w):
@@ -424,10 +432,11 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
             "nox_national": {str(k): v for k, v in geo.nox.quantile([.1, .25, .5, .75, .9]).round(2).to_dict().items()},
             "density_national": {str(k): v for k, v in geo.pc_within_1km.quantile([.1, .25, .5, .75, .9]).round(0).to_dict().items()},
             "alph": ALPH, "a_lo": round(float(A_LO), 4), "a_span": round(float(A_SPAN), 4),
-            "index": index, "nation_flags": NATION_FLAGS,
-            "nation": nation, "default_area": first["code"], "cities": {first["code"]: first}}
+            "index": index, "nation_flags": NATION_FLAGS, "default_area": first["code"], "cities": {first["code"]: first}}
     with open(out / "site_data.json", "w") as fh:
         json.dump(site, fh, separators=(",", ":"))
+    with open(out / "nation.json", "w") as fh:                 # every sector in the country, fetched beside the page
+        json.dump({"flags": NATION_FLAGS, "rows": nation}, fh, separators=(",", ":"))
     print(f"wrote {len(index)} areas and {out / 'site_data.json'} ({(out / 'site_data.json').stat().st_size / 1e6:.1f} MB); "
           f"{len(nation):,} sectors in the national table", flush=True)
 

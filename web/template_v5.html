@@ -351,21 +351,24 @@ function loadArea(k){ if(DATA.cities[k]) return Promise.resolve(DATA.cities[k]);
   if(!_loading[k]) _loading[k] = fetch("areas/"+k+".json").then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(j=>{ DATA.cities[k]=prepArea(j); return j; }).catch(e=>{ delete _loading[k]; throw e; });
   return _loading[k]; }
-let LOADING = null;
+let LOADING = null, LOAD_ERR = null;
+/* The national sector table sits beside the page and arrives after it. */
+let NATION = DATA.nation || null;
+if(!NATION) fetch("nation.json").then(r=>r.ok?r.json():null).then(j=>{ if(j){ NATION=j.rows; DATA.nation_flags=j.flags; render(); } }).catch(()=>{});
 function areaPicker(){ const by={}; (DATA.index||[]).forEach(a=>(by[a.region]=by[a.region]||[]).push(a));
   return `<label class="areapick"><span class="mono">Area</span><select aria-label="Choose a postcode area" onchange="setCity(this.value)">${
     Object.entries(by).map(([r,l])=>`<optgroup label="${esc(r)}">${[...l].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>
       `<option value="${a.code}" ${a.code===(LOADING||S.city)?"selected":""}>${esc(a.name)} · ${a.code}</option>`).join("")}</optgroup>`).join("")
-    }</select>${LOADING?`<span class="mono loadnote">loading…</span>`:""}</label>`; }
+    }</select>${LOADING?`<span class="mono loadnote">loading…</span>`:LOAD_ERR?`<span class="mono loadnote">${esc(LOAD_ERR)} did not load; choose it again</span>`:""}</label>`; }
 const FLAGS = () => C().flags;
 const flagBit = key => FLAGS().findIndex(f=>f.key===key);
 const flagOf = key => FLAGS().find(f=>f.key===key);
 function compass(b){ const d=["north","north-east","east","south-east","south","south-west","west","north-west"]; return d[Math.round(b/45)%8]; }
 function viewOf(sector, city){ return ((city?DATA.cities[city]:C()).views||{})[sector]; }
-function setCity(k, then){
+function setCity(k, then){ LOAD_ERR=null;
   if(!DATA.cities[k]){ LOADING=k; render();
     loadArea(k).then(()=>{ LOADING=null; setCity(k, then); })
-      .catch(()=>{ LOADING=null; render(); alert("That area could not be loaded just now. Please try again."); });
+      .catch(()=>{ LOADING=null; LOAD_ERR=k; render(); });
     return; }
   if(k!==S.city){ S.city=k; S.selected=[]; S.campaign=null; S.viewSector=null;
     S.brief.views=(S.brief.views||[]).filter(v=>!v.startsWith("lm")); S.day=0; S.connected=false; save(); }
@@ -851,13 +854,13 @@ function vSearch(){
    out here. */
 function nationRank(b){ const nf=DATA.nation_flags||[], keys=(b.views||[]).filter(k=>nf.includes(k));
   if(!keys.length) return null; let need=0; keys.forEach(k=>need|=1<<nf.indexOf(k));
-  const rows=[]; for(const r of DATA.nation||[]){ const [sec,area,lad,n,lat,lon,vm]=r; if(n<300) continue;
+  const rows=[]; for(const r of NATION||[]){ const [sec,area,lad,n,lat,lon,vm]=r; if(n<300) continue;
     let hit=0,tot=0; for(let i=0;i<vm.length;i+=2){ tot+=vm[i+1]; if((vm[i]&need)===need) hit+=vm[i+1]; }
     const f=tot?hit/tot:0; if(f>0) rows.push({sec,area,lad,n,f,homes:Math.round(n*f)}); }
   const total=rows.reduce((s,r)=>s+r.homes,0);
   rows.sort((a,b)=>b.f-a.f||b.homes-a.homes); return {keys, rows:rows.slice(0,8), total}; }
-function nationPanel(b){ const R=nationRank(b), nS=(DATA.nation||[]).length;
-  if(!nS) return "";
+function nationPanel(b){ const R=nationRank(b), nS=(NATION||[]).length;
+  if(!nS) return `<div class="panel" style="margin-top:14px"><div class="eyebrow">Anywhere in England and Wales</div><p class="note" style="margin:6px 0 0">Loading every postcode sector in the country…</p></div>`;
   if(!R) return `<div class="panel" style="margin-top:14px"><div class="eyebrow">Anywhere in England and Wales</div>
     <p class="note" style="margin:6px 0 0">Choose an outlook or the light you want, and this shows where in the whole country it is most common.</p></div>`;
   const area=k=>((DATA.index||[]).find(a=>a.code===k)||{name:k}).name;
