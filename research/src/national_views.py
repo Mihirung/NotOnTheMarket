@@ -189,6 +189,13 @@ def mem_available_gb():
     return 99.0
 
 
+def _cmdline(pid):
+    try:
+        return open(f"/proc/{pid}/cmdline").read().replace("\0", " ")
+    except OSError:
+        return ""
+
+
 def run_cell(args):
     cid, pos, lmk, out_dir = args
     out = Path(out_dir)
@@ -447,7 +454,11 @@ def main(pos_path, lmk_path, out_dir, workers=4, *only):
     T.release({k for k in need})
     for p in (T.ROOT / "ready").glob("*") if (T.ROOT / "ready").exists() else []:
         p.unlink()
-    (out / ".memory_ledger").unlink(missing_ok=True)   # a fresh run: no cell is running yet
+    # a fresh run: no cell is running yet, but a side job holding memory through ledger_run.py keeps its share
+    led = out / ".memory_ledger"
+    keep = [l for l in (led.read_text().splitlines() if led.exists() else [])
+            if len(l.split()) == 2 and "ledger_run" in _cmdline(l.split()[0])]
+    led.write_text("".join(l + "\n" for l in keep))
     lock = threading.Lock(); started = set(); finished = set()
     stop = threading.Event()
 

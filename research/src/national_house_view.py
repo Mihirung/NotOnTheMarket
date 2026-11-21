@@ -75,7 +75,8 @@ def facts(row, want=()):
               ["Evening sun in the garden at midsummer", hrs(row.sun_evening_jun)]]
     for w, label in want:
         if f"below_{w}" in row:
-            f.append([f"Nationally, {label}", f"better than {row[f'below_{w}']:.0f}% of homes"])
+            b = row[f'below_{w}']
+            f.append([f"Nationally, {label}", f"better than {b:.1f}% of homes" if b >= 99 else f"better than {b:.0f}% of homes"])
     return f
 
 
