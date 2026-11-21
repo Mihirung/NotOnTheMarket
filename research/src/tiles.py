@@ -74,11 +74,14 @@ class Refused(Exception):
     """The service answered and said no (outside its coverage): not worth retrying."""
 
 
-def _download(url, timeout=600):
+def _download(url, timeout=300):
     fd, tmp = tempfile.mkstemp(suffix=".tif", dir=ROOT / "tmp"); os.close(fd)
     try:
-        r = subprocess.run(["curl", "-sS", "--max-time", str(timeout), "-o", tmp, "-w", "%{http_code}", url],
-                           capture_output=True, text=True)
+        try:                                          # curl's own limit, and a hard one in case it hangs on exit
+            r = subprocess.run(["curl", "-sS", "--max-time", str(timeout), "-o", tmp, "-w", "%{http_code}", url],
+                               capture_output=True, text=True, timeout=timeout + 60)
+        except subprocess.TimeoutExpired:
+            return None
         code = r.stdout.strip()
         if r.returncode == 0 and code.startswith("4"):
             raise Refused(code)
@@ -135,7 +138,10 @@ def fetch_wa(kind, e0, n0, tries=5):
         return "skip"
     url = WA_BASE + cat.loc[(e0, n0), f"{kind}_link"]
     for attempt in range(tries):
-        got = _download(url)
+        try:
+            got = _download(url)
+        except Refused:                               # listed in the catalogue but not there
+            break
         if got is not None:
             a, tr, nd = got
             if nd is not None:

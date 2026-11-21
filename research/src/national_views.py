@@ -56,6 +56,8 @@ from city_views import HAS, facade_points  # noqa: E402
 from light import facade_sun  # noqa: E402
 
 CELL, MARGIN, BATCH = 10_000, 1_100, 96
+NEED_PER_POS = 12e-6                                 # GB of memory per house position: anonymous memory, measured mid-run
+BUDGET_GB = 14.0                                     # what all cells running at once may reserve between them
 OSMAP = Path("research/data/osmap/cells")
 GROUP = {"cathedral": "cathedral", "abbey": "cathedral", "castle": "castle", "tower": "tower", "folly": "tower",
          "lighthouse": "tower", "church": "church", "hill": "hill", "big hill": "hill"}
@@ -180,9 +182,55 @@ def morton(x, y):
 
 
 # ---------------------------------------------------------------- one cell
+def mem_available_gb():
+    for line in open("/proc/meminfo"):
+        if line.startswith("MemAvailable:"):
+            return int(line.split()[1]) / 1e6
+    return 99.0
+
+
 def run_cell(args):
     cid, pos, lmk, out_dir = args
-    out = Path(out_dir); t0 = time.time()
+    out = Path(out_dir)
+    # Each cell reserves what it will need (about 2.7 GB plus 23 kB a house) in a shared ledger, and starts
+    # only when every running cell's reservation and its own fit the budget: four small cells run together,
+    # dense city cells take turns, and the memory limit is never overrun.
+    need = 2.7 + len(pos) * NEED_PER_POS
+    out.mkdir(parents=True, exist_ok=True)
+    reserve(out, need)
+    try:
+        return _run_cell(cid, pos, lmk, out)
+    finally:
+        release_reservation(out)
+
+
+def reserve(out, need):
+    import fcntl
+    ledger = out / ".memory_ledger"
+    while True:
+        with open(out / ".memory.lock", "w") as lk:
+            fcntl.flock(lk, fcntl.LOCK_EX)
+            rows = [l.split() for l in ledger.read_text().splitlines()] if ledger.exists() else []
+            rows = [r for r in rows if len(r) == 2 and os.path.exists(f"/proc/{r[0]}")]   # drop entries of dead workers
+            if sum(float(r[1]) for r in rows) + need <= BUDGET_GB or not rows:
+                rows.append([str(os.getpid()), f"{need:.2f}"])
+                ledger.write_text("\n".join(" ".join(r) for r in rows) + "\n")
+                return
+        time.sleep(10)
+
+
+def release_reservation(out):
+    import fcntl
+    ledger = out / ".memory_ledger"
+    with open(out / ".memory.lock", "w") as lk:
+        fcntl.flock(lk, fcntl.LOCK_EX)
+        rows = [l.split() for l in ledger.read_text().splitlines()] if ledger.exists() else []
+        rows = [r for r in rows if len(r) == 2 and r[0] != str(os.getpid()) and os.path.exists(f"/proc/{r[0]}")]
+        ledger.write_text("".join(" ".join(r) + "\n" for r in rows))
+
+
+def _run_cell(cid, pos, lmk, out):
+    t0 = time.time()
     E0, N0, WE0, WN0, WE1, WN1 = bounds(cid)
     city, bld, imp, roads, surveyed = load_cell(cid)
     t_load = time.time() - t0
@@ -195,12 +243,16 @@ def run_cell(args):
     pos["e"], pos["n"] = pos.x + 0.5, pos.y + 0.5
     geo = [V.house_geometry(city, a, b, bld) for a, b in zip(pos.e.to_numpy(), pos.n.to_numpy())]
     keep = np.array([g is not None for g in geo], bool)
-    h = pd.concat([pos[keep].reset_index(drop=True), pd.DataFrame([g for g in geo if g is not None])], axis=1)
+    gdf = pd.DataFrame([g for g in geo if g is not None])
+    del geo                                           # a dict per house: free it as soon as it is a table
+    h = pd.concat([pos[keep].reset_index(drop=True), gdf], axis=1)
+    del gdf
     if not len(h):
         _write(out, cid, h, None, None, {"houses": 0, "load_s": t_load, "surveyed": surveyed})
         return cid, 0, time.time() - t0
     h = h.iloc[np.argsort(morton(h.x.to_numpy() // 16, h.y.to_numpy() // 16), kind="stable")].reset_index(drop=True)
     t_geo = time.time() - t0 - t_load
+
 
     front, road_m = front_bearing(h, roads)
     fp = facade_points(h, front, bld, city)
@@ -212,60 +264,76 @@ def run_cell(args):
     hasg = h.has_garden.to_numpy().astype(bool)
     ge, gn, gz = h.g_e.to_numpy(), h.g_n.to_numpy(), h.g_z.to_numpy() + 1.6
 
-    # landmarks in range of each house
+    # landmarks: found batch by batch, so a dense city cell never holds every house's candidates at once
     lt = cKDTree(lmk[["e", "n"]].to_numpy())
-    near = lt.query_ball_point(np.column_stack([h.e, h.n]), r=float(lmk.range_m.max()))
-    hi = np.repeat(np.arange(len(h)), [len(x) for x in near]); li = np.concatenate([np.asarray(x, int) for x in near]) if len(hi) else np.zeros(0, int)
     le, ln, lz, lr = (lmk[k].to_numpy() for k in ("e", "n", "top_m", "range_m"))
-    dist = np.hypot(le[li] - h.e.to_numpy()[hi], ln[li] - h.n.to_numpy()[hi])
-    ok = dist <= lr[li]; hi, li, dist = hi[ok], li[ok], dist[ok]
+    rmax = float(lmk.range_m.max())
+    he, hn = h.e.to_numpy(), h.n.to_numpy()
+    N = len(h); n_pairs = 0
+    cols = {}
+    # drawings go straight to arrays on disk, so a city cell's 3 kB a house never sits in memory
+    pdir = out / "panos" / f"_{cell_name(cid)}"; pdir.mkdir(parents=True, exist_ok=True)
+    pano = {}
+    for v in ("pu", "pg"):
+        for k, nb in (("a", 7), ("c", 4), ("w", 2)):
+            pano[f"{v}_{k}"] = np.lib.format.open_memmap(pdir / f"{v}_{k}.npy", mode="w+", dtype=np.uint8, shape=(N, nb, 120))
+            pano[f"{v}_{k}"][:] = 255 if k == "w" else 0
+    seen_h, seen_l, seen_d = [], [], []
 
-    cols, draw = defaultdict(list), {k: [] for k in ("pu", "pg")}
-    sight = np.zeros(len(hi), bool)
+    def put(k, s_, v):
+        if k not in cols:
+            cols[k] = np.full(N, np.nan, np.float32)
+        cols[k][s_:s_ + len(v)] = v
+
     lat = city.lat
-    for s in range(0, len(h), BATCH):
+    for s in range(0, N, BATCH):
         sl = slice(s, s + BATCH)
         cf = F.cast(city, fe[sl], fn[sl], zf[sl]); cb = F.cast(city, be[sl], bn[sl], zb[sl])
         o, bu = F.compose(cf, cb, front[sl])
         for k, v in V.metrics(o, "u").items():
-            cols[k].append(v)
+            put(k, s, v)
         # window sun: top floor from the upstairs casts (every other ray = the 3 degree rays), downstairs cast here
         for side, oc, (pe, pn, pz) in (("front", cf[0], (fe, fn, fz)), ("back", cb[0], (be, bn, bz))):
             normal = front[sl] if side == "front" else (front[sl] + 180) % 360
             for floor, hz in (("top", oc["hz_deg"][:, ::2]),
                               ("down", F.skyline(city, pe[sl], pn[sl], pz[sl] + 1.6, step_deg=3.0)[1])):
                 for k, v in facade_sun(hz, normal, lat).items():
-                    cols[f"{floor}_{side}_{k}"].append(np.round(v, 2).astype(np.float32))
-        draw["pu"].append(F.halve(bu))
+                    put(f"{floor}_{side}_{k}", s, np.round(v, 2).astype(np.float32))
+        hu = F.halve(bu)
+        for k in ("a", "c", "w"):
+            pano[f"pu_{k}"][sl] = hu[k]
         # garden
         gi = np.nonzero(hasg[sl])[0]; nb_ = len(fe[sl])
         gm = {}
-        bg = {"a": np.zeros((nb_, 7, 120), np.uint8), "c": np.zeros((nb_, 4, 120), np.uint8),
-              "w": np.full((nb_, 2, 120), 255, np.uint8)}
         if len(gi):
             og, bgi = F.cast(city, ge[sl][gi], gn[sl][gi], gz[sl][gi])
             gm = V.metrics(og, "g"); gm.update(V.sun_hours(og["hz_deg"], og["bearing"], lat))
             hv = F.halve(bgi)
-            for k in bg:
-                bg[k][gi] = hv[k]
-        draw["pg"].append(bg)
+            for k in ("a", "c", "w"):
+                pano[f"pg_{k}"][s + gi] = hv[k]
         for k in G_COLS:                              # NaN where a house has no garden
             full = np.full(nb_, np.nan, np.float32)
             if k in gm:
                 full[gi] = gm[k]
-            cols[k].append(full)
-        # landmarks: from the wall that faces each one, as in the city runs
-        m = (hi >= s) & (hi < s + BATCH)
-        if m.any():
-            j = hi[m]
-            brg = np.degrees(np.arctan2(le[li[m]] - h.e.to_numpy()[j], ln[li[m]] - h.n.to_numpy()[j])) % 360
-            uf = np.abs(((brg - front[j] + 180) % 360) - 180) < 90
-            sight[m] = F.sightlines(city, np.where(uf, fe[j], be[j]), np.where(uf, fn[j], bn[j]), np.where(uf, zf[j], zb[j]),
-                                    le[li[m]], ln[li[m]], lz[li[m]])
+            put(k, s, full)
+        # landmarks in range, seen from the wall that faces each one, as in the city runs
+        near = lt.query_ball_point(np.column_stack([he[sl], hn[sl]]), r=rmax)
+        j = np.repeat(np.arange(s, s + nb_), [len(x) for x in near])
+        if len(j):
+            li = np.concatenate([np.asarray(x, np.int64) for x in near])
+            d = np.hypot(le[li] - he[j], ln[li] - hn[j])
+            ok = d <= lr[li]; j, li, d = j[ok], li[ok], d[ok]
+            n_pairs += len(j)
+            if len(j):
+                brg = np.degrees(np.arctan2(le[li] - he[j], ln[li] - hn[j])) % 360
+                uf = np.abs(((brg - front[j] + 180) % 360) - 180) < 90
+                seen = F.sightlines(city, np.where(uf, fe[j], be[j]), np.where(uf, fn[j], bn[j]), np.where(uf, zf[j], zb[j]),
+                                    le[li], ln[li], lz[li])
+                seen_h.append(j[seen]); seen_l.append(li[seen]); seen_d.append(d[seen])
     t_views = time.time() - t0 - t_load - t_geo
 
-    for k, v in cols.items():
-        h[k] = np.concatenate(v)
+    h = pd.concat([h, pd.DataFrame(cols)], axis=1)   # one step: adding columns one by one copies the table each time
+    del cols
     h["light_front"], h["light_back"] = h.down_front_year, h.down_back_year
     h["top_front"], h["top_back"] = h.top_front_year, h.top_back_year
     h["winter_front"], h["winter_back"] = h.down_front_dec, h.down_back_dec
@@ -280,7 +348,8 @@ def run_cell(args):
     h["sector"] = part.str[0] + " " + part.str[1].str[0]
     # landmark summaries
     grp = lmk.kind.map(GROUP).fillna(lmk.name.map(_city_group)).to_numpy()
-    hs, ls_, ds = hi[sight], li[sight], dist[sight]
+    cat = lambda xs, dt: np.concatenate(xs).astype(dt) if xs else np.zeros(0, dt)
+    hs, ls_, ds = cat(seen_h, np.int64), cat(seen_l, np.int64), cat(seen_d, np.float64)
     h["lm_n"] = np.bincount(hs, minlength=len(h)).astype(np.int16)
     for g in LM_GROUPS:
         sel = grp[ls_] == g
@@ -288,10 +357,11 @@ def run_cell(args):
     h["h3"] = np.arange(len(h), dtype=np.int32)       # row within the cell, the key for drawings and sight-lines
     seen = pd.DataFrame({"hid": hs.astype(np.int32), "lid": lmk.lid.to_numpy()[ls_].astype(np.int32),
                          "dist_m": np.round(ds).astype(np.int32)})
-    pano = {f"{v}_{k}": np.concatenate([d[k] for d in draw[v]]) for v in draw for k in ("a", "c", "w")}
-    _write(out, cid, h, seen, pano, {"houses": int(len(h)), "positions": int(len(pos)), "pairs": int(len(hi)),
-                                     "in_sight": int(sight.sum()), "surveyed": surveyed, "load_s": round(t_load, 1),
-                                     "geometry_s": round(t_geo, 1), "views_s": round(t_views, 1)})
+    import resource
+    _write(out, cid, h, seen, pano, {"houses": int(len(h)), "positions": int(len(pos)), "pairs": int(n_pairs),
+                                     "in_sight": int(len(hs)), "surveyed": surveyed, "load_s": round(t_load, 1),
+                                     "geometry_s": round(t_geo, 1), "views_s": round(t_views, 1),
+                                     "peak_rss_gb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6, 2)})
     return cid, len(h), time.time() - t0
 
 
@@ -306,9 +376,16 @@ def _city_group(name):
 def _write(out, cid, h, seen, pano, info):
     name = cell_name(cid)
     (out / "cells").mkdir(parents=True, exist_ok=True); (out / "panos").mkdir(exist_ok=True)
-    if pano is not None:
-        buf = io.BytesIO(); np.savez(buf, **pano)
-        (out / "panos" / f"{name}.npz.zst").write_bytes(zstandard.ZstdCompressor(level=9).compress(buf.getvalue()))
+    if pano is not None:                              # via a file on disk, so no second copy is held in memory
+        tmp, part = out / "panos" / f"{name}.npz.tmp", out / "panos" / f"{name}.npz.zst.part"
+        with open(tmp, "wb") as fh:
+            np.savez(fh, **pano)
+        with open(tmp, "rb") as src, open(part, "wb") as dst:
+            zstandard.ZstdCompressor(level=9).copy_stream(src, dst)
+        tmp.unlink()
+        os.replace(part, out / "panos" / f"{name}.npz.zst")
+        import shutil
+        shutil.rmtree(out / "panos" / f"_{name}", ignore_errors=True)   # files can go while still mapped
         seen.to_parquet(out / "cells" / f"{name}_sight.parquet", index=False)
     h.to_parquet(out / "cells" / f"{name}.parquet.part", index=False)
     (out / "cells" / f"{name}.json").write_text(json.dumps(info))
@@ -316,7 +393,8 @@ def _write(out, cid, h, seen, pano, info):
 
 
 def load_panos(out_dir, cid):
-    raw = zstandard.ZstdDecompressor().decompress((Path(out_dir) / "panos" / f"{cell_name(cid)}.npz.zst").read_bytes())
+    with open(Path(out_dir) / "panos" / f"{cell_name(cid)}.npz.zst", "rb") as fh:
+        raw = zstandard.ZstdDecompressor().stream_reader(fh).read()     # works with or without a recorded size
     return dict(np.load(io.BytesIO(raw)))
 
 
@@ -369,6 +447,7 @@ def main(pos_path, lmk_path, out_dir, workers=4, *only):
     T.release({k for k in need})
     for p in (T.ROOT / "ready").glob("*") if (T.ROOT / "ready").exists() else []:
         p.unlink()
+    (out / ".memory_ledger").unlink(missing_ok=True)   # a fresh run: no cell is running yet
     lock = threading.Lock(); started = set(); finished = set()
     stop = threading.Event()
 
@@ -389,13 +468,18 @@ def main(pos_path, lmk_path, out_dir, workers=4, *only):
             _, _, a, b, c1, d = bounds(c)
             for attempt in range(5):                  # never let one bad download stop the downloads for every later cell
                 try:
-                    T.fetch_window(a, b, c1, d, workers=24)
+                    T.fetch_window(a, b, c1, d, workers=64)   # Wales comes in 1 km tiles: many small downloads
                     break
                 except Exception as err:
                     print(f"download problem for cell {cell_name(c)}: {err!r}; retrying", flush=True)
                     time.sleep(30)
             (T.ROOT / "ready").mkdir(exist_ok=True); (T.ROOT / "ready" / str(c)).touch()
 
+    # Workers come from a fork server started now, before any download: a worker forked from this process
+    # would inherit the pipes of downloads in flight and keep them open, so those downloads never finish.
+    ctx = get_context("forkserver")
+    ctx.set_forkserver_preload(["numpy", "pandas", "geopandas", "rasterio", "numba", "fastviews", "views2", "tiles"])
+    pool = ctx.Pool(int(workers), maxtasksperchild=1)          # a fresh worker per cell: no memory carried over
     th = threading.Thread(target=prefetch, daemon=True); th.start()
 
     def tasks():
@@ -405,8 +489,7 @@ def main(pos_path, lmk_path, out_dir, workers=4, *only):
             yield (c, rows(c), lmk, str(out))
 
     t0 = time.time(); n_h = 0
-    ctx = get_context("fork")
-    with ctx.Pool(int(workers), maxtasksperchild=8) as pool:
+    with pool:
         for k, (c, nh, secs) in enumerate(pool.imap_unordered(run_cell, tasks())):
             n_h += nh
             with lock:
