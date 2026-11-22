@@ -30,8 +30,13 @@ from signals import HOUSE_COLS  # noqa: E402
 MEAN_COLS = [c for c in HOUSE_COLS if not c.startswith("sd_") and c != "garden"]
 
 
-def cells(nat):
-    return sorted(p for p in (Path(nat) / "cells").glob("*.parquet") if not p.stem.endswith("_sight"))
+def cells(nat, need=None):
+    """The cell tables; with `need`, only those holding houses (an empty cell keeps only its address columns)."""
+    import pyarrow.parquet as pq
+    out = sorted(p for p in (Path(nat) / "cells").glob("*.parquet") if not p.stem.endswith("_sight"))
+    if need:
+        out = [p for p in out if need in pq.read_schema(p).names]
+    return out
 
 
 FAR_M = 2_000                                        # an exact postcode whose centre is further than this is not trusted
@@ -79,7 +84,7 @@ def exact_postcodes(nat, map_path):
 
 def house_signals(nat, out):
     rows = []
-    for p in cells(nat):
+    for p in cells(nat, need="has_garden"):
         h = pd.read_parquet(p, columns=["postcode", "n_uprn", "has_garden"] + MEAN_COLS)
         w = h.n_uprn.astype(float)
         h["garden"] = h.has_garden.astype(float)
@@ -112,7 +117,7 @@ def sectors(nat, out):
     flags = ["has_long", "has_water", "has_tidal", "has_hills", "has_private", "has_evening", "has_sunny",
              "has_swgarden", "has_garden"]
     rows = []
-    for p in cells(nat):
+    for p in cells(nat, need="has_garden"):
         h = pd.read_parquet(p, columns=["sector", "x", "y", "n_uprn", "u_long", "u_water", "u_hills", "u_longest_km",
                                         "u_horizon", "sun_equinox", "sun_evening_jun", "lm_n", "lm_cathedral"] + flags)
         h["lm_any"] = h.lm_n > 0; h["lm_cathedral_any"] = h.lm_cathedral > 0

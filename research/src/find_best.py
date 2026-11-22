@@ -94,7 +94,9 @@ def load(cols):
     import signals as SG
     own = [c for c in cols if c not in POSTCODE and c not in PER_HOUSE_PD]
     pdc = [c for c in cols if c in PER_HOUSE_PD]
-    files = sorted(str(p) for p in (NAT / "cells").glob("*.parquet") if not p.stem.endswith("_sight"))
+    import pyarrow.parquet as pq
+    files = sorted(str(p) for p in (NAT / "cells").glob("*.parquet") if not p.stem.endswith("_sight")
+                   and "h3" in pq.read_schema(p).names)               # cells with no houses are skipped
     parts, pcs = [], []
     for f in files:
         t = pd.read_parquet(f, columns=sorted(set(own + KEEP)))

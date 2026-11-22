@@ -113,8 +113,10 @@ def main(cells):
     (NAT / "plots").mkdir(exist_ok=True)
     if not cells:
         done = {p.stem for p in (NAT / "plots").glob("*.parquet")}
+        import pyarrow.parquet as pq                  # cells with no houses keep only their address columns
         cells = sorted(p.stem for p in (NAT / "cells").glob("*_*.parquet")
-                       if not p.stem.endswith("_sight") and p.stem not in done)
+                       if not p.stem.endswith("_sight") and p.stem not in done
+                       and "front_bearing" in pq.read_schema(p).names)
     t0 = time.time()
     for k, cell in enumerate(cells):
         out = measure(cell)

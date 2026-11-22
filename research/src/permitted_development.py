@@ -162,7 +162,10 @@ def main(cells):
     if not cells:
         cells = sorted(p.stem for p in (NAT / "plots").glob("*.parquet"))
     rows = []
+    import pyarrow.parquet as pq
     for k, cell in enumerate(cells):
+        if "storeys" not in pq.read_schema(NAT / "cells" / f"{cell}.parquet").names:
+            continue                                  # no houses in this cell
         h = pd.read_parquet(NAT / "cells" / f"{cell}.parquet",
                             columns=["x", "y", "h3", "postcode", "n_uprn", "storeys", "has_garden", "depth_m"])
         if not len(h):

@@ -145,7 +145,8 @@ def houses(nat, cache_dir):
     nat, out = Path(nat), Path(cache_dir) / "houses"
     out.mkdir(parents=True, exist_ok=True)
     writers, swriters = {}, {}
-    files = sorted(p for p in (nat / "cells").glob("*.parquet") if not p.stem.endswith("_sight"))
+    files = sorted(p for p in (nat / "cells").glob("*.parquet") if not p.stem.endswith("_sight")
+                   and "has_garden" in pq.read_schema(p).names)       # cells with no houses are skipped
     for i, p in enumerate(files):
         cid = int(p.stem.split("_")[0]) * 1000 + int(p.stem.split("_")[1])
         h = pd.read_parquet(p, columns=HOUSE_COLS)
