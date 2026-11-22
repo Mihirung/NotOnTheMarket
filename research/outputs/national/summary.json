@@ -1,0 +1,9 @@
+{
+ "cells": 1711,
+ "houses": 24114764,
+ "positions": 27968320,
+ "landmark_pairs": 976272327,
+ "in_sight": 37323304,
+ "surveyed_share_mean": 0.9538,
+ "compute_hours": 75.7
+}

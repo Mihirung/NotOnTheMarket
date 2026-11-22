@@ -22,3 +22,4 @@ research/outputs/national/.memory_ledger
 research/outputs/national/.memory.lock
 research/outputs/national/plots/
 research/outputs/national/pd/
+research/outputs/national/sectors.parquet
