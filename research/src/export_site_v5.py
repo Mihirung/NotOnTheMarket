@@ -83,10 +83,23 @@ HOUSE_COLS = ["x", "y", "postcode", "sector", "n_uprn", "has_garden", "storeys",
               "g_horizon", "g_overlooked", "sun_jun", "sun_evening_jun", "sun_equinox", "sun_dec",
               "has_long", "has_water", "has_hills", "has_private", "has_evening", "has_swgarden",
               "light_back", "light_front", "winter_front", "winter_back", "lm_n", "h3"]
-NATION_FLAGS = [k for k, *_ in V4.GENERIC] + [k for k, *_ in V4.LIGHT]
+# What could be built, and heritage (permitted_development.py, per house)
+BUILD = [("extend", "Room to extend without planning permission",
+          "A rear extension or a loft the house could add under permitted development, judged from its type, the room "
+          "behind it and where it stands. An estimate: earlier extensions use the allowance up.",
+          lambda H: (H.pd_rear_m.fillna(0) > 0) | H.pd_loft.fillna(False).astype(bool)),
+         ("loftok", "Loft extension allowed without permission",
+          "A house, not on a conservation area, protected landscape, National Park or World Heritage Site, and not under "
+          "an Article 4 direction for roofs.", lambda H: H.pd_loft.fillna(False).astype(bool)),
+         ("historic", "Conservation area or listed",
+          "The house stands in a conservation area or is listed (or joined to a listed building).",
+          lambda H: H.in_conservation.fillna(False).astype(bool) | H.listed.fillna(False).astype(bool))]
+PD_COLS = ["h3", "pd_rear_m", "pd_loft", "in_conservation", "listed", "add_value", "add_m2"]
+NATION_FLAGS = [k for k, *_ in V4.GENERIC] + [k for k, *_ in V4.LIGHT] + [k for k, *_ in BUILD]
 # cells travel as rows; the page turns them back into objects with these names (outcode is the sector's first part)
 CELL_COLS = ["sector", "ptype", "band", "n", "n_top", "exp_sellers", "p_med", "value_med", "offer_med", "premium_med",
-             "tenure_med", "nox", "density", "km_gp", "min_centre", "lat", "lon", "vm"]
+             "tenure_med", "nox", "density", "km_gp", "min_centre", "lat", "lon", "vm",
+             "km_hosp", "km_park", "km_blue", "km_pub", "add_value"]
 
 
 def area_of(pc):
@@ -136,6 +149,14 @@ def houses(nat, cache_dir):
     for i, p in enumerate(files):
         cid = int(p.stem.split("_")[0]) * 1000 + int(p.stem.split("_")[1])
         h = pd.read_parquet(p, columns=HOUSE_COLS)
+        pdf = nat / "pd" / p.name                     # what could be built, where the permitted development table exists
+        if pdf.exists():
+            h = h.merge(pd.read_parquet(pdf, columns=PD_COLS), on="h3", how="left")
+        else:
+            for c in PD_COLS[1:]:
+                h[c] = np.nan
+        for c in ("pd_loft", "in_conservation", "listed"):
+            h[c] = h[c].astype("float32")
         h = h[h.postcode.notna()]
         h["cell"] = np.int32(cid)
         for c in h.columns:
@@ -233,7 +254,12 @@ def centre_of(A, geo):
     return (float(r.lat), float(r.lon)), f"the centre of {TOWN.get(A, A)}"
 
 
-def export_area(A, cache, geo, lmk, nat, scored, lad):
+def med1(s, nd=1):
+    s = s.dropna()
+    return round(float(s.median()), nd) if len(s) else None
+
+
+def export_area(A, cache, geo, lmk, nat, scored, lad, amen):
     H = pd.read_parquet(Path(cache) / "houses" / f"{A}.parquet").reset_index(drop=True)
     Sg = pd.read_parquet(Path(cache) / "houses" / f"{A}_sight.parquet")
     H["key"] = H.cell.astype(np.int64) * 10_000_000 + H.h3
@@ -267,6 +293,9 @@ def export_area(A, cache, geo, lmk, nat, scored, lad):
     for k, lab, why, rule in V4.LIGHT:
         H["has_" + k] = rule(H).to_numpy()
         flags.append({"key": k, "label": lab, "why": why, "group": "light"}); flagcols.append("has_" + k)
+    for k, lab, why, rule in BUILD:
+        H["has_" + k] = rule(H).to_numpy()
+        flags.append({"key": k, "label": lab, "why": why, "group": "build"}); flagcols.append("has_" + k)
     flags += [{"key": f"lm{i}", "label": f"Can see {nm}", "lm": nm, "group": "lm",
                "why": f"A clear line of sight from the upper windows to {nm}, checked against every roof and tree in between."}
               for i, (nm, *_) in enumerate(area_lms)]
@@ -277,7 +306,10 @@ def export_area(A, cache, geo, lmk, nat, scored, lad):
     # ---- owned homes, scored, into cells ------------------------------
     d = scored[scored.area == A].copy()
     d["postcode"] = d.postcode.astype(str)
-    d = d.merge(geo[["postcode", "nox", "pc_within_1km", "km_gp", "lat", "lon"]], on="postcode", how="left")
+    d = d.merge(geo[["postcode", "nox", "pc_within_1km", "km_gp", "km_hospital", "lat", "lon"]], on="postcode", how="left")
+    d = d.merge(amen, on="postcode", how="left")
+    pv = H.groupby("postcode").add_value.median().rename("add_value")      # typical value a house there could add
+    d = d.merge(pv, left_on="postcode", right_index=True, how="left")
     d = d[d.nox.notna() & d.postcode.str.contains(" ")].copy()
     if not len(d):                                   # no sale records here: views only
         d = pd.DataFrame(columns=["postcode", "ptype", "tenure", "p_sale", "est_value", "nox", "pc_within_1km", "km_gp",
@@ -314,7 +346,9 @@ def export_area(A, cache, geo, lmk, nat, scored, lad):
                       int(g.offer_mid.median() // 1000 * 1000), round(float(g.premium.median()), 3),
                       float(g.tenure.median()), round(float(g.nox.median()), 1), int(g.pc_within_1km.median()),
                       round(float(g.km_gp.median()), 2), int(round(g.mins.median())), round(float(g.lat.median()), 4),
-                      round(float(g.lon.median()), 4), vm])
+                      round(float(g.lon.median()), 4), vm,
+                      med1(g.km_hospital), med1(g.km_park, 2), med1(g.km_blue), med1(g.km_pub, 2),
+                      int(g.add_value.median()) if g.add_value.notna().any() else None])
 
     # ---- each sector: shares, and two real houses to draw -----------------
     H["log_reach"] = np.log10(H.u_longest_km.clip(lower=0.05))
@@ -400,6 +434,8 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
     cats = scored.postcode.cat.categories                 # the postcode area, worked out once per postcode
     scored["area"] = area_of(pd.Series(cats)).fillna("?").to_numpy()[scored.postcode.cat.codes.to_numpy()]
     lad = lad_names()
+    amen = pd.read_parquet("research/data/signals/amenity_postcode.parquet",
+                           columns=["postcode", "km_park", "km_blue", "km_pub"])
     lab = Path(lab_dir)
     load = lambda f: json.load(open(lab / f)) if (lab / f).exists() else {}
     deploy = load("lab_deploy.json"); pct = deploy.get("pct", 100); name = deploy.get("name", "ALL")
@@ -415,7 +451,7 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
     areas = [a for a in areas if not only or a in only]
     index, nation, first = [], [], None
     for A in areas:
-        entry, nat_rows = export_area(A, cache, geo, lmk, nat, scored, lad)
+        entry, nat_rows = export_area(A, cache, geo, lmk, nat, scored, lad, amen)
         nation += nat_rows
         with open(out / "areas" / f"{A}.json", "w") as fh:
             json.dump(entry, fh, separators=(",", ":"))

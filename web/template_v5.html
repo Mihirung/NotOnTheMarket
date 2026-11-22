@@ -541,7 +541,7 @@ const GBPk = n => n>=1e6 ? "£"+(n/1e6).toFixed(2)+"m" : "£"+Math.round(n/1000)
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 const DEFAULTS = {brief:{max:475000, types:["S","T","D"], airMax:100, openMin:0,
-    minsCentre:12, gpKm:3, views:[]}, selected:[], campaign:null, day:0, connected:false, seller:{},
+    minsCentre:12, gpKm:3, hospKm:60, parkM:2000, blueKm:10, pubs:"any", views:[]}, selected:[], campaign:null, day:0, connected:false, seller:{},
     viewSector:null, viewMode:"up", viewHome:0, city:""};
 let S = load();
 function load(){ try{const r=localStorage.getItem("qm5");
@@ -577,12 +577,24 @@ function viewNeed(b){ let m=0; (b.views||[]).forEach(k=>{ const i=flagBit(k); if
 function viewFrac(c, need){ if(!need) return 1; const vm=c.vm||[]; let hit=0, tot=0;
   for(let i=0;i<vm.length;i+=2){ tot+=vm[i+1]; if((vm[i]&need)===need) hit+=vm[i+1]; }
   return tot?hit/tot:0; }
+/* Hospital, park, water and pubs: each cell carries its homes' typical distances.
+   Pubs cut both ways: some want one at the end of the road, some want none near. */
+const PUBS = {any:"Don't mind", near:"A pub within a short walk", far:"Away from pubs"};
+function near(c, b){
+  const ok = (v, lim, any) => lim>=any || v==null || v<=lim;
+  if(!ok(c.km_hosp, b.hospKm??60, 60) || !ok(c.km_park==null?null:c.km_park*1000, b.parkM??2000, 2000)
+     || !ok(c.km_blue, b.blueKm??10, 10)) return false;
+  const p=b.pubs||"any";
+  if(p==="near" && c.km_pub!=null && c.km_pub>0.8) return false;
+  if(p==="far" && c.km_pub!=null && c.km_pub<0.4) return false;
+  return true; }
+function setPubs(v){ S.brief.pubs=v; save(); render(); }
 function matchCells(b){
   const nx = noxCut(b.airMax), dn = densCut(b.openMin), need = viewNeed(b), out=[];
   for(const c of C().cells){
     const [lo] = BANDR[c.band];
     if(!(b.types.includes(c.ptype) && lo < b.max && c.offer_med <= b.max*1.06
-      && c.nox <= nx && c.density <= dn && (b.minsCentre>=60 || c.min_centre <= b.minsCentre) && c.km_gp <= b.gpKm)) continue;
+      && c.nox <= nx && c.density <= dn && (b.minsCentre>=60 || c.min_centre <= b.minsCentre) && c.km_gp <= b.gpKm && near(c, b))) continue;
     const f = viewFrac(c, need), n = Math.round(c.n*f);
     if(n < 1) continue;
     out.push(need ? {...c, n0:c.n, f, n, n_top:Math.round(c.n_top*f), exp_sellers:c.exp_sellers*f} : {...c, n0:c.n, f:1});
@@ -792,6 +804,30 @@ function vSearch(){
           aria-label="distance to GP" oninput="S.brief.gpKm=+this.value;save();render()">
       </div>
       <div class="crit">
+        <div class="lab"><b>Hospital within</b><span class="val">${(b.hospKm??60)>=60?"any distance":(b.hospKm)+" km"}</span></div>
+        <div class="why">Straight-line distance to the nearest hospital.</div>
+        <input type="range" min="2" max="60" step="2" value="${b.hospKm??60}"
+          aria-label="distance to hospital" oninput="S.brief.hospKm=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Park or playing field within</b><span class="val">${(b.parkM??2000)>=2000?"any distance":(b.parkM)+" m"}</span></div>
+        <div class="why">To the nearest entrance of a public park, garden or playing field (OS Open Greenspace).</div>
+        <input type="range" min="200" max="2000" step="200" value="${b.parkM??2000}"
+          aria-label="distance to a park" oninput="S.brief.parkM=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>River, lake or the sea within</b><span class="val">${(b.blueKm??10)>=10?"any distance":(b.blueKm)+" km"}</span></div>
+        <div class="why">To the nearest river, lake or reservoir of 2 ha or more, or the sea.</div>
+        <input type="range" min="0.5" max="10" step="0.5" value="${b.blueKm??10}"
+          aria-label="distance to water" oninput="S.brief.blueKm=+this.value;save();render()">
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Pubs</b><span class="val">${PUBS[b.pubs||"any"]}</span></div>
+        <div class="why">From the Food Standards Agency's register of every pub and bar. A short walk is within 800 m; away means none within 400 m.</div>
+        <div class="chiprow">${Object.entries(PUBS).map(([k,l])=>`
+          <button class="chip ${(b.pubs||"any")===k?"on":""}" aria-pressed="${(b.pubs||"any")===k}" onclick="setPubs('${k}')">${l}</button>`).join("")}</div>
+      </div>
+      <div class="crit">
         <div class="lab"><b>Budget ceiling</b><span class="val">${GBP(b.max)}</span></div>
         <div class="why">What you could pay for the <i>right offer</i>, usually 6–20% over today's value.</div>
         <input type="range" min="180000" max="900000" step="25000" value="${b.max}"
@@ -806,6 +842,10 @@ function vSearch(){
         </div>
         <div class="chipgroup">Light indoors</div>
         <div class="chiprow">${FLAGS().filter(f=>f.group==="light").map(f=>`
+          <button class="chip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${f.label}</button>`).join("")}
+        </div>
+        <div class="chipgroup">Room to grow, and character</div>
+        <div class="chiprow">${FLAGS().filter(f=>f.group==="build").map(f=>`
           <button class="chip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${f.label}</button>`).join("")}
         </div>
         <div class="chipgroup">Landmarks in sight from the upper windows</div>
@@ -929,7 +969,10 @@ function vResults(){
         <div class="kv"><span class="k">Typical value today</span><span class="v num">${GBPk(c.value_med)}</span></div>
         <div class="kv"><span class="k">The right offer</span><span class="v num" style="color:var(--accent-deep)">${GBPk(c.offer_med*0.96)}–${GBPk(c.offer_med*1.04)}</span></div>
         <div class="tags"><span class="tag">NOx ${c.nox}</span><span class="tag">${c.min_centre} min to centre</span>
-          <span class="tag">GP ${c.km_gp} km</span><span class="tag">${Math.round(c.tenure_med)} yrs owned</span></div>
+          <span class="tag">GP ${c.km_gp} km</span><span class="tag">${Math.round(c.tenure_med)} yrs owned</span>
+          ${c.km_park!=null?`<span class="tag">Park ${Math.round(c.km_park*1000)} m</span>`:""}
+          ${c.km_pub!=null?`<span class="tag">Pub ${c.km_pub<1?Math.round(c.km_pub*1000)+" m":c.km_pub+" km"}</span>`:""}
+          ${c.add_value?`<span class="tag" title="Typical value a house here could add without planning permission, at 2019 prices (estimate)">Could add ≈ ${GBPk(c.add_value)}</span>`:""}</div>
         ${(()=>{const v=viewOf(c.sector); if(!v) return ""; return `
         <div class="panomini">${panoSVG(v.homes[0].up,{mini:true,label:"Typical upstairs view in "+c.sector})}</div>
         <div class="viewtags">${viewTags(v)}<button class="seeview" onclick="event.stopPropagation();openView('${esc(c.sector)}')">See the view →</button></div>`;})()}

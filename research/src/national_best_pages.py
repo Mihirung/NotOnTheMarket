@@ -19,8 +19,8 @@ import find_best as FB  # noqa: E402
 import national_house_view as NHV  # noqa: E402
 
 BRIEFS = [
-    ("The very best of everything", list(FB.CHAR), {},
-     "All seventeen characteristics at once: views, water, hills, sea, privacy, garden, sun, light and landmarks."),
+    ("The very best of everything", FB.ALL, {},
+     "Every outlook, garden, light and landmark measure, with clean air, a GP and hospital, parks, woods and water nearby."),
     ("The finest views", ["views", "far", "water", "hills"], {},
      "Long views across most of the horizon, the furthest sight-lines, water and hills."),
     ("By the sea, with the evening sun", ["sea", "evening_sun", "garden_sun", "views"], {},
@@ -28,6 +28,12 @@ BRIEFS = [
     ("A private, sunny garden and a light house", ["quiet_garden", "garden_room", "garden_sun", "evening_sun", "light",
                                                    "winter_light"], {"houses_only": True},
      "Not overlooked, room in the garden, sun in it all day and all year, and sun on the windows. Houses only."),
+    ("Quiet, green and healthy", ["clean_air", "near_park", "parkland", "near_woods", "near_gp", "near_hospital",
+                                  "pubs_far", "few_takeaways", "quiet_garden"], {},
+     "Clean air, parks and woods close by, a GP and hospital in reach, away from pubs and takeaways."),
+    ("A village pub, a view and a sunny garden", ["pubs_near", "views", "garden_sun", "near_woods", "clean_air"], {}, None),
+    ("Room to grow", ["extension_value", "extension_space", "garden_room", "light"], {"houses_only": True},
+     "The most value and space that could be added without planning permission, with room in the garden and good light."),
     ("A cathedral or abbey in sight", ["cathedral", "views", "light"], {}, None),
     ("A castle in sight", ["castle", "views", "light"], {}, None),
 ]
@@ -64,7 +70,7 @@ def main(out_html, out_csv, top=5):
     df["_area"] = np.where(codes >= 0, cats[np.clip(codes, 0, None)], "")
     print(f"{len(df):,} houses scored on {len(want_all)} characteristics", flush=True)
 
-    briefs = list(BRIEFS) + [(f"The best of everything in {r}", want_all, {"region": r}, None) for r in FB.REGION_AREAS]
+    briefs = list(BRIEFS) + [(f"The best of everything in {r}", FB.ALL, {"region": r}, None) for r in FB.REGION_AREAS]
     items, rows = [], []
     for title, want, opts, blurb in briefs:
         n = top if "region" not in opts else 1

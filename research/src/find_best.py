@@ -45,7 +45,33 @@ CHAR = {
     "cathedral": ("lm_cathedral", True, "a cathedral or abbey in sight"),
     "castle": ("lm_castle", True, "a castle in sight"),
     "named_hills": ("lm_hill", True, "named hills in sight"),
+    # health and surroundings, by postcode (GEO and AMENITY families)
+    "clean_air": ("nox", False, "clean air (nitrogen oxides)"),
+    "near_gp": ("km_gp", False, "a GP nearby"),
+    "near_hospital": ("km_hospital", False, "a hospital nearby"),
+    "near_park": ("km_park", False, "a park or playing field nearby"),
+    "parkland": ("park_ha_1km", True, "parkland within 1 km"),
+    "near_woods": ("km_wood", False, "woodland nearby"),
+    "near_water": ("km_blue", False, "a river, lake or the sea nearby"),
+    "near_coast": ("km_sea", False, "the coast nearby"),
+    "pubs_near": ("km_pub", False, "a pub nearby"),
+    "pubs_far": ("km_pub_far", True, "away from pubs"),
+    "restaurants": ("restaurants_1km", True, "restaurants and cafes within 1 km"),
+    "few_takeaways": ("takeaways_1km", False, "few takeaways nearby"),
+    # what could be built without planning permission (permitted_development.py, per house)
+    "extension_value": ("add_value", True, "value that could be added without planning permission"),
+    "extension_space": ("add_m2", True, "floor space that could be added without planning permission"),
+    "loft": ("pd_loft", True, "a loft extension allowed without planning permission"),
+    "historic": ("historic", True, "in a conservation area or listed"),
 }
+# where each column comes from when it is not one of the house's own measures
+POSTCODE = {"nox": "GEO", "km_gp": "GEO", "km_hospital": "GEO", "km_park": "AMENITY", "park_ha_1km": "AMENITY",
+            "km_wood": "AMENITY", "km_blue": "AMENITY", "km_sea": "AMENITY", "km_pub": "AMENITY", "km_pub_far": "AMENITY",
+            "restaurants_1km": "AMENITY", "takeaways_1km": "AMENITY"}
+PER_HOUSE_PD = {"add_value", "add_m2", "pd_loft", "historic"}
+# "all": every outlook, garden, light and landmark measure, with clean air, health services, green and blue
+# space. Pubs (near or far), food and building work are matters of taste: they are chosen by name.
+ALL = list(CHAR)[:17] + ["clean_air", "near_gp", "near_hospital", "near_park", "parkland", "near_woods", "near_water"]
 REGION_AREAS = {
     "London": "E EC N NW SE SW W WC BR CR DA EN HA IG KT RM SM TW UB WD",
     "South East": "BN CT GU HP ME MK OX PO RG RH SL SO TN",
@@ -62,22 +88,48 @@ KEEP = ["postcode", "x", "y", "h3", "storeys", "has_garden", "garden_bearing", "
 def load(cols):
     """The asked-for columns of every house, read cell by cell into compact
     columns (single precision, postcodes as codes): 28 million houses in a
-    few gigabytes."""
+    few gigabytes. Postcode signals are attached by postcode, and what could
+    be built without permission from each cell's permitted development table."""
     from pandas.api.types import union_categoricals
+    import signals as SG
+    own = [c for c in cols if c not in POSTCODE and c not in PER_HOUSE_PD]
+    pdc = [c for c in cols if c in PER_HOUSE_PD]
     files = sorted(str(p) for p in (NAT / "cells").glob("*.parquet") if not p.stem.endswith("_sight"))
     parts, pcs = [], []
     for f in files:
-        t = pd.read_parquet(f, columns=sorted(set(cols + KEEP)))
+        t = pd.read_parquet(f, columns=sorted(set(own + KEEP)))
         if not len(t):
             continue
+        if pdc:
+            pf = NAT / "pd" / Path(f).name
+            if pf.exists():
+                q = pd.read_parquet(pf)
+                q["historic"] = q["in_conservation"] | q["listed"] if "in_conservation" in q.columns else (q.pd_reason == 2)
+                t = t.merge(q[["h3"] + [c for c in pdc if c in q.columns]], on="h3", how="left")
+            for c in pdc:
+                if c not in t.columns:
+                    t[c] = np.nan
         for c in t.columns:
-            if t[c].dtype == "float64":
-                t[c] = t[c].astype("float32")
+            if t[c].dtype == "float64" or t[c].dtype == bool or t[c].dtype == object and c != "postcode":
+                t[c] = pd.to_numeric(t[c], errors="coerce").astype("float32")
         pcs.append(t.pop("postcode").astype("category"))
         parts.append(t)
     df = pd.concat(parts, ignore_index=True); del parts
     df["postcode"] = union_categoricals(pcs); del pcs
     df["cell"] = (df.x // 10_000) * 1000 + df.y // 10_000
+    cats = df.postcode.cat.categories; codes = df.postcode.cat.codes.to_numpy()
+    for fam in sorted({POSTCODE[c] for c in cols if c in POSTCODE}):
+        spec = SG.FAMILIES[fam]
+        tab = pd.read_parquet(SG.ROOT / spec["table"])
+        if spec.get("derive"):
+            tab = getattr(SG, spec["derive"])(tab)
+        tab = tab.drop_duplicates("postcode").set_index("postcode")
+        if "km_pub" in tab.columns:
+            tab["km_pub_far"] = tab.km_pub
+        for c in cols:
+            if POSTCODE.get(c) == fam:
+                v = tab[c].reindex(cats).to_numpy(dtype="float32")
+                df[c] = np.where(codes >= 0, v[np.clip(codes, 0, None)], np.nan).astype("float32")
     return df
 
 
@@ -115,7 +167,8 @@ def describe(top, want, ranks, below):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--want", nargs="*", default=[], help=" ".join(CHAR))
-    ap.add_argument("--all", action="store_true", help="every characteristic at once")
+    ap.add_argument("--all", action="store_true", help="every outlook, garden, light and landmark measure, clean air, "
+                    "health services, green and blue space at once (add others by name, e.g. --all --want pubs_far)")
     ap.add_argument("--area", nargs="*", default=[], help="postcode areas to search, e.g. BA BS EX")
     ap.add_argument("--region", default=None, help=", ".join(REGION_AREAS))
     ap.add_argument("--houses-only", action="store_true", help="leave out buildings with several addresses (flats)")
@@ -125,7 +178,7 @@ def main():
     ap.add_argument("--out", default="research/outputs/national/best.csv")
     ap.add_argument("--draw", default=None, help="write a page with the top houses drawn")
     a = ap.parse_args()
-    want = list(CHAR) if a.all else a.want
+    want = (ALL + [w for w in a.want if w not in ALL]) if a.all else a.want
     bad = [w for w in want if w not in CHAR]
     if not want or bad:
         sys.exit(f"choose from: {', '.join(CHAR)}" + (f" (unknown: {bad})" if bad else ""))

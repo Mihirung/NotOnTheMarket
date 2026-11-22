@@ -80,6 +80,16 @@ FAMILIES = {
                  columns=["imd_rank", "rural", "oac_1", "oac_2", "oac_3", "oac_4", "oac_5", "oac_6", "oac_7", "oac_8"],
                  about="From the ONS UPRN Directory: deprivation rank (IMD 2025), rural or urban, and the census "
                        "output-area classification (2021), as the share of the postcode's addresses in each group"),
+    "AMENITY": dict(table="research/data/signals/amenity_postcode.parquet",
+                    columns=["km_pub", "pubs_1km", "takeaways_1km", "restaurants_1km", "km_park", "park_ha_1km",
+                             "km_play", "km_wood", "km_water", "km_sea", "km_blue"],
+                    about="Green and blue space (OS Open Greenspace, OS OpenMap Local) and pubs, takeaways and "
+                          "restaurants (Food Standards Agency hygiene register), by distance from the postcode centre"),
+    "PD": dict(table="research/data/signals/pd_postcode.parquet",
+               columns=["pd_rear_share", "pd_rear_prior_m", "pd_loft_share", "pd_two_storey_share", "pd_side_share",
+                        "pd_heritage_share", "pd_add_m2", "pd_add_pct", "price_m2", "flat_share", "listed_share"],
+               about="What the houses of the postcode could add without planning permission (permitted development, "
+                     "planning constraints from planning.data.gov.uk and DataMapWales), and their price per m2"),
 }
 
 

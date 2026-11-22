@@ -62,6 +62,19 @@ def house(x, y):
     return row, up, garden
 
 
+EXTRA = {"nox": ("Nitrogen oxides in the air", lambda v: f"{v:.0f} µg/m³"),
+         "km_gp": ("Nearest GP", lambda v: f"{v:.1f} km"), "km_hospital": ("Nearest hospital", lambda v: f"{v:.1f} km"),
+         "km_park": ("Nearest park or playing field", lambda v: f"{v * 1000:.0f} m"),
+         "park_ha_1km": ("Parkland within 1 km", lambda v: f"{v:.0f} ha"),
+         "km_wood": ("Nearest woodland", lambda v: f"{v:.1f} km"),
+         "km_blue": ("Nearest river, lake or sea", lambda v: f"{v:.1f} km"), "km_sea": ("Coast", lambda v: f"{v:.1f} km"),
+         "km_pub": ("Nearest pub", lambda v: f"{v * 1000:.0f} m"), "km_pub_far": ("Nearest pub", lambda v: f"{v * 1000:.0f} m"),
+         "restaurants_1km": ("Restaurants and cafes within 1 km", lambda v: f"{v:.0f}"),
+         "takeaways_1km": ("Takeaways within 1 km", lambda v: f"{v:.0f}"),
+         "add_m2": ("Floor space that could be added without planning permission (estimate)", lambda v: f"about {v:.0f} m²"),
+         "add_value": ("Value that could add, at 2019 prices (estimate)", lambda v: f"about £{v:,.0f}")}
+
+
 def facts(row, want=()):
     f = [["Postcode", f"{row.postcode}"], ["Storeys, estimated from roof height", str(int(row.storeys))],
          ["Front faces", comp(row.front_bearing)],
@@ -73,6 +86,11 @@ def facts(row, want=()):
         f += [["Garden lies to the", comp(row.garden_bearing)],
               ["Garden overlooked from", f"{row.g_overlooked * 100:.0f}% of directions"],
               ["Evening sun in the garden at midsummer", hrs(row.sun_evening_jun)]]
+    seen = set()
+    for k, (label, fmt) in EXTRA.items():
+        v = row.get(k) if hasattr(row, "get") else None
+        if v is not None and np.isfinite(v) and label not in seen:
+            f.append([label, fmt(float(v))]); seen.add(label)
     for w, label in want:
         if f"below_{w}" in row:
             b = row[f'below_{w}']
@@ -122,6 +140,9 @@ def item(row, want=()):
         for k in (f"pct_{w}", f"below_{w}"):
             if k in row:
                 r[k] = row[k]
+    for k in EXTRA:                                   # postcode and building-work measures the search attached
+        if k in row and k not in r:
+            r[k] = row[k]
     head = f"A {int(r.storeys)}-storey home in {r.postcode}"
     return {"headline": head, "facts": facts(r, want), "up": up, "garden": garden, "lat": lat, "lon": lon}
 
