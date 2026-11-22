@@ -39,6 +39,8 @@ Rules applied (England unless marked):
 
 Floor area added is estimated from the house's width (footprint over depth)
 and the allowed depth; a loft adds about half the footprint, up to 30 m2.
+The signal is the single biggest job (what most owners weigh); every
+allowance used at once is kept beside it as an upper limit.
 Value added = floor area x the postcode's price per m2 x 0.7, the share of
 average price per m2 that extra space usually fetches; this factor is an
 assumption until the planning sample (planit_fetch.py) measures it. These
@@ -139,7 +141,10 @@ def assess(h):
     m2_two = np.where(two, 3.0 * width * 0.9 * 2, 0.0)
     m2_side = np.where(side, np.minimum(side_gap - 1.0, width / 2) * depth * 0.9, 0.0)
     m2_loft = np.where(loft, np.minimum(0.5 * h.footprint_m2.to_numpy(), 30.0), 0.0)
-    m2_best = np.maximum(m2_rear, m2_two) + m2_loft + m2_side
+    m2_all = np.maximum(m2_rear, m2_two) + m2_loft + m2_side          # every allowance used at once: an upper limit
+    jobs = np.column_stack([m2_rear, m2_two, m2_loft, m2_side])        # the single biggest job is what most owners weigh
+    best = jobs.argmax(axis=1)
+    m2_best = jobs.max(axis=1)
     reason = np.where(flat, 1, np.where(listed, 2, np.where(a4_ext, 3, np.where(rear_pd == 0, 4, 0))))
     return pd.DataFrame({
         "h3": h.h3.to_numpy(), "pd_kind": kind, "pd_rear_m": rear_pd.round(1).astype("float32"),
@@ -148,6 +153,8 @@ def assess(h):
         "pd_heritage_limits": a23 & house_ok, "pd_reason": reason.astype("int8"),
         "in_conservation": bit(b, "conservation"), "listed": listed, "green_belt": bit(b, "green_belt"),
         "add_m2": np.round(m2_best, 0).astype("float32"),
+        "best_job": np.where(m2_best > 0, np.array(["rear", "two_storey", "loft", "side"])[best], ""),
+        "add_m2_all": np.round(m2_all, 0).astype("float32"),
         "floor_m2": np.round(h.footprint_m2.to_numpy() * np.clip(h.storeys.to_numpy(), 1, 4) * 0.85, 0).astype("float32"),
         "garden_depth_m": garden.astype("float32")})
 
@@ -189,6 +196,7 @@ def main(cells):
         r["price_m2"] = ppm.reindex(r.postcode).to_numpy().astype("float32")
         r["value_2019"] = v.reindex(r.postcode).to_numpy().astype("float32")
         r["add_value"] = np.round(r.add_m2 * r.price_m2 * ALPHA, -3).astype("float32")
+        r["add_value_all"] = np.round(r.add_m2_all * r.price_m2 * ALPHA, -3).astype("float32")
         r["add_pct"] = (r.add_value / r.value_2019).astype("float32")
         tmp = out_dir / f"{cell}.tmp"
         r.drop(columns=["postcode", "n_uprn"]).to_parquet(tmp, index=False); tmp.replace(out_dir / f"{cell}.parquet")
@@ -210,8 +218,10 @@ def main(cells):
     Path("research/data/signals").mkdir(parents=True, exist_ok=True)
     t.to_parquet("research/data/signals/pd_postcode.parquet", index=False)
     print(f"{len(a):,} homes assessed; {len(t):,} postcodes; houses with a permitted rear extension "
-          f"{(hs.pd_rear_m > 0).mean():.1%}, a loft {hs.pd_loft.mean():.1%}; median floor area addable "
-          f"{hs.add_m2.median():.0f} m2; {time.time() - t0:.0f}s", flush=True)
+          f"{(hs.pd_rear_m > 0).mean():.1%}, a loft {hs.pd_loft.mean():.1%}; the biggest single job adds a median "
+          f"{hs.add_m2.median():.0f} m2 (every allowance at once {hs.add_m2_all.median():.0f} m2), worth a median "
+          f"£{hs.add_value.median():,.0f}; biggest job: {hs.best_job.value_counts(normalize=True).round(3).to_dict()}; "
+          f"{time.time() - t0:.0f}s", flush=True)
 
 
 if __name__ == "__main__":
