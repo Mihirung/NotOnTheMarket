@@ -78,6 +78,11 @@ class Chunks:
     def X(self, c):
         return View(self, c)
 
+    def release(self):
+        """Drop cached columns and place lookups; they reload when next asked for."""
+        import gc
+        self._cache.clear(); self._L.clear(); gc.collect()
+
     def rows(self, c, years, max_bucket=None):
         yr = self.col("year", c)
         m = (yr >= years[0]) & (yr <= years[1])
@@ -165,11 +170,14 @@ def dataset(ch, pct, families, years, neg_keep=None):
 
 
 def params(n_rows, threads):
+    # force_col_wise: left to choose, the library builds a second, row-wise copy
+    # of the whole table to time both ways, which does not fit in memory once the
+    # house signals are added for every home. Column-wise gives the same trees.
     leaves = 31 if n_rows < 1e6 else 63 if n_rows < 3e6 else 127 if n_rows < 1e7 else 255
     return dict(objective="binary", learning_rate=0.08, num_leaves=leaves,
                 min_data_in_leaf=int(np.clip(n_rows / 8000, 80, 1200)), max_bin=63,
                 feature_fraction=0.8, bagging_fraction=0.7, bagging_freq=1, lambda_l2=5.0,
-                num_threads=threads, verbose=-1, seed=7)
+                num_threads=threads, verbose=-1, seed=7, force_col_wise=True)
 
 
 def valid_set(ch, cols, chunks=(0, 1)):
@@ -249,10 +257,13 @@ def fit(ch, pct, families, threads, years=TRAIN, n_rounds=None, tag="", neg_keep
     t0 = time.time()
     ds, n = dataset(ch, pct, families, years, neg_keep)
     pr = params(n, threads)
+    ds.params.update(pr); ds.construct()
     if n_rounds is None:
         cols, _ = ch.cols(families)
         Xv, yv = valid_set(ch, cols)
-        dv = lgb.Dataset(Xv, label=yv, reference=ds)
+        dv = lgb.Dataset(Xv, label=yv, reference=ds); dv.construct(); del Xv   # binned; the float copy is not kept
+    ch.release()                                      # the binned copies are all training needs from here
+    if n_rounds is None:
         bst = lgb.train(pr | {"metric": "auc"}, ds, num_boost_round=MAX_ROUNDS, valid_sets=[dv],
                         callbacks=[lgb.early_stopping(40, verbose=False)])
         nr = bst.best_iteration
