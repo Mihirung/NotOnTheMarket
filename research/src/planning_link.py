@@ -31,7 +31,8 @@ OUT = Path("research/data/planning/applications.parquet")
 
 JOBS = [
     ("new_home", r"(?:erection|construction|build\w*) of .{0,40}?(?:dwelling|house|bungalow|home)s?\b(?! extension)|"
-                 r"new (?:dwelling|house|bungalow)s?|residential development"),
+                 r"new (?:dwelling|house|bungalow)s?|residential development|^(?:a |one |\d+ )?(?:detached |semi-detached )?"
+                 r"(?:dwelling|bungalow|house)s?\b|redevelopment to provide .{0,30}(?:dwelling|house|flats)"),
     ("split", r"(?:conversion|convert|sub-?division|subdivide)\w* .{0,40}(?:into |to )(?:\w+ )?(?:self-contained )?(?:flats|apartments|"
               r"dwellings|units|maisonettes)|change of use .{0,60}(?:to|into) (?:\w+ )?(?:flats|hmo|house in multiple)"),
     ("basement", r"basement|lower ground floor extension"),
@@ -42,14 +43,18 @@ JOBS = [
     ("rear", r"rear extension|extension to (?:the )?rear|single[- ]stor(?:e)?y (?:rear )?extension|conservatory|orangery"),
     ("side", r"side extension|extension to (?:the )?side"),
     ("front", r"porch|front extension|extension to (?:the )?front|bay window"),
-    ("garage", r"garage conversion|conver\w+ (?:of )?(?:the )?(?:existing )?(?:integral )?garage|garage into"),
+    ("garage", r"garage conversion|conver\w+ (?:of )?(?:the )?(?:existing )?(?:integral )?garage|garage into|"
+               r"(?:replace|in place of) (?:the )?(?:integral )?garages?|garage to (?:provide|form)"),
     ("outbuilding", r"outbuilding|garden (?:room|studio|office|building)|summer ?house|annexe|annex\b|home office|"
-                    r"detached (?:garage|gym|studio)|cabin|log cabin|workshop"),
+                    r"detached (?:garage|gym|studio|single storey building)|cabin|log cabin|workshop|shed\b|garage\b"),
     ("extension", r"extension|extend"),
     ("listed", r"listed building consent|\blbc\b"),
     ("lawful", r"certificate of lawful|lawful development|lawfulness|prior approval|prior notification"),
     ("trees", r"\btree|\bt\d+\b|crown (?:lift|reduc|thin)|fell\b|pollard|hedge"),
     ("windows", r"window|door|cladding|render|solar|photovoltaic|heat pump|satellite|chimney|flue"),
+    ("alterations", r"(?:external|internal) (?:and (?:internal|external) )?alterations|^alterations"),
+    ("commercial", r"shop ?front|\bsign|advert|atm\b|class a\d|class b\d|class e\b|plant|air condition|condensing|"
+                   r"telecom|mast\b|canopy|kiosk"),
     ("boundary", r"fence|wall\b|walls\b|gate|driveway|dropped kerb|hardstanding|hard standing|parking|crossover|vehicular access"),
     ("demolition", r"demoli"),
     ("change_of_use", r"change of use"),
@@ -104,6 +109,35 @@ def parse_address(address, postcode):
     return name, saon
 
 
+STREET = re.compile(r"\b(ROAD|STREET|LANE|AVENUE|CLOSE|DRIVE|WAY|HILL|PLACE|CRESCENT|GARDENS|TERRACE|GROVE|PARK|"
+                    r"COURT|SQUARE|WALK|ROW|MEWS|VIEW|RISE|GREEN|VALE|END|PARADE|BANK|MEADOWS?|FIELDS?|CROFT|ESTATE)\b")
+
+
+def readings(address, postcode):
+    """Every plausible (PAON, SAON) for an address, most likely first."""
+    first = parse_address(address, postcode)
+    out = [first] if first else []
+    a = str(address or "").upper().replace(str(postcode or "").upper(), " ")
+    a = PC_RE.sub(" ", a)
+    parts = [p.strip(" .") for p in re.split(r",|\n", a) if p.strip(" .")]
+    if parts and not NOT_HOME.match(parts[0]):
+        words = parts[0].split()
+        m = STREET.search(parts[0])
+        stop = len(parts[0][:m.start()].split()) - 1 if m else len(words)   # the word before ROAD is the street name
+        for k in range(min(stop, 6), 0, -1):          # house names written without commas: "ROSE COTTAGE MILL LANE"
+            out.append((" ".join(words[:k]), ""))
+        if len(parts) > 1:
+            n2 = NUM.match(parts[1])
+            if n2 and first and not NUM.match(first[0]):
+                out.append((f"{first[0]}, {n2.group(1)}", first[1]))   # "ROSE COTTAGE, 12"
+                out.append((n2.group(1), first[1]))
+    seen, uniq = set(), []
+    for r in out:
+        if r not in seen:
+            seen.add(r); uniq.append(r)
+    return uniq
+
+
 def key_of(pc, paon, saon):
     """The property key of build_dataset.py for (postcode, PAON, SAON)."""
     s = (pd.Series(pc, dtype="string").str.strip().str.upper() + "|" + pd.Series(paon, dtype="string").str.strip().str.upper()
@@ -131,16 +165,25 @@ def main():
     for k, _ in JOBS:
         t[f"job_{k}"] = [k in j for j in J]
     pc = t.postcode.fillna("").str.upper().str.strip()
-    parsed = [parse_address(a, p) for a, p in zip(t.address, pc)]
-    t["paon"] = [p[0] if p else None for p in parsed]
-    t["saon"] = [p[1] if p else None for p in parsed]
-    ok = t.paon.notna() & (pc.str.len() >= 5)
-    t["key"] = pd.array([pd.NA] * len(t), dtype="Int64")
-    t.loc[ok, "key"] = key_of(pc[ok], t.paon[ok], t.saon[ok])
-    t["postcode"] = pc.where(pc.str.len() >= 5)
     tx = pd.read_parquet("research/data/transactions.parquet", columns=["key"])
-    known = set(tx.key.unique().tolist())
-    t["on_sale_record"] = t.key.isin(known).fillna(False).astype(bool) if len(t) else False
+    known = np.unique(tx.key.to_numpy())
+    # every reading of every address, keyed; an application takes the first reading that is a home with sales
+    R = [(i, r) for i, (a, p) in enumerate(zip(t.address, pc)) if len(p) >= 5 for r in readings(a, p)]
+    ri = np.array([i for i, _ in R], dtype=np.int64)
+    rk = key_of(pc.to_numpy()[ri], [r[0] for _, r in R], [r[1] for _, r in R]) if len(R) else np.array([], np.int64)
+    hit = np.isin(rk, known)
+    t["paon"] = None; t["saon"] = None
+    t["key"] = pd.array([pd.NA] * len(t), dtype="Int64")
+    t["on_sale_record"] = False
+    first = pd.Series(range(len(ri))).groupby(ri).first()            # the most likely reading
+    best = pd.Series(np.nonzero(hit)[0]).groupby(ri[hit]).first() if hit.any() else pd.Series(dtype=int)
+    pick = first.copy(); pick.loc[best.index] = best.to_numpy()
+    rows_ = pick.index.to_numpy(); sel = pick.to_numpy()
+    t.loc[rows_, "paon"] = [R[j][1][0] for j in sel]
+    t.loc[rows_, "saon"] = [R[j][1][1] for j in sel]
+    t.loc[rows_, "key"] = rk[sel]
+    t.loc[rows_, "on_sale_record"] = hit[sel]
+    t["postcode"] = pc.where(pc.str.len() >= 5)
     keep = ["name", "area_name", "uid", "address", "postcode", "description", "app_type", "app_size", "state",
             "start", "decided", "location_x", "location_y", "atype", "job", "paon", "saon", "key", "on_sale_record"] \
         + [f"job_{k}" for k, _ in JOBS]

@@ -35,14 +35,14 @@ API = "https://www.planit.org.uk/api"
 GAP_S = 65                                   # seconds between requests (PlanIt asks for at least 60)
 DAILY_CAP = 290                              # requests per night (PlanIt asks for about 300 at most)
 WINDOW = (18, 6)                             # UK hours in which bulk use is welcome
-PG_SZ = 2500                                 # records per page; a page must stay under PlanIt's 1,000 kB
+PG_SZ = 2000                                 # records per page; about 0.85 MB, under PlanIt's 1,000 kB limit
 YEARS = [(2003, 2006), (2007, 2009), (2010, 2012), (2013, 2015), (2016, 2017), (2018, 2019)]
 SELECT = ("name,area_name,uid,address,postcode,description,app_type,app_size,app_state,start_date,"
           "decided_date,location_x,location_y,atype:other_fields->application_type")
 # Council areas in the order they are fetched: the four cities with house-level views first, then a spread
 # across regions, sizes and kinds of place. Names are PlanIt's short area names.
 AREAS = ["Exeter", "Bath", "Bristol", "Plymouth", "Cheltenham", "Brighton", "York", "Cambridge", "Norwich",
-         "Canterbury", "Guildford", "Reading", "Trafford", "Stockport", "Nottingham", "Cardiff", "Newcastle",
+         "Canterbury", "Guildford", "Reading", "Trafford", "Stockport", "Nottingham", "Cardiff", "Newcastle upon Tyne",
          "Harrogate", "Richmond", "Wandsworth", "Barnet", "Leeds", "Cornwall", "Wiltshire"]
 
 
@@ -132,8 +132,9 @@ def log(msg):
 def resolve_areas(cl, st, wanted):
     """PlanIt's own short names for the wanted areas (one request, kept)."""
     if not st.s["areas"]:
-        d, _ = cl.get("areas/json", {"pg_sz": 1000, "select": "area_name,area_id,long_name,area_type,planning",
-                                     "compress": "on"})
+        d, _ = cl.get("areas/json", {"pg_sz": 1000, "select": "area_name,area_id,long_name,area_type", "compress": "on"})
+        if "error" in d:                              # field names differ: take every field instead
+            d, _ = cl.get("areas/json", {"pg_sz": 1000, "compress": "on"})
         st.s["areas"] = {r["area_name"]: r for r in d.get("records", [])}
         st.save()
         log(f"{len(st.s['areas'])} PlanIt areas listed")
@@ -185,6 +186,9 @@ def fetch(out, areas):
                     break
                 page += 1
             st.s["done"][unit] = got; st.save()
+    if not st.s["areas"]:
+        log("no areas could be listed; stopping without marking anything done")
+        return
     log("every unit done")
 
 
