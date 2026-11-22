@@ -180,13 +180,17 @@ def params(n_rows, threads):
                 num_threads=threads, verbose=-1, seed=7, force_col_wise=True)
 
 
-def valid_set(ch, cols, chunks=(0, 1)):
-    """2016 rows: later than every training year, earlier than every test year."""
-    Xs, ys = [], []
-    for c in chunks:
-        rows = ch.rows(c, (VALID_YEAR, VALID_YEAR))
-        Xs.append(ch.X(c).take(rows, cols).astype(np.float32)); ys.append(ch.col("y", c)[rows])
-    return np.concatenate(Xs), np.concatenate(ys)
+def valid_set(ch, cols, chunks=(0, 1), batch=262_144):
+    """2016 rows: later than every training year, earlier than every test year.
+    Filled in batches straight into one float32 table, so no float64 copy of
+    the whole set is ever held."""
+    rows = [ch.rows(c, (VALID_YEAR, VALID_YEAR)) for c in chunks]
+    X = np.empty((sum(len(r) for r in rows), len(cols)), np.float32); at = 0
+    for c, r in zip(chunks, rows):
+        V = ch.X(c)
+        for i in range(0, len(r), batch):
+            b = r[i:i + batch]; X[at:at + len(b)] = V.take(b, cols); at += len(b)
+    return X, np.concatenate([ch.col("y", c)[r] for c, r in zip(chunks, rows)])
 
 
 def test_set(ch, families, years, chunks=(0, 1)):

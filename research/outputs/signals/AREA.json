@@ -1,0 +1,394 @@
+{
+ "family": "AREA",
+ "about": "From the ONS UPRN Directory: deprivation rank (IMD 2025), rural or urban, and the census output-area classification (2021), as the share of the postcode's addresses in each group",
+ "when": "2026-11-22 21:45",
+ "coverage": {
+  "postcodes": 0.9941,
+  "test_home_years": 0.998
+ },
+ "adds": {
+  "all": {
+   "current": 1.6893,
+   "with": 1.713,
+   "gain": 0.0237,
+   "range": [
+    0.0089,
+    0.0383
+   ]
+  },
+  "t0_9": {
+   "current": 1.7049,
+   "with": 1.7395,
+   "gain": 0.0347,
+   "range": [
+    0.0063,
+    0.0549
+   ]
+  },
+  "t10_19": {
+   "current": 1.4859,
+   "with": 1.513,
+   "gain": 0.0271,
+   "range": [
+    0.0014,
+    0.0492
+   ]
+  },
+  "t20p": {
+   "current": 1.233,
+   "with": 1.2556,
+   "gain": 0.0225,
+   "range": [
+    -0.0434,
+    0.089
+   ]
+  },
+  "gain_share": {
+   "BASE": 0.186,
+   "HIST": 0.704,
+   "GEO": 0.046,
+   "VIEW": 0.037,
+   "AREA": 0.027
+  }
+ },
+ "lfl": {
+  "imd_rank": {
+   "points_per_step": 0.3682,
+   "range": [
+    0.3546,
+    0.3788
+   ],
+   "step": 0.2766,
+   "by_region": {
+    "London": 0.4117,
+    "South East": 0.2564,
+    "East": 0.251,
+    "South West": 0.2094,
+    "Midlands": 0.3584,
+    "North West": 0.3563,
+    "Yorkshire and North East": 0.3743,
+    "Wales": 0.2794
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "rural": {
+   "points_per_step": 0.0794,
+   "range": [
+    0.0685,
+    0.0909
+   ],
+   "step": 0.3808,
+   "by_region": {
+    "London": 0.2008,
+    "South East": 0.0459,
+    "East": 0.09,
+    "South West": -0.0237,
+    "Midlands": 0.0844,
+    "North West": -0.0101,
+    "Yorkshire and North East": 0.0479,
+    "Wales": -0.0606
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "oac_1": {
+   "points_per_step": 0.0447,
+   "range": [
+    0.0331,
+    0.0544
+   ],
+   "step": 0.3717,
+   "by_region": {
+    "London": 0.0147,
+    "South East": -0.002,
+    "East": 0.0155,
+    "South West": -0.0103,
+    "Midlands": 0.069,
+    "North West": 0.0049,
+    "Yorkshire and North East": 0.0326,
+    "Wales": 0.0547
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "oac_2": {
+   "points_per_step": 0.1693,
+   "range": [
+    0.1577,
+    0.1789
+   ],
+   "step": 0.4233,
+   "by_region": {
+    "London": 0.2538,
+    "South East": 0.1067,
+    "East": 0.1249,
+    "South West": 0.0689,
+    "Midlands": 0.2084,
+    "North West": 0.1701,
+    "Yorkshire and North East": 0.1641,
+    "Wales": 0.0847
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "oac_3": {
+   "points_per_step": -0.1457,
+   "range": [
+    -0.1574,
+    -0.1321
+   ],
+   "step": 0.2742,
+   "by_region": {
+    "London": -0.0688,
+    "South East": -0.1772,
+    "East": -0.1599,
+    "South West": -0.1518,
+    "Midlands": -0.1311,
+    "North West": -0.1444,
+    "Yorkshire and North East": -0.136,
+    "Wales": -0.1503
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "oac_4": {
+   "points_per_step": -0.2766,
+   "range": [
+    -0.2878,
+    -0.2647
+   ],
+   "step": 0.3018,
+   "by_region": {
+    "London": -0.2461,
+    "South East": -0.2963,
+    "East": -0.3359,
+    "South West": -0.2618,
+    "Midlands": -0.3248,
+    "North West": -0.2298,
+    "Yorkshire and North East": -0.294,
+    "Wales": -0.1765
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "oac_5": {
+   "points_per_step": 0.0372,
+   "range": [
+    0.0276,
+    0.0481
+   ],
+   "step": 0.3224,
+   "by_region": {
+    "London": 0.1194,
+    "South East": 0.0289,
+    "East": 0.0037,
+    "South West": 0.0175,
+    "Midlands": -0.0092,
+    "North West": 0.05,
+    "Yorkshire and North East": 0.0368,
+    "Wales": 0.0984
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "oac_6": {
+   "points_per_step": 0.0749,
+   "range": [
+    0.0632,
+    0.0873
+   ],
+   "step": 0.3687,
+   "by_region": {
+    "London": 0.3087,
+    "South East": 0.0537,
+    "East": -0.014,
+    "South West": 0.0103,
+    "Midlands": 0.0074,
+    "North West": 0.0047,
+    "Yorkshire and North East": -0.0049,
+    "Wales": 0.0203
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "oac_7": {
+   "points_per_step": -0.0787,
+   "range": [
+    -0.0873,
+    -0.0691
+   ],
+   "step": 0.2702,
+   "by_region": {
+    "London": -0.0791,
+    "South East": -0.0406,
+    "East": -0.0108,
+    "South West": -0.0362,
+    "Midlands": 0.005,
+    "North West": -0.041,
+    "Yorkshire and North East": -0.0596,
+    "Wales": -0.1092
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "oac_8": {
+   "points_per_step": 0.0023,
+   "range": [
+    -0.0087,
+    0.0158
+   ],
+   "step": 0.124,
+   "by_region": {
+    "London": -0.0011,
+    "South East": 0.0609,
+    "East": -0.0028,
+    "South West": 0.0015,
+    "Midlands": 0.0444,
+    "North West": -0.0366,
+    "Yorkshire and North East": -0.014,
+    "Wales": -0.0428
+   },
+   "regions_same_sign": "3 of 8"
+  }
+ },
+ "lfl_rows": 11875967,
+ "lfl_sales": 458268,
+ "on_top": {
+  "imd_rank": {
+   "points_per_step": -0.0438,
+   "range": [
+    -0.0641,
+    -0.0229
+   ]
+  },
+  "rural": {
+   "points_per_step": 0.0475,
+   "range": [
+    0.026,
+    0.0714
+   ]
+  },
+  "oac_1": {
+   "points_per_step": 0.0275,
+   "range": [
+    0.0023,
+    0.0475
+   ]
+  },
+  "oac_2": {
+   "points_per_step": 0.1138,
+   "range": [
+    0.0926,
+    0.1395
+   ]
+  },
+  "oac_3": {
+   "points_per_step": -0.191,
+   "range": [
+    -0.214,
+    -0.1724
+   ]
+  },
+  "oac_4": {
+   "points_per_step": -0.0931,
+   "range": [
+    -0.1138,
+    -0.0705
+   ]
+  },
+  "oac_5": {
+   "points_per_step": -0.0305,
+   "range": [
+    -0.0491,
+    -0.0055
+   ]
+  },
+  "oac_6": {
+   "points_per_step": 0.0311,
+   "range": [
+    0.0015,
+    0.0594
+   ]
+  },
+  "oac_7": {
+   "points_per_step": 0.0723,
+   "range": [
+    0.0473,
+    0.0956
+   ]
+  },
+  "oac_8": {
+   "points_per_step": 0.0065,
+   "range": [
+    -0.0155,
+    0.0309
+   ]
+  }
+ },
+ "price": {
+  "imd_rank": {
+   "pct_per_step": 10.24,
+   "range": [
+    10.14,
+    10.34
+   ]
+  },
+  "rural": {
+   "pct_per_step": 6.13,
+   "range": [
+    5.98,
+    6.3
+   ]
+  },
+  "oac_1": {
+   "pct_per_step": 3.44,
+   "range": [
+    3.37,
+    3.51
+   ]
+  },
+  "oac_2": {
+   "pct_per_step": 1.64,
+   "range": [
+    1.57,
+    1.7
+   ]
+  },
+  "oac_3": {
+   "pct_per_step": -0.66,
+   "range": [
+    -0.79,
+    -0.51
+   ]
+  },
+  "oac_4": {
+   "pct_per_step": -3.14,
+   "range": [
+    -3.22,
+    -3.05
+   ]
+  },
+  "oac_5": {
+   "pct_per_step": 3.4,
+   "range": [
+    3.32,
+    3.48
+   ]
+  },
+  "oac_6": {
+   "pct_per_step": -2.5,
+   "range": [
+    -2.58,
+    -2.42
+   ]
+  },
+  "oac_7": {
+   "pct_per_step": -4.32,
+   "range": [
+    -4.37,
+    -4.27
+   ]
+  },
+  "oac_8": {
+   "pct_per_step": -0.23,
+   "range": [
+    -0.34,
+    -0.13
+   ]
+  }
+ },
+ "price_sales": 8041460,
+ "verdict": "add it: the model finds more sellers and the range is clear of zero"
+}
