@@ -132,7 +132,33 @@ def load(cols):
             if POSTCODE.get(c) == fam:
                 v = tab[c].reindex(cats).to_numpy(dtype="float32")
                 df[c] = np.where(codes >= 0, v[np.clip(codes, 0, None)], np.nan).astype("float32")
+        # postcodes newer than the table: take the nearest postcode the table has
+        fam_cols = [c for c in cols if POSTCODE.get(c) == fam]
+        miss = np.nonzero(df[fam_cols[0]].isna().to_numpy())[0] if fam_cols else []
+        if len(miss):
+            from scipy.spatial import cKDTree
+            cen = _centres()
+            have = cen.index.intersection(tab.index)
+            tree = cKDTree(cen.loc[have, ["e", "n"]].to_numpy())
+            _, j = tree.query(np.column_stack([df.x.to_numpy()[miss] + 0.5, df.y.to_numpy()[miss] + 0.5]))
+            near = have[j]
+            for c in fam_cols:
+                df.loc[df.index[miss], c] = tab[c].reindex(near).to_numpy(dtype="float32")
+            print(f"  {len(miss):,} houses on postcodes newer than the {fam} table: nearest postcode used", flush=True)
     return df
+
+
+_CEN = {}
+
+
+def _centres():
+    """Postcode centres on the national grid (cached)."""
+    if "c" not in _CEN:
+        from pyproj import Transformer
+        g = pd.read_parquet("research/data/geo_postcode.parquet", columns=["postcode", "lat", "lon"]).dropna()
+        e, n = Transformer.from_crs("EPSG:4326", "EPSG:27700", always_xy=True).transform(g.lon.to_numpy(), g.lat.to_numpy())
+        _CEN["c"] = pd.DataFrame({"e": e, "n": n}, index=g.postcode.astype(str).to_numpy())
+    return _CEN["c"]
 
 
 def score(df, want):
@@ -147,8 +173,9 @@ def score(df, want):
         col, up, _ = CHAR[w]
         v = df[col].to_numpy(dtype="float32")
         s_ = pd.Series(v if up else -v)
-        r = (s_.rank(pct=True, na_option="bottom").to_numpy() * 100).astype("float16")     # ties share the middle rank
-        lo = ((s_.rank(method="min", na_option="bottom").to_numpy() - 1) / n * 100).astype("float16")
+        # ties share the middle rank; a house with no value (no garden, say) ranks last, never first
+        r = np.nan_to_num(s_.rank(pct=True, na_option="keep").to_numpy() * 100, nan=0.0).astype("float16")
+        lo = np.nan_to_num((s_.rank(method="min", na_option="keep").to_numpy() - 1) / n * 100, nan=0.0).astype("float16")
         ranks[w], below[w] = r, lo
         total += r; weakest = np.minimum(weakest, r)
         del s_
