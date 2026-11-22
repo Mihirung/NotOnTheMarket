@@ -120,6 +120,8 @@ a{color:var(--accent-deep)}
   background:transparent;color:var(--muted);padding:7px 14px;cursor:pointer}
 .cityswitch button.on{background:var(--accent);color:#fff}
 .cityswitch button:focus-visible{outline:2.5px solid var(--accent);outline-offset:-2px}
+.crit .ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:2px}
+.crit .hint{font-size:13.5px;color:var(--accent-deep);margin-top:6px}
 .chipgroup{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--muted);margin:12px 0 0}
 .chip.lmchip.on{border-color:var(--post);color:var(--post);background:var(--post-soft)}
@@ -541,7 +543,7 @@ const GBP = n => "£"+Math.round(n).toLocaleString("en-GB");
 const GBPk = n => n>=1e6 ? "£"+(n/1e6).toFixed(2)+"m" : "£"+Math.round(n/1000)+"k";
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-const DEFAULTS = {brief:{max:475000, types:["S","T","D"], airMax:100, openMin:0,
+const DEFAULTS = {brief:{max:475000, types:["S","T","D"], airStep:0, openStep:0,
     minsCentre:12, gpKm:3, hospKm:60, parkM:2000, blueKm:10, pubs:"any", views:[]}, selected:[], campaign:null, day:0, connected:false, seller:{},
     viewSector:null, viewMode:"up", viewHome:0, city:""};
 let S = load();
@@ -553,25 +555,49 @@ if(!DATA.cities[S.city]){ const want=S.city; S.city=DATA.default_area;
   if(want && (DATA.index||[]).some(a=>a.code===want)) setTimeout(()=>setCity(want), 0); }
 
 /* ---------- lifestyle filtering ---------- */
-// Air-quality slider is a national percentile of NOx: "cleanest N%".
-function noxCut(pctile){
-  const q = DATA.nox_national;
-  const keys = [[10,"0.1"],[25,"0.25"],[50,"0.5"],[75,"0.75"],[90,"0.9"]];
-  if(pctile>=100) return Infinity;
-  let best = q["0.9"];
-  for(const [p,k] of keys){ if(pctile<=p){ best=q[k]; break; } }
-  return best;
-}
-// Openness slider is a national percentile of built density, inverted:
-// 0 = anywhere, 100 = only the most open/greenest surroundings.
-function densCut(openMin){
-  const q = DATA.density_national;
-  if(openMin<=0) return Infinity;
-  if(openMin<=25) return q["0.75"];
-  if(openMin<=50) return q["0.5"];
-  if(openMin<=75) return q["0.25"];
-  return q["0.1"];
-}
+/* ---------- the place sliders, in plain words ----------
+   Clean air and open surroundings are set in five named steps. Each step
+   is a share of all places in England and Wales, from national figures. */
+const AIR_STEPS = [
+  ["Any", "No limit on air quality.", null],
+  ["Not the most polluted", "Leaves out the most polluted quarter of places: city centres and main roads.", "0.75"],
+  ["Suburban air or cleaner", "Cleaner than half of all places in England and Wales.", "0.5"],
+  ["Small-town or village air", "Cleaner than 3 in every 4 places.", "0.25"],
+  ["Countryside air", "As clean as the cleanest 1 in 10 places.", "0.1"]];
+const OPEN_STEPS = [
+  ["Anywhere", "Town centre, suburb or country.", null],
+  ["Not right in the city", "Leaves out the most built-up quarter of places.", "0.75"],
+  ["Suburban or leafier", "Less built up than half of all places.", "0.5"],
+  ["Edge of town or village", "Less built up than 3 in every 4 places.", "0.25"],
+  ["Open countryside", "As open as the most rural 1 in 10 places.", "0.1"]];
+function airStep(b){ return b.airStep ?? (b.airMax==null||b.airMax>=100?0:b.airMax>=85?1:b.airMax>=55?2:b.airMax>=25?3:4); }
+function openStep(b){ return b.openStep ?? (!b.openMin?0:b.openMin<=25?1:b.openMin<=50?2:b.openMin<=75?3:4); }
+function noxLimit(b){ const k=AIR_STEPS[airStep(b)][2]; return k?DATA.nox_national[k]:Infinity; }
+function densLimit(b){ const k=OPEN_STEPS[openStep(b)][2]; return k?DATA.density_national[k]:Infinity; }
+function travel(km){                                /* walking 12.5 min a km; driving 2 min a km in town, faster beyond */
+  if(km<=1.5){ const n=Math.max(1,Math.round(km*12.5)); return `about ${/^(8|11|18)/.test(String(n))?"an":"a"} ${n}-minute walk`; }
+  const m = km<=5 ? km*2 : 10+(km-5)*1.2;
+  return m>=60 ? "over an hour by car" : `about ${m<15?Math.max(2,Math.round(m)):Math.round(m/5)*5} minutes by car`; }
+function sliderText(k){ const b=S.brief, v=b[k];
+  switch(k){
+    case "airStep": return AIR_STEPS[airStep(b)][0];
+    case "openStep": return OPEN_STEPS[openStep(b)][0];
+    case "minsCentre": return v>=60 ? "any distance" : `within ${v} minutes' drive`;
+    case "gpKm": return `within ${v} km, ${travel(v)}`;
+    case "max": return GBP(v);
+    case "hospKm": return (v??60)>=60 ? "any distance" : `within ${v} km, ${travel(v)}`;
+    case "parkM": return (v??2000)>=2000 ? "any distance" : `within ${v} m, ${travel(v/1000)}`;
+    case "blueKm": return (v??10)>=10 ? "any distance" : `within ${v} km, ${travel(v)}`;
+  }
+  return String(v); }
+function stepHint(k){ const b=S.brief;
+  return k==="airStep" ? AIR_STEPS[airStep(b)][1] : k==="openStep" ? OPEN_STEPS[openStep(b)][1] : ""; }
+/* Dragging changes only the label and the panel on the right: redrawing the
+   whole page would replace the slider under the pointer. */
+function slide(k, v){ S.brief[k]=v; save();
+  const el=document.getElementById("val-"+k); if(el) el.textContent=sliderText(k);
+  const h=document.getElementById("hint-"+k); if(h) h.textContent=stepHint(k);
+  const r=document.getElementById("rail"); if(r) r.innerHTML=railHTML(); }
 // Views are matched jointly at house level: each cell carries a small table of
 // how many of its homes have each combination of view flags.
 function viewNeed(b){ let m=0; (b.views||[]).forEach(k=>{ const i=flagBit(k); if(i>=0) m|=(1<<i); }); return m; }
@@ -592,7 +618,7 @@ function near(c, b){
   return true; }
 function setPubs(v){ S.brief.pubs=v; save(); render(); }
 function matchCells(b){
-  const nx = noxCut(b.airMax), dn = densCut(b.openMin), need = viewNeed(b), out=[];
+  const nx = noxLimit(b), dn = densLimit(b), need = viewNeed(b), out=[];
   for(const c of C().cells){
     const [lo] = BANDR[c.band];
     if(!(b.types.includes(c.ptype) && lo < b.max && c.offer_med <= b.max*1.06
@@ -628,7 +654,7 @@ function warmBook(){
   }));
 }
 function warmMatching(b){
-  const nx=noxCut(b.airMax), dn=densCut(b.openMin);
+  const nx=noxLimit(b), dn=densLimit(b);
   return warmBook().filter(w=> b.types.includes(w.ptype) && w.offer<=b.max*1.06
     && w.nox<=nx && w.mins<=b.minsCentre
     && (C().cells.find(c=>c.sector===w.sector)||{density:0}).density<=dn);
@@ -770,58 +796,86 @@ function openRef(){
   go("/offer/"+v);
 }
 
+function railHTML(){
+  const b=S.brief, cells=matchCells(b), s=summarise(cells), warm=warmMatching(b).length;
+  const wide = s.pSilent < 0.20;
+  return `      <div class="panel">
+        <div class="eyebrow">Homes that fit your life</div>
+        <div class="big num">${s.n.toLocaleString()}</div>
+        <div class="sub">across ${s.sectors} postcode sectors</div>
+        <div style="height:1px;background:var(--line);margin:14px 0"></div>
+        <div class="kv"><span class="k">Would move for the right offer</span><span class="v num">≈ ${s.likely.toLocaleString()}</span></div>
+        <div class="kv"><span class="k">We'd write to</span><span class="v num">${s.nTop.toLocaleString()}</span></div>
+        <div class="kv"><span class="k">Already talking to us</span><span class="v num" style="color:var(--post)">${warm}</span></div>
+        <div class="gauge ${wide?"good":"warn"}">
+          <h4>${wide?"Wide enough to get answers":"Too narrow to hear back"}</h4>
+          <div class="bar"><i style="width:${Math.min(100,Math.round((1-s.pSilent)*100))}%;
+            background:${wide?"var(--accent)":"var(--warn)"}"></i></div>
+          <p>${wide
+            ? `About <b>${s.expReplies.toFixed(1)}</b> owners should reply to a first wave.`
+            : `A first wave to ${s.nTop.toLocaleString()} homes has a <b>${Math.round(s.pSilent*100)}%</b> chance of no reply at all. Loosen a slider, or start with the owners already talking to us.`}</p>
+        </div>
+        <a class="btn" style="width:100%;justify-content:center;margin-top:14px" href="#/results">See what's out there →</a>
+      </div>
+      <div style="margin-top:14px">${sectorMap(cells)}</div>
+      ${nationPanel(b)}`;
+}
 function vSearch(){
   const b=S.brief, cells=matchCells(b), s=summarise(cells), warm=warmMatching(b).length;
   const wide = s.pSilent < 0.20;
   return `<div class="fadein">
   <div class="eyebrow">Where you'd live · this is the whole search</div>
   <h1 style="font-size:32px;margin:8px 0 6px">What would make a place right?</h1>
-  <p style="color:var(--muted);margin:0 0 20px;max-width:52em">Every number on the right updates as you
+  <p style="color:var(--muted);margin:0 0 20px;max-width:52em">The numbers on the right update as you
     move these. Air quality and distances are real measurements for every postcode in ${C().name}; views are
     measured for every house.</p>
   <div class="searchgrid">
     <div class="panel">
       <div class="crit">
-        <div class="lab"><b>Clean air</b><span class="val">${b.airMax>=100?"anywhere":"cleanest "+b.airMax+"% nationally"}</span></div>
-        <div class="why">Modelled NOx from the AHAH index, per postcode.</div>
-        <input type="range" min="10" max="100" step="15" value="${b.airMax}"
-          aria-label="air quality" oninput="S.brief.airMax=+this.value;save();render()">
+        <div class="lab"><b>Clean air</b><span class="val" id="val-airStep">${sliderText("airStep")}</span></div>
+        <div class="why">How clean the air is where you would live, from the national air pollution model.</div>
+        <input type="range" min="0" max="4" step="1" value="${airStep(b)}"
+          aria-label="air quality" oninput="slide('airStep',+this.value)">
+        <div class="ticks"><span>${AIR_STEPS[0][0]}</span><span>${AIR_STEPS[AIR_STEPS.length-1][0]}</span></div>
+        <div class="hint" id="hint-airStep">${stepHint("airStep")}</div>
       </div>
       <div class="crit">
-        <div class="lab"><b>Open, green surroundings</b><span class="val">${b.openMin<=0?"anywhere":b.openMin>=90?"most open only":"top "+(100-b.openMin)+"% most open"}</span></div>
-        <div class="why">How built-up the immediate area is: our stand-in for green space.</div>
-        <input type="range" min="0" max="100" step="25" value="${b.openMin}"
-          aria-label="openness" oninput="S.brief.openMin=+this.value;save();render()">
+        <div class="lab"><b>Open, green surroundings</b><span class="val" id="val-openStep">${sliderText("openStep")}</span></div>
+        <div class="why">How built up the area around the home is: our stand-in for green space nearby.</div>
+        <input type="range" min="0" max="4" step="1" value="${openStep(b)}"
+          aria-label="openness" oninput="slide('openStep',+this.value)">
+        <div class="ticks"><span>${OPEN_STEPS[0][0]}</span><span>${OPEN_STEPS[OPEN_STEPS.length-1][0]}</span></div>
+        <div class="hint" id="hint-openStep">${stepHint("openStep")}</div>
       </div>
       <div class="crit">
-        <div class="lab"><b>Drive to the centre</b><span class="val">${b.minsCentre>=60?"any distance":"under "+b.minsCentre+" min"}</span></div>
+        <div class="lab"><b>Drive to the centre</b><span class="val" id="val-minsCentre">${sliderText("minsCentre")}</span></div>
         <div class="why">To ${esc(C().centre_name)}. Approximate, from straight-line distance, not routed.</div>
         <input type="range" min="3" max="60" step="1" value="${b.minsCentre}"
-          aria-label="drive time to the centre" oninput="S.brief.minsCentre=+this.value;save();render()">
+          aria-label="drive time to the centre" oninput="slide('minsCentre',+this.value)">
       </div>
       <div class="crit">
-        <div class="lab"><b>GP within</b><span class="val">${b.gpKm} km</span></div>
+        <div class="lab"><b>GP within</b><span class="val" id="val-gpKm">${sliderText("gpKm")}</span></div>
         <div class="why">Straight-line distance to the nearest GP surgery.</div>
         <input type="range" min="0.5" max="6" step="0.5" value="${b.gpKm}"
-          aria-label="distance to GP" oninput="S.brief.gpKm=+this.value;save();render()">
+          aria-label="distance to GP" oninput="slide('gpKm',+this.value)">
       </div>
       <div class="crit">
-        <div class="lab"><b>Hospital within</b><span class="val">${(b.hospKm??60)>=60?"any distance":(b.hospKm)+" km"}</span></div>
+        <div class="lab"><b>Hospital within</b><span class="val" id="val-hospKm">${sliderText("hospKm")}</span></div>
         <div class="why">Straight-line distance to the nearest hospital.</div>
         <input type="range" min="2" max="60" step="2" value="${b.hospKm??60}"
-          aria-label="distance to hospital" oninput="S.brief.hospKm=+this.value;save();render()">
+          aria-label="distance to hospital" oninput="slide('hospKm',+this.value)">
       </div>
       <div class="crit">
-        <div class="lab"><b>Park or playing field within</b><span class="val">${(b.parkM??2000)>=2000?"any distance":(b.parkM)+" m"}</span></div>
+        <div class="lab"><b>Park or playing field within</b><span class="val" id="val-parkM">${sliderText("parkM")}</span></div>
         <div class="why">To the nearest entrance of a public park, garden or playing field (OS Open Greenspace).</div>
         <input type="range" min="200" max="2000" step="200" value="${b.parkM??2000}"
-          aria-label="distance to a park" oninput="S.brief.parkM=+this.value;save();render()">
+          aria-label="distance to a park" oninput="slide('parkM',+this.value)">
       </div>
       <div class="crit">
-        <div class="lab"><b>River, lake or the sea within</b><span class="val">${(b.blueKm??10)>=10?"any distance":(b.blueKm)+" km"}</span></div>
+        <div class="lab"><b>River, lake or the sea within</b><span class="val" id="val-blueKm">${sliderText("blueKm")}</span></div>
         <div class="why">To the nearest river, lake or reservoir of 2 ha or more, or the sea.</div>
         <input type="range" min="0.5" max="10" step="0.5" value="${b.blueKm??10}"
-          aria-label="distance to water" oninput="S.brief.blueKm=+this.value;save();render()">
+          aria-label="distance to water" oninput="slide('blueKm',+this.value)">
       </div>
       <div class="crit">
         <div class="lab"><b>Pubs</b><span class="val">${PUBS[b.pubs||"any"]}</span></div>
@@ -830,10 +884,10 @@ function vSearch(){
           <button class="chip ${(b.pubs||"any")===k?"on":""}" aria-pressed="${(b.pubs||"any")===k}" onclick="setPubs('${k}')">${l}</button>`).join("")}</div>
       </div>
       <div class="crit">
-        <div class="lab"><b>Budget ceiling</b><span class="val">${GBP(b.max)}</span></div>
+        <div class="lab"><b>Budget ceiling</b><span class="val" id="val-max">${sliderText("max")}</span></div>
         <div class="why">What you could pay for the <i>right offer</i>, usually 6–20% over today's value.</div>
         <input type="range" min="180000" max="900000" step="25000" value="${b.max}"
-          aria-label="budget" oninput="S.brief.max=+this.value;save();render()">
+          aria-label="budget" oninput="slide('max',+this.value)">
       </div>
       <div class="crit">
         <div class="lab"><b>What you'd like to see</b><span class="val">${(b.views||[]).length?(b.views||[]).map(k=>(flagOf(k)||{}).label).filter(Boolean).join(" · "):"no preference"}</span></div>
@@ -864,28 +918,7 @@ function vSearch(){
       </div>
     </div>
 
-    <div class="rail">
-      <div class="panel">
-        <div class="eyebrow">Homes that fit your life</div>
-        <div class="big num">${s.n.toLocaleString()}</div>
-        <div class="sub">across ${s.sectors} postcode sectors</div>
-        <div style="height:1px;background:var(--line);margin:14px 0"></div>
-        <div class="kv"><span class="k">Would move for the right offer</span><span class="v num">≈ ${s.likely.toLocaleString()}</span></div>
-        <div class="kv"><span class="k">We'd write to</span><span class="v num">${s.nTop.toLocaleString()}</span></div>
-        <div class="kv"><span class="k">Already talking to us</span><span class="v num" style="color:var(--post)">${warm}</span></div>
-        <div class="gauge ${wide?"good":"warn"}">
-          <h4>${wide?"Wide enough to get answers":"Too narrow to hear back"}</h4>
-          <div class="bar"><i style="width:${Math.min(100,Math.round((1-s.pSilent)*100))}%;
-            background:${wide?"var(--accent)":"var(--warn)"}"></i></div>
-          <p>${wide
-            ? `About <b>${s.expReplies.toFixed(1)}</b> owners should reply to a first wave.`
-            : `A first wave to ${s.nTop.toLocaleString()} homes has a <b>${Math.round(s.pSilent*100)}%</b> chance of no reply at all. Loosen a slider, or start with the owners already talking to us.`}</p>
-        </div>
-        <a class="btn" style="width:100%;justify-content:center;margin-top:14px" href="#/results">See what's out there →</a>
-      </div>
-      <div style="margin-top:14px">${sectorMap(cells)}</div>
-      ${nationPanel(b)}
-    </div>
+    <div class="rail" id="rail">${railHTML()}</div>
   </div>
   </div>`;
 }
