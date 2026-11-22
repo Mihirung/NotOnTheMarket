@@ -139,7 +139,7 @@ def like_for_like(ch, fam, say):
 
 
 def on_top(ch, fam, ref_pred, say):
-    _, y, yr, ten, blk = ML.shared_test(ch)
+    _, y, yr, ten, blk = ML.shared_labels(ch)
     cr = test_rows(ch, (2017, 2019))
     fam_idx, fam_cols = ch.cols([fam])
     F = gather(ch, cr, fam_idx)

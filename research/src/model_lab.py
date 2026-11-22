@@ -279,6 +279,15 @@ def shared_test(ch):
     return _TEST["t"]
 
 
+def shared_labels(ch):
+    """Outcome, year, tenure and block of every test row, without the
+    features: holding every feature of the test set while a model is fitted
+    on every home does not fit in memory."""
+    if "l" not in _TEST:
+        _TEST["l"] = (None,) + test_set(ch, ["BASE"], (2017, 2019))[1:]
+    return _TEST["l"]
+
+
 def predict_cached(ch, out, threads, name, pct, fams):
     """Test-set predictions for one (feature set, sample size), fitted once and
     kept on disk so that later experiments can compare against it."""
@@ -287,10 +296,10 @@ def predict_cached(ch, out, threads, name, pct, fams):
     fp, fj = cache / f"{key}.npy", cache / f"{key}.json"
     if fp.exists() and fj.exists():
         return np.load(fp), json.load(open(fj))
-    X = shared_test(ch)[0]
-    cols_all, _ = ch.cols(everything(ch)); cols, _ = ch.cols(fams)
+    _TEST.pop("t", None)                             # the fit needs the memory more than a cached test set
     bst, n = fit(ch, pct, fams, threads)
-    p = bst.predict(X[:, [cols_all.index(c) for c in cols]], num_threads=threads).astype("float32")
+    X = test_set(ch, fams, (2017, 2019))[0]           # same rows in the same order as shared_test
+    p = bst.predict(X, num_threads=threads).astype("float32"); del X
     info = {"train_rows": n, "rounds": bst.n_rounds_used, "families": list(fams)}
     (out / "models").mkdir(exist_ok=True); bst.save_model(str(out / "models" / f"{key}.txt"))
     g = bst.feature_importance("gain"); nm = bst.feature_name(); tot = g.sum()
@@ -319,7 +328,7 @@ def exp_smoke(ch, out, threads):
 def exp_ladder(ch, out, threads, pct=10):
     rungs = [("BASE", ["BASE"]), ("+HIST", ["BASE", "HIST"]), ("+HIST+GEO", ["BASE", "HIST", "GEO"]),
              ("+HIST+VIEW", ["BASE", "HIST", "VIEW"]), ("ALL", FULL)]
-    _, y, yr, ten, blk = shared_test(ch)
+    _, y, yr, ten, blk = shared_labels(ch)
     res, preds = {"pct": pct, "test_rows": int(len(y)), "neg_keep": NEG_KEEP}, {}
     for name, fams in rungs:
         p, info = predict_cached(ch, out, threads, name, pct, fams)
@@ -404,7 +413,7 @@ def exp_rolling(ch, out, threads, pct=10):
 def exp_ablate(ch, out, threads, pct=40, drop=("VIEW", "GEO")):
     """At a large sample: what do geography and outlook each add on top of
     everything else? (Leave one family out, compare with the full model.)"""
-    _, y, yr, ten, blk = shared_test(ch)
+    _, y, yr, ten, blk = shared_labels(ch)
     res, preds = {"pct": pct}, {}
     rungs = [("ALL", FULL)] + [(f"no {d}", [f for f in FULL if f != d]) for d in drop]
     for name, fams in rungs:
@@ -439,7 +448,7 @@ def exp_sampling(ch, out, threads, pct=5):
 
 def exp_fitset(ch, out, threads, name, fams, pct=100):
     """Fit one named set of families (e.g. CURRENT, +HOUSE) and report it on 2017-2019."""
-    _, y, yr, ten, blk = shared_test(ch)
+    _, y, yr, ten, blk = shared_labels(ch)
     p, info = predict_cached(ch, out, threads, name, pct, fams)
     r = summarise(y, p, yr, ten) | info
     json.dump(r, open(out / f"lab_fit_{name.replace(' ', '_')}@{pct}.json", "w"), indent=1)
