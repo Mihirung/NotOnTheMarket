@@ -1,0 +1,1483 @@
+{
+ "family": "HOUSE",
+ "about": "House by house from the 1 m laser survey, averaged over the postcode's addresses: the upstairs view, the garden and its sun, sun on the windows, the house's size, landmarks in sight",
+ "when": "2026-11-22 19:54",
+ "coverage": {
+  "postcodes": 0.9893,
+  "test_home_years": 0.9925
+ },
+ "adds": {
+  "all": {
+   "current": 1.6893,
+   "with": 1.7205,
+   "gain": 0.0312,
+   "range": [
+    0.0156,
+    0.0454
+   ]
+  },
+  "t0_9": {
+   "current": 1.7049,
+   "with": 1.7216,
+   "gain": 0.0167,
+   "range": [
+    -0.0127,
+    0.0417
+   ]
+  },
+  "t10_19": {
+   "current": 1.4859,
+   "with": 1.5237,
+   "gain": 0.0377,
+   "range": [
+    0.0156,
+    0.0654
+   ]
+  },
+  "t20p": {
+   "current": 1.233,
+   "with": 1.2668,
+   "gain": 0.0338,
+   "range": [
+    -0.0312,
+    0.0946
+   ]
+  },
+  "gain_share": {
+   "BASE": 0.199,
+   "HIST": 0.659,
+   "GEO": 0.044,
+   "VIEW": 0.029,
+   "HOUSE": 0.069
+  }
+ },
+ "lfl": {
+  "u_horizon": {
+   "points_per_step": -0.0543,
+   "range": [
+    -0.0668,
+    -0.0415
+   ],
+   "step": 7.7545,
+   "by_region": {
+    "London": -0.0673,
+    "South East": -0.0078,
+    "East": 0.0,
+    "South West": 0.0075,
+    "Midlands": -0.0513,
+    "North West": -0.0506,
+    "Yorkshire and North East": -0.036,
+    "Wales": -0.0462
+   },
+   "regions_same_sign": "6 of 7"
+  },
+  "u_open": {
+   "points_per_step": -0.0205,
+   "range": [
+    -0.034,
+    -0.0101
+   ],
+   "step": 0.1767,
+   "by_region": {
+    "London": 0.0053,
+    "South East": -0.0636,
+    "East": -0.0511,
+    "South West": -0.0793,
+    "Midlands": 0.0189,
+    "North West": -0.0224,
+    "Yorkshire and North East": -0.0374,
+    "Wales": -0.0236
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "u_long": {
+   "points_per_step": -0.0003,
+   "range": [
+    -0.012,
+    0.0099
+   ],
+   "step": 0.0983,
+   "by_region": {
+    "London": 0.0219,
+    "South East": -0.0109,
+    "East": 0.02,
+    "South West": -0.0272,
+    "Midlands": 0.0357,
+    "North West": 0.0063,
+    "Yorkshire and North East": -0.0027,
+    "Wales": -0.0345
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "u_long5": {
+   "points_per_step": -0.0074,
+   "range": [
+    -0.0182,
+    0.002
+   ],
+   "step": 0.0752,
+   "by_region": {
+    "London": 0.0092,
+    "South East": -0.0104,
+    "East": 0.0341,
+    "South West": -0.0174,
+    "Midlands": 0.0097,
+    "North West": -0.0083,
+    "Yorkshire and North East": -0.005,
+    "Wales": -0.0214
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "u_longest_km": {
+   "points_per_step": -0.007,
+   "range": [
+    -0.0169,
+    0.0048
+   ],
+   "step": 8.8747,
+   "by_region": {
+    "London": -0.0113,
+    "South East": 0.0049,
+    "East": 0.0413,
+    "South West": 0.0041,
+    "Midlands": 0.0243,
+    "North West": 0.0218,
+    "Yorkshire and North East": -0.0144,
+    "Wales": -0.0371
+   },
+   "regions_same_sign": "3 of 8"
+  },
+  "u_water": {
+   "points_per_step": -0.0017,
+   "range": [
+    -0.0128,
+    0.0092
+   ],
+   "step": 0.0523,
+   "by_region": {
+    "London": -0.0672,
+    "South East": -0.0182,
+    "East": -0.0033,
+    "South West": -0.0324,
+    "Midlands": 0.011,
+    "North West": 0.0284,
+    "Yorkshire and North East": 0.0148,
+    "Wales": 0.0015
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "u_tidal": {
+   "points_per_step": 0.0074,
+   "range": [
+    -0.004,
+    0.0183
+   ],
+   "step": 0.0368,
+   "by_region": {
+    "London": -0.0586,
+    "South East": -0.0225,
+    "East": -0.0104,
+    "South West": -0.021,
+    "Midlands": -0.3514,
+    "North West": 0.0384,
+    "Yorkshire and North East": -0.0096,
+    "Wales": 0.0005
+   },
+   "regions_same_sign": "2 of 8"
+  },
+  "u_hills": {
+   "points_per_step": -0.0107,
+   "range": [
+    -0.0235,
+    -0.0002
+   ],
+   "step": 0.052,
+   "by_region": {
+    "London": 0.0106,
+    "South East": 0.0159,
+    "East": -0.0872,
+    "South West": -0.0029,
+    "Midlands": -0.0068,
+    "North West": 0.0043,
+    "Yorkshire and North East": -0.0064,
+    "Wales": -0.0165
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "u_overlooked": {
+   "points_per_step": 0.0567,
+   "range": [
+    0.0458,
+    0.0679
+   ],
+   "step": 0.1646,
+   "by_region": {
+    "London": 0.0533,
+    "South East": 0.0713,
+    "East": 0.124,
+    "South West": 0.1333,
+    "Midlands": 0.1141,
+    "North West": 0.0634,
+    "Yorkshire and North East": 0.0609,
+    "Wales": 0.1234
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "u_hz_s": {
+   "points_per_step": -0.0382,
+   "range": [
+    -0.0511,
+    -0.0265
+   ],
+   "step": 8.2783,
+   "by_region": {
+    "London": -0.0703,
+    "South East": -0.0068,
+    "East": -0.029,
+    "South West": 0.0498,
+    "Midlands": -0.0348,
+    "North West": -0.0448,
+    "Yorkshire and North East": 0.0036,
+    "Wales": -0.0286
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "u_hz_w": {
+   "points_per_step": -0.0407,
+   "range": [
+    -0.0529,
+    -0.0296
+   ],
+   "step": 8.2853,
+   "by_region": {
+    "London": -0.0602,
+    "South East": 0.0018,
+    "East": -0.026,
+    "South West": 0.0053,
+    "Midlands": -0.0569,
+    "North West": -0.0468,
+    "Yorkshire and North East": -0.014,
+    "Wales": -0.0256
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "g_horizon": {
+   "points_per_step": -0.0688,
+   "range": [
+    -0.0794,
+    -0.0554
+   ],
+   "step": 8.1025,
+   "by_region": {
+    "London": -0.0813,
+    "South East": 0.0023,
+    "East": -0.0219,
+    "South West": 0.0105,
+    "Midlands": -0.0902,
+    "North West": -0.0772,
+    "Yorkshire and North East": -0.0261,
+    "Wales": -0.0226
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "g_long": {
+   "points_per_step": -0.0049,
+   "range": [
+    -0.0148,
+    0.0069
+   ],
+   "step": 0.0326,
+   "by_region": {
+    "London": -0.0453,
+    "South East": -0.0301,
+    "East": 0.0007,
+    "South West": -0.0314,
+    "Midlands": -0.015,
+    "North West": -0.0012,
+    "Yorkshire and North East": 0.01,
+    "Wales": -0.025
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "g_overlooked": {
+   "points_per_step": 0.0116,
+   "range": [
+    -0.0008,
+    0.0227
+   ],
+   "step": 0.1338,
+   "by_region": {
+    "London": 0.0137,
+    "South East": 0.0299,
+    "East": 0.0775,
+    "South West": 0.0914,
+    "Midlands": 0.0676,
+    "North West": 0.0387,
+    "Yorkshire and North East": 0.0406,
+    "Wales": 0.0578
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "g_hz_s": {
+   "points_per_step": -0.0616,
+   "range": [
+    -0.0722,
+    -0.0485
+   ],
+   "step": 8.7738,
+   "by_region": {
+    "London": -0.0611,
+    "South East": -0.0129,
+    "East": -0.0629,
+    "South West": 0.01,
+    "Midlands": -0.0886,
+    "North West": -0.0678,
+    "Yorkshire and North East": -0.023,
+    "Wales": -0.0232
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "g_hz_w": {
+   "points_per_step": -0.0594,
+   "range": [
+    -0.0705,
+    -0.0453
+   ],
+   "step": 8.9996,
+   "by_region": {
+    "London": -0.0557,
+    "South East": -0.0129,
+    "East": -0.0274,
+    "South West": 0.0145,
+    "Midlands": -0.0927,
+    "North West": -0.0765,
+    "Yorkshire and North East": -0.0159,
+    "Wales": -0.017
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "sun_jun": {
+   "points_per_step": 0.0644,
+   "range": [
+    0.0505,
+    0.0749
+   ],
+   "step": 1.8574,
+   "by_region": {
+    "London": 0.0858,
+    "South East": 0.0106,
+    "East": 0.0111,
+    "South West": -0.0122,
+    "Midlands": 0.0818,
+    "North West": 0.0778,
+    "Yorkshire and North East": 0.0361,
+    "Wales": 0.0149
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "sun_evening_jun": {
+   "points_per_step": 0.0159,
+   "range": [
+    0.0037,
+    0.0265
+   ],
+   "step": 0.5905,
+   "by_region": {
+    "London": 0.0292,
+    "South East": -0.0301,
+    "East": -0.0414,
+    "South West": -0.0538,
+    "Midlands": 0.043,
+    "North West": 0.0444,
+    "Yorkshire and North East": -0.0027,
+    "Wales": -0.0314
+   },
+   "regions_same_sign": "3 of 8"
+  },
+  "sun_equinox": {
+   "points_per_step": 0.0596,
+   "range": [
+    0.0457,
+    0.0709
+   ],
+   "step": 1.7331,
+   "by_region": {
+    "London": 0.0641,
+    "South East": -0.0038,
+    "East": 0.0282,
+    "South West": -0.0478,
+    "Midlands": 0.0659,
+    "North West": 0.0501,
+    "Yorkshire and North East": 0.0195,
+    "Wales": 0.0067
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "sun_dec": {
+   "points_per_step": 0.0304,
+   "range": [
+    0.0184,
+    0.0409
+   ],
+   "step": 1.2803,
+   "by_region": {
+    "London": 0.0098,
+    "South East": -0.0371,
+    "East": 0.0199,
+    "South West": -0.0525,
+    "Midlands": 0.0383,
+    "North West": -0.0233,
+    "Yorkshire and North East": -0.0211,
+    "Wales": -0.0017
+   },
+   "regions_same_sign": "3 of 8"
+  },
+  "garden": {
+   "points_per_step": 0.0353,
+   "range": [
+    0.0243,
+    0.0434
+   ],
+   "step": 0.0497,
+   "by_region": {
+    "London": 0.0295,
+    "South East": 0.0154,
+    "East": 0.0321,
+    "South West": 0.051,
+    "Midlands": 0.0681,
+    "North West": -0.0179,
+    "Yorkshire and North East": 0.0328,
+    "Wales": 0.078
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "garden_clear": {
+   "points_per_step": 0.0458,
+   "range": [
+    0.0345,
+    0.0569
+   ],
+   "step": 1.7714,
+   "by_region": {
+    "London": 0.0182,
+    "South East": 0.0073,
+    "East": 0.0032,
+    "South West": 0.0162,
+    "Midlands": 0.0103,
+    "North West": 0.006,
+    "Yorkshire and North East": -0.003,
+    "Wales": 0.0469
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "plot_open": {
+   "points_per_step": 0.0606,
+   "range": [
+    0.0469,
+    0.0735
+   ],
+   "step": 54.6326,
+   "by_region": {
+    "London": 0.0197,
+    "South East": -0.013,
+    "East": 0.0059,
+    "South West": -0.0168,
+    "Midlands": 0.0875,
+    "North West": 0.0191,
+    "Yorkshire and North East": 0.0418,
+    "Wales": 0.0756
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "light_front": {
+   "points_per_step": 0.0018,
+   "range": [
+    -0.0084,
+    0.0123
+   ],
+   "step": 1.4082,
+   "by_region": {
+    "London": 0.018,
+    "South East": -0.0137,
+    "East": 0.0221,
+    "South West": -0.0571,
+    "Midlands": -0.023,
+    "North West": 0.0272,
+    "Yorkshire and North East": -0.0061,
+    "Wales": 0.0294
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "light_back": {
+   "points_per_step": 0.0275,
+   "range": [
+    0.0164,
+    0.0375
+   ],
+   "step": 1.3781,
+   "by_region": {
+    "London": 0.038,
+    "South East": 0.0009,
+    "East": -0.0211,
+    "South West": -0.0008,
+    "Midlands": 0.0378,
+    "North West": 0.0089,
+    "Yorkshire and North East": 0.0238,
+    "Wales": 0.0555
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "light_best": {
+   "points_per_step": 0.0192,
+   "range": [
+    0.0047,
+    0.0312
+   ],
+   "step": 1.2398,
+   "by_region": {
+    "London": 0.0575,
+    "South East": -0.0198,
+    "East": -0.0187,
+    "South West": -0.0736,
+    "Midlands": 0.0048,
+    "North West": 0.029,
+    "Yorkshire and North East": -0.0033,
+    "Wales": 0.0421
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "light_both": {
+   "points_per_step": 0.0336,
+   "range": [
+    0.0179,
+    0.0458
+   ],
+   "step": 1.4613,
+   "by_region": {
+    "London": 0.0671,
+    "South East": -0.0156,
+    "East": 0.0024,
+    "South West": -0.0694,
+    "Midlands": 0.0204,
+    "North West": 0.046,
+    "Yorkshire and North East": 0.0239,
+    "Wales": 0.0688
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "winter_front": {
+   "points_per_step": -0.0046,
+   "range": [
+    -0.014,
+    0.0052
+   ],
+   "step": 1.0535,
+   "by_region": {
+    "London": -0.0106,
+    "South East": -0.0357,
+    "East": -0.0106,
+    "South West": -0.0644,
+    "Midlands": -0.0302,
+    "North West": 0.0023,
+    "Yorkshire and North East": -0.0192,
+    "Wales": -0.0021
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "winter_back": {
+   "points_per_step": 0.0059,
+   "range": [
+    -0.0062,
+    0.0153
+   ],
+   "step": 0.9567,
+   "by_region": {
+    "London": 0.0031,
+    "South East": -0.0203,
+    "East": -0.0194,
+    "South West": -0.0538,
+    "Midlands": 0.015,
+    "North West": -0.028,
+    "Yorkshire and North East": 0.0007,
+    "Wales": 0.0141
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "top_front": {
+   "points_per_step": 0.0064,
+   "range": [
+    -0.0043,
+    0.0164
+   ],
+   "step": 1.5037,
+   "by_region": {
+    "London": 0.0176,
+    "South East": -0.0047,
+    "East": 0.0314,
+    "South West": -0.0404,
+    "Midlands": -0.015,
+    "North West": 0.0345,
+    "Yorkshire and North East": -0.008,
+    "Wales": 0.0251
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "top_back": {
+   "points_per_step": 0.0186,
+   "range": [
+    0.0074,
+    0.0292
+   ],
+   "step": 1.528,
+   "by_region": {
+    "London": 0.0312,
+    "South East": 0.0024,
+    "East": -0.0233,
+    "South West": 0.0112,
+    "Midlands": 0.0363,
+    "North West": -0.0048,
+    "Yorkshire and North East": 0.0087,
+    "Wales": 0.0046
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "storeys": {
+   "points_per_step": -0.1062,
+   "range": [
+    -0.1226,
+    -0.0887
+   ],
+   "step": 0.5771,
+   "by_region": {
+    "London": -0.1745,
+    "South East": -0.0279,
+    "East": 0.0313,
+    "South West": 0.0348,
+    "Midlands": -0.0452,
+    "North West": -0.0896,
+    "Yorkshire and North East": -0.0163,
+    "Wales": -0.1052
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "height": {
+   "points_per_step": -0.125,
+   "range": [
+    -0.1368,
+    -0.1108
+   ],
+   "step": 3.7015,
+   "by_region": {
+    "London": -0.1063,
+    "South East": -0.0591,
+    "East": 0.0248,
+    "South West": -0.0122,
+    "Midlands": -0.071,
+    "North West": -0.0917,
+    "Yorkshire and North East": -0.0527,
+    "Wales": -0.0556
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "depth_m": {
+   "points_per_step": -0.0309,
+   "range": [
+    -0.0411,
+    -0.0189
+   ],
+   "step": 2.9587,
+   "by_region": {
+    "London": -0.0417,
+    "South East": 0.0222,
+    "East": -0.026,
+    "South West": -0.0489,
+    "Midlands": -0.0723,
+    "North West": -0.0542,
+    "Yorkshire and North East": -0.0303,
+    "Wales": -0.0795
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "road_m": {
+   "points_per_step": -0.022,
+   "range": [
+    -0.0344,
+    -0.0096
+   ],
+   "step": 6.6541,
+   "by_region": {
+    "London": -0.0314,
+    "South East": -0.0321,
+    "East": -0.0422,
+    "South West": -0.0252,
+    "Midlands": -0.0866,
+    "North West": -0.0636,
+    "Yorkshire and North East": -0.0593,
+    "Wales": -0.0034
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "lm_n": {
+   "points_per_step": -0.0252,
+   "range": [
+    -0.0375,
+    -0.0153
+   ],
+   "step": 2.6399,
+   "by_region": {
+    "London": -0.0195,
+    "South East": -0.017,
+    "East": -0.0442,
+    "South West": -0.019,
+    "Midlands": -0.014,
+    "North West": 0.0008,
+    "Yorkshire and North East": -0.0149,
+    "Wales": -0.0074
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "lm_cathedral": {
+   "points_per_step": -0.0264,
+   "range": [
+    -0.0363,
+    -0.0154
+   ],
+   "step": 0.3622,
+   "by_region": {
+    "London": 0.002,
+    "South East": -0.0676,
+    "East": 0.0262,
+    "South West": -0.0006,
+    "Midlands": -0.0292,
+    "North West": -0.0663,
+    "Yorkshire and North East": -0.0338,
+    "Wales": -0.0326
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "lm_castle": {
+   "points_per_step": 0.0043,
+   "range": [
+    -0.0086,
+    0.0154
+   ],
+   "step": 0.2302,
+   "by_region": {
+    "London": -0.0168,
+    "South East": -0.017,
+    "East": 0.013,
+    "South West": -0.0111,
+    "Midlands": -0.0097,
+    "North West": 0.0082,
+    "Yorkshire and North East": -0.013,
+    "Wales": 0.0126
+   },
+   "regions_same_sign": "3 of 8"
+  },
+  "lm_tower": {
+   "points_per_step": -0.0429,
+   "range": [
+    -0.0531,
+    -0.031
+   ],
+   "step": 0.8687,
+   "by_region": {
+    "London": -0.0089,
+    "South East": -0.0983,
+    "East": 0.1085,
+    "South West": -0.0248,
+    "Midlands": -0.057,
+    "North West": -0.0464,
+    "Yorkshire and North East": 0.0249,
+    "Wales": -0.0371
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "lm_church": {
+   "points_per_step": -0.0191,
+   "range": [
+    -0.0307,
+    -0.0095
+   ],
+   "step": 0.7417,
+   "by_region": {
+    "London": -0.0154,
+    "South East": -0.0968,
+    "East": -0.0297,
+    "South West": -0.0404,
+    "Midlands": 0.02,
+    "North West": -0.0469,
+    "Yorkshire and North East": 0.0626,
+    "Wales": 0.0145
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "lm_hill": {
+   "points_per_step": -0.0042,
+   "range": [
+    -0.0156,
+    0.0059
+   ],
+   "step": 1.8137,
+   "by_region": {
+    "London": -0.0634,
+    "South East": 0.0583,
+    "East": -0.155,
+    "South West": -0.011,
+    "Midlands": -0.0078,
+    "North West": 0.0119,
+    "Yorkshire and North East": -0.032,
+    "Wales": -0.0066
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "sd_u_long": {
+   "points_per_step": 0.0073,
+   "range": [
+    -0.0037,
+    0.0167
+   ],
+   "step": 0.0458,
+   "by_region": {
+    "London": -0.0008,
+    "South East": 0.0192,
+    "East": 0.0202,
+    "South West": 0.0072,
+    "Midlands": 0.0558,
+    "North West": -0.022,
+    "Yorkshire and North East": -0.0115,
+    "Wales": -0.0339
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "sd_light_both": {
+   "points_per_step": 0.0146,
+   "range": [
+    0.0031,
+    0.0267
+   ],
+   "step": 0.6161,
+   "by_region": {
+    "London": 0.0036,
+    "South East": -0.0182,
+    "East": -0.0433,
+    "South West": 0.015,
+    "Midlands": 0.0106,
+    "North West": -0.024,
+    "Yorkshire and North East": 0.0042,
+    "Wales": -0.0073
+   },
+   "regions_same_sign": "4 of 8"
+  }
+ },
+ "lfl_rows": 11875967,
+ "lfl_sales": 458268,
+ "on_top": {
+  "u_horizon": {
+   "points_per_step": -0.0664,
+   "range": [
+    -0.091,
+    -0.0465
+   ]
+  },
+  "u_open": {
+   "points_per_step": -0.0193,
+   "range": [
+    -0.0415,
+    0.0018
+   ]
+  },
+  "u_long": {
+   "points_per_step": 0.0636,
+   "range": [
+    0.0409,
+    0.0839
+   ]
+  },
+  "u_long5": {
+   "points_per_step": 0.0367,
+   "range": [
+    0.0175,
+    0.0581
+   ]
+  },
+  "u_longest_km": {
+   "points_per_step": 0.0427,
+   "range": [
+    0.0231,
+    0.0632
+   ]
+  },
+  "u_water": {
+   "points_per_step": -0.0219,
+   "range": [
+    -0.0467,
+    0.0012
+   ]
+  },
+  "u_tidal": {
+   "points_per_step": -0.0205,
+   "range": [
+    -0.044,
+    0.0014
+   ]
+  },
+  "u_hills": {
+   "points_per_step": 0.1066,
+   "range": [
+    0.0822,
+    0.1275
+   ]
+  },
+  "u_overlooked": {
+   "points_per_step": 0.0669,
+   "range": [
+    0.0431,
+    0.0922
+   ]
+  },
+  "u_hz_s": {
+   "points_per_step": -0.0643,
+   "range": [
+    -0.0889,
+    -0.0445
+   ]
+  },
+  "u_hz_w": {
+   "points_per_step": -0.0553,
+   "range": [
+    -0.078,
+    -0.0354
+   ]
+  },
+  "g_horizon": {
+   "points_per_step": -0.0873,
+   "range": [
+    -0.1093,
+    -0.0662
+   ]
+  },
+  "g_long": {
+   "points_per_step": 0.0706,
+   "range": [
+    0.0502,
+    0.0903
+   ]
+  },
+  "g_overlooked": {
+   "points_per_step": 0.0264,
+   "range": [
+    -0.0002,
+    0.0479
+   ]
+  },
+  "g_hz_s": {
+   "points_per_step": -0.0847,
+   "range": [
+    -0.1038,
+    -0.0584
+   ]
+  },
+  "g_hz_w": {
+   "points_per_step": -0.0829,
+   "range": [
+    -0.1047,
+    -0.0571
+   ]
+  },
+  "sun_jun": {
+   "points_per_step": 0.1008,
+   "range": [
+    0.0772,
+    0.1222
+   ]
+  },
+  "sun_evening_jun": {
+   "points_per_step": 0.0594,
+   "range": [
+    0.037,
+    0.0858
+   ]
+  },
+  "sun_equinox": {
+   "points_per_step": 0.0674,
+   "range": [
+    0.0425,
+    0.0901
+   ]
+  },
+  "sun_dec": {
+   "points_per_step": -0.0085,
+   "range": [
+    -0.0333,
+    0.0125
+   ]
+  },
+  "garden": {
+   "points_per_step": 0.0286,
+   "range": [
+    0.0065,
+    0.0506
+   ]
+  },
+  "garden_clear": {
+   "points_per_step": 0.0265,
+   "range": [
+    0.0042,
+    0.0491
+   ]
+  },
+  "plot_open": {
+   "points_per_step": 0.0707,
+   "range": [
+    0.0453,
+    0.0933
+   ]
+  },
+  "light_front": {
+   "points_per_step": 0.0408,
+   "range": [
+    0.0198,
+    0.064
+   ]
+  },
+  "light_back": {
+   "points_per_step": 0.0344,
+   "range": [
+    0.0066,
+    0.0563
+   ]
+  },
+  "light_best": {
+   "points_per_step": 0.0544,
+   "range": [
+    0.0306,
+    0.0746
+   ]
+  },
+  "light_both": {
+   "points_per_step": 0.0717,
+   "range": [
+    0.0485,
+    0.0938
+   ]
+  },
+  "winter_front": {
+   "points_per_step": 0.0066,
+   "range": [
+    -0.0136,
+    0.0261
+   ]
+  },
+  "winter_back": {
+   "points_per_step": -0.018,
+   "range": [
+    -0.0461,
+    0.0029
+   ]
+  },
+  "top_front": {
+   "points_per_step": 0.0141,
+   "range": [
+    -0.0072,
+    0.0379
+   ]
+  },
+  "top_back": {
+   "points_per_step": 0.0174,
+   "range": [
+    -0.0093,
+    0.0383
+   ]
+  },
+  "storeys": {
+   "points_per_step": -0.1326,
+   "range": [
+    -0.155,
+    -0.1133
+   ]
+  },
+  "height": {
+   "points_per_step": -0.1224,
+   "range": [
+    -0.1409,
+    -0.1009
+   ]
+  },
+  "depth_m": {
+   "points_per_step": -0.1344,
+   "range": [
+    -0.1565,
+    -0.1124
+   ]
+  },
+  "road_m": {
+   "points_per_step": -0.0887,
+   "range": [
+    -0.1108,
+    -0.0692
+   ]
+  },
+  "lm_n": {
+   "points_per_step": 0.0266,
+   "range": [
+    0.0045,
+    0.0485
+   ]
+  },
+  "lm_cathedral": {
+   "points_per_step": -0.0419,
+   "range": [
+    -0.0645,
+    -0.0209
+   ]
+  },
+  "lm_castle": {
+   "points_per_step": 0.0206,
+   "range": [
+    -0.0002,
+    0.0432
+   ]
+  },
+  "lm_tower": {
+   "points_per_step": -0.0722,
+   "range": [
+    -0.0927,
+    -0.0492
+   ]
+  },
+  "lm_church": {
+   "points_per_step": -0.053,
+   "range": [
+    -0.0753,
+    -0.0314
+   ]
+  },
+  "lm_hill": {
+   "points_per_step": 0.1006,
+   "range": [
+    0.0771,
+    0.1238
+   ]
+  },
+  "sd_u_long": {
+   "points_per_step": 0.0584,
+   "range": [
+    0.0399,
+    0.078
+   ]
+  },
+  "sd_light_both": {
+   "points_per_step": -0.0208,
+   "range": [
+    -0.0398,
+    0.0042
+   ]
+  }
+ },
+ "price": {
+  "u_horizon": {
+   "pct_per_step": 0.64,
+   "range": [
+    0.52,
+    0.76
+   ]
+  },
+  "u_open": {
+   "pct_per_step": 1.37,
+   "range": [
+    1.29,
+    1.46
+   ]
+  },
+  "u_long": {
+   "pct_per_step": 4.03,
+   "range": [
+    3.94,
+    4.11
+   ]
+  },
+  "u_long5": {
+   "pct_per_step": 3.85,
+   "range": [
+    3.77,
+    3.96
+   ]
+  },
+  "u_longest_km": {
+   "pct_per_step": 3.54,
+   "range": [
+    3.45,
+    3.61
+   ]
+  },
+  "u_water": {
+   "pct_per_step": 4.32,
+   "range": [
+    4.22,
+    4.41
+   ]
+  },
+  "u_tidal": {
+   "pct_per_step": 3.96,
+   "range": [
+    3.82,
+    4.07
+   ]
+  },
+  "u_hills": {
+   "pct_per_step": 2.78,
+   "range": [
+    2.68,
+    2.88
+   ]
+  },
+  "u_overlooked": {
+   "pct_per_step": -6.41,
+   "range": [
+    -6.51,
+    -6.34
+   ]
+  },
+  "u_hz_s": {
+   "pct_per_step": 0.55,
+   "range": [
+    0.42,
+    0.65
+   ]
+  },
+  "u_hz_w": {
+   "pct_per_step": 0.76,
+   "range": [
+    0.62,
+    0.86
+   ]
+  },
+  "g_horizon": {
+   "pct_per_step": 2.38,
+   "range": [
+    2.26,
+    2.5
+   ]
+  },
+  "g_long": {
+   "pct_per_step": 2.85,
+   "range": [
+    2.76,
+    2.92
+   ]
+  },
+  "g_overlooked": {
+   "pct_per_step": -5.52,
+   "range": [
+    -5.62,
+    -5.46
+   ]
+  },
+  "g_hz_s": {
+   "pct_per_step": 2.24,
+   "range": [
+    2.11,
+    2.38
+   ]
+  },
+  "g_hz_w": {
+   "pct_per_step": 2.13,
+   "range": [
+    2.02,
+    2.23
+   ]
+  },
+  "sun_jun": {
+   "pct_per_step": -2.6,
+   "range": [
+    -2.71,
+    -2.47
+   ]
+  },
+  "sun_evening_jun": {
+   "pct_per_step": -1.58,
+   "range": [
+    -1.67,
+    -1.51
+   ]
+  },
+  "sun_equinox": {
+   "pct_per_step": -2.8,
+   "range": [
+    -2.93,
+    -2.67
+   ]
+  },
+  "sun_dec": {
+   "pct_per_step": -1.2,
+   "range": [
+    -1.29,
+    -1.11
+   ]
+  },
+  "garden": {
+   "pct_per_step": -0.16,
+   "range": [
+    -0.28,
+    -0.05
+   ]
+  },
+  "garden_clear": {
+   "pct_per_step": 0.46,
+   "range": [
+    0.36,
+    0.55
+   ]
+  },
+  "plot_open": {
+   "pct_per_step": -3.06,
+   "range": [
+    -3.17,
+    -2.97
+   ]
+  },
+  "light_front": {
+   "pct_per_step": -1.49,
+   "range": [
+    -1.57,
+    -1.41
+   ]
+  },
+  "light_back": {
+   "pct_per_step": -0.48,
+   "range": [
+    -0.54,
+    -0.4
+   ]
+  },
+  "light_best": {
+   "pct_per_step": -1.67,
+   "range": [
+    -1.76,
+    -1.56
+   ]
+  },
+  "light_both": {
+   "pct_per_step": -2.87,
+   "range": [
+    -2.99,
+    -2.75
+   ]
+  },
+  "winter_front": {
+   "pct_per_step": -0.96,
+   "range": [
+    -1.02,
+    -0.89
+   ]
+  },
+  "winter_back": {
+   "pct_per_step": 0.16,
+   "range": [
+    0.09,
+    0.22
+   ]
+  },
+  "top_front": {
+   "pct_per_step": -0.5,
+   "range": [
+    -0.57,
+    -0.42
+   ]
+  },
+  "top_back": {
+   "pct_per_step": 0.26,
+   "range": [
+    0.19,
+    0.34
+   ]
+  },
+  "storeys": {
+   "pct_per_step": 8.21,
+   "range": [
+    8.08,
+    8.34
+   ]
+  },
+  "height": {
+   "pct_per_step": 3.43,
+   "range": [
+    3.2,
+    3.72
+   ]
+  },
+  "depth_m": {
+   "pct_per_step": 5.17,
+   "range": [
+    5.06,
+    5.28
+   ]
+  },
+  "road_m": {
+   "pct_per_step": 4.64,
+   "range": [
+    4.41,
+    4.89
+   ]
+  },
+  "lm_n": {
+   "pct_per_step": 2.89,
+   "range": [
+    2.79,
+    2.99
+   ]
+  },
+  "lm_cathedral": {
+   "pct_per_step": 1.25,
+   "range": [
+    1.17,
+    1.33
+   ]
+  },
+  "lm_castle": {
+   "pct_per_step": 2.05,
+   "range": [
+    1.96,
+    2.16
+   ]
+  },
+  "lm_tower": {
+   "pct_per_step": 0.96,
+   "range": [
+    0.86,
+    1.08
+   ]
+  },
+  "lm_church": {
+   "pct_per_step": 1.22,
+   "range": [
+    1.1,
+    1.34
+   ]
+  },
+  "lm_hill": {
+   "pct_per_step": 3.17,
+   "range": [
+    3.09,
+    3.29
+   ]
+  },
+  "sd_u_long": {
+   "pct_per_step": 3.58,
+   "range": [
+    3.51,
+    3.67
+   ]
+  },
+  "sd_light_both": {
+   "pct_per_step": 1.97,
+   "range": [
+    1.89,
+    2.04
+   ]
+  }
+ },
+ "price_sales": 7977158,
+ "verdict": "add it: the model finds more sellers and the range is clear of zero"
+}
