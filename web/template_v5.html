@@ -85,6 +85,7 @@ a{color:var(--accent-deep)}
 .tag.v-hills{background:var(--v-hill)} .tag.v-private{background:var(--v-bld)}
 .tag.v-evening{background:var(--warn)} .tag.v-swgarden{background:var(--sun)} .tag.v-lm{background:var(--post)}
 .tag.v-lightback,.tag.v-lightfront,.tag.v-wintersun{background:var(--sun)}
+.tag.v-extend,.tag.v-loftok{background:var(--accent)} .tag.v-historic{background:var(--ink)}
 .viewpanel{background:var(--card);border:1.5px solid var(--accent);border-radius:16px;
   padding:20px 24px;margin:0 0 18px;box-shadow:var(--shadow)}
 .viewpanel h3{font-size:19px}
@@ -576,7 +577,8 @@ function densCut(openMin){
 function viewNeed(b){ let m=0; (b.views||[]).forEach(k=>{ const i=flagBit(k); if(i>=0) m|=(1<<i); }); return m; }
 function viewFrac(c, need){ if(!need) return 1; const vm=c.vm||[]; let hit=0, tot=0;
   for(let i=0;i<vm.length;i+=2){ tot+=vm[i+1]; if((vm[i]&need)===need) hit+=vm[i+1]; }
-  return tot?hit/tot:0; }
+  const den=c.n||tot;                               // rare combinations are trimmed: divide by every home, not what is left
+  return den?Math.min(1,hit/den):0; }
 /* Hospital, park, water and pubs: each cell carries its homes' typical distances.
    Pubs cut both ways: some want one at the end of the road, some want none near. */
 const PUBS = {any:"Don't mind", near:"A pub within a short walk", far:"Away from pubs"};
@@ -895,8 +897,8 @@ function vSearch(){
 function nationRank(b){ const nf=DATA.nation_flags||[], keys=(b.views||[]).filter(k=>nf.includes(k));
   if(!keys.length) return null; let need=0; keys.forEach(k=>need|=1<<nf.indexOf(k));
   const rows=[]; for(const r of NATION||[]){ const [sec,area,lad,n,lat,lon,vm]=r; if(n<300) continue;
-    let hit=0,tot=0; for(let i=0;i<vm.length;i+=2){ tot+=vm[i+1]; if((vm[i]&need)===need) hit+=vm[i+1]; }
-    const f=tot?hit/tot:0; if(f>0) rows.push({sec,area,lad,n,f,homes:Math.round(n*f)}); }
+    let hit=0; for(let i=0;i<vm.length;i+=2){ if((vm[i]&need)===need) hit+=vm[i+1]; }
+    const f=Math.min(1,hit); /* shares of the sector's homes: rare combinations are trimmed, not re-spread */ if(f>0) rows.push({sec,area,lad,n,f,homes:Math.round(n*f)}); }
   const total=rows.reduce((s,r)=>s+r.homes,0);
   rows.sort((a,b)=>b.f-a.f||b.homes-a.homes); return {keys, rows:rows.slice(0,8), total}; }
 function nationPanel(b){ const R=nationRank(b), nS=(NATION||[]).length;

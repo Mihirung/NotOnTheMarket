@@ -35,7 +35,9 @@ PAIRS = [("BASE@10", "+HIST@10"), ("+HIST@10", "+HIST+GEO@10"), ("+HIST@10", "+H
          ("ALL@1", "ALL@100"), ("BASE@1", "BASE@100"), ("no_VIEW@100", "ALL@100"),
          ("CURRENT@100", "+HOUSE@100"), ("CURRENT@100", "+AREA@100"), ("CURRENT@100", "+HOUSE+AREA@100"),
          ("ALL@100", "CURRENT@100"), ("CURRENT@100", "NOVIEW30+HOUSE@100"),
-         ("ALL@100", "+HOUSE@100"), ("ALL@100", "+AREA@100"), ("ALL@100", "+HOUSE+AREA@100")]
+         ("ALL@100", "+HOUSE@100"), ("ALL@100", "+AREA@100"), ("ALL@100", "+HOUSE+AREA@100"),
+         ("CURRENT@100", "+AMENITY@100"), ("CURRENT@100", "+PD@100"), ("CURRENT@100", "+ALLNEW@100"),
+         ("ALL@100", "+ALLNEW@100"), ("+HOUSE+AREA@100", "+ALLNEW@100")]
 TENURE = [("all", 0, 99), ("t0_9", 0, 10), ("t10_19", 10, 20), ("t20p", 20, 99)]
 
 
