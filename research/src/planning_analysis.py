@@ -42,7 +42,8 @@ Y_FROM, Y_TO = 2006, 2019
 NB, BOOT = 256, 200
 WORK = ["rear", "two_storey", "loft", "side", "wraparound", "basement", "garage", "outbuilding", "front", "extension"]
 JOB_ORDER = ["loft", "two_storey", "rear", "side", "wraparound", "basement", "garage", "outbuilding", "front",
-             "extension", "new_home", "split", "listed", "lawful", "windows", "boundary", "trees", "change_of_use",
+             "extension", "new_home", "split", "listed", "lawful", "alterations", "windows", "boundary", "trees",
+             "commercial", "change_of_use",
              "demolition", "other"]
 
 
@@ -157,6 +158,12 @@ def history(df, apps):
     for st in ("approved", "refused"):
         first = a[a.state == st].groupby("key").sy.min()
         out[f"since_{st}"] = out.year - first.reindex(out.key).to_numpy()
+    # what any earlier application said about the home itself (era, kind)
+    hint_cols = [c for c in a.columns if c.startswith("hint_")]
+    if hint_cols:
+        hh = a.groupby("key")[hint_cols].max()
+        for c in hint_cols:
+            out[c] = hh[c].reindex(out.key).fillna(False).to_numpy().astype(float)
     # main job of approvals in the three years before
     mm = m[(m.state == "approved") & m.dy.between(m.year - 3, m.year - 1)]
     for j in JOB_ORDER:
@@ -331,6 +338,10 @@ def main():
     jobs = [f"job_{j}" for j in JOB_ORDER if D[f"job_{j}"].sum() >= 200]
     R["by_job"], _ = effect(D, jobs, w)
     say("by job:", R["by_job"])
+    hints = [c for c in H.columns if c.startswith("hint_") and D[c].sum() >= 200]
+    if hints:
+        R["by_description_of_home"], _ = effect(D, hints, w)
+        say("what the description says about the home:", R["by_description_of_home"])
     R["on_top_of_model"] = test_on_top(P, D, H)
     say("on top:", R["on_top_of_model"])
     del P

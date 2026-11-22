@@ -60,6 +60,12 @@ JOBS = [
     ("change_of_use", r"change of use"),
 ]
 JOB_RE = [(k, re.compile(p, re.I)) for k, p in JOBS]
+# what the description says about the home itself: its era and its kind (factual record, no documents needed)
+HINTS = [("georgian", r"georgian|regency"), ("victorian", r"victorian"), ("edwardian", r"edwardian"),
+         ("interwar", r"19[23]0s|inter-?war"), ("postwar", r"19[5-7]0s|post-?war"),
+         ("bungalow", r"bungalow"), ("cottage", r"cottage"), ("barn", r"\bbarn\b"), ("thatched", r"thatch"),
+         ("farmhouse", r"farm ?house"), ("townhouse", r"town ?house"), ("listed_mention", r"listed building|grade (?:i|ii)")]
+HINT_RE = [(k, re.compile(p, re.I)) for k, p in HINTS]
 STATE = {"Permitted": "approved", "Conditions": "approved", "Rejected": "refused", "Withdrawn": "withdrawn",
          "Undecided": "undecided", "Referred": "other", "Unresolved": "other", "Other": "other"}
 PC_RE = re.compile(r"\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b")
@@ -164,6 +170,8 @@ def main():
     t["job"] = [j[0] if j else "other" for j in J]
     for k, _ in JOBS:
         t[f"job_{k}"] = [k in j for j in J]
+    for k, r in HINT_RE:
+        t[f"hint_{k}"] = [bool(r.search(str(d or ""))) for d in t.description]
     pc = t.postcode.fillna("").str.upper().str.strip()
     tx = pd.read_parquet("research/data/transactions.parquet", columns=["key"])
     known = np.unique(tx.key.to_numpy())
@@ -186,7 +194,7 @@ def main():
     t["postcode"] = pc.where(pc.str.len() >= 5)
     keep = ["name", "area_name", "uid", "address", "postcode", "description", "app_type", "app_size", "state",
             "start", "decided", "location_x", "location_y", "atype", "job", "paon", "saon", "key", "on_sale_record"] \
-        + [f"job_{k}" for k, _ in JOBS]
+        + [f"job_{k}" for k, _ in JOBS] + [f"hint_{k}" for k, _ in HINTS]
     t = t[[c for c in keep if c in t.columns]]
     t.to_parquet(OUT, index=False)
     by = t.groupby("area_name").agg(apps=("name", "size"), parsed=("key", lambda k: k.notna().mean()),
