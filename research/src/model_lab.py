@@ -475,6 +475,8 @@ def exp_deploy(ch, out, threads, pct=20, fams=None, ref_name="ALL"):
     left out because its file undercounts late registrations)."""
     fams = fams or ["BASE", "HIST", "GEO", "VIEW"]
     ref = out / "preds" / f"{ref_name}@{pct}.json"
+    if not ref.exists():                              # a smaller sample than any tested: rounds from the full fit
+        ref = out / "preds" / f"{ref_name}@100.json"
     nr = int((json.load(open(ref))["rounds"] if ref.exists() else 350) * 1.1)
     bst, n = fit(ch, pct, fams, threads, (2001, 2018), n_rounds=nr, tag="deploy<=2018")
     bst.save_model(str(out / "model_deploy.txt"))
