@@ -276,6 +276,7 @@ python src/model_lab.py data/panel3 outputs/lab deploy_set <NAME> <FAM+FAM> 100
 python src/export_site_v5.py score data/transactions.parquet outputs/lab/model_deploy.txt outputs/lab/lab_deploy.json outputs/site5_cache
 python src/export_site_v5.py houses outputs/national outputs/site5_cache
 python src/export_site_v5.py export outputs/site5_cache data/geo_postcode.parquet outputs/national outputs/lab outputs/site5
+python src/export_travel.py outputs/site5      # stations, place names, postcode positions, sectors' nearest stations
 python ../web/build.py outputs/site5/site_data.json ../web/template_v5.html outputs/site5/index.html
 ```
 

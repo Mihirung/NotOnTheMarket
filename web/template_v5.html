@@ -123,6 +123,25 @@ a{color:var(--accent-deep)}
 .crit .ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:2px}
 .climrow{margin-top:10px}.climlab{display:inline-block;min-width:96px;font-size:13.5px;font-weight:600;margin-bottom:4px}
 .crit .hint{font-size:13.5px;color:var(--accent-deep);margin-top:6px}
+.prio{display:flex;gap:0;margin:8px 0 2px;border:1px solid var(--line);border-radius:999px;overflow:hidden;width:max-content;max-width:100%}
+.prio button{border:0;background:transparent;font:inherit;font-size:12.5px;padding:5px 11px;cursor:pointer;color:var(--muted)}
+.prio button+button{border-left:1px solid var(--line)}
+.prio button.on{background:var(--accent);color:#fff}
+.prio.dim{opacity:.38}.prio.dim button.on{background:var(--line);color:var(--ink)}
+.anchor{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
+.anchtop{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.anchtop input{flex:1;min-width:180px;font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.anchtop select{font:inherit;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.fitrep{margin-top:14px}.fitrep h4{margin:0 0 6px;font-size:14px}
+.fitrow{display:grid;grid-template-columns:1fr 70px 38px;gap:8px;align-items:center;margin:5px 0;font-size:13px}
+.fitbar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}.fitbar i{display:block;height:100%;background:var(--accent)}
+.fitnum{text-align:right;font-size:12.5px}
+.plev{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-right:4px}
+.plev.must{color:var(--accent-deep);font-weight:600}
+.journeys{display:flex;flex-direction:column;gap:2px;font-size:12.5px;color:var(--muted);margin:2px 0 6px}
+.fitchips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 8px}
+.fc{font-size:11px;padding:2px 7px;border-radius:999px;border:1px solid var(--line)}
+.fc.ok{background:var(--accent);color:#fff;border-color:var(--accent)}.fc.part{background:var(--bg)}.fc.no{opacity:.5;text-decoration:line-through}
 .chipgroup{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--muted);margin:12px 0 0}
 .chip.lmchip.on{border-color:var(--post);color:var(--post);background:var(--post-soft)}
@@ -347,7 +366,7 @@ const C = () => DATA.cities[S.city] || DATA.cities[DATA.default_area];
 /* Each postcode area is its own file, loaded when it is chosen. Cells travel
    as rows and are turned back into objects here. */
 function prepArea(c){ if(c && c.cell_cols){ const k=c.cell_cols;
-    c.cells=c.cells.map(r=>{ const o={}; k.forEach((n,i)=>o[n]=r[i]); o.outcode=o.sector.split(" ")[0]; return o; });
+    c.cells=c.cells.map(r=>{ const o={}; k.forEach((n,i)=>o[n]=r[i]); o.outcode=o.sector.split(" ")[0]; o.area=c.code; return o; });
     delete c.cell_cols; } return c; }
 Object.values(DATA.cities).forEach(prepArea);
 const _loading = {};
@@ -358,7 +377,8 @@ function loadArea(k){ if(DATA.cities[k]) return Promise.resolve(DATA.cities[k]);
 let LOADING = null, LOAD_ERR = null;
 /* The national sector table sits beside the page and arrives after it. */
 let NATION = DATA.nation || null;
-if(!NATION) fetch("nation.json").then(r=>r.ok?r.json():null).then(j=>{ if(j){ NATION=j.rows; DATA.nation_flags=j.flags; render(); } }).catch(()=>{});
+if(!NATION) fetch("nation.json").then(r=>r.ok?r.json():null).then(j=>{ if(j){ NATION=j.rows; NSEC=null; DATA.nation_flags=j.flags;
+    if((S.brief.anchors||[]).length){ loadTravel(); ensureAreas(); } render(); } }).catch(()=>{});
 function areaPicker(){ const by={}; (DATA.index||[]).forEach(a=>(by[a.region]=by[a.region]||[]).push(a));
   return `<label class="areapick"><span class="mono">Area</span><select aria-label="Choose a postcode area" onchange="setCity(this.value)">${
     Object.entries(by).map(([r,l])=>`<optgroup label="${esc(r)}">${[...l].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>
@@ -368,7 +388,7 @@ const FLAGS = () => C().flags;
 const flagBit = key => FLAGS().findIndex(f=>f.key===key);
 const flagOf = key => FLAGS().find(f=>f.key===key);
 function compass(b){ const d=["north","north-east","east","south-east","south","south-west","west","north-west"]; return d[Math.round(b/45)%8]; }
-function viewOf(sector, city){ return ((city?DATA.cities[city]:C()).views||{})[sector]; }
+function viewOf(sector, city){ return (((city&&DATA.cities[city])||C()).views||{})[sector]; }
 function setCity(k, then){ LOAD_ERR=null;
   if(!DATA.cities[k]){ LOADING=k; render();
     loadArea(k).then(()=>{ LOADING=null; setCity(k, then); })
@@ -500,8 +520,8 @@ const HZ_LEGEND = `<div class="hzlegend"><span><i style="background:var(--v-bld)
   <span><i style="background:var(--v-hill);opacity:.45"></i>distant country, paler with distance</span></div>`;
 const HOME_TITLE = {typical:"A typical home here", best:"The best outlook here", other:"Another home here", yours:"Your home"};
 function vViewPanel(sector){
-  const v=viewOf(sector); if(!v) return "";
-  const city=C(), n=v.homes.length, hi=Math.min(Math.max(0,S.viewHome||0), n-1), h=v.homes[hi];
+  const v=viewOf(sector, S.viewArea); if(!v) return "";
+  const city=DATA.cities[S.viewArea]||C(), n=v.homes.length, hi=Math.min(Math.max(0,S.viewHome||0), n-1), h=v.homes[hi];
   const garden=S.viewMode==="garden" && h.garden, p=garden?h.garden:h.up;
   const seen=(h.up.lm||[]).filter(l=>l.sees);
   const inSight=seen.length?`In sight from this one: ${andList(seen.map(l=>`${esc(l.name)} (${l.km} km, ${compass(l.b)})`))}.`:"None of the landmarks is in sight from this one.";
@@ -531,7 +551,7 @@ function vViewPanel(sector){
     <p class="note" style="margin:8px 0 0">Every house in ${city.name} has a drawing like this. These are real houses from this pocket, shown without their address. Drawn from a 3-D model of the ground, every building and every tree, measured by laser from the air. Not a photograph, and nobody has visited.</p>
   </div>`;
 }
-function openView(sector){ S.viewSector=sector; S.viewHome=0; if(!["up","garden"].includes(S.viewMode)) S.viewMode="up"; save(); render(); }
+function openView(sector, area){ S.viewSector=sector; S.viewArea=area||S.city; S.viewHome=0; if(!["up","garden"].includes(S.viewMode)) S.viewMode="up"; save(); render(); }
 
 const PT = {D:"Detached houses",S:"Semi-detached houses",T:"Terraced houses",F:"Flats & maisonettes"};
 const PT1 = {D:"detached house",S:"semi-detached house",T:"terraced house",F:"flat"};
@@ -545,7 +565,7 @@ const GBPk = n => n>=1e6 ? "£"+(n/1e6).toFixed(2)+"m" : "£"+Math.round(n/1000)
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 const DEFAULTS = {brief:{max:475000, types:["S","T","D"], airStep:0, openStep:0,
-    minsCentre:12, gpKm:3, hospKm:60, parkM:2000, blueKm:10, pubs:"any", views:[]}, selected:[], campaign:null, day:0, connected:false, seller:{},
+    minsCentre:12, gpKm:3, hospKm:60, parkM:2000, blueKm:10, pubs:"any", views:[], anchors:[], prio:{}}, selected:[], campaign:null, day:0, connected:false, seller:{},
     viewSector:null, viewMode:"up", viewHome:0, city:""};
 let S = load();
 function load(){ try{const r=localStorage.getItem("qm5");
@@ -596,6 +616,7 @@ function stepHint(k){ const b=S.brief;
 /* Dragging changes only the label and the panel on the right: redrawing the
    whole page would replace the slider under the pointer. */
 function slide(k, v){ S.brief[k]=v; save();
+  const pk=PRIO_OF[k], pe=pk&&document.getElementById("prio-"+pk); if(pe) pe.classList.toggle("dim", !prioActive(pk));
   const el=document.getElementById("val-"+k); if(el) el.textContent=sliderText(k);
   const h=document.getElementById("hint-"+k); if(h) h.textContent=stepHint(k);
   const r=document.getElementById("rail"); if(r) r.innerHTML=railHTML(); }
@@ -662,6 +683,151 @@ function climWhy(k){ const opt=((S.brief.clim||{})[k])||"any", n=CN();
           winter:"How cold winter nights get, December to February.", summer:"How warm summer afternoons get, June to August.",
           wind:"Average wind speed.", future:"How much warmer and hotter it gets once the world is 2 °C warmer."}[k]; }
 function setClim(k, v){ S.brief.clim = {...(S.brief.clim||{}), [k]:v}; save(); render(); }
+/* ---------- where people need to get to ----------
+   A search starts from the places someone needs to reach (work, school,
+   family), each with a way of travelling and a time. Every postcode sector
+   in the country carries its position and its nearest stations, so travel
+   times can be estimated for all of them; the postcode areas within reach
+   are then loaded. These are estimates from distance, typical speeds and
+   stations, not a timetable or live traffic. */
+const MODES = {car:"By car", walk:"On foot", pt:"By public transport"};
+const MODE1 = {car:"by car", walk:"on foot", pt:"by public transport"};
+let STATIONS = null, PLACES = null; const PCS = {};
+function loadTravel(){ if(!loadTravel.p) loadTravel.p = Promise.all([
+    fetch("stations.json").then(r=>r.json()), fetch("places.json").then(r=>r.json())])
+  .then(([s,p])=>{ STATIONS=s; PLACES=p; anchorsReady(); render(); }).catch(()=>{ delete loadTravel.p; });
+  return loadTravel.p; }
+function kmBetween(a,b,c,d){ const p=Math.PI/180, x=(d-b)*p*Math.cos((a+c)/2*p), y=(c-a)*p; return Math.hypot(x,y)*6371; }
+function nearestStations(lat, lon){ let a=[-1,1e9], r=[-1,1e9];
+  STATIONS.forEach((s,i)=>{ const d=kmBetween(lat,lon,s[1],s[2]); if(d<a[1]) a=[i,d]; if(s[3]===1 && d<r[1]) r=[i,d]; });
+  return [a,r]; }
+function anchorsReady(){ (S.brief.anchors||[]).forEach(a=>{ if(a.lat!=null && STATIONS && !a.st) a.st=nearestStations(a.lat,a.lon); }); }
+function findPlace(q){ const up=(q||"").trim().toUpperCase().replace(/\s+/g," ");
+  if(!up) return Promise.resolve(null);
+  const m=up.match(/^([A-Z]{1,2}\d[A-Z\d]?) ?(\d[A-Z]{2})$/);
+  if(m){ const pc=m[1]+" "+m[2], area=m[1].match(/^[A-Z]+/)[0];
+    PCS[area] ||= fetch("pc/"+area+".json").then(r=>r.ok?r.json():{}).catch(()=>({}));
+    return PCS[area].then(d=>d[pc]?{lat:d[pc][0],lon:d[pc][1],label:pc}:null); }
+  return loadTravel().then(()=>{ const l=up.toLowerCase(), L=PLACES;
+    const hit = L.find(p=>p[0].toLowerCase()===l) || L.find(p=>p[0].toLowerCase().startsWith(l)) || L.find(p=>p[0].toLowerCase().includes(l));
+    return hit?{lat:hit[1],lon:hit[2],label:hit[0]}:null; }); }
+function suggest(i, v){ const dl=document.getElementById("pl-"+i); if(!dl || !PLACES) return;
+  const l=(v||"").trim().toLowerCase(); if(l.length<2){ dl.innerHTML=""; return; }
+  const a=PLACES.filter(p=>p[0].toLowerCase().startsWith(l)), b=PLACES.filter(p=>!p[0].toLowerCase().startsWith(l) && p[0].toLowerCase().includes(l));
+  dl.innerHTML=[...a,...b].slice(0,12).map(p=>`<option value="${esc(p[0])}">`).join(""); }
+function setAnchorPlace(i, q){ const a=S.brief.anchors[i]; a.q=q; a.err=null;
+  findPlace(q).then(p=>{ if(!p){ a.lat=a.lon=null; a.err="Not found: try a full postcode, a station or a town"; }
+    else { Object.assign(a,{lat:p.lat,lon:p.lon,label:p.label}); a.st = STATIONS ? nearestStations(p.lat,p.lon) : null;
+      if(!STATIONS) loadTravel(); }
+    TT.clear(); save(); render(); ensureAreas(); }); }
+function addAnchor(){ (S.brief.anchors ||= []).push({q:"",label:"",mode:"car",mins:30,prio:"must"}); loadTravel(); save(); render(); }
+function dropAnchor(i){ S.brief.anchors.splice(i,1); TT.clear(); save(); render(); ensureAreas(); }
+function setAnchor(i, k, v){ S.brief.anchors[i][k]=v; TT.clear(); save();
+  if(k==="mins"){ const el=document.getElementById("val-anc"+i); if(el) el.textContent=v+" minutes";
+    const r=document.getElementById("rail"); if(r) r.innerHTML=railHTML(); clearTimeout(setAnchor.t); setAnchor.t=setTimeout(ensureAreas,400); }
+  else { render(); ensureAreas(); } }
+const activeAnchors = b => (b.anchors||[]).filter(a=>a.lat!=null && a.prio!=="off");
+
+/* every sector in the country, by name: position, homes, nearest stations */
+let NSEC = null;
+function nsec(){ if(!NSEC && NATION){ NSEC=new Map(); NATION.forEach(r=>{ if(r[4]!=null) NSEC.set(r[0],{area:r[1],homes:r[3],lat:r[4],lon:r[5],st:r[9]}); }); } return NSEC; }
+const TT = new Map();
+function minsTo(sec, a){ const key=sec.lat+","+sec.lon+"|"+a.lat+","+a.lon+"|"+a.mode; if(TT.has(key)) return TT.get(key);
+  const d=kmBetween(sec.lat,sec.lon,a.lat,a.lon); let t;
+  if(a.mode==="walk") t=d*1.3/4.8*60;
+  else if(a.mode==="car"){ const r=d*1.25; t=4+(Math.min(r,3)/22+Math.min(Math.max(r-3,0),12)/40+Math.max(r-15,0)/70)*60; }
+  else { t = Math.min(d*1.3/4.8*60, d<=40 ? 8+d*1.35/16*60 : Infinity);                  // walk, or a bus door to door
+    if(sec.st && a.st && STATIONS){ const end=x=>x<=2?x*1.3/4.8*60:x<=12?6+x*1.35/16*60:Infinity;
+      for(const [si,sk] of [[sec.st[0],sec.st[1]],[sec.st[2],sec.st[3]]]) for(const [ai,ak] of a.st){
+        const s=STATIONS[si], e=STATIONS[ai]; if(!s||!e) continue;
+        const v=(s[3]===2&&e[3]===2)?30:65, leg=si===ai?0:4+kmBetween(s[1],s[2],e[1],e[2])*1.15/v*60;
+        t=Math.min(t, end(sk)+8+leg+end(ak)); } } }
+  TT.set(key,t); return t; }
+function cellMins(c, a){ const s=nsec()&&NSEC.get(c.sector); return s?minsTo(s,a):Infinity; }
+/* the postcode areas worth loading: those with homes within reach of every place that matters */
+function reachAreas(b){ const A=activeAnchors(b); if(!A.length || !nsec()) return [];
+  const hard=A.filter(a=>a.prio==="must"||a.prio==="high"), use=hard.length?hard:A, tot={};
+  for(const s of NSEC.values()){ if(use.every(a=>minsTo(s,a)<=a.mins*1.5)) tot[s.area]=(tot[s.area]||0)+s.homes; }
+  return Object.entries(tot).sort((x,y)=>y[1]-x[1]).slice(0,14).map(x=>x[0]); }
+let AREAS_WAITING = 0;
+function ensureAreas(){ const need=reachAreas(S.brief).filter(k=>!DATA.cities[k]); if(!need.length) return;
+  AREAS_WAITING=need.length; render();
+  Promise.allSettled(need.map(loadArea)).then(()=>{ AREAS_WAITING=0; render(); }); }
+
+/* ---------- priorities, not filters ----------
+   Every criterion has a priority. A must is met first; the important and the
+   nice-to-have rank what is left. The search always returns enough homes for
+   a first wave of letters to bring replies, and reports how well that group
+   fits each priority. */
+const LEVELS = [["must","Must"],["high","Important"],["nice","Nice to have"],["off","Don't mind"]];
+const WEIGHT = {high:3, nice:1};
+const REPLIES_WANTED = 3;
+const CARDS_WANTED = Math.ceil(REPLIES_WANTED/REPLY_PER_CARD);
+function prio(k, d){ return (S.brief.prio||{})[k] || d; }
+function setPrio(k, v){ S.brief.prio={...(S.brief.prio||{}), [k]:v}; save(); render(); }
+/* whether a criterion has a target yet: until it has, its priority is shown dimmed */
+const PRIO_OF = {airStep:"air", openStep:"open", minsCentre:"centre", gpKm:"gp", hospKm:"hosp", parkM:"park", blueKm:"blue", max:"budget"};
+function prioActive(k){ const b=S.brief; return ({air:airStep(b)>0, open:openStep(b)>0, centre:b.minsCentre<60, gp:b.gpKm<6,
+  hosp:(b.hospKm??60)<60, park:(b.parkM??2000)<2000, blue:(b.blueKm??10)<10, pubs:(b.pubs||"any")!=="any",
+  views:(b.views||[]).length>0})[k] ?? true; }
+function prioCtl(k, d){ const cur=prio(k,d);
+  return `<div class="prio ${prioActive(k)?"":"dim"}" id="prio-${k}" role="group" aria-label="How much this matters"
+    title="${prioActive(k)?"":"Set a target first, then say how much it matters"}">${LEVELS.map(([v,l])=>
+    `<button class="${cur===v?"on":""}" aria-pressed="${cur===v}" onclick="setPrio('${k}','${v}')">${l}</button>`).join("")}</div>`; }
+const near1 = (v, lim, slack) => v==null ? 0.5 : v<=lim ? 1 : Math.max(0, 1-(v-lim)/(slack*lim));
+function flagShare(c, key){ const city=DATA.cities[c.area]||C(), i=(city.flags||[]).findIndex(f=>f.key===key); if(i<0) return 0;
+  const vm=c.vm||[]; let hit=0; for(let j=0;j<vm.length;j+=2) if(vm[j]&(1<<i)) hit+=vm[j+1]; return c.n?Math.min(1,hit/c.n):0; }
+function jointShare(c, keys){ if(!keys.length) return 1; const city=DATA.cities[c.area]||C(); let need=0;
+  for(const k of keys){ const i=(city.flags||[]).findIndex(f=>f.key===k); if(i<0) return 0; need|=1<<i; }
+  const vm=c.vm||[]; let hit=0; for(let j=0;j<vm.length;j+=2) if((vm[j]&need)===need) hit+=vm[j+1]; return c.n?Math.min(1,hit/c.n):0; }
+function criteria(b){ const K=[], A=activeAnchors(b);
+  A.forEach((a,i)=>K.push({key:"anc"+i, label:`${a.mins} min ${MODE1[a.mode]} to ${a.label}`, prio:a.prio||"must",
+    fit:c=>{ const t=cellMins(c,a); return t<=a.mins?1:Math.max(0,1-(t-a.mins)/(0.5*a.mins)); }}));
+  K.push({key:"budget", label:`The right offer within ${GBP(b.max)}`, prio:prio("budget","must"), fit:c=>near1(c.offer_med,b.max,0.25)});
+  if(airStep(b)>0){ const l=noxLimit(b); K.push({key:"air", label:"Clean air: "+AIR_STEPS[airStep(b)][0].toLowerCase(), prio:prio("air","high"), fit:c=>near1(c.nox,l,0.5)}); }
+  if(openStep(b)>0){ const l=densLimit(b); K.push({key:"open", label:"Open surroundings: "+OPEN_STEPS[openStep(b)][0].toLowerCase(), prio:prio("open","high"), fit:c=>near1(c.density,l,0.5)}); }
+  if(!A.length && b.minsCentre<60) K.push({key:"centre", label:`Within ${b.minsCentre} min of ${C().centre_name}`, prio:prio("centre","high"), fit:c=>near1(c.min_centre,b.minsCentre,0.5)});
+  if(b.gpKm<6) K.push({key:"gp", label:`A GP within ${b.gpKm} km`, prio:prio("gp","high"), fit:c=>near1(c.km_gp,b.gpKm,1)});
+  if((b.hospKm??60)<60) K.push({key:"hosp", label:`A hospital within ${b.hospKm} km`, prio:prio("hosp","high"), fit:c=>near1(c.km_hosp,b.hospKm,0.5)});
+  if((b.parkM??2000)<2000) K.push({key:"park", label:`A park within ${b.parkM} m`, prio:prio("park","high"), fit:c=>near1(c.km_park==null?null:c.km_park*1000,b.parkM,1)});
+  if((b.blueKm??10)<10) K.push({key:"blue", label:`Water within ${b.blueKm} km`, prio:prio("blue","high"), fit:c=>near1(c.km_blue,b.blueKm,1)});
+  if(b.pubs==="near") K.push({key:"pubs", label:"A pub within a short walk", prio:prio("pubs","high"), fit:c=>near1(c.km_pub,0.8,1)});
+  if(b.pubs==="far") K.push({key:"pubs", label:"Away from pubs", prio:prio("pubs","high"), fit:c=>c.km_pub==null?0.5:c.km_pub>=0.4?1:c.km_pub/0.4});
+  for(const [k,o] of climChosen(b)){ const [dir,q]=climLimit(k,o), col=CLIMATE[k].col, span=Math.abs((CN()[col]||{})["0.75"]-(CN()[col]||{})["0.25"])||1;
+    K.push({key:"clim_"+k, label:CLIMATE[k].label+": "+CLIMATE[k].opts[o].toLowerCase(), prio:prio("clim_"+k,"high"),
+      fit:c=>{ const v=c[col]; if(v==null||q==null) return 0.5; const gap=dir>0?q-v:v-q; return gap<=0?1:Math.max(0,1-gap/span); }}); }
+  (b.views||[]).forEach(k=>{ const f=(DATA.cities[S.city]||C()).flags.find(x=>x.key===k); if(!f) return;
+    K.push({key:"view_"+k, view:k, label:f.label, prio:prio("views","high"), fit:c=>flagShare(c,k)}); });
+  return K.filter(k=>k.prio!=="off"); }
+function poolCells(b){ const A=activeAnchors(b);
+  if(!A.length) return C().cells.map(c=>({...c, area:c.area||S.city}));
+  const out=[]; for(const k of reachAreas(b)){ const city=DATA.cities[k]; if(city) city.cells.forEach(c=>out.push({...c, area:k})); }
+  return out; }
+function cohort(b){
+  const K=criteria(b), soft=K.filter(k=>k.prio==="high"||k.prio==="nice"), sw=soft.reduce((s,k)=>s+WEIGHT[k.prio],0);
+  const mustViews=K.filter(k=>k.prio==="must"&&k.view).map(k=>k.view), all=[];
+  for(const c of poolCells(b)){
+    if(!b.types.includes(c.ptype)) continue;
+    const fits={}; let mf=1;
+    for(const k of K){ const f=k.view && k.prio==="must" ? 1 : k.fit(c); fits[k.key]=f; if(k.prio==="must") mf=Math.min(mf,f); }
+    const f = mustViews.length ? jointShare(c, mustViews) : 1;          // a must-have view: only the homes that have it
+    if(mustViews.length) mustViews.forEach(v=>fits["view_"+v]=1);
+    const sc = sw ? soft.reduce((s,k)=>s+WEIGHT[k.prio]*fits[k.key],0)/sw : 1;
+    const n=Math.round(c.n*f), nt=Math.round(c.n_top*f);
+    if(nt<1) continue;
+    all.push({...c, n0:c.n, f, n, n_top:nt, exp_sellers:c.exp_sellers*f, mf, sc, fits});
+  }
+  const full = all.filter(c=>c.mf>=0.999).sort((x,y)=>y.sc-x.sc||y.p_med-x.p_med);
+  const part = all.filter(c=>c.mf<0.999 && c.mf>0).sort((x,y)=>y.mf-x.mf||y.sc-x.sc);
+  const cells=[]; let cards=0;
+  for(const c of [...full, ...part]){ if(cards>=CARDS_WANTED) break; cells.push(c); cards+=c.n_top; }
+  const fullHomes = full.reduce((s,c)=>s+c.n,0);
+  return {cells, K, relaxed:cells.some(c=>c.mf<0.999), fullHomes, poolSize:all.length, short:cards<CARDS_WANTED}; }
+function fitReport(R){ const tot=R.cells.reduce((s,c)=>s+c.n,0)||1;
+  return R.K.map(k=>{ const met=R.cells.reduce((s,c)=>s+(c.fits[k.key]>=0.999?c.n:0),0)/tot,
+      avg=R.cells.reduce((s,c)=>s+c.fits[k.key]*c.n,0)/tot;
+    return {k, met, avg}; }); }
+
 function matchCells(b){
   const nx = noxLimit(b), dn = densLimit(b), need = viewNeed(b), out=[];
   for(const c of C().cells){
@@ -689,10 +855,10 @@ function summarise(cells){
    product this is real inbound; here it is generated deterministically
    from the highest-propensity cells so the demo behaves consistently. */
 function warmBook(){
-  const pool = [...C().cells].sort((a,b)=>b.p_med-a.p_med).slice(0,26);
+  const pool = [...poolCells(S.brief)].sort((a,b)=>b.p_med-a.p_med).slice(0,26);
   const days = [2,3,5,6,8,9,11,13,15,17,19,22,24,27,30,33];
   return pool.map((c,i)=>({
-    sector:c.sector, ptype:c.ptype, band:c.band, value:c.value_med,
+    sector:c.sector, ptype:c.ptype, band:c.band, value:c.value_med, density:c.density,
     offer:c.offer_med, tenure:Math.round(c.tenure_med), nox:c.nox,
     mins:c.min_centre, days:days[i%days.length],
     stage: i%5===0 ? "ready" : (i%3===0 ? "talking" : "curious")
@@ -701,8 +867,8 @@ function warmBook(){
 function warmMatching(b){
   const nx=noxLimit(b), dn=densLimit(b);
   return warmBook().filter(w=> b.types.includes(w.ptype) && w.offer<=b.max*1.06
-    && w.nox<=nx && w.mins<=b.minsCentre
-    && (C().cells.find(c=>c.sector===w.sector)||{density:0}).density<=dn);
+    && w.nox<=nx && (activeAnchors(b).length || w.mins<=b.minsCentre)
+    && w.density<=dn);
 }
 
 /* ---------- router ---------- */
@@ -724,36 +890,38 @@ function nav(cur){
 
 /* ---------- sector map ---------- */
 function sectorMap(matched){
-  const all = C().cells;
+  const all = poolCells(S.brief);
+  if(!all.length) return "";
   const byS = {};
   all.forEach(c=>{ (byS[c.sector] ||= {lat:c.lat, lon:c.lon, n:0, top:0, on:false}).n += c.n; });
-  matched.forEach(c=>{ byS[c.sector].on = true; byS[c.sector].top += c.n_top; });
-  const pts = Object.entries(byS);
+  matched.forEach(c=>{ if(byS[c.sector]){ byS[c.sector].on = true; byS[c.sector].top += c.n_top; } });
+  const pts = Object.entries(byS).filter(([,p])=>p.lat!=null);
   const lats = pts.map(([,p])=>p.lat), lons = pts.map(([,p])=>p.lon);
-  const la0=Math.min(...lats), la1=Math.max(...lats),
-        lo0=Math.min(...lons), lo1=Math.max(...lons);
-  const W=300,H=210,pad=16;
-  const px = p => pad + (p.lon-lo0)/((lo1-lo0)||1)*(W-2*pad);
-  const py = p => H-pad - (p.lat-la0)/((la1-la0)||1)*(H-2*pad);
+  const la0=Math.min(...lats), la1=Math.max(...lats), lo0=Math.min(...lons), lo1=Math.max(...lons);
+  const W=300,H=210,pad=16, k=Math.cos((la0+la1)/2*Math.PI/180);
+  const sx=(W-2*pad)/(((lo1-lo0)*k)||1), sy=(H-2*pad)/((la1-la0)||1), sc=Math.min(sx,sy);
+  const px = p => pad + (p.lon-lo0)*k*sc, py = p => H-pad - (p.lat-la0)*sc;
   const maxTop = Math.max(1, ...pts.map(([,p])=>p.top));
+  const big = pts.length>600;
   const circles = pts.map(([s,p])=>{
-    const r = 3 + Math.sqrt(p.n)/7;
+    const r = big ? 1.6 : 3 + Math.sqrt(p.n)/7;
     if(!p.on) return `<circle cx="${px(p).toFixed(1)}" cy="${py(p).toFixed(1)}" r="${r.toFixed(1)}"
-      fill="var(--line)" opacity=".85"><title>${esc(s)}: outside your criteria</title></circle>`;
+      fill="var(--line)" opacity=".85"><title>${esc(s)}</title></circle>`;
     const t = p.top/maxTop;
     const fill = t>.66?"var(--m4)":t>.33?"var(--m3)":"var(--m2)";
-    return `<circle cx="${px(p).toFixed(1)}" cy="${py(p).toFixed(1)}" r="${r.toFixed(1)}"
+    return `<circle cx="${px(p).toFixed(1)}" cy="${py(p).toFixed(1)}" r="${(big?2.4:r).toFixed(1)}"
       fill="${fill}"><title>${esc(s)}: ${p.top} homes we'd write to</title></circle>`;
   }).join("");
+  const A=activeAnchors(S.brief), pins=A.map(a=>`<circle cx="${px(a).toFixed(1)}" cy="${py(a).toFixed(1)}" r="4.5" fill="var(--post)" stroke="#fff" stroke-width="1.5"><title>${esc(a.label)}</title></circle>`).join("");
   return `<div class="mapwrap">
-    <h3>Where your life fits</h3>
-    <p class="note" style="margin:2px 0 6px">Postcode sectors across ${C().name}. Filled = matches your criteria.</p>
+    <h3>Where they are</h3>
+    <p class="note" style="margin:2px 0 6px">Postcode sectors ${A.length?"within reach":"across "+esc(C().name)}. Filled = the homes to write to${A.length?"; red = your places":""}.</p>
     <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img"
-      aria-label="Map of ${C().name} postcode sectors matching your criteria">${circles}</svg>
+      aria-label="Map of the postcode sectors searched">${circles}${pins}</svg>
     <div class="legend"><span><i style="background:var(--m2)"></i>some</span>
       <span><i style="background:var(--m3)"></i>more</span>
       <span><i style="background:var(--m4)"></i>most to write to</span>
-      <span><i style="background:var(--line)"></i>ruled out</span></div>
+      <span><i style="background:var(--line)"></i>not chosen</span></div>
   </div>`;
 }
 
@@ -842,42 +1010,62 @@ function openRef(){
 }
 
 function railHTML(){
-  const b=S.brief, cells=matchCells(b), s=summarise(cells), warm=warmMatching(b).length;
-  const wide = s.pSilent < 0.20;
+  const b=S.brief, R=cohort(b), cells=R.cells, s=summarise(cells), A=activeAnchors(b), rep=fitReport(R);
+  const where = A.length ? `within reach of ${andList(A.map(a=>esc(a.label)))}` : `in ${esc(C().name)}`;
   return `      <div class="panel">
-        <div class="eyebrow">Homes that fit your life</div>
+        <div class="eyebrow">The homes to write to</div>
         <div class="big num">${s.n.toLocaleString()}</div>
-        <div class="sub">across ${s.sectors} postcode sectors</div>
+        <div class="sub">homes ${where}, across ${s.sectors} postcode sectors${AREAS_WAITING?` · loading ${AREAS_WAITING} more area${AREAS_WAITING>1?"s":""}…`:""}</div>
         <div style="height:1px;background:var(--line);margin:14px 0"></div>
         <div class="kv"><span class="k">Would move for the right offer</span><span class="v num">≈ ${s.likely.toLocaleString()}</span></div>
         <div class="kv"><span class="k">We'd write to</span><span class="v num">${s.nTop.toLocaleString()}</span></div>
-        <div class="kv"><span class="k">Already talking to us</span><span class="v num" style="color:var(--post)">${warm}</span></div>
-        <div class="gauge ${wide?"good":"warn"}">
-          <h4>${wide?"Wide enough to get answers":"Too narrow to hear back"}</h4>
-          <div class="bar"><i style="width:${Math.min(100,Math.round((1-s.pSilent)*100))}%;
-            background:${wide?"var(--accent)":"var(--warn)"}"></i></div>
-          <p>${wide
-            ? `About <b>${s.expReplies.toFixed(1)}</b> owners should reply to a first wave.`
-            : `A first wave to ${s.nTop.toLocaleString()} homes has a <b>${Math.round(s.pSilent*100)}%</b> chance of no reply at all. Loosen a slider, or start with the owners already talking to us.`}</p>
+        <div class="kv"><span class="k">Replies to expect from a first wave</span><span class="v num">≈ ${s.expReplies.toFixed(1)}</span></div>
+        ${R.short?`<p class="note" style="margin:10px 0 0;color:var(--warn)">Fewer homes than a reliable first wave needs: even counting near misses, only these are ${where}. Allow more travel time or relax a must.</p>`
+          : R.fullHomes>s.n?`<p class="note" style="margin:10px 0 0">The best-fitting ${s.n.toLocaleString()} of ${R.fullHomes.toLocaleString()} homes that meet every must: enough for about ${REPLIES_WANTED} replies.</p>`:""}
+        <div class="fitrep">
+          <h4>How well they fit</h4>
+          ${rep.map(r=>`<div class="fitrow"><div class="fitlab"><span class="plev ${r.k.prio}">${(LEVELS.find(l=>l[0]===r.k.prio)||[])[1]||""}</span> ${esc(r.k.label)}</div>
+            <div class="fitbar"><i style="width:${Math.round(r.met*100)}%"></i></div><div class="fitnum num">${Math.round(r.met*100)}%</div></div>`).join("")}
+          <p class="note" style="margin:6px 0 0">Share of these homes that fully meet each one.${R.relaxed?" To reach enough homes, some only nearly meet a must; the bars show how many.":""}</p>
         </div>
-        <a class="btn" style="width:100%;justify-content:center;margin-top:14px" href="#/results">See what's out there →</a>
+        <a class="btn" style="width:100%;justify-content:center;margin-top:14px" href="#/results">See them →</a>
       </div>
       <div style="margin-top:14px">${sectorMap(cells)}</div>
       ${nationPanel(b)}`;
 }
 function vSearch(){
-  const b=S.brief, cells=matchCells(b), s=summarise(cells), warm=warmMatching(b).length;
-  const wide = s.pSilent < 0.20;
+  const b=S.brief, wide = true;
   return `<div class="fadein">
   <div class="eyebrow">Where you'd live · this is the whole search</div>
   <h1 style="font-size:32px;margin:8px 0 6px">What would make a place right?</h1>
-  <p style="color:var(--muted);margin:0 0 20px;max-width:52em">The numbers on the right update as you
-    move these. Air quality and distances are real measurements for every postcode in ${C().name}; views are
-    measured for every house.</p>
+  <p style="color:var(--muted);margin:0 0 20px;max-width:52em">Start with where you need to get to, then say how much
+    each thing matters. Nothing is a filter: we always find enough homes to write to, the best fits first, and show
+    how well they fit. Air, distances, climate and views are measured for every home in England and Wales.</p>
   <div class="searchgrid">
     <div class="panel">
+      <div class="crit anchors">
+        <div class="lab"><b>Where you need to get to</b></div>
+        <div class="why">Work, school, family, a station. Type a postcode, a station or a town. Travel times are
+          estimated from distance, typical speeds and the nearest stations, not from a timetable.</div>
+        ${(b.anchors||[]).map((a,i)=>`<div class="anchor">
+          <div class="anchtop"><input list="pl-${i}" value="${esc(a.q||"")}" placeholder="Postcode, station or town"
+              aria-label="Place ${i+1}" oninput="suggest(${i},this.value)" onchange="setAnchorPlace(${i},this.value)">
+            <datalist id="pl-${i}"></datalist>
+            <select aria-label="How you would travel" onchange="setAnchor(${i},'mode',this.value)">${Object.entries(MODES).map(([k,l])=>
+              `<option value="${k}" ${a.mode===k?"selected":""}>${l}</option>`).join("")}</select>
+            <button class="chip" aria-label="Remove this place" onclick="dropAnchor(${i})">✕</button></div>
+          ${a.err?`<div class="hint" style="color:var(--warn)">${esc(a.err)}</div>`:a.lat!=null?`<div class="hint">${esc(a.label)}</div>`:""}
+          <div class="lab" style="margin-top:6px"><span>At most</span><span class="val" id="val-anc${i}">${a.mins} minutes</span></div>
+          <input type="range" min="5" max="120" step="5" value="${a.mins}" aria-label="Most minutes to get there" oninput="setAnchor(${i},'mins',+this.value)">
+          <div class="prio" role="group" aria-label="How much this matters">${LEVELS.map(([v,l])=>
+            `<button class="${(a.prio||"must")===v?"on":""}" onclick="setAnchor(${i},'prio','${v}')">${l}</button>`).join("")}</div>
+        </div>`).join("")}
+        <button class="chip" onclick="addAnchor()">+ ${(b.anchors||[]).length?"Add another place":"Add a place you need to reach"}</button>
+        ${activeAnchors(b).length?"":`<div class="why" style="margin-top:10px">Or look around one postcode area: ${areaPicker()}</div>`}
+      </div>
       <div class="crit">
         <div class="lab"><b>Clean air</b><span class="val" id="val-airStep">${sliderText("airStep")}</span></div>
+        ${prioCtl("air","high")}
         <div class="why">How clean the air is where you would live, from the national air pollution model.</div>
         <input type="range" min="0" max="4" step="1" value="${airStep(b)}"
           aria-label="air quality" oninput="slide('airStep',+this.value)">
@@ -886,44 +1074,51 @@ function vSearch(){
       </div>
       <div class="crit">
         <div class="lab"><b>Open, green surroundings</b><span class="val" id="val-openStep">${sliderText("openStep")}</span></div>
+        ${prioCtl("open","high")}
         <div class="why">How built up the area around the home is: our stand-in for green space nearby.</div>
         <input type="range" min="0" max="4" step="1" value="${openStep(b)}"
           aria-label="openness" oninput="slide('openStep',+this.value)">
         <div class="ticks"><span>${OPEN_STEPS[0][0]}</span><span>${OPEN_STEPS[OPEN_STEPS.length-1][0]}</span></div>
         <div class="hint" id="hint-openStep">${stepHint("openStep")}</div>
       </div>
-      <div class="crit">
+      <div class="crit" ${activeAnchors(b).length?'style="display:none"':""}>
         <div class="lab"><b>Drive to the centre</b><span class="val" id="val-minsCentre">${sliderText("minsCentre")}</span></div>
+        ${prioCtl("centre","high")}
         <div class="why">To ${esc(C().centre_name)}. Approximate, from straight-line distance, not routed.</div>
         <input type="range" min="3" max="60" step="1" value="${b.minsCentre}"
           aria-label="drive time to the centre" oninput="slide('minsCentre',+this.value)">
       </div>
       <div class="crit">
         <div class="lab"><b>GP within</b><span class="val" id="val-gpKm">${sliderText("gpKm")}</span></div>
+        ${prioCtl("gp","high")}
         <div class="why">Straight-line distance to the nearest GP surgery.</div>
         <input type="range" min="0.5" max="6" step="0.5" value="${b.gpKm}"
           aria-label="distance to GP" oninput="slide('gpKm',+this.value)">
       </div>
       <div class="crit">
         <div class="lab"><b>Hospital within</b><span class="val" id="val-hospKm">${sliderText("hospKm")}</span></div>
+        ${prioCtl("hosp","high")}
         <div class="why">Straight-line distance to the nearest hospital.</div>
         <input type="range" min="2" max="60" step="2" value="${b.hospKm??60}"
           aria-label="distance to hospital" oninput="slide('hospKm',+this.value)">
       </div>
       <div class="crit">
         <div class="lab"><b>Park or playing field within</b><span class="val" id="val-parkM">${sliderText("parkM")}</span></div>
+        ${prioCtl("park","high")}
         <div class="why">To the nearest entrance of a public park, garden or playing field (OS Open Greenspace).</div>
         <input type="range" min="200" max="2000" step="200" value="${b.parkM??2000}"
           aria-label="distance to a park" oninput="slide('parkM',+this.value)">
       </div>
       <div class="crit">
         <div class="lab"><b>River, lake or the sea within</b><span class="val" id="val-blueKm">${sliderText("blueKm")}</span></div>
+        ${prioCtl("blue","high")}
         <div class="why">To the nearest river, lake or reservoir of 2 ha or more, or the sea.</div>
         <input type="range" min="0.5" max="10" step="0.5" value="${b.blueKm??10}"
           aria-label="distance to water" oninput="slide('blueKm',+this.value)">
       </div>
       <div class="crit">
         <div class="lab"><b>Pubs</b><span class="val">${PUBS[b.pubs||"any"]}</span></div>
+        ${prioCtl("pubs","high")}
         <div class="why">From the Food Standards Agency's register of every pub and bar. A short walk is within 800 m; away means none within 400 m.</div>
         <div class="chiprow">${Object.entries(PUBS).map(([k,l])=>`
           <button class="chip ${(b.pubs||"any")===k?"on":""}" aria-pressed="${(b.pubs||"any")===k}" onclick="setPubs('${k}')">${l}</button>`).join("")}</div>
@@ -935,16 +1130,18 @@ function vSearch(){
         ${Object.entries(CLIMATE).map(([k,d])=>{ const cur=((b.clim||{})[k])||"any"; return `
         <div class="climrow"><span class="climlab">${d.label}</span><div class="chiprow">${Object.entries(d.opts).map(([o,l])=>`
           <button class="chip ${cur===o?"on":""}" aria-pressed="${cur===o}" onclick="setClim('${k}','${o}')">${l}</button>`).join("")}</div>
-          ${cur!=="any"?`<div class="hint">${climWhy(k)}</div>`:""}</div>`; }).join("")}
+          ${cur!=="any"?`<div class="hint">${climWhy(k)}</div>${prioCtl("clim_"+k,"high")}`:""}</div>`; }).join("")}
       </div>
       <div class="crit">
         <div class="lab"><b>Budget ceiling</b><span class="val" id="val-max">${sliderText("max")}</span></div>
+        ${prioCtl("budget","must")}
         <div class="why">What you could pay for the <i>right offer</i>, usually 6–20% over today's value.</div>
         <input type="range" min="180000" max="900000" step="25000" value="${b.max}"
           aria-label="budget" oninput="slide('max',+this.value)">
       </div>
       <div class="crit">
         <div class="lab"><b>What you'd like to see</b><span class="val">${(b.views||[]).length?(b.views||[]).map(k=>(flagOf(k)||{}).label).filter(Boolean).join(" · "):"no preference"}</span></div>
+        ${prioCtl("views","high")}
         <div class="why">Worked out for every house from a 3-D model of the ground, the buildings and the trees: the view from the upper windows and from the garden, and how much sun reaches the windows. No photos needed.</div>
         <div class="chipgroup">Outlook and garden</div>
         <div class="chiprow">${FLAGS().filter(f=>f.group==="view").map(f=>`
@@ -958,11 +1155,11 @@ function vSearch(){
         <div class="chiprow">${FLAGS().filter(f=>f.group==="build").map(f=>`
           <button class="chip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${f.label}</button>`).join("")}
         </div>
-        <div class="chipgroup">Landmarks in sight from the upper windows</div>
+        ${activeAnchors(b).length?"":`<div class="chipgroup">Landmarks in sight from the upper windows</div>
         <div class="chiprow">${FLAGS().filter(f=>f.lm).map(f=>`
           <button class="chip lmchip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${esc(f.label)}</button>`).join("")}
-        </div>
-        ${(b.views||[]).length?`<div class="why" style="margin-top:9px">Counted jointly: a home is only included if it has <b>all</b> of these.</div>`:""}
+        </div>`}
+        ${(b.views||[]).length?`<div class="why" style="margin-top:9px">As a must, a home counts only if it has <b>all</b> of these; otherwise homes with more of them rank higher.</div>`:""}
       </div>
       <div class="crit">
         <div class="lab"><b>Kind of home</b></div>
@@ -1015,7 +1212,7 @@ function tglType(t){ const a=S.brief.types, i=a.indexOf(t);
   if(i>=0){ if(a.length>1) a.splice(i,1); } else a.push(t); save(); render(); }
 
 function vResults(){
-  const b=S.brief, cells=matchCells(b).sort((x,y)=>y.n_top-x.n_top), s=summarise(cells);
+  const b=S.brief, R=cohort(b), cells=R.cells, s=summarise(cells), A=activeAnchors(b);
   const warm=warmMatching(b);
   S.selected = S.selected.filter(id=>cells.some(c=>cellId(c)===id)); save();
   const selCells = cells.filter(c=>S.selected.includes(cellId(c)));
@@ -1059,7 +1256,9 @@ function vResults(){
       return `<div class="cohort ${sel?"sel":""}" tabindex="0" role="button" aria-pressed="${sel}"
         onclick="selC('${id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selC('${id}')}">
         <div class="tick">✓</div>
-        <div class="where">${esc(c.sector)} · ${esc(C().areas[c.outcode]||"")}</div>
+        <div class="where">${esc(c.sector)} · ${esc(((DATA.cities[c.area]||C()).areas||{})[c.outcode]||"")}</div>
+        ${A.length?`<div class="journeys">${A.map(a=>`<span>≈ ${Math.round(cellMins(c,a))} min ${MODE1[a.mode]} to ${esc(a.label)}</span>`).join("")}</div>`:""}
+        <div class="fitchips">${R.K.map(k=>`<span class="fc ${c.fits[k.key]>=0.999?"ok":c.fits[k.key]>=0.5?"part":"no"}" title="${esc(k.label)}">${esc(k.label)}</span>`).join("")}</div>
         <h3>${PT[c.ptype]}, ${BANDL[c.band]}</h3>
         <div class="likely"><b class="num">≈ ${lk}</b><span>of ${c.n.toLocaleString()} would move for the right offer</span></div>
         ${c.f<1?`<div class="viewmatch">${c.n.toLocaleString()} of the ${c.n0.toLocaleString()} homes here have the view you asked for</div>`:""}
@@ -1072,14 +1271,14 @@ function vResults(){
           ${c.warm_2c!=null?`<span class="tag" title="Warmer by the time the world is 2 °C warmer than before industry, around the 2050s">+${c.warm_2c.toFixed(1)} °C by the 2050s</span>`:""}
           ${c.km_pub!=null?`<span class="tag">Pub ${c.km_pub<1?Math.round(c.km_pub*1000)+" m":c.km_pub+" km"}</span>`:""}
           ${c.add_value?`<span class="tag" title="Typical value a house here could add without planning permission, at 2019 prices (estimate)">Could add ≈ ${GBPk(c.add_value)}</span>`:""}</div>
-        ${(()=>{const v=viewOf(c.sector); if(!v) return ""; return `
+        ${(()=>{const v=viewOf(c.sector,c.area); if(!v) return ""; return `
         <div class="panomini">${panoSVG(v.homes[0].up,{mini:true,label:"Typical upstairs view in "+c.sector})}</div>
-        <div class="viewtags">${viewTags(v)}<button class="seeview" onclick="event.stopPropagation();openView('${esc(c.sector)}')">See the view →</button></div>`;})()}
+        <div class="viewtags">${viewTags(v)}<button class="seeview" onclick="event.stopPropagation();openView('${esc(c.sector)}','${c.area}')">See the view →</button></div>`;})()}
         <div class="note" style="margin-top:2px">${c.n_top} cards · premium ≈ ${(c.premium_med*100).toFixed(0)}%</div>
       </div>`;}).join("")}
   </div>
-  ${cells.length>12?`<p class="note" style="margin-top:12px">Showing the 12 biggest of ${cells.length} matching pockets.</p>`:""}
-  ${cells.length===0?`<div class="panel">Nothing matches yet. Loosen a slider on <a href="#/search">your criteria</a>.</div>`:""}
+  ${cells.length>12?`<p class="note" style="margin-top:12px">Showing the 12 best-fitting of ${cells.length} pockets.</p>`:""}
+  ${cells.length===0?`<div class="panel">No homes yet: ${AREAS_WAITING?"the areas within reach are still loading.":"add a place you need to reach, or allow more time."}</div>`:""}
 
   <div class="tray" role="status">
     <div><b style="font-family:'Bricolage Grotesque',sans-serif">${S.selected.length} selected</b>
@@ -1091,11 +1290,11 @@ function vResults(){
     picture would be a promise nobody has made. You get the true count, the honest price, and we go and ask.</p>
   </div>`;
 }
-function cellId(c){ return c.sector+"|"+c.ptype+"|"+c.band; }
+function cellId(c){ return (c.area||"")+"|"+c.sector+"|"+c.ptype+"|"+c.band; }
 function selC(id){ const i=S.selected.indexOf(id);
   if(i>=0) S.selected.splice(i,1); else S.selected.push(id); save(); render(); }
 function startCampaign(){
-  const cells=matchCells(S.brief).filter(c=>S.selected.includes(cellId(c)));
+  const cells=cohort(S.brief).cells.filter(c=>S.selected.includes(cellId(c)));
   S.campaign={cards:cells.reduce((a,c)=>a+c.n_top,0), sent:false};
   S.day=0; S.connected=false; save(); go("/campaign");
 }
@@ -1297,7 +1496,7 @@ function render(){
   document.getElementById("nav").innerHTML = r.v==="offer"
     ? `<span class="mono" style="font-size:11px;color:var(--muted)">A PRIVATE NOTE FROM A REAL BUYER</span>`
     : nav(r.v);
-  document.getElementById("citysw").innerHTML = r.v==="offer" ? "" : areaPicker();
+  document.getElementById("citysw").innerHTML = r.v==="offer" || activeAnchors(S.brief).length ? "" : areaPicker();
   const fa=document.getElementById("footauc"); if(fa) fa.textContent=DATA.model.auc_oot||"";
   document.getElementById("app").innerHTML =
     r.v==="offer"?vOffer(r.code) : r.v==="search"?vSearch() :
