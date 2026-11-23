@@ -122,7 +122,7 @@ def like_for_like(ch, fam, say):
     cr = test_rows(ch, (2010, 2019))
     ctrl_idx = [ch.names.index(c) for c in CTRL]
     fam_idx, fam_cols = ch.cols([fam])
-    C = gather(ch, cr, ctrl_idx); F = gather(ch, cr, fam_idx)
+    C = gather(ch, cr, ctrl_idx); F = gather(ch, cr, fam_idx).astype(np.float32)   # wide families (40 columns) need the room
     y = col_of(ch, "y", cr).astype(float); yr = col_of(ch, "year", cr); blk = _blocks(col_of(ch, "block", cr))
     pc = col_of(ch, "pc", cr); area = pd.Series(ch.postcodes[pc]).str.extract(r"^([A-Z]+)")[0].map(AREA2REGION).to_numpy()
     C = np.nan_to_num((C - np.nanmean(C, 0)) / np.where(np.nanstd(C, 0) > 0, np.nanstd(C, 0), 1))
@@ -228,6 +228,17 @@ def price(fam, say, years=(2010, 2019)):
     return res, int(len(tx))
 
 
+def free_memory(ch):
+    """Hand back what the fit held before the column-by-column tests start."""
+    import ctypes
+    import gc
+    ch.release(); ML._TEST.clear(); gc.collect()
+    try:
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+    except OSError:
+        pass
+
+
 def coverage(ch, fam):
     L = ch.lookup(fam)
     have = np.isfinite(L).any(axis=1)
@@ -285,6 +296,7 @@ def main():
     if not a.skip_fit:
         say(f"== {fam}: does it improve the national model ({a.pct}% of homes)?")
         R["adds"], p_cur = adds_to_model(ch, fam, a.pct, a.threads, say)
+        free_memory(ch)                               # the fit's tables are no longer needed; wide families ran out without this
     else:
         p_cur, _ = ML.predict_cached(ch, Path(LAB), a.threads, CUR_NAME, a.pct, CURRENT)
     say(f"== {fam}: like for like, sale timing"); R["lfl"], R["lfl_rows"], R["lfl_sales"] = like_for_like(ch, fam, say)
