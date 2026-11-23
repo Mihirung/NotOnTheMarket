@@ -148,6 +148,7 @@ FAMILIES = {
                  columns=["owner_age", "p_owner_75", "p_owner_85", "p_exit", "p_exit_alone", "le65", "health_dep",
                           "older_income_dep", "alone_share"],
                  rowwise="life_rows",
+                 never_shown=True,          # model ranking only: never in search, pages or anything sent to owners
                  about="Later life: the owner's likely age from years owned and the 2011 age mix of the output area, "
                        "and the yearly chance of a death or move into care at that age, moved by local life "
                        "expectancy (life_signals.py). For the model's ranking only; never shown"),

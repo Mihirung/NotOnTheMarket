@@ -294,6 +294,7 @@ def main():
         g = R["adds"]["all"]
         R["verdict"] = ("add it: the model finds more sellers and the range is clear of zero" if g["range"][0] > 0 else
                         "do not add it to the model: no gain clear of zero" + (
+                            "; it stays out of search and pricing too (model ranking only)" if SG.FAMILIES[fam].get("never_shown") else
                             "; use it for search and pricing" if any(v["range"][0] > 0 or v["range"][1] < 0
                                                                      for v in R["price"].values()) else ""))
     else:
