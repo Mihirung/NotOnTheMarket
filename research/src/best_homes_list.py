@@ -150,7 +150,7 @@ def write(sel, addr, want, last, cap):
                             for x in a.head(12).itertuples())
             parts.append(f"""<div class=home><h3>{i}. {html.escape(r.postcode)} <span class=n>{html.escape(town)}</span></h3>
 <p><b>Score {r.score:.1f}</b> (average national percentile across {len(want)} measures; weakest {r.weakest:.0f}, on
-{html.escape(label[weak[0]])}). A {TYPE_NAME[r.type]}, {int(r.storeys)} storeys. Value today: <b>{val}</b>.</p>
+{html.escape(label[weak[0]])}). A {TYPE_NAME[r.type]}, {int(r.storeys)} storey{'s' if int(r.storeys) != 1 else ''}. Value today: <b>{val}</b>.</p>
 <p>Best at: {'; '.join(f'{html.escape(label[w])} ({p:.1f})' for w, p in strong)}.</p>
 <p><a href="{maps}">The house on a map</a> ({r.lat}, {r.lon})</p>
 <p class=n>Addresses in {html.escape(r.postcode)} from the sale records, the same type first:</p><ul>{alist or '<li>none on record</li>'}</ul></div>""")
