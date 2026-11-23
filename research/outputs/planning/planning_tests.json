@@ -1,0 +1,955 @@
+{
+ "applications": 430320,
+ "council_areas": 14,
+ "linked_to_a_home_with_sales": 208478,
+ "linked_share": 0.484,
+ "areas": {
+  "Bath": "Bath and North East Somerset",
+  "Brighton": "Brighton and Hove",
+  "Bristol": "City of Bristol",
+  "Cambridge": "Cambridge",
+  "Canterbury": "Canterbury",
+  "Cheltenham": "Cheltenham",
+  "Exeter": "Exeter",
+  "Guildford": "Guildford",
+  "Norwich": "Norwich",
+  "Plymouth": "Plymouth",
+  "Reading": "Reading",
+  "Stockport": "Stockport",
+  "Trafford": "Trafford",
+  "York": "York"
+ },
+ "timing": {
+  "applied_1y": {
+   "rows": 133382,
+   "points": 0.18,
+   "range": [
+    -0.07,
+    0.45
+   ],
+   "times_base": 1.04
+  },
+  "applied_2_3y": {
+   "rows": 244944,
+   "points": 0.12,
+   "range": [
+    -0.07,
+    0.32
+   ],
+   "times_base": 1.03
+  },
+  "approved_1y": {
+   "rows": 114123,
+   "points": -1.08,
+   "range": [
+    -1.37,
+    -0.85
+   ],
+   "times_base": 0.77
+  },
+  "approved_2_3y": {
+   "rows": 213057,
+   "points": -0.97,
+   "range": [
+    -1.15,
+    -0.76
+   ],
+   "times_base": 0.79
+  },
+  "refused_1y": {
+   "rows": 20675,
+   "points": 0.27,
+   "range": [
+    -0.03,
+    0.61
+   ],
+   "times_base": 1.06
+  },
+  "refused_2_3y": {
+   "rows": 40409,
+   "points": 0.23,
+   "range": [
+    0.06,
+    0.46
+   ],
+   "times_base": 1.05
+  },
+  "withdrawn_1y": {
+   "rows": 9387,
+   "points": 0.9,
+   "range": [
+    0.48,
+    1.4
+   ],
+   "times_base": 1.2
+  },
+  "pending": {
+   "rows": 25516,
+   "points": -0.27,
+   "range": [
+    -0.58,
+    0.05
+   ],
+   "times_base": 0.94
+  }
+ },
+ "base_rate": 0.046249018863636734,
+ "by_year": {
+  "approved": {
+   "-3": {
+    "rows": 47111,
+    "points": 1.0,
+    "range": [
+     0.78,
+     1.21
+    ],
+    "times_base": 1.22
+   },
+   "-2": {
+    "rows": 53910,
+    "points": 1.32,
+    "range": [
+     1.13,
+     1.53
+    ],
+    "times_base": 1.29
+   },
+   "-1": {
+    "rows": 62372,
+    "points": 4.4,
+    "range": [
+     4.21,
+     4.62
+    ],
+    "times_base": 1.95
+   },
+   "0": {
+    "rows": 75688,
+    "points": 4.51,
+    "range": [
+     4.31,
+     4.68
+    ],
+    "times_base": 1.98
+   },
+   "1": {
+    "rows": 86832,
+    "points": -0.62,
+    "range": [
+     -0.75,
+     -0.49
+    ],
+    "times_base": 0.87
+   },
+   "2": {
+    "rows": 88161,
+    "points": -0.88,
+    "range": [
+     -0.99,
+     -0.74
+    ],
+    "times_base": 0.81
+   },
+   "3": {
+    "rows": 88246,
+    "points": -0.66,
+    "range": [
+     -0.78,
+     -0.52
+    ],
+    "times_base": 0.86
+   },
+   "4": {
+    "rows": 82007,
+    "points": -0.32,
+    "range": [
+     -0.45,
+     -0.2
+    ],
+    "times_base": 0.93
+   },
+   "5": {
+    "rows": 75941,
+    "points": -0.33,
+    "range": [
+     -0.47,
+     -0.18
+    ],
+    "times_base": 0.93
+   },
+   "6": {
+    "rows": 70121,
+    "points": -0.37,
+    "range": [
+     -0.5,
+     -0.21
+    ],
+    "times_base": 0.92
+   }
+  },
+  "refused": {
+   "-3": {
+    "rows": 8629,
+    "points": 0.55,
+    "range": [
+     0.04,
+     0.95
+    ],
+    "times_base": 1.12
+   },
+   "-2": {
+    "rows": 10360,
+    "points": 0.86,
+    "range": [
+     0.47,
+     1.26
+    ],
+    "times_base": 1.19
+   },
+   "-1": {
+    "rows": 12371,
+    "points": 3.69,
+    "range": [
+     3.22,
+     4.27
+    ],
+    "times_base": 1.8
+   },
+   "0": {
+    "rows": 15067,
+    "points": 3.36,
+    "range": [
+     2.92,
+     3.77
+    ],
+    "times_base": 1.73
+   },
+   "1": {
+    "rows": 17233,
+    "points": 0.22,
+    "range": [
+     -0.08,
+     0.57
+    ],
+    "times_base": 1.05
+   },
+   "2": {
+    "rows": 17958,
+    "points": -0.06,
+    "range": [
+     -0.37,
+     0.29
+    ],
+    "times_base": 0.99
+   },
+   "3": {
+    "rows": 18149,
+    "points": -0.29,
+    "range": [
+     -0.55,
+     -0.0
+    ],
+    "times_base": 0.94
+   },
+   "4": {
+    "rows": 17177,
+    "points": -0.17,
+    "range": [
+     -0.43,
+     0.17
+    ],
+    "times_base": 0.96
+   },
+   "5": {
+    "rows": 16257,
+    "points": -0.28,
+    "range": [
+     -0.61,
+     0.05
+    ],
+    "times_base": 0.94
+   },
+   "6": {
+    "rows": 15341,
+    "points": -0.69,
+    "range": [
+     -1.01,
+     -0.41
+    ],
+    "times_base": 0.85
+   }
+  }
+ },
+ "by_job": {
+  "job_loft": {
+   "rows": 42910,
+   "points": -0.44,
+   "range": [
+    -0.59,
+    -0.28
+   ],
+   "times_base": 0.9
+  },
+  "job_two_storey": {
+   "rows": 71703,
+   "points": -1.08,
+   "range": [
+    -1.22,
+    -0.96
+   ],
+   "times_base": 0.77
+  },
+  "job_rear": {
+   "rows": 98413,
+   "points": -1.14,
+   "range": [
+    -1.25,
+    -1.01
+   ],
+   "times_base": 0.75
+  },
+  "job_side": {
+   "rows": 15767,
+   "points": -1.39,
+   "range": [
+    -1.66,
+    -1.17
+   ],
+   "times_base": 0.7
+  },
+  "job_basement": {
+   "rows": 4488,
+   "points": -0.91,
+   "range": [
+    -1.5,
+    -0.35
+   ],
+   "times_base": 0.8
+  },
+  "job_garage": {
+   "rows": 3665,
+   "points": -0.48,
+   "range": [
+    -1.04,
+    0.17
+   ],
+   "times_base": 0.9
+  },
+  "job_outbuilding": {
+   "rows": 19018,
+   "points": -0.91,
+   "range": [
+    -1.18,
+    -0.66
+   ],
+   "times_base": 0.8
+  },
+  "job_front": {
+   "rows": 9294,
+   "points": -0.98,
+   "range": [
+    -1.36,
+    -0.64
+   ],
+   "times_base": 0.79
+  },
+  "job_extension": {
+   "rows": 7844,
+   "points": -0.69,
+   "range": [
+    -1.1,
+    -0.3
+   ],
+   "times_base": 0.85
+  },
+  "job_new_home": {
+   "rows": 7730,
+   "points": 2.17,
+   "range": [
+    1.67,
+    2.71
+   ],
+   "times_base": 1.47
+  },
+  "job_split": {
+   "rows": 2054,
+   "points": -0.9,
+   "range": [
+    -1.68,
+    -0.13
+   ],
+   "times_base": 0.81
+  },
+  "job_listed": {
+   "rows": 966,
+   "points": -0.57,
+   "range": [
+    -1.56,
+    0.72
+   ],
+   "times_base": 0.88
+  },
+  "job_lawful": {
+   "rows": 3252,
+   "points": -0.39,
+   "range": [
+    -1.06,
+    0.18
+   ],
+   "times_base": 0.92
+  },
+  "job_alterations": {
+   "rows": 4848,
+   "points": 0.79,
+   "range": [
+    0.21,
+    1.42
+   ],
+   "times_base": 1.17
+  },
+  "job_windows": {
+   "rows": 14740,
+   "points": -0.08,
+   "range": [
+    -0.34,
+    0.25
+   ],
+   "times_base": 0.98
+  },
+  "job_boundary": {
+   "rows": 9754,
+   "points": 0.21,
+   "range": [
+    -0.19,
+    0.61
+   ],
+   "times_base": 1.05
+  },
+  "job_trees": {
+   "rows": 4264,
+   "points": 0.11,
+   "range": [
+    -0.49,
+    0.69
+   ],
+   "times_base": 1.02
+  },
+  "job_commercial": {
+   "rows": 2363,
+   "points": -2.43,
+   "range": [
+    -2.95,
+    -1.71
+   ],
+   "times_base": 0.47
+  },
+  "job_change_of_use": {
+   "rows": 5028,
+   "points": -1.45,
+   "range": [
+    -1.93,
+    -1.02
+   ],
+   "times_base": 0.69
+  },
+  "job_demolition": {
+   "rows": 1114,
+   "points": 0.9,
+   "range": [
+    -0.44,
+    2.3
+   ],
+   "times_base": 1.2
+  },
+  "job_other": {
+   "rows": 16006,
+   "points": -0.1,
+   "range": [
+    -0.39,
+    0.27
+   ],
+   "times_base": 0.98
+  }
+ },
+ "by_description_of_home": {
+  "hint_georgian": {
+   "rows": 460,
+   "points": 2.26,
+   "range": [
+    -0.1,
+    4.71
+   ],
+   "times_base": 1.49
+  },
+  "hint_victorian": {
+   "rows": 641,
+   "points": 0.23,
+   "range": [
+    -1.35,
+    2.15
+   ],
+   "times_base": 1.05
+  },
+  "hint_edwardian": {
+   "rows": 208,
+   "points": 1.9,
+   "range": [
+    -0.85,
+    4.78
+   ],
+   "times_base": 1.41
+  },
+  "hint_bungalow": {
+   "rows": 17415,
+   "points": 1.16,
+   "range": [
+    0.86,
+    1.54
+   ],
+   "times_base": 1.25
+  },
+  "hint_cottage": {
+   "rows": 1853,
+   "points": 0.34,
+   "range": [
+    -0.69,
+    1.38
+   ],
+   "times_base": 1.07
+  },
+  "hint_barn": {
+   "rows": 3977,
+   "points": -0.51,
+   "range": [
+    -1.02,
+    0.02
+   ],
+   "times_base": 0.89
+  },
+  "hint_thatched": {
+   "rows": 222,
+   "points": -1.07,
+   "range": [
+    -3.46,
+    0.67
+   ],
+   "times_base": 0.77
+  },
+  "hint_townhouse": {
+   "rows": 762,
+   "points": 1.12,
+   "range": [
+    -0.32,
+    2.33
+   ],
+   "times_base": 1.24
+  },
+  "hint_listed_mention": {
+   "rows": 10364,
+   "points": 0.69,
+   "range": [
+    0.3,
+    1.16
+   ],
+   "times_base": 1.15
+  }
+ },
+ "on_top_of_model": {
+  "lift_top10_model": 1.912,
+  "lift_top10_with_planning": 1.909,
+  "gain": -0.003,
+  "gain_range": [
+   -0.013,
+   0.007
+  ],
+  "test_home_years": 1121417
+ },
+ "approval": {
+  "decided": 398401,
+  "approved_share": 0.849,
+  "cv_auc": 0.705,
+  "by_job": {
+   "alterations": {
+    "approved": 0.894,
+    "decided": 10298
+   },
+   "basement": {
+    "approved": 0.844,
+    "decided": 6251
+   },
+   "boundary": {
+    "approved": 0.813,
+    "decided": 16662
+   },
+   "change_of_use": {
+    "approved": 0.81,
+    "decided": 11298
+   },
+   "commercial": {
+    "approved": 0.868,
+    "decided": 14692
+   },
+   "demolition": {
+    "approved": 0.766,
+    "decided": 3850
+   },
+   "extension": {
+    "approved": 0.856,
+    "decided": 11712
+   },
+   "front": {
+    "approved": 0.903,
+    "decided": 8269
+   },
+   "garage": {
+    "approved": 0.869,
+    "decided": 2756
+   },
+   "lawful": {
+    "approved": 0.834,
+    "decided": 6377
+   },
+   "listed": {
+    "approved": 0.919,
+    "decided": 2892
+   },
+   "loft": {
+    "approved": 0.816,
+    "decided": 34663
+   },
+   "new_home": {
+    "approved": 0.637,
+    "decided": 18073
+   },
+   "other": {
+    "approved": 0.863,
+    "decided": 41672
+   },
+   "outbuilding": {
+    "approved": 0.837,
+    "decided": 23034
+   },
+   "rear": {
+    "approved": 0.909,
+    "decided": 76374
+   },
+   "side": {
+    "approved": 0.91,
+    "decided": 12191
+   },
+   "split": {
+    "approved": 0.729,
+    "decided": 2410
+   },
+   "trees": {
+    "approved": 0.979,
+    "decided": 6308
+   },
+   "two_storey": {
+    "approved": 0.805,
+    "decided": 61232
+   },
+   "windows": {
+    "approved": 0.898,
+    "decided": 27251
+   },
+   "wraparound": {
+    "approved": 0.897,
+    "decided": 136
+   }
+  },
+  "by_job_heritage": {
+   "alterations": {
+    "not": 0.886,
+    "in heritage area": 0.897
+   },
+   "basement": {
+    "not": 0.778,
+    "in heritage area": 0.869
+   },
+   "boundary": {
+    "not": 0.812,
+    "in heritage area": 0.816
+   },
+   "change_of_use": {
+    "not": 0.772,
+    "in heritage area": 0.861
+   },
+   "commercial": {
+    "not": 0.879,
+    "in heritage area": 0.86
+   },
+   "demolition": {
+    "not": 0.749,
+    "in heritage area": 0.782
+   },
+   "extension": {
+    "not": 0.862,
+    "in heritage area": 0.847
+   },
+   "front": {
+    "not": 0.911,
+    "in heritage area": 0.874
+   },
+   "garage": {
+    "not": 0.868,
+    "in heritage area": 0.871
+   },
+   "lawful": {
+    "not": 0.828,
+    "in heritage area": 0.847
+   },
+   "listed": {
+    "not": 0.916,
+    "in heritage area": 0.92
+   },
+   "loft": {
+    "not": 0.815,
+    "in heritage area": 0.818
+   },
+   "new_home": {
+    "not": 0.63,
+    "in heritage area": 0.659
+   },
+   "other": {
+    "not": 0.859,
+    "in heritage area": 0.867
+   },
+   "outbuilding": {
+    "not": 0.826,
+    "in heritage area": 0.857
+   },
+   "rear": {
+    "not": 0.91,
+    "in heritage area": 0.907
+   },
+   "side": {
+    "not": 0.91,
+    "in heritage area": 0.911
+   },
+   "split": {
+    "not": 0.684,
+    "in heritage area": 0.799
+   },
+   "trees": {
+    "not": 0.95,
+    "in heritage area": 0.985
+   },
+   "two_storey": {
+    "not": 0.807,
+    "in heritage area": 0.794
+   },
+   "windows": {
+    "not": 0.919,
+    "in heritage area": 0.885
+   },
+   "wraparound": {
+    "not": 0.891,
+    "in heritage area": 0.941
+   }
+  },
+  "by_area": {
+   "Bath": 0.848,
+   "Brighton": 0.735,
+   "Bristol": 0.84,
+   "Cambridge": 0.894,
+   "Canterbury": 0.897,
+   "Cheltenham": 0.923,
+   "Exeter": 0.846,
+   "Guildford": 0.799,
+   "Norwich": 0.896,
+   "Plymouth": 0.859,
+   "Reading": 0.845,
+   "Stockport": 0.884,
+   "Trafford": 0.869,
+   "York": 0.879
+  }
+ },
+ "value_added": {
+  "alterations": {
+   "repeat_sales": 192,
+   "extra_growth_pct": 6.2,
+   "range_pct": [
+    1.0,
+    10.9
+   ],
+   "typical_first_price": 282000.0
+  },
+  "basement": {
+   "repeat_sales": 196,
+   "extra_growth_pct": 10.2,
+   "range_pct": [
+    5.7,
+    15.0
+   ],
+   "typical_first_price": 378000.0
+  },
+  "boundary": {
+   "repeat_sales": 585,
+   "extra_growth_pct": 7.6,
+   "range_pct": [
+    4.9,
+    9.9
+   ],
+   "typical_first_price": 220000.0
+  },
+  "change_of_use": {
+   "repeat_sales": 143,
+   "extra_growth_pct": 4.4,
+   "range_pct": [
+    0.8,
+    13.5
+   ],
+   "typical_first_price": 150000.0
+  },
+  "commercial": {
+   "repeat_sales": 48,
+   "extra_growth_pct": 12.5,
+   "range_pct": [
+    -9.0,
+    28.7
+   ],
+   "typical_first_price": 158000.0
+  },
+  "demolition": {
+   "repeat_sales": 47,
+   "extra_growth_pct": 10.1,
+   "range_pct": [
+    -1.6,
+    27.4
+   ],
+   "typical_first_price": 250000.0
+  },
+  "extension": {
+   "repeat_sales": 431,
+   "extra_growth_pct": 12.1,
+   "range_pct": [
+    8.7,
+    14.4
+   ],
+   "typical_first_price": 240000.0
+  },
+  "front": {
+   "repeat_sales": 493,
+   "extra_growth_pct": 7.0,
+   "range_pct": [
+    4.1,
+    9.3
+   ],
+   "typical_first_price": 190000.0
+  },
+  "garage": {
+   "repeat_sales": 233,
+   "extra_growth_pct": 2.0,
+   "range_pct": [
+    -0.4,
+    5.0
+   ],
+   "typical_first_price": 250000.0
+  },
+  "lawful": {
+   "repeat_sales": 131,
+   "extra_growth_pct": 4.5,
+   "range_pct": [
+    2.1,
+    7.2
+   ],
+   "typical_first_price": 225000.0
+  },
+  "loft": {
+   "repeat_sales": 2574,
+   "extra_growth_pct": 15.6,
+   "range_pct": [
+    14.7,
+    16.6
+   ],
+   "typical_first_price": 240000.0
+  },
+  "new_home": {
+   "repeat_sales": 452,
+   "extra_growth_pct": 5.3,
+   "range_pct": [
+    2.3,
+    8.4
+   ],
+   "typical_first_price": 225000.0
+  },
+  "other": {
+   "repeat_sales": 688,
+   "extra_growth_pct": 9.5,
+   "range_pct": [
+    7.6,
+    11.9
+   ],
+   "typical_first_price": 218000.0
+  },
+  "outbuilding": {
+   "repeat_sales": 935,
+   "extra_growth_pct": 8.1,
+   "range_pct": [
+    6.9,
+    9.5
+   ],
+   "typical_first_price": 237000.0
+  },
+  "rear": {
+   "repeat_sales": 6204,
+   "extra_growth_pct": 9.7,
+   "range_pct": [
+    9.3,
+    10.3
+   ],
+   "typical_first_price": 204000.0
+  },
+  "side": {
+   "repeat_sales": 880,
+   "extra_growth_pct": 11.6,
+   "range_pct": [
+    10.2,
+    12.9
+   ],
+   "typical_first_price": 203000.0
+  },
+  "split": {
+   "repeat_sales": 73,
+   "extra_growth_pct": 1.7,
+   "range_pct": [
+    -8.0,
+    7.9
+   ],
+   "typical_first_price": 170000.0
+  },
+  "trees": {
+   "repeat_sales": 169,
+   "extra_growth_pct": 2.0,
+   "range_pct": [
+    0.1,
+    5.0
+   ],
+   "typical_first_price": 295000.0
+  },
+  "two_storey": {
+   "repeat_sales": 4537,
+   "extra_growth_pct": 19.0,
+   "range_pct": [
+    17.9,
+    20.1
+   ],
+   "typical_first_price": 205000.0
+  },
+  "windows": {
+   "repeat_sales": 564,
+   "extra_growth_pct": 6.2,
+   "range_pct": [
+    4.1,
+    7.8
+   ],
+   "typical_first_price": 241000.0
+  },
+  "_neighbours_without": {
+   "repeat_sales": 350389,
+   "extra_growth_pct": 0.0
+  }
+ },
+ "seconds": 223
+}

@@ -187,6 +187,10 @@ def daylight(lat, month):
 
 
 DAYS = np.array([31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])
+# Fitted on stations south of 56 N only: with the far north of Scotland in, the fit bends to its long summer days
+# and northern cloud, and stations in England and Wales left out in turn are missed by 5.3% a year on average
+# rather than 4.1% (research/outputs/climate/sunshine_fit.json).
+LAT_MAX = 56.0
 
 
 class Grid:
@@ -210,6 +214,7 @@ def fit_sunshine(st, ch):
     """Monthly sunshine fraction from the clearness of the sky (solar energy at the ground over the
     energy at the top of the atmosphere) and cloud cover, fitted on 1991-2020 station months."""
     norm = st[(st.year >= 1991) & (st.year <= 2020)].groupby(["station", "lat", "lon", "month"]).sun.mean().reset_index()
+    norm = norm[norm.lat < LAT_MAX]                              # stations at England and Wales latitudes
     pos = norm.drop_duplicates("station")[["station", "lat", "lon"]].reset_index(drop=True)
     rs = Grid(ch["rsds"], ch["rsds_transform"]).at(pos.lon, pos.lat)
     cl = Grid(ch["clt"], ch["clt_transform"]).at(pos.lon, pos.lat)
@@ -237,6 +242,8 @@ def fit_sunshine(st, ch):
            "annual_mean_abs_error_share": round(float(np.mean(np.abs(e) / np.array([o for _, o, _ in err]))), 4),
            "by_station": err}
     json.dump(rep, open(D / "sunshine_fit.json", "w"), indent=1)
+    Path("research/outputs/climate").mkdir(parents=True, exist_ok=True)
+    json.dump(rep, open("research/outputs/climate/sunshine_fit.json", "w"), indent=1)
     print(f"  sunshine: fitted on {len(err)} stations; left-out yearly error {rep['annual_mean_abs_error_hours']} hours "
           f"({100 * rep['annual_mean_abs_error_share']:.1f}%)", flush=True)
     return beta
