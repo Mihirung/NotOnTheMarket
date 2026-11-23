@@ -11,6 +11,9 @@
   --v-bld:#7A8187; --v-tree:#5B8A4A; --v-land:#B3AA7A; --v-water:#4C86B0; --v-hill:#275E54;
   --sky-top:#C9DDEA; --sky-low:#F3EFE2; --haze:#DCE4E6; --sun:#D9912B;
   --shadow:0 1px 2px rgba(32,40,46,.06),0 8px 28px rgba(32,40,46,.08);
+  --map-sea:#CADCE2; --map-land:#F2F0E8; --map-urban:#E4DED0; --map-wood:#D5E4CB; --map-water:#BFD6DE;
+  --map-motor:#BC864C; --map-primary:#CCA36A; --map-a:#D8BD8E; --map-b:#E0D0AE; --map-minor:#D7D0BF;
+  --map-label:#3B4248; --map-halo:#F7F6F1; --map-off:#8C949A;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -22,6 +25,9 @@
     --v-bld:#8E969D; --v-tree:#6FA35C; --v-land:#9C9470; --v-water:#5F9BC6; --v-hill:#63A899;
     --sky-top:#1B2A36; --sky-low:#33404A; --haze:#3A4750; --sun:#E0A756;
     --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+    --map-sea:#132027; --map-land:#20262A; --map-urban:#2A3034; --map-wood:#1E2D25; --map-water:#16303A;
+    --map-motor:#A3784A; --map-primary:#8B7150; --map-a:#6C5F49; --map-b:#565044; --map-minor:#3A4044;
+    --map-label:#D4D7CF; --map-halo:#1B2124; --map-off:#6C757B;
   }
 }
 :root[data-theme="dark"]{
@@ -33,8 +39,12 @@
   --v-bld:#8E969D; --v-tree:#6FA35C; --v-land:#9C9470; --v-water:#5F9BC6; --v-hill:#63A899;
   --sky-top:#1B2A36; --sky-low:#33404A; --haze:#3A4750; --sun:#E0A756;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+  --map-sea:#132027; --map-land:#20262A; --map-urban:#2A3034; --map-wood:#1E2D25; --map-water:#16303A;
+  --map-motor:#A3784A; --map-primary:#8B7150; --map-a:#6C5F49; --map-b:#565044; --map-minor:#3A4044;
+  --map-label:#D4D7CF; --map-halo:#1B2124; --map-off:#6C757B;
 }
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);
   font-family:"Spectral",Georgia,serif;font-size:16.5px;line-height:1.62}
 h1,h2,h3{font-family:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
@@ -194,8 +204,49 @@ section.band{padding:32px 0;border-top:1px solid var(--line)}
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted)}
 
 /* lifestyle search */
-.searchgrid{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}
-@media(max-width:900px){.searchgrid{grid-template-columns:1fr}}
+.searchgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,44%);gap:22px;align-items:start}
+/* the map and the count stay beside the controls while they scroll; on a phone the map pins to the top */
+.side{position:sticky;top:12px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 24px)}
+.side .rail{position:static;overflow-y:auto;min-height:0;overscroll-behavior:contain;border-radius:14px}
+.mapbox{position:relative;flex:0 0 auto;height:min(56vh,540px);min-height:280px}
+.qm{position:absolute;inset:0;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--map-sea);isolation:isolate}
+.qm-map{position:absolute;inset:0;background:var(--map-sea)}
+.qm-map.fallback{position:static;overflow:auto;height:100%}
+.qm-pill{position:absolute;z-index:1001;top:10px;left:10px;right:56px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;pointer-events:none}
+.qm-pill>*{pointer-events:auto}
+.qm-count{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:13px;
+  font-family:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;box-shadow:var(--shadow);color:var(--ink)}
+.qm-count b{font-weight:800}
+.qm-btn{font:600 12.5px "Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;background:var(--card);color:var(--accent-deep);
+  border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer;box-shadow:var(--shadow)}
+.qm-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.qm-hide{display:none}
+.qm-legend{position:absolute;z-index:1001;left:8px;bottom:8px;display:flex;flex-wrap:wrap;gap:4px 10px;max-width:calc(100% - 150px);
+  background:color-mix(in srgb, var(--card) 88%, transparent);border-radius:8px;padding:4px 8px;font-size:11.5px;color:var(--muted);pointer-events:none}
+.qm-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.qm-legend i.d3{background:var(--m4)} .qm-legend i.d1{background:var(--m2)} .qm-legend i.off{background:var(--map-off);opacity:.6}
+.qm-legend i.ring{border:2px solid var(--m3);background:transparent;width:10px;height:10px;box-sizing:border-box}
+.qm-legend i.pin{background:var(--post);border:1.5px solid var(--card)}
+.qm-tip{position:absolute;z-index:1002;max-width:250px;background:var(--card);color:var(--ink);border:1px solid var(--line);
+  border-radius:10px;padding:7px 10px;font-size:13px;line-height:1.4;box-shadow:var(--shadow)}
+.qm-tip .seeview{margin-top:5px}
+.qm .leaflet-container{background:var(--map-sea);font-family:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif}
+.qm .leaflet-bar{box-shadow:var(--shadow);border:1px solid var(--line)}
+.qm .leaflet-bar a{background:var(--card);color:var(--ink);border-bottom-color:var(--line)}
+.qm .leaflet-bar a:hover{background:var(--accent-soft)}
+.qm .leaflet-container .leaflet-control-attribution{background:color-mix(in srgb, var(--card) 80%, transparent);color:var(--muted);font-size:10px}
+@media(max-width:900px){
+  .searchgrid{display:flex;flex-direction:column;align-items:stretch;gap:16px}
+  .side{display:contents}
+  .side .rail{overflow:visible}
+  .mapbox{order:-1;position:sticky;top:env(safe-area-inset-top,0px);z-index:40;height:38vh;min-height:210px;max-height:340px}
+  .mapbox.typing{position:relative}
+  .mapbox.collapsed{height:46px;min-height:0}
+  .mapbox.collapsed .qm-map,.mapbox.collapsed .qm-legend,.mapbox.collapsed .qm-tip,.mapbox.collapsed .qm-all{display:none}
+  .mapbox.collapsed .qm{background:var(--paper);border-color:transparent}
+  .qm-hide{display:inline-block}
+}
+@media(max-width:520px){ .qm-legend{display:none} .qm-pill{right:52px} }
 .crit{border-bottom:1px solid var(--line);padding:15px 0}
 .crit:last-child{border-bottom:none}
 .crit .lab{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
@@ -222,6 +273,9 @@ input[type=range]{width:100%;accent-color:var(--accent);margin-top:9px}
 .gauge p{margin:0;font-size:13.5px;color:var(--muted)}
 .bar{height:9px;border-radius:5px;background:var(--line);overflow:hidden;margin:9px 0 7px}
 .bar i{display:block;height:100%;border-radius:5px}
+
+/* Leaflet 1.9.4 (BSD-2-Clause), inlined: the page may load scripts from a CDN but not stylesheets */
+.leaflet-image-layer,.leaflet-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane,.leaflet-pane>canvas,.leaflet-pane>svg,.leaflet-tile,.leaflet-tile-container,.leaflet-zoom-box{position:absolute;left:0;top:0}.leaflet-container{overflow:hidden}.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-user-drag:none}.leaflet-tile::selection{background:0 0}.leaflet-safari .leaflet-tile{image-rendering:-webkit-optimize-contrast}.leaflet-safari .leaflet-tile-container{width:1600px;height:1600px;-webkit-transform-origin:0 0}.leaflet-marker-icon,.leaflet-marker-shadow{display:block}.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-shadow-pane img,.leaflet-container .leaflet-tile,.leaflet-container .leaflet-tile-pane img,.leaflet-container img.leaflet-image-layer{max-width:none!important;max-height:none!important;width:auto;padding:0}.leaflet-container img.leaflet-tile{mix-blend-mode:plus-lighter}.leaflet-container.leaflet-touch-zoom{-ms-touch-action:pan-x pan-y;touch-action:pan-x pan-y}.leaflet-container.leaflet-touch-drag{-ms-touch-action:pinch-zoom;touch-action:none;touch-action:pinch-zoom}.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom{-ms-touch-action:none;touch-action:none}.leaflet-container{-webkit-tap-highlight-color:transparent}.leaflet-container a{-webkit-tap-highlight-color:rgba(51,181,229,.4)}.leaflet-tile{filter:inherit;visibility:hidden}.leaflet-tile-loaded{visibility:inherit}.leaflet-zoom-box{width:0;height:0;-moz-box-sizing:border-box;box-sizing:border-box;z-index:800}.leaflet-overlay-pane svg{-moz-user-select:none}.leaflet-pane{z-index:400}.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}.leaflet-map-pane canvas{z-index:100}.leaflet-map-pane svg{z-index:200}.leaflet-vml-shape{width:1px;height:1px}.lvml{behavior:url(#default#VML);display:inline-block;position:absolute}.leaflet-control{position:relative;z-index:800;pointer-events:visiblePainted;pointer-events:auto}.leaflet-bottom,.leaflet-top{position:absolute;z-index:1000;pointer-events:none}.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}.leaflet-control{float:left;clear:both}.leaflet-right .leaflet-control{float:right}.leaflet-top .leaflet-control{margin-top:10px}.leaflet-bottom .leaflet-control{margin-bottom:10px}.leaflet-left .leaflet-control{margin-left:10px}.leaflet-right .leaflet-control{margin-right:10px}.leaflet-fade-anim .leaflet-popup{opacity:0;-webkit-transition:opacity .2s linear;-moz-transition:opacity .2s linear;transition:opacity .2s linear}.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1}.leaflet-zoom-animated{-webkit-transform-origin:0 0;-ms-transform-origin:0 0;transform-origin:0 0}svg.leaflet-zoom-animated{will-change:transform}.leaflet-zoom-anim .leaflet-zoom-animated{-webkit-transition:-webkit-transform .25s cubic-bezier(0,0,.25,1);-moz-transition:-moz-transform .25s cubic-bezier(0,0,.25,1);transition:transform .25s cubic-bezier(0,0,.25,1)}.leaflet-pan-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-tile{-webkit-transition:none;-moz-transition:none;transition:none}.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}.leaflet-interactive{cursor:pointer}.leaflet-grab{cursor:-webkit-grab;cursor:-moz-grab;cursor:grab}.leaflet-crosshair,.leaflet-crosshair .leaflet-interactive{cursor:crosshair}.leaflet-control,.leaflet-popup-pane{cursor:auto}.leaflet-dragging .leaflet-grab,.leaflet-dragging .leaflet-grab .leaflet-interactive,.leaflet-dragging .leaflet-marker-draggable{cursor:move;cursor:-webkit-grabbing;cursor:-moz-grabbing;cursor:grabbing}.leaflet-image-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane>svg path,.leaflet-tile-container{pointer-events:none}.leaflet-image-layer.leaflet-interactive,.leaflet-marker-icon.leaflet-interactive,.leaflet-pane>svg path.leaflet-interactive,svg.leaflet-image-layer.leaflet-interactive path{pointer-events:visiblePainted;pointer-events:auto}.leaflet-container{background:#ddd;outline-offset:1px}.leaflet-container a{color:#0078a8}.leaflet-zoom-box{border:2px dotted #38f;background:rgba(255,255,255,.5)}.leaflet-container{font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;font-size:12px;font-size:.75rem;line-height:1.5}.leaflet-bar{box-shadow:0 1px 5px rgba(0,0,0,.65);border-radius:4px}.leaflet-bar a{background-color:#fff;border-bottom:1px solid #ccc;width:26px;height:26px;line-height:26px;display:block;text-align:center;text-decoration:none;color:#000}.leaflet-bar a,.leaflet-control-layers-toggle{background-position:50% 50%;background-repeat:no-repeat;display:block}.leaflet-bar a:focus,.leaflet-bar a:hover{background-color:#f4f4f4}.leaflet-bar a:first-child{border-top-left-radius:4px;border-top-right-radius:4px}.leaflet-bar a:last-child{border-bottom-left-radius:4px;border-bottom-right-radius:4px;border-bottom:none}.leaflet-bar a.leaflet-disabled{cursor:default;background-color:#f4f4f4;color:#bbb}.leaflet-touch .leaflet-bar a{width:30px;height:30px;line-height:30px}.leaflet-touch .leaflet-bar a:first-child{border-top-left-radius:2px;border-top-right-radius:2px}.leaflet-touch .leaflet-bar a:last-child{border-bottom-left-radius:2px;border-bottom-right-radius:2px}.leaflet-control-zoom-in,.leaflet-control-zoom-out{font:bold 18px 'Lucida Console',Monaco,monospace;text-indent:1px}.leaflet-touch .leaflet-control-zoom-in,.leaflet-touch .leaflet-control-zoom-out{font-size:22px}.leaflet-control-layers{box-shadow:0 1px 5px rgba(0,0,0,.4);background:#fff;border-radius:5px}.leaflet-control-layers-toggle{background-image:none;width:36px;height:36px}.leaflet-retina .leaflet-control-layers-toggle{background-image:none;background-size:26px 26px}.leaflet-touch .leaflet-control-layers-toggle{width:44px;height:44px}.leaflet-control-layers .leaflet-control-layers-list,.leaflet-control-layers-expanded .leaflet-control-layers-toggle{display:none}.leaflet-control-layers-expanded .leaflet-control-layers-list{display:block;position:relative}.leaflet-control-layers-expanded{padding:6px 10px 6px 6px;color:#333;background:#fff}.leaflet-control-layers-scrollbar{overflow-y:scroll;overflow-x:hidden;padding-right:5px}.leaflet-control-layers-selector{margin-top:2px;position:relative;top:1px}.leaflet-control-layers label{display:block;font-size:13px;font-size:1.08333em}.leaflet-control-layers-separator{height:0;border-top:1px solid #ddd;margin:5px -10px 5px -6px}.leaflet-default-icon-path{background-image:none}.leaflet-container .leaflet-control-attribution{background:#fff;background:rgba(255,255,255,.8);margin:0}.leaflet-control-attribution,.leaflet-control-scale-line{padding:0 5px;color:#333;line-height:1.4}.leaflet-control-attribution a{text-decoration:none}.leaflet-control-attribution a:focus,.leaflet-control-attribution a:hover{text-decoration:underline}.leaflet-attribution-flag{display:inline!important;vertical-align:baseline!important;width:1em;height:.6669em}.leaflet-left .leaflet-control-scale{margin-left:5px}.leaflet-bottom .leaflet-control-scale{margin-bottom:5px}.leaflet-control-scale-line{border:2px solid #777;border-top:none;line-height:1.1;padding:2px 5px 1px;white-space:nowrap;-moz-box-sizing:border-box;box-sizing:border-box;background:rgba(255,255,255,.8);text-shadow:1px 1px #fff}.leaflet-control-scale-line:not(:first-child){border-top:2px solid #777;border-bottom:none;margin-top:-2px}.leaflet-control-scale-line:not(:first-child):not(:last-child){border-bottom:2px solid #777}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-attribution,.leaflet-touch .leaflet-control-layers{box-shadow:none}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-layers{border:2px solid rgba(0,0,0,.2);background-clip:padding-box}.leaflet-popup{position:absolute;text-align:center;margin-bottom:20px}.leaflet-popup-content-wrapper{padding:1px;text-align:left;border-radius:12px}.leaflet-popup-content{margin:13px 24px 13px 20px;line-height:1.3;font-size:13px;font-size:1.08333em;min-height:1px}.leaflet-popup-content p{margin:17px 0;margin:1.3em 0}.leaflet-popup-tip-container{width:40px;height:20px;position:absolute;left:50%;margin-top:-1px;margin-left:-20px;overflow:hidden;pointer-events:none}.leaflet-popup-tip{width:17px;height:17px;padding:1px;margin:-10px auto 0;pointer-events:auto;-webkit-transform:rotate(45deg);-moz-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg)}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#fff;color:#333;box-shadow:0 3px 14px rgba(0,0,0,.4)}.leaflet-container a.leaflet-popup-close-button{position:absolute;top:0;right:0;border:none;text-align:center;width:24px;height:24px;font:16px/24px Tahoma,Verdana,sans-serif;color:#757575;text-decoration:none;background:0 0}.leaflet-container a.leaflet-popup-close-button:focus,.leaflet-container a.leaflet-popup-close-button:hover{color:#585858}.leaflet-popup-scrolled{overflow:auto}.leaflet-oldie .leaflet-popup-content-wrapper{-ms-zoom:1}.leaflet-oldie .leaflet-popup-tip{width:24px;margin:0 auto}.leaflet-oldie .leaflet-control-layers,.leaflet-oldie .leaflet-control-zoom,.leaflet-oldie .leaflet-popup-content-wrapper,.leaflet-oldie .leaflet-popup-tip{border:1px solid #999}.leaflet-div-icon{background:#fff;border:1px solid #666}.leaflet-tooltip{position:absolute;padding:6px;background-color:#fff;border:1px solid #fff;border-radius:3px;color:#222;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}.leaflet-tooltip.leaflet-interactive{cursor:pointer;pointer-events:auto}.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before,.leaflet-tooltip-top:before{position:absolute;pointer-events:none;border:6px solid transparent;background:0 0;content:""}.leaflet-tooltip-bottom{margin-top:6px}.leaflet-tooltip-top{margin-top:-6px}.leaflet-tooltip-bottom:before,.leaflet-tooltip-top:before{left:50%;margin-left:-6px}.leaflet-tooltip-top:before{bottom:0;margin-bottom:-12px;border-top-color:#fff}.leaflet-tooltip-bottom:before{top:0;margin-top:-12px;margin-left:-6px;border-bottom-color:#fff}.leaflet-tooltip-left{margin-left:-6px}.leaflet-tooltip-right{margin-left:6px}.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{top:50%;margin-top:-6px}.leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}.leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}@media print{.leaflet-control{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 
 /* map */
 .mapwrap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
@@ -345,11 +399,12 @@ details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
     <div class="mono" style="margin-top:8px">Contains HM Land Registry data © Crown copyright (OGL v3.0) ·
       ONS postcode geography and UPRN Directory (OGL) · AHAH v4, Geographic Data Service · Environment Agency LIDAR (OGL) ·
       Natural Resources Wales and Welsh Government LIDAR (OGL) · Wikidata (CC0) · Database of British and Irish Hills (CC BY 4.0) ·
-      OS OpenMap Local and OS Open UPRN © Crown copyright and database right · Copernicus DEM © DLR/Airbus, ESA.</div>
+      OS OpenMap Local, OS Open UPRN, OS Open Built Up Areas and OS Open Names © Crown copyright and database right · ONS Countries boundaries (OGL) · Leaflet (BSD-2-Clause) · Copernicus DEM © DLR/Airbus, ESA.</div>
   </footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 const DATA = {};
 
@@ -619,7 +674,7 @@ function slide(k, v){ S.brief[k]=v; save();
   const pk=PRIO_OF[k], pe=pk&&document.getElementById("prio-"+pk); if(pe) pe.classList.toggle("dim", !prioActive(pk));
   const el=document.getElementById("val-"+k); if(el) el.textContent=sliderText(k);
   const h=document.getElementById("hint-"+k); if(h) h.textContent=stepHint(k);
-  const r=document.getElementById("rail"); if(r) r.innerHTML=railHTML(); }
+  refreshSide(); }
 // Views are matched jointly at house level: each cell carries a small table of
 // how many of its homes have each combination of view flags.
 function viewNeed(b){ let m=0; (b.views||[]).forEach(k=>{ const i=flagBit(k); if(i>=0) m|=(1<<i); }); return m; }
@@ -724,7 +779,7 @@ function addAnchor(){ (S.brief.anchors ||= []).push({q:"",label:"",mode:"car",mi
 function dropAnchor(i){ S.brief.anchors.splice(i,1); TT.clear(); save(); render(); ensureAreas(); }
 function setAnchor(i, k, v){ S.brief.anchors[i][k]=v; TT.clear(); save();
   if(k==="mins"){ const el=document.getElementById("val-anc"+i); if(el) el.textContent=v+" minutes";
-    const r=document.getElementById("rail"); if(r) r.innerHTML=railHTML(); clearTimeout(setAnchor.t); setAnchor.t=setTimeout(ensureAreas,400); }
+    refreshSide(); clearTimeout(setAnchor.t); setAnchor.t=setTimeout(ensureAreas,400); }
   else { render(); ensureAreas(); } }
 const activeAnchors = b => (b.anchors||[]).filter(a=>a.lat!=null && a.prio!=="off");
 
@@ -1009,8 +1064,237 @@ function openRef(){
   go("/offer/"+v);
 }
 
-function railHTML(){
-  const b=S.brief, R=cohort(b), cells=R.cells, s=summarise(cells), A=activeAnchors(b), rep=fitReport(R);
+/* ---------- the live map ----------
+   One map lives for the whole visit and is moved into the page each time it is
+   drawn, so a change to the brief never loses the reader's place on it. The
+   published page may not fetch map tiles from other servers, so the ground is
+   drawn here from our own copy of open data: land and coast (ONS), built-up
+   land (OS Open Built Up Areas), woods, inland water and roads (OS OpenMap
+   Local) and place names (OS Open Names). One national file serves the
+   zoomed-out view; 50 km squares load as you zoom in. The postcode sectors sit
+   on their own layer and are repainted on every change, which is cheap. */
+const QM = {map:null, node:null, nat:null, idx:new Map(), sq:new Map(), tiles:new Map(), pts:[], maxTop:1, sig:"", col:null, pin:null, Q:10000};
+const QM_DETAIL = 10, QM_MAXZ = 13, QM_EW = [[49.9,-5.8],[55.85,1.8]];
+const mx = lon => (lon+180)/360*256;
+const my = lat => { const s=Math.sin(lat*Math.PI/180); return (0.5-Math.log((1+s)/(1-s))/(4*Math.PI))*256; };
+const QM_ROADS = {6:{m:.9}, 7:{m:1.2,p:.6}, 8:{m:1.5,p:.8}, 9:{m:1.8,p:1.1}, 10:{m:2.2,p:1.6,a:1.1,b:.8},
+  11:{m:2.6,p:2,a:1.5,b:1.1,n:.6}, 12:{m:3.2,p:2.5,a:2,b:1.5,n:.9}, 13:{m:4,p:3.2,a:2.6,b:2,n:1.3}};
+
+function qmDecode(F){
+  const Q=QM.Q, o=F.o||[0,0];
+  const line = a => { const n=a.length>>1, p=new Float32Array(a.length); let x=o[0], y=o[1], x0=1e9, y0=1e9, x1=-1e9, y1=-1e9;
+    for(let i=0;i<n;i++){ x+=a[2*i]; y+=a[2*i+1]; const X=mx(x/Q), Y=my(y/Q); p[2*i]=X; p[2*i+1]=Y;
+      if(X<x0)x0=X; if(X>x1)x1=X; if(Y<y0)y0=Y; if(Y>y1)y1=Y; }
+    return {p, b:[x0,y0,x1,y1]}; };
+  const poly = rings => { const R=rings.map(line), b=[1e9,1e9,-1e9,-1e9];
+    for(const r of R){ b[0]=Math.min(b[0],r.b[0]); b[1]=Math.min(b[1],r.b[1]); b[2]=Math.max(b[2],r.b[2]); b[3]=Math.max(b[3],r.b[3]); }
+    return {r:R.map(r=>r.p), b}; };
+  const D = {g:(F.g||[]).map(poly), u:(F.u||[]).map(poly), w:(F.w||[]).map(poly), h:(F.h||[]).map(poly), r:{},
+    t:(F.t||[]).map(([name,dx,dy,rank])=>({name: rank>=3 ? name.split(" / ")[0] : name, x:mx((o[0]+dx)/Q), y:my((o[1]+dy)/Q), rank}))};
+  for(const [k,v] of Object.entries(F.r||{})) D.r[k]=v.map(line);
+  return D; }
+
+function qmColours(){ const cs=getComputedStyle(document.documentElement), v=k=>cs.getPropertyValue(k).trim();
+  QM.col={sea:v("--map-sea"), land:v("--map-land"), urban:v("--map-urban"), wood:v("--map-wood"), water:v("--map-water"),
+    m:v("--map-motor"), p:v("--map-primary"), a:v("--map-a"), b:v("--map-b"), n:v("--map-minor"),
+    label:v("--map-label"), halo:v("--map-halo"), off:v("--map-off"),
+    on1:v("--m2"), on2:v("--m3"), on3:v("--m4"), pin:v("--post"), ring:v("--card"), ink:v("--ink")};
+  return QM.col; }
+
+/* the detailed squares under a tile, and whether they cover all of it */
+function qmSquaresFor(tb){ const files=[]; let all=true;
+  for(const [id,s] of QM.idx){ const b=s.b; if(b[2]<tb[0]||b[0]>tb[2]||b[3]<tb[1]||b[1]>tb[3]) continue;
+    const got=QM.sq.get(id); if(got&&got.D) files.push(got.D); else { all=false; if(!got) qmLoad(id); } }
+  const inside=(x,y)=>[...QM.idx.values()].some(s=>x>=s.b[0]&&x<=s.b[2]&&y>=s.b[1]&&y<=s.b[3]);
+  const cx=(tb[0]+tb[2])/2, cy=(tb[1]+tb[3])/2;
+  const covered = all && files.length>0 && [[tb[0],tb[1]],[tb[2],tb[1]],[tb[0],tb[3]],[tb[2],tb[3]],[cx,cy]].every(([x,y])=>inside(x,y));
+  return {files, covered}; }
+
+function qmDrawTile(cv, c){
+  const dpr=Math.min(2, window.devicePixelRatio||1), z=c.z, k=2**z, T=256, col=QM.col||qmColours();
+  if(cv.width!==T*dpr){ cv.width=cv.height=T*dpr; }
+  const g=cv.getContext("2d"); g.setTransform(1,0,0,1,0,0);
+  g.fillStyle=col.sea; g.fillRect(0,0,cv.width,cv.height);
+  if(!QM.nat) return;
+  const pad=8/k, tb=[c.x*T/k-pad, c.y*T/k-pad, (c.x+1)*T/k+pad, (c.y+1)*T/k+pad], s=dpr*k, ox=c.x*T*dpr, oy=c.y*T*dpr;
+  const hit=b=>b[2]>=tb[0]&&b[0]<=tb[2]&&b[3]>=tb[1]&&b[1]<=tb[3];
+  const fill=(list, colour)=>{ let any=false; g.beginPath();
+    for(const f of list){ if(!hit(f.b)) continue; any=true;
+      for(const r of f.r){ g.moveTo(r[0]*s-ox, r[1]*s-oy); for(let i=2;i<r.length;i+=2) g.lineTo(r[i]*s-ox, r[i+1]*s-oy); g.closePath(); } }
+    if(any){ g.fillStyle=colour; g.fill("evenodd"); } };
+  const stroke=(list, colour, w)=>{ if(!list||!w) return; let any=false; g.beginPath();
+    for(const f of list){ if(!hit(f.b)) continue; any=true; const r=f.p;
+      g.moveTo(r[0]*s-ox, r[1]*s-oy); for(let i=2;i<r.length;i+=2) g.lineTo(r[i]*s-ox, r[i+1]*s-oy); }
+    if(any){ g.strokeStyle=colour; g.lineWidth=w*dpr; g.stroke(); } };
+  g.lineCap="round"; g.lineJoin="round";
+  const det = z>=QM_DETAIL ? qmSquaresFor(tb) : {files:[], covered:false};
+  const coarse = det.covered ? [] : [QM.nat], fine = det.files, W = QM_ROADS[Math.max(6,Math.min(13,z))]||{};
+  for(const F of [...coarse, ...fine]) fill(F.g, col.land);
+  for(const F of [...coarse, ...fine]) fill(F.u, col.urban);
+  for(const F of fine) fill(F.w, col.wood);
+  for(const F of [...coarse, ...fine]) fill(F.h, col.water);
+  for(const key of ["n","b","a","p","m"]) for(const F of [...coarse, ...fine]) stroke(F.r[key], col[key], W[key]);
+}
+
+function qmLoad(id){ if(QM.sq.has(id)) return; QM.sq.set(id, {loading:true});
+  fetch("base/sq/"+id+".json").then(r=>r.ok?r.json():null).then(F=>{
+    if(!F){ QM.sq.set(id,{failed:true}); return; }
+    QM.sq.set(id, {D:qmDecode(F)}); const b=QM.idx.get(id).b;
+    for(const t of QM.tiles.values()){ const k=2**t.c.z;
+      if(t.c.z>=QM_DETAIL && b[2]>=t.c.x*256/k && b[0]<=(t.c.x+1)*256/k && b[3]>=t.c.y*256/k && b[1]<=(t.c.y+1)*256/k) qmDrawTile(t.cv, t.c); }
+    QM.labels && QM.labels.draw(); }).catch(()=>QM.sq.set(id,{failed:true})); }
+
+/* load the squares in view; let go of ones far away once many are held */
+function qmWant(){ const map=QM.map; if(!map||!QM.nat) return; const z=map.getZoom(); if(z<QM_DETAIL) return;
+  const k=2**z, pb=map.getPixelBounds(), v=[pb.min.x/k, pb.min.y/k, pb.max.x/k, pb.max.y/k], near=[];
+  for(const [id,s] of QM.idx){ const b=s.b; if(b[2]>=v[0]&&b[0]<=v[2]&&b[3]>=v[1]&&b[1]<=v[3]){ near.push(id); qmLoad(id); } }
+  const held=[...QM.sq.keys()].filter(id=>QM.sq.get(id).D);
+  if(held.length>20) held.filter(id=>!near.includes(id)).forEach(id=>QM.sq.delete(id)); }
+
+function qmLoadNation(){ fetch("base/gb.json").then(r=>r.ok?r.json():null).then(F=>{ if(!F) return;
+    QM.Q=F.Q||QM.Q;
+    for(const [sx,sy,lo0,la0,lo1,la1] of F.sq||[]) QM.idx.set(sx+"_"+sy, {b:[mx(lo0), my(la1), mx(lo1), my(la0)]});
+    QM.nat=qmDecode(F); qmRedrawAll(); qmWant(); }).catch(()=>{}); }
+
+function qmRedrawAll(){ for(const t of QM.tiles.values()) qmDrawTile(t.cv, t.c); QM.sectors&&QM.sectors.draw(); QM.labels&&QM.labels.draw(); }
+
+/* a canvas over the whole map, repainted when the view or the brief changes */
+function qmCanvasLayer(draw, pane){
+  const Layer = L.Layer.extend({
+    onAdd(map){ this._c=L.DomUtil.create("canvas","leaflet-zoom-hide"); map.getPane(pane).appendChild(this._c);
+      map.on("moveend zoomend resize viewreset", this.draw, this); this.draw(); },
+    onRemove(map){ L.DomUtil.remove(this._c); map.off("moveend zoomend resize viewreset", this.draw, this); },
+    draw(){ const map=this._map; if(!map) return; const sz=map.getSize(), dpr=Math.min(2, window.devicePixelRatio||1), c=this._c;
+      L.DomUtil.setPosition(c, map.containerPointToLayerPoint([0,0]));
+      c.width=sz.x*dpr; c.height=sz.y*dpr; c.style.width=sz.x+"px"; c.style.height=sz.y+"px";
+      const g=c.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0); draw(g, map, sz); } });
+  return new Layer(); }
+
+function qmDrawLabels(g, map, sz){ if(!QM.nat) return;
+  const z=map.getZoom(), k=2**z, pb=map.getPixelBounds().min, col=QM.col||qmColours(), items=[];
+  const maxRank = z>=13?4 : z>=11?3 : z>=9?2 : z>=6?1 : 0;
+  const add=t=>{ const x=t.x*k-pb.x, y=t.y*k-pb.y; if(x>-80&&y>-20&&x<sz.x+80&&y<sz.y+20) items.push({t,x,y}); };
+  for(const t of QM.nat.t) if(t.rank<=maxRank) add(t);
+  if(z>=11) for(const s of QM.sq.values()) if(s.D) for(const t of s.D.t) if(t.rank>=3&&t.rank<=maxRank) add(t);
+  items.sort((a,b)=>a.t.rank-b.t.rank);
+  const boxes=[]; g.textAlign="center"; g.textBaseline="middle"; g.lineJoin="round";
+  for(const it of items){ const r=it.t.rank, size=r===1?13.5:r===2?12.5:r===3?11.5:10.5;
+    g.font=`${r<=2?600:400} ${size}px "Bricolage Grotesque","Helvetica Neue",Arial,sans-serif`;
+    const w=g.measureText(it.t.name).width, b=[it.x-w/2-4, it.y-size/2-3, it.x+w/2+4, it.y+size/2+3];
+    if(boxes.some(o=>b[0]<o[2]&&b[2]>o[0]&&b[1]<o[3]&&b[3]>o[1])) continue;
+    boxes.push(b); g.lineWidth=3.2; g.strokeStyle=col.halo; g.strokeText(it.t.name, it.x, it.y);
+    g.fillStyle=col.label; g.fillText(it.t.name, it.x, it.y);
+    if(boxes.length>240) break; } }
+
+function qmDrawSectors(g, map, sz){
+  const z=map.getZoom(), k=2**z, pb=map.getPixelBounds().min, col=QM.col||qmColours();
+  const mpp=40075016.7*Math.cos(map.getCenter().lat*Math.PI/180)/(256*k);           // metres to a pixel
+  for(const pass of [0,1]) for(const p of QM.pts){ if((pass===1)!==p.on) continue;
+    /* a chosen sector is drawn at about its own size; the rest are small dots, so the group stands out */
+    const x=p.X*k-pb.x, y=p.Y*k-pb.y, foot=17*Math.sqrt(p.n)/mpp;
+    p.r = p.on ? Math.max(6, Math.min(36, foot)) : Math.max(2, Math.min(4.5, foot*0.35));
+    if(x<-40||y<-40||x>sz.x+40||y>sz.y+40) continue;
+    g.beginPath(); g.arc(x, y, p.r, 0, 7);
+    if(!p.on){ g.globalAlpha=.5; g.fillStyle=col.off; g.fill(); g.globalAlpha=1; continue; }
+    const t=p.top/QM.maxTop, c=t>.66?col.on3:t>.33?col.on2:col.on1;
+    if(p.full){ g.globalAlpha=.8; g.fillStyle=c; g.fill(); g.globalAlpha=1; g.lineWidth=1.5; g.strokeStyle=col.ring; g.stroke(); }
+    else { g.globalAlpha=.18; g.fillStyle=c; g.fill(); g.globalAlpha=1; g.lineWidth=2.4; g.strokeStyle=c; g.stroke(); } }
+  const hi=QM.pin||QM.hover;
+  if(hi){ const x=hi.X*k-pb.x, y=hi.Y*k-pb.y; g.beginPath(); g.arc(x, y, (hi.r||5)+3, 0, 7); g.lineWidth=2; g.strokeStyle=col.ink; g.stroke(); }
+  g.font=`600 12px "Bricolage Grotesque","Helvetica Neue",Arial,sans-serif`; g.textBaseline="middle"; g.lineJoin="round";
+  for(const a of activeAnchors(S.brief)){ const x=mx(a.lon)*k-pb.x, y=my(a.lat)*k-pb.y;
+    g.beginPath(); g.arc(x, y, 7, 0, 7); g.fillStyle=col.pin; g.fill(); g.lineWidth=2.2; g.strokeStyle=col.ring; g.stroke();
+    g.textAlign="left"; g.lineWidth=3.2; g.strokeStyle=col.halo; g.strokeText(a.label, x+11, y); g.fillStyle=col.ink; g.fillText(a.label, x+11, y); } }
+
+function qmHit(cp){ const map=QM.map, k=2**map.getZoom(), pb=map.getPixelBounds().min; let best=null, bd=1e9;
+  for(const p of QM.pts){ const d=Math.hypot(p.X*k-pb.x-cp.x, p.Y*k-pb.y-cp.y); if(d<Math.max((p.r||4)+3, 10) && d<bd && (p.on||!best||!best.on)){ bd=d; best=p; } }
+  return best; }
+function qmTip(p, cp, pinned){ const tip=QM.node&&QM.node.querySelector(".qm-tip"); if(!tip) return;
+  if(!p){ tip.hidden=true; return; }
+  const area=((DATA.index||[]).find(a=>a.code===p.area)||{}).name||p.area;
+  tip.innerHTML = `<b class="mono">${esc(p.sector)}</b> <span class="note">${esc(area)}</span><br>`
+    + (p.on ? `${p.homes.toLocaleString()} homes in this group${p.full?"":", nearly meeting every must"} · we'd write to ${p.top.toLocaleString()}`
+            : `${p.n.toLocaleString()} homes, not among the best fits`)
+    + (pinned ? `<br><button class="seeview" onclick="qmOpen('${p.area}','${esc(p.sector)}')">See its homes →</button>` : "");
+  tip.hidden=false; const box=QM.node.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
+  tip.style.left=Math.max(6, Math.min(box.width-w-6, cp.x+12))+"px"; tip.style.top=Math.max(6, Math.min(box.height-h-6, cp.y-h-10<6?cp.y+14:cp.y-h-10))+"px"; }
+function qmOpen(area, sector){ QM.pin=null; openView(sector, area); go("/results"); }
+
+function qmFit(animate){ const map=QM.map; if(!map) return;
+  const on=QM.pts.filter(p=>p.on), use=on.length?on:QM.pts, ll=use.map(p=>[p.lat,p.lon]);
+  activeAnchors(S.brief).forEach(a=>ll.push([a.lat,a.lon]));
+  if(!ll.length){ map.fitBounds(QM_EW, {animate:false}); return; }
+  map.fitBounds(L.latLngBounds(ll), {padding:[28,28], maxZoom:12, animate:!!animate}); }
+
+function qmInit(){ const el=QM.node.querySelector(".qm-map");
+  const map=QM.map=L.map(el, {zoomControl:false, minZoom:5, maxZoom:QM_MAXZ, zoomSnap:1, maxBounds:[[47.5,-12],[61.5,5]], maxBoundsViscosity:.8});
+  L.control.zoom({position:"topright"}).addTo(map);
+  map.attributionControl.setPrefix(false);
+  map.attributionControl.addAttribution("Contains OS data © Crown copyright 2026 · ONS");
+  map.createPane("qmSectors").style.zIndex=410; const lp=map.createPane("qmLabels"); lp.style.zIndex=420; lp.style.pointerEvents="none";
+  const Base=L.GridLayer.extend({ createTile(c){ const cv=document.createElement("canvas"); qmDrawTile(cv, c);
+    QM.tiles.set(c.x+":"+c.y+":"+c.z, {cv, c}); return cv; } });
+  QM.base=new Base({maxZoom:QM_MAXZ, updateWhenZooming:false, keepBuffer:2}).addTo(map);
+  QM.base.on("tileunload", e=>QM.tiles.delete(e.coords.x+":"+e.coords.y+":"+e.coords.z));
+  QM.sectors=qmCanvasLayer(qmDrawSectors, "qmSectors").addTo(map);
+  QM.labels=qmCanvasLayer(qmDrawLabels, "qmLabels").addTo(map);
+  map.fitBounds(QM_EW, {animate:false});
+  map.on("moveend", qmWant);
+  map.on("mousemove", e=>{ if(QM.pin) return; const p=qmHit(e.containerPoint); if(p!==QM.hover){ QM.hover=p; QM.sectors.draw(); } qmTip(p, e.containerPoint, false); });
+  map.on("mouseout", ()=>{ if(QM.pin) return; QM.hover=null; QM.sectors.draw(); qmTip(null); });
+  map.on("click", e=>{ const p=qmHit(e.containerPoint); QM.pin=p; QM.hover=null; QM.sectors.draw(); qmTip(p, e.containerPoint, true); });
+  map.on("movestart", ()=>{ if(QM.pin){ QM.pin=null; qmTip(null); } });
+  const retheme=()=>{ qmColours(); qmRedrawAll(); };
+  try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", retheme); }catch(e){}
+  new MutationObserver(retheme).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
+  qmLoadNation(); }
+
+function qmToggle(){ S.mapHidden=!S.mapHidden; save(); const box=document.getElementById("mapbox");
+  if(box) box.classList.toggle("collapsed", !!S.mapHidden);
+  const b=QM.node&&QM.node.querySelector(".qm-hide"); if(b) b.textContent=S.mapHidden?"Show map":"Hide map";
+  if(QM.map && !S.mapHidden) setTimeout(()=>QM.map.invalidateSize(), 30); }
+
+/* put the one map into the page just drawn */
+function mapMount(R){ const slot=document.getElementById("mapbox"); if(!slot) return;
+  if(!QM.node){ QM.node=document.createElement("div"); QM.node.className="qm";
+    QM.node.innerHTML=`<div class="qm-map" role="img" aria-label="Map of the postcode sectors that fit the brief"></div>
+      <div class="qm-pill"><span class="qm-count"></span><button class="qm-btn qm-all" onclick="qmFit(true)">Show them all</button><button class="qm-btn qm-hide" onclick="qmToggle()"></button></div>
+      <div class="qm-legend"><span><i class="d3"></i>most to write to</span><span><i class="d1"></i>fewer</span><span><i class="ring"></i>near miss</span><span><i class="off"></i>not chosen</span>${activeAnchors(S.brief).length?`<span><i class="pin"></i>your places</span>`:""}</div>
+      <div class="qm-tip" hidden></div>`; }
+  slot.appendChild(QM.node);
+  const hb=QM.node.querySelector(".qm-hide"); if(hb) hb.textContent=S.mapHidden?"Show map":"Hide map";
+  const lg=QM.node.querySelector(".qm-legend"); if(lg){ const pinItem=lg.querySelector(".pin"); const want=activeAnchors(S.brief).length>0;
+    if(want&&!pinItem) lg.insertAdjacentHTML("beforeend",`<span><i class="pin"></i>your places</span>`); if(!want&&pinItem) pinItem.parentElement.remove(); }
+  if(!window.L){ const el=QM.node.querySelector(".qm-map"); el.innerHTML=sectorMap(R.cells); el.classList.add("fallback"); }
+  else if(!QM.map) qmInit(); else QM.map.invalidateSize({pan:false});
+  mapUpdate(R); }
+
+/* repaint the sectors for this brief: fit-to-view only when the places or the area change */
+function mapUpdate(R){ if(!QM.node) return; const s=summarise(R.cells);
+  const cnt=QM.node.querySelector(".qm-count");
+  if(cnt) cnt.innerHTML=`<b class="num">${s.n.toLocaleString()}</b> homes · ${s.sectors} sector${s.sectors===1?"":"s"}${AREAS_WAITING?" · loading…":""}`;
+  if(!window.L){ const el=QM.node.querySelector(".qm-map"); if(el) el.innerHTML=sectorMap(R.cells); return; }
+  if(!QM.map) return;
+  const byS=new Map();
+  for(const c of poolCells(S.brief)){ if(c.lat==null) continue; const key=c.area+"|"+c.sector; let p=byS.get(key);
+    if(!p){ p={sector:c.sector, area:c.area, lat:c.lat, lon:c.lon, X:mx(c.lon), Y:my(c.lat), n:0, homes:0, top:0, on:false, full:false}; byS.set(key,p); }
+    p.n+=c.n; }
+  for(const c of R.cells){ const p=byS.get(c.area+"|"+c.sector); if(!p) continue; p.on=true; p.homes+=c.n; p.top+=c.n_top; if(c.mf>=0.999) p.full=true; }
+  QM.pts=[...byS.values()]; QM.maxTop=Math.max(1, ...QM.pts.map(p=>p.top));
+  if(QM.pin) QM.pin=QM.pts.find(p=>p.area===QM.pin.area&&p.sector===QM.pin.sector)||null;
+  const A=activeAnchors(S.brief), sig=(A.length?"":S.city)+"|"+A.map(a=>a.lat+","+a.lon+","+a.mode).join(";")+"|"+(A.length?Object.keys(DATA.cities).length:0);
+  if(sig!==QM.sig){ const first=!QM.sig; QM.sig=sig; qmFit(!first); }
+  QM.sectors.draw(); }
+
+let LAST_R = null;
+function refreshSide(){ const R=cohort(S.brief), r=document.getElementById("rail"); if(r) r.innerHTML=railHTML(R); mapUpdate(R); }
+document.addEventListener("focusin", e=>{ const box=document.getElementById("mapbox");
+  if(box && e.target.matches && e.target.matches(".panel input:not([type=range]), .panel select")) box.classList.add("typing"); });
+document.addEventListener("focusout", ()=>{ const box=document.getElementById("mapbox"); if(box) box.classList.remove("typing"); });
+
+function railHTML(R0){
+  const b=S.brief, R=R0||cohort(b), cells=R.cells, s=summarise(cells), A=activeAnchors(b), rep=fitReport(R);
+  LAST_R = R;
   const where = A.length ? `within reach of ${andList(A.map(a=>esc(a.label)))}` : `in ${esc(C().name)}`;
   return `      <div class="panel">
         <div class="eyebrow">The homes to write to</div>
@@ -1030,7 +1314,6 @@ function railHTML(){
         </div>
         <a class="btn" style="width:100%;justify-content:center;margin-top:14px" href="#/results">See them →</a>
       </div>
-      <div style="margin-top:14px">${sectorMap(cells)}</div>
       ${nationPanel(b)}`;
 }
 function vSearch(){
@@ -1169,7 +1452,10 @@ function vSearch(){
       </div>
     </div>
 
-    <div class="rail" id="rail">${railHTML()}</div>
+    <div class="side">
+      <div id="mapbox" class="mapbox ${S.mapHidden?"collapsed":""}"></div>
+      <div class="rail" id="rail">${railHTML()}</div>
+    </div>
   </div>
   </div>`;
 }
@@ -1498,9 +1784,12 @@ function render(){
     : nav(r.v);
   document.getElementById("citysw").innerHTML = r.v==="offer" || activeAnchors(S.brief).length ? "" : areaPicker();
   const fa=document.getElementById("footauc"); if(fa) fa.textContent=DATA.model.auc_oot||"";
-  document.getElementById("app").innerHTML =
+  const app=document.getElementById("app"), samePage=(location.hash||"#/")===render.lastPage;
+  app.innerHTML =
     r.v==="offer"?vOffer(r.code) : r.v==="search"?vSearch() :
     r.v==="results"?vResults() : r.v==="campaign"?vCampaign() : vHome();
+  if(samePage && app.firstElementChild) app.firstElementChild.classList.remove("fadein");   // fade in on arrival only
+  if(r.v==="search" && LAST_R) mapMount(LAST_R);
   /* Back to the top only when moving to another page of the site: a button that changes
      the current page (a filter, a chip, a choice of area) leaves the reader where they were. */
   const at=location.hash||"#/";
