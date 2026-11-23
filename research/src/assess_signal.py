@@ -307,6 +307,7 @@ def main():
         R["verdict"] = ("add it: the model finds more sellers and the range is clear of zero" if g["range"][0] > 0 else
                         "do not add it to the model: no gain clear of zero" + (
                             "; it stays out of search and pricing too (model ranking only)" if SG.FAMILIES[fam].get("never_shown") else
+                            "; measured only: never a search filter or a pricing input" if SG.FAMILIES[fam].get("no_auto_deploy") else
                             "; use it for search and pricing" if any(v["range"][0] > 0 or v["range"][1] < 0
                                                                      for v in R["price"].values()) else ""))
     else:

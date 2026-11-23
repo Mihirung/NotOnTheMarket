@@ -2,7 +2,7 @@
 
 Ethnicity and religion of the output area, 2011 Census (people_signals.py). Measured, never deployed automatically: special category data under UK GDPR when used to treat people differently, so it needs legal sign-off. Used to audit fairness
 
-**Verdict:** do not add it to the model: no gain clear of zero; use it for search and pricing
+**Verdict:** do not add it to the model: no gain clear of zero; measured only: never a search filter or a pricing input
 
 Coverage: 99.4% of postcodes, 99.8% of the home-years the model is tested on.
 

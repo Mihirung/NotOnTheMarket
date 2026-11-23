@@ -768,5 +768,5 @@
   }
  },
  "price_sales": 8041819,
- "verdict": "do not add it to the model: no gain clear of zero; use it for search and pricing"
+ "verdict": "do not add it to the model: no gain clear of zero; measured only: never a search filter or a pricing input"
 }
