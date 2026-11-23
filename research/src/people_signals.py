@@ -11,14 +11,19 @@ areas whose 2021 code is new (split or merged since 2011) fall back to their
 2011 lower-layer area (about 650 households), and then to the postcode's
 lower-layer area in the AHAH table.
 
-Deliberately left out: ethnicity, religion, marital status and health. They
-should not decide whom a buyer writes to.
+Marital status and area health are included (a separation or a death is a
+common reason to sell). Ethnicity and religion are written to a separate
+family, COMMUNITY (community_postcode.parquet), which is measured but never
+deployed automatically: using them to choose whom to approach needs legal
+sign-off first, and its main use is to check the model treats communities
+fairly (audit_fairness.py).
 
 Source: Office for National Statistics, Census 2011 key and quick statistics
-tables KS102EW, KS105EW, KS402EW, QS412EW, KS601EW, KS403EW, KS404EW, from
+tables KS102EW, KS105EW, KS402EW, QS412EW, KS601EW, KS403EW, KS404EW, KS103EW,
+KS301EW, KS201EW, KS209EW, from
 Nomis bulk downloads (Open Government Licence).
 
-Writes research/data/signals/people_postcode.parquet.
+Writes research/data/signals/people_postcode.parquet and community_postcode.parquet.
 
 Usage: python people_signals.py
 """
@@ -95,7 +100,45 @@ def census():
     cars = table("ks404ew", {"KS404EW0001": "households", "KS404EW0007": "cars", "KS404EW0008": "no_car"})
     out["no_car"] = cars.no_car
     out["cars_per_household"] = cars.cars / cars.households
+    m = "KS103EW00"
+    mar = table("ks103ew", {f"{m}08": "single", f"{m}09": "married", f"{m}11": "separated", f"{m}12": "divorced",
+                            f"{m}13": "widowed"})
+    out["married"] = mar.married
+    out["separated_divorced"] = mar.separated + mar.divorced
+    out["widowed"] = mar.widowed
+    out["never_married"] = mar.single
+    h = "KS301EW00"
+    hl = table("ks301ew", {f"{h}17": "limited_lot", f"{h}26": "bad", f"{h}27": "very_bad", f"{h}30": "care20",
+                           f"{h}31": "care50"})
+    out["bad_health"] = hl.bad + hl.very_bad
+    out["limited_a_lot"] = hl.limited_lot
+    out["carers_20h"] = hl.care20 + hl.care50
     return out.astype("float32")
+
+
+def community():
+    """Ethnicity and religion shares, and how mixed the area is (COMMUNITY family)."""
+    e = "KS201EW00"
+    eth = table("ks201ew", {f"{e}{i}": f"e{i}" for i in range(20, 38)})
+    o = pd.DataFrame(index=eth.index)
+    o["white_british"] = eth.e20
+    o["white_other"] = eth.e21 + eth.e22 + eth.e23
+    o["mixed"] = eth[["e24", "e25", "e26", "e27"]].sum(axis=1)
+    o["indian"] = eth.e28
+    o["pakistani"] = eth.e29
+    o["bangladeshi"] = eth.e30
+    o["chinese"] = eth.e31
+    o["other_asian"] = eth.e32
+    o["black_african"] = eth.e33
+    o["black_caribbean"] = eth.e34 + eth.e35
+    o["other_ethnic"] = eth.e36 + eth.e37
+    sh = eth.div(100)
+    o["ethnic_mix"] = 1 - (sh ** 2).sum(axis=1)                              # chance two residents differ
+    r = "KS209EW00"
+    rel = table("ks209ew", {f"{r}{i}": n for i, n in zip(range(11, 20), ["christian", "buddhist", "hindu", "jewish",
+                                                                         "muslim", "sikh", "other_religion",
+                                                                         "no_religion", "religion_not_stated"])})
+    return o.join(rel).astype("float32")
 
 
 def postcode_areas():
@@ -109,11 +152,15 @@ def postcode_areas():
 
 
 def main():
-    c = census()
-    oa = c[c.index.str.match(r"^[EW]00")]; lsoa = c[c.index.str.match(r"^[EW]01")]
     pc = postcode_areas()
     geo = pd.read_parquet("research/data/geo_postcode.parquet", columns=["postcode", "lsoa"])
     pc = geo.merge(pc, on="postcode", how="left")
+    write(census(), pc, OUT)
+    write(community(), pc, OUT.with_name("community_postcode.parquet"))
+
+
+def write(c, pc, out_path):
+    oa = c[c.index.str.match(r"^[EW]00")]; lsoa = c[c.index.str.match(r"^[EW]01")]
     cols = list(c.columns)
     vals = np.full((len(pc), len(cols)), np.nan, np.float32)
     how = np.zeros(len(pc), np.int8)
@@ -127,12 +174,12 @@ def main():
     o = pd.DataFrame(vals, columns=cols)
     o.insert(0, "postcode", pc.postcode.to_numpy())
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    o.to_parquet(OUT, index=False)
+    o.to_parquet(out_path, index=False)
     share = {1: "2011 output area", 2: "2011 lower-layer area (output area changed)", 3: "lower-layer area from AHAH", 0: "none"}
     for k, v in share.items():
         print(f"  {v}: {(how == k).mean():.1%} of postcodes")
     print(o[cols].describe().T[["mean", "50%"]].round(2).to_string())
-    print(f"wrote {OUT}: {len(o):,} postcodes, {len(cols)} columns")
+    print(f"wrote {out_path}: {len(o):,} postcodes, {len(cols)} columns")
 
 
 if __name__ == "__main__":

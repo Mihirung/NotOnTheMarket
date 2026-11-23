@@ -21,6 +21,9 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, "research/src")
+import signals as SG  # noqa: E402
+
 LAB = Path("research/outputs/lab")
 SIG = Path("research/outputs/signals")
 
@@ -39,6 +42,9 @@ def plan(fams):
             print(f"# {f}: not assessed", file=sys.stderr); continue
         r = json.load(open(p))
         g = r.get("adds", {}).get("all", {})
+        if SG.FAMILIES.get(f, {}).get("no_auto_deploy"):
+            print(f"# {f}: measured only, never deployed automatically ({r.get('verdict')}, gain {g.get('gain')})",
+                  file=sys.stderr); continue
         ok = r.get("verdict", "").startswith("add it") and r.get("against", {}).get("name") == name
         print(f"# {f}: {r.get('verdict')} (gain {g.get('gain')}, range {g.get('range')})", file=sys.stderr)
         if ok:

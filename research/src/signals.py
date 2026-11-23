@@ -106,10 +106,20 @@ FAMILIES = {
                             "hh_couple_no_children", "hh_young_children", "hh_grown_children", "hh_lone_parent",
                             "hh_students", "own_outright", "own_mortgage", "social_rent", "private_rent",
                             "spare_2_bedrooms", "overcrowded", "retired", "self_employed", "unemployed", "students",
-                            "hh_size", "rooms", "bedrooms", "no_central_heating", "no_car", "cars_per_household"],
-                   about="Who lives around the postcode: life stage, household type, tenure, spare bedrooms, work "
-                         "and cars, from the 2011 Census output area (people_signals.py). No ethnicity, religion, "
-                         "marital status or health"),
+                            "hh_size", "rooms", "bedrooms", "no_central_heating", "no_car", "cars_per_household",
+                            "married", "separated_divorced", "widowed", "never_married", "bad_health",
+                            "limited_a_lot", "carers_20h"],
+                   about="Who lives around the postcode: life stage, household type, tenure, spare bedrooms, work, "
+                         "cars, marital status and health, from the 2011 Census output area (people_signals.py)"),
+    "COMMUNITY": dict(table="research/data/signals/community_postcode.parquet",
+                      columns=["white_british", "white_other", "mixed", "indian", "pakistani", "bangladeshi",
+                               "chinese", "other_asian", "black_african", "black_caribbean", "other_ethnic",
+                               "ethnic_mix", "christian", "buddhist", "hindu", "jewish", "muslim", "sikh",
+                               "other_religion", "no_religion", "religion_not_stated"],
+                      no_auto_deploy=True,
+                      about="Ethnicity and religion of the output area, 2011 Census (people_signals.py). Measured, "
+                            "never deployed automatically: special category data under UK GDPR when used to treat "
+                            "people differently, so it needs legal sign-off. Used to audit fairness"),
     "SCHOOLS": dict(table="research/data/signals/schools_postcode.parquet",
                     columns=["km_primary_good", "km_primary_outstanding", "km_secondary_good",
                              "km_secondary_outstanding", "good_primaries_2km", "km_primary", "km_secondary",
