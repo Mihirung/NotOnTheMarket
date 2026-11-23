@@ -1,0 +1,1399 @@
+{
+ "family": "PEOPLE",
+ "about": "Who lives around the postcode: life stage, household type, tenure, spare bedrooms, work, cars, marital status and health, from the 2011 Census output area (people_signals.py)",
+ "when": "2026-11-23 22:16",
+ "against": {
+  "name": "+HOUSE+AREA+PD",
+  "families": [
+   "BASE",
+   "HIST",
+   "GEO",
+   "VIEW",
+   "HOUSE",
+   "AREA",
+   "PD"
+  ]
+ },
+ "coverage": {
+  "postcodes": 0.9944,
+  "test_home_years": 0.9981
+ },
+ "adds": {
+  "all": {
+   "current": 1.7408,
+   "with": 1.7387,
+   "gain": -0.0021,
+   "range": [
+    -0.0201,
+    0.0141
+   ]
+  },
+  "t0_9": {
+   "current": 1.7405,
+   "with": 1.7597,
+   "gain": 0.0193,
+   "range": [
+    -0.0024,
+    0.0431
+   ]
+  },
+  "t10_19": {
+   "current": 1.5139,
+   "with": 1.5427,
+   "gain": 0.0288,
+   "range": [
+    0.0005,
+    0.0556
+   ]
+  },
+  "t20p": {
+   "current": 1.291,
+   "with": 1.2717,
+   "gain": -0.0193,
+   "range": [
+    -0.0934,
+    0.0451
+   ]
+  },
+  "gain_share": {
+   "BASE": 0.209,
+   "HIST": 0.544,
+   "GEO": 0.03,
+   "VIEW": 0.025,
+   "HOUSE": 0.055,
+   "AREA": 0.012,
+   "PD": 0.037,
+   "PEOPLE": 0.087
+  }
+ },
+ "lfl": {
+  "children": {
+   "points_per_step": -0.0543,
+   "range": [
+    -0.0648,
+    -0.0436
+   ],
+   "step": 5.9987,
+   "by_region": {
+    "London": -0.0855,
+    "South East": -0.0177,
+    "East": -0.0237,
+    "South West": 0.0327,
+    "Midlands": -0.0734,
+    "North West": -0.0607,
+    "Yorkshire and North East": -0.0695,
+    "Wales": 0.0268
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "age_20_29": {
+   "points_per_step": -0.1823,
+   "range": [
+    -0.1939,
+    -0.1704
+   ],
+   "step": 8.8575,
+   "by_region": {
+    "London": -0.2494,
+    "South East": -0.171,
+    "East": -0.1439,
+    "South West": -0.1005,
+    "Midlands": -0.1236,
+    "North West": -0.1126,
+    "Yorkshire and North East": -0.0863,
+    "Wales": -0.0363
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "age_30_44": {
+   "points_per_step": 0.1174,
+   "range": [
+    0.1068,
+    0.1307
+   ],
+   "step": 6.5554,
+   "by_region": {
+    "London": 0.1693,
+    "South East": 0.0576,
+    "East": 0.1187,
+    "South West": 0.0813,
+    "Midlands": 0.2156,
+    "North West": 0.2365,
+    "Yorkshire and North East": 0.2369,
+    "Wales": 0.2415
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "age_45_59": {
+   "points_per_step": 0.066,
+   "range": [
+    0.0539,
+    0.0761
+   ],
+   "step": 5.0707,
+   "by_region": {
+    "London": 0.0944,
+    "South East": 0.0271,
+    "East": -0.0134,
+    "South West": -0.0825,
+    "Midlands": 0.0975,
+    "North West": 0.0478,
+    "Yorkshire and North East": 0.091,
+    "Wales": -0.0678
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "age_60_64": {
+   "points_per_step": 0.0655,
+   "range": [
+    0.0551,
+    0.0774
+   ],
+   "step": 2.9358,
+   "by_region": {
+    "London": 0.1532,
+    "South East": 0.0339,
+    "East": 0.0053,
+    "South West": -0.0242,
+    "Midlands": 0.0621,
+    "North West": 0.0125,
+    "Yorkshire and North East": -0.0008,
+    "Wales": -0.0362
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "age_65_74": {
+   "points_per_step": 0.0543,
+   "range": [
+    0.0418,
+    0.0654
+   ],
+   "step": 4.8584,
+   "by_region": {
+    "London": 0.1416,
+    "South East": 0.0422,
+    "East": 0.0317,
+    "South West": 0.006,
+    "Midlands": -0.011,
+    "North West": -0.0198,
+    "Yorkshire and North East": -0.0123,
+    "Wales": -0.0469
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "age_75_84": {
+   "points_per_step": 0.081,
+   "range": [
+    0.0702,
+    0.0925
+   ],
+   "step": 4.0782,
+   "by_region": {
+    "London": 0.1349,
+    "South East": 0.0668,
+    "East": 0.0321,
+    "South West": 0.0651,
+    "Midlands": 0.0197,
+    "North West": 0.0283,
+    "Yorkshire and North East": 0.0052,
+    "Wales": -0.0069
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "age_85_plus": {
+   "points_per_step": 0.1175,
+   "range": [
+    0.1049,
+    0.1282
+   ],
+   "step": 2.7581,
+   "by_region": {
+    "London": 0.1587,
+    "South East": 0.0901,
+    "East": 0.0649,
+    "South West": 0.0803,
+    "Midlands": 0.0884,
+    "North West": 0.101,
+    "Yorkshire and North East": 0.0436,
+    "Wales": 0.0388
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "median_age": {
+   "points_per_step": 0.1606,
+   "range": [
+    0.1489,
+    0.1719
+   ],
+   "step": 8.6843,
+   "by_region": {
+    "London": 0.3394,
+    "South East": 0.1136,
+    "East": 0.0817,
+    "South West": 0.0651,
+    "Midlands": 0.1326,
+    "North West": 0.0982,
+    "Yorkshire and North East": 0.0958,
+    "Wales": 0.022
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "hh_alone_65": {
+   "points_per_step": 0.0786,
+   "range": [
+    0.0674,
+    0.0903
+   ],
+   "step": 7.532,
+   "by_region": {
+    "London": 0.1445,
+    "South East": 0.082,
+    "East": 0.0352,
+    "South West": 0.0626,
+    "Midlands": 0.012,
+    "North West": 0.0392,
+    "Yorkshire and North East": -0.0043,
+    "Wales": -0.0173
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "hh_alone_under_65": {
+   "points_per_step": -0.0999,
+   "range": [
+    -0.1128,
+    -0.0881
+   ],
+   "step": 10.3508,
+   "by_region": {
+    "London": 0.0216,
+    "South East": -0.0792,
+    "East": -0.0274,
+    "South West": -0.1419,
+    "Midlands": -0.0189,
+    "North West": -0.0958,
+    "Yorkshire and North East": -0.0842,
+    "Wales": -0.1264
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "hh_couple_65": {
+   "points_per_step": 0.0756,
+   "range": [
+    0.0626,
+    0.0858
+   ],
+   "step": 6.2084,
+   "by_region": {
+    "London": 0.1075,
+    "South East": 0.0322,
+    "East": 0.0256,
+    "South West": 0.0379,
+    "Midlands": 0.0022,
+    "North West": -0.0103,
+    "Yorkshire and North East": 0.0005,
+    "Wales": -0.0151
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "hh_couple_no_children": {
+   "points_per_step": 0.318,
+   "range": [
+    0.308,
+    0.3292
+   ],
+   "step": 6.1848,
+   "by_region": {
+    "London": 0.3725,
+    "South East": 0.2161,
+    "East": 0.2318,
+    "South West": 0.1307,
+    "Midlands": 0.3765,
+    "North West": 0.2832,
+    "Yorkshire and North East": 0.3062,
+    "Wales": 0.2998
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "hh_young_children": {
+   "points_per_step": -0.0519,
+   "range": [
+    -0.0631,
+    -0.0407
+   ],
+   "step": 10.6584,
+   "by_region": {
+    "London": -0.1559,
+    "South East": -0.0301,
+    "East": -0.0279,
+    "South West": 0.0334,
+    "Midlands": -0.0641,
+    "North West": 0.0017,
+    "Yorkshire and North East": -0.0223,
+    "Wales": 0.051
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "hh_grown_children": {
+   "points_per_step": -0.1444,
+   "range": [
+    -0.1573,
+    -0.1334
+   ],
+   "step": 4.3402,
+   "by_region": {
+    "London": -0.1554,
+    "South East": -0.0829,
+    "East": -0.1213,
+    "South West": -0.088,
+    "Midlands": -0.1439,
+    "North West": -0.0997,
+    "Yorkshire and North East": -0.0597,
+    "Wales": -0.107
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "hh_lone_parent": {
+   "points_per_step": -0.1601,
+   "range": [
+    -0.1708,
+    -0.149
+   ],
+   "step": 4.5882,
+   "by_region": {
+    "London": -0.1661,
+    "South East": -0.0816,
+    "East": -0.0452,
+    "South West": -0.02,
+    "Midlands": -0.1201,
+    "North West": -0.1258,
+    "Yorkshire and North East": -0.1591,
+    "Wales": -0.0887
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "hh_students": {
+   "points_per_step": -0.0972,
+   "range": [
+    -0.1055,
+    -0.0882
+   ],
+   "step": 2.9723,
+   "by_region": {
+    "London": -0.339,
+    "South East": -0.1193,
+    "East": -0.1973,
+    "South West": -0.0881,
+    "Midlands": -0.0902,
+    "North West": -0.0632,
+    "Yorkshire and North East": -0.0819,
+    "Wales": -0.0429
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "own_outright": {
+   "points_per_step": 0.1252,
+   "range": [
+    0.1117,
+    0.1361
+   ],
+   "step": 15.9939,
+   "by_region": {
+    "London": 0.1937,
+    "South East": 0.0945,
+    "East": 0.0572,
+    "South West": 0.0672,
+    "Midlands": 0.0373,
+    "North West": 0.0837,
+    "Yorkshire and North East": 0.0609,
+    "Wales": 0.0043
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "own_mortgage": {
+   "points_per_step": 0.326,
+   "range": [
+    0.3136,
+    0.3384
+   ],
+   "step": 13.2407,
+   "by_region": {
+    "London": 0.457,
+    "South East": 0.268,
+    "East": 0.2358,
+    "South West": 0.2165,
+    "Midlands": 0.3436,
+    "North West": 0.3554,
+    "Yorkshire and North East": 0.3553,
+    "Wales": 0.3315
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "social_rent": {
+   "points_per_step": -0.2137,
+   "range": [
+    -0.2241,
+    -0.2039
+   ],
+   "step": 15.4081,
+   "by_region": {
+    "London": -0.1707,
+    "South East": -0.1445,
+    "East": -0.13,
+    "South West": -0.1139,
+    "Midlands": -0.214,
+    "North West": -0.2272,
+    "Yorkshire and North East": -0.195,
+    "Wales": -0.189
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "private_rent": {
+   "points_per_step": -0.2006,
+   "range": [
+    -0.2125,
+    -0.1867
+   ],
+   "step": 14.9473,
+   "by_region": {
+    "London": -0.2003,
+    "South East": -0.2236,
+    "East": -0.2034,
+    "South West": -0.1863,
+    "Midlands": -0.1533,
+    "North West": -0.1682,
+    "Yorkshire and North East": -0.1869,
+    "Wales": -0.149
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "spare_2_bedrooms": {
+   "points_per_step": 0.1706,
+   "range": [
+    0.1584,
+    0.1817
+   ],
+   "step": 18.0307,
+   "by_region": {
+    "London": 0.1857,
+    "South East": 0.0462,
+    "East": 0.0733,
+    "South West": 0.0166,
+    "Midlands": 0.1664,
+    "North West": 0.1078,
+    "Yorkshire and North East": 0.1923,
+    "Wales": 0.0957
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "overcrowded": {
+   "points_per_step": -0.3583,
+   "range": [
+    -0.3691,
+    -0.3485
+   ],
+   "step": 4.7125,
+   "by_region": {
+    "London": -0.3163,
+    "South East": -0.4332,
+    "East": -0.4208,
+    "South West": -0.3273,
+    "Midlands": -0.4603,
+    "North West": -0.4072,
+    "Yorkshire and North East": -0.4471,
+    "Wales": -0.3811
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "retired": {
+   "points_per_step": 0.0738,
+   "range": [
+    0.0608,
+    0.0846
+   ],
+   "step": 8.0433,
+   "by_region": {
+    "London": 0.1766,
+    "South East": 0.0624,
+    "East": 0.042,
+    "South West": 0.0421,
+    "Midlands": 0.0244,
+    "North West": 0.0168,
+    "Yorkshire and North East": -0.0045,
+    "Wales": -0.0112
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "self_employed": {
+   "points_per_step": 0.1495,
+   "range": [
+    0.1373,
+    0.1619
+   ],
+   "step": 4.663,
+   "by_region": {
+    "London": 0.1827,
+    "South East": 0.0894,
+    "East": 0.1404,
+    "South West": -0.011,
+    "Midlands": 0.1345,
+    "North West": 0.0504,
+    "Yorkshire and North East": 0.1253,
+    "Wales": -0.0125
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "unemployed": {
+   "points_per_step": -0.3459,
+   "range": [
+    -0.3573,
+    -0.3353
+   ],
+   "step": 2.618,
+   "by_region": {
+    "London": -0.3131,
+    "South East": -0.2881,
+    "East": -0.2632,
+    "South West": -0.1698,
+    "Midlands": -0.3126,
+    "North West": -0.3065,
+    "Yorkshire and North East": -0.3015,
+    "Wales": -0.2119
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "students": {
+   "points_per_step": -0.1976,
+   "range": [
+    -0.2065,
+    -0.1879
+   ],
+   "step": 7.2002,
+   "by_region": {
+    "London": -0.4448,
+    "South East": -0.1704,
+    "East": -0.2469,
+    "South West": -0.0945,
+    "Midlands": -0.1916,
+    "North West": -0.1286,
+    "Yorkshire and North East": -0.138,
+    "Wales": -0.0677
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "hh_size": {
+   "points_per_step": -0.1577,
+   "range": [
+    -0.1678,
+    -0.1483
+   ],
+   "step": 0.3735,
+   "by_region": {
+    "London": -0.2948,
+    "South East": -0.1525,
+    "East": -0.1508,
+    "South West": -0.0392,
+    "Midlands": -0.2104,
+    "North West": -0.0948,
+    "Yorkshire and North East": -0.1076,
+    "Wales": -0.0
+   },
+   "regions_same_sign": "7 of 7"
+  },
+  "rooms": {
+   "points_per_step": 0.1536,
+   "range": [
+    0.1422,
+    0.1636
+   ],
+   "step": 0.9981,
+   "by_region": {
+    "London": 0.1513,
+    "South East": 0.0574,
+    "East": 0.0755,
+    "South West": 0.0537,
+    "Midlands": 0.0917,
+    "North West": 0.1164,
+    "Yorkshire and North East": 0.1221,
+    "Wales": 0.0845
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "bedrooms": {
+   "points_per_step": 0.0757,
+   "range": [
+    0.0637,
+    0.0863
+   ],
+   "step": 0.5019,
+   "by_region": {
+    "London": 0.0367,
+    "South East": 0.0036,
+    "East": 0.0209,
+    "South West": 0.0295,
+    "Midlands": 0.0252,
+    "North West": 0.064,
+    "Yorkshire and North East": 0.0745,
+    "Wales": 0.0639
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "no_central_heating": {
+   "points_per_step": -0.098,
+   "range": [
+    -0.1101,
+    -0.0865
+   ],
+   "step": 3.0245,
+   "by_region": {
+    "London": -0.0587,
+    "South East": -0.1436,
+    "East": -0.0909,
+    "South West": -0.1247,
+    "Midlands": -0.1122,
+    "North West": -0.0757,
+    "Yorkshire and North East": -0.045,
+    "Wales": -0.1099
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "no_car": {
+   "points_per_step": -0.4058,
+   "range": [
+    -0.4176,
+    -0.3948
+   ],
+   "step": 16.6855,
+   "by_region": {
+    "London": -0.2887,
+    "South East": -0.3299,
+    "East": -0.3804,
+    "South West": -0.2409,
+    "Midlands": -0.4387,
+    "North West": -0.3838,
+    "Yorkshire and North East": -0.4005,
+    "Wales": -0.3333
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "cars_per_household": {
+   "points_per_step": 0.3339,
+   "range": [
+    0.3215,
+    0.3462
+   ],
+   "step": 0.4086,
+   "by_region": {
+    "London": 0.2544,
+    "South East": 0.2054,
+    "East": 0.2492,
+    "South West": 0.1038,
+    "Midlands": 0.334,
+    "North West": 0.3371,
+    "Yorkshire and North East": 0.3574,
+    "Wales": 0.2397
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "married": {
+   "points_per_step": 0.1541,
+   "range": [
+    0.142,
+    0.1654
+   ],
+   "step": 13.5004,
+   "by_region": {
+    "London": 0.0492,
+    "South East": 0.0943,
+    "East": 0.089,
+    "South West": 0.0925,
+    "Midlands": 0.0934,
+    "North West": 0.1185,
+    "Yorkshire and North East": 0.1169,
+    "Wales": 0.1491
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "separated_divorced": {
+   "points_per_step": 0.0425,
+   "range": [
+    0.0331,
+    0.0532
+   ],
+   "step": 4.1746,
+   "by_region": {
+    "London": 0.0582,
+    "South East": 0.0426,
+    "East": -0.0046,
+    "South West": -0.0208,
+    "Midlands": 0.1089,
+    "North West": 0.0067,
+    "Yorkshire and North East": 0.0105,
+    "Wales": -0.0867
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "widowed": {
+   "points_per_step": 0.0647,
+   "range": [
+    0.0526,
+    0.0767
+   ],
+   "step": 4.4512,
+   "by_region": {
+    "London": 0.1176,
+    "South East": 0.09,
+    "East": 0.0555,
+    "South West": 0.0633,
+    "Midlands": 0.0122,
+    "North West": 0.0411,
+    "Yorkshire and North East": -0.0133,
+    "Wales": -0.0315
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "never_married": {
+   "points_per_step": -0.1935,
+   "range": [
+    -0.2044,
+    -0.181
+   ],
+   "step": 13.2364,
+   "by_region": {
+    "London": -0.1026,
+    "South East": -0.1662,
+    "East": -0.1313,
+    "South West": -0.1121,
+    "Midlands": -0.1453,
+    "North West": -0.1338,
+    "Yorkshire and North East": -0.1135,
+    "Wales": -0.0944
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "bad_health": {
+   "points_per_step": -0.1989,
+   "range": [
+    -0.209,
+    -0.1836
+   ],
+   "step": 3.1265,
+   "by_region": {
+    "London": -0.201,
+    "South East": -0.0889,
+    "East": -0.0747,
+    "South West": -0.0728,
+    "Midlands": -0.2053,
+    "North West": -0.1721,
+    "Yorkshire and North East": -0.1742,
+    "Wales": -0.1422
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "limited_a_lot": {
+   "points_per_step": -0.1166,
+   "range": [
+    -0.1279,
+    -0.1042
+   ],
+   "step": 4.7009,
+   "by_region": {
+    "London": -0.0921,
+    "South East": -0.0179,
+    "East": -0.0282,
+    "South West": -0.0101,
+    "Midlands": -0.1133,
+    "North West": -0.114,
+    "Yorkshire and North East": -0.1305,
+    "Wales": -0.124
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "carers_20h": {
+   "points_per_step": -0.1618,
+   "range": [
+    -0.1737,
+    -0.1502
+   ],
+   "step": 1.8402,
+   "by_region": {
+    "London": -0.2457,
+    "South East": -0.111,
+    "East": -0.0404,
+    "South West": -0.0218,
+    "Midlands": -0.1515,
+    "North West": -0.1693,
+    "Yorkshire and North East": -0.1244,
+    "Wales": -0.0988
+   },
+   "regions_same_sign": "8 of 8"
+  }
+ },
+ "lfl_rows": 11875967,
+ "lfl_sales": 458268,
+ "on_top": {
+  "children": {
+   "points_per_step": 0.0696,
+   "range": [
+    0.0498,
+    0.0933
+   ]
+  },
+  "age_20_29": {
+   "points_per_step": -0.1294,
+   "range": [
+    -0.1536,
+    -0.1082
+   ]
+  },
+  "age_30_44": {
+   "points_per_step": -0.1033,
+   "range": [
+    -0.126,
+    -0.0835
+   ]
+  },
+  "age_45_59": {
+   "points_per_step": 0.0701,
+   "range": [
+    0.0494,
+    0.0929
+   ]
+  },
+  "age_60_64": {
+   "points_per_step": 0.0933,
+   "range": [
+    0.0748,
+    0.1133
+   ]
+  },
+  "age_65_74": {
+   "points_per_step": 0.0801,
+   "range": [
+    0.0586,
+    0.1048
+   ]
+  },
+  "age_75_84": {
+   "points_per_step": 0.0572,
+   "range": [
+    0.0348,
+    0.0821
+   ]
+  },
+  "age_85_plus": {
+   "points_per_step": 0.0348,
+   "range": [
+    0.0079,
+    0.0594
+   ]
+  },
+  "median_age": {
+   "points_per_step": 0.0745,
+   "range": [
+    0.053,
+    0.0993
+   ]
+  },
+  "hh_alone_65": {
+   "points_per_step": 0.0619,
+   "range": [
+    0.0398,
+    0.0925
+   ]
+  },
+  "hh_alone_under_65": {
+   "points_per_step": -0.098,
+   "range": [
+    -0.1242,
+    -0.0786
+   ]
+  },
+  "hh_couple_65": {
+   "points_per_step": 0.0673,
+   "range": [
+    0.0453,
+    0.0928
+   ]
+  },
+  "hh_couple_no_children": {
+   "points_per_step": 0.0443,
+   "range": [
+    0.0226,
+    0.0634
+   ]
+  },
+  "hh_young_children": {
+   "points_per_step": 0.0624,
+   "range": [
+    0.0406,
+    0.0868
+   ]
+  },
+  "hh_grown_children": {
+   "points_per_step": 0.118,
+   "range": [
+    0.0947,
+    0.1407
+   ]
+  },
+  "hh_lone_parent": {
+   "points_per_step": 0.0866,
+   "range": [
+    0.0637,
+    0.1078
+   ]
+  },
+  "hh_students": {
+   "points_per_step": -0.1309,
+   "range": [
+    -0.147,
+    -0.1103
+   ]
+  },
+  "own_outright": {
+   "points_per_step": 0.0632,
+   "range": [
+    0.0436,
+    0.087
+   ]
+  },
+  "own_mortgage": {
+   "points_per_step": 0.1338,
+   "range": [
+    0.1134,
+    0.1604
+   ]
+  },
+  "social_rent": {
+   "points_per_step": 0.015,
+   "range": [
+    -0.0069,
+    0.039
+   ]
+  },
+  "private_rent": {
+   "points_per_step": -0.1968,
+   "range": [
+    -0.2205,
+    -0.1745
+   ]
+  },
+  "spare_2_bedrooms": {
+   "points_per_step": 0.0812,
+   "range": [
+    0.064,
+    0.1084
+   ]
+  },
+  "overcrowded": {
+   "points_per_step": -0.1553,
+   "range": [
+    -0.1728,
+    -0.1387
+   ]
+  },
+  "retired": {
+   "points_per_step": 0.1116,
+   "range": [
+    0.0924,
+    0.1354
+   ]
+  },
+  "self_employed": {
+   "points_per_step": -0.1253,
+   "range": [
+    -0.1511,
+    -0.1018
+   ]
+  },
+  "unemployed": {
+   "points_per_step": 0.0479,
+   "range": [
+    0.0258,
+    0.0677
+   ]
+  },
+  "students": {
+   "points_per_step": -0.1435,
+   "range": [
+    -0.1618,
+    -0.1244
+   ]
+  },
+  "hh_size": {
+   "points_per_step": -0.0183,
+   "range": [
+    -0.0375,
+    0.0053
+   ]
+  },
+  "rooms": {
+   "points_per_step": 0.0784,
+   "range": [
+    0.0615,
+    0.1012
+   ]
+  },
+  "bedrooms": {
+   "points_per_step": 0.0588,
+   "range": [
+    0.039,
+    0.082
+   ]
+  },
+  "no_central_heating": {
+   "points_per_step": -0.027,
+   "range": [
+    -0.052,
+    -0.0029
+   ]
+  },
+  "no_car": {
+   "points_per_step": -0.1005,
+   "range": [
+    -0.1247,
+    -0.084
+   ]
+  },
+  "cars_per_household": {
+   "points_per_step": 0.0708,
+   "range": [
+    0.0544,
+    0.0947
+   ]
+  },
+  "married": {
+   "points_per_step": 0.0643,
+   "range": [
+    0.0455,
+    0.0879
+   ]
+  },
+  "separated_divorced": {
+   "points_per_step": 0.0859,
+   "range": [
+    0.0617,
+    0.112
+   ]
+  },
+  "widowed": {
+   "points_per_step": 0.0936,
+   "range": [
+    0.0719,
+    0.1185
+   ]
+  },
+  "never_married": {
+   "points_per_step": -0.1209,
+   "range": [
+    -0.1435,
+    -0.0991
+   ]
+  },
+  "bad_health": {
+   "points_per_step": 0.1357,
+   "range": [
+    0.112,
+    0.1609
+   ]
+  },
+  "limited_a_lot": {
+   "points_per_step": 0.1518,
+   "range": [
+    0.1264,
+    0.1768
+   ]
+  },
+  "carers_20h": {
+   "points_per_step": 0.1794,
+   "range": [
+    0.1562,
+    0.2025
+   ]
+  }
+ },
+ "price": {
+  "children": {
+   "pct_per_step": -2.78,
+   "range": [
+    -2.88,
+    -2.69
+   ]
+  },
+  "age_20_29": {
+   "pct_per_step": -5.02,
+   "range": [
+    -5.14,
+    -4.9
+   ]
+  },
+  "age_30_44": {
+   "pct_per_step": -3.49,
+   "range": [
+    -3.59,
+    -3.4
+   ]
+  },
+  "age_45_59": {
+   "pct_per_step": 4.95,
+   "range": [
+    4.88,
+    5.03
+   ]
+  },
+  "age_60_64": {
+   "pct_per_step": 4.53,
+   "range": [
+    4.45,
+    4.6
+   ]
+  },
+  "age_65_74": {
+   "pct_per_step": 3.74,
+   "range": [
+    3.67,
+    3.81
+   ]
+  },
+  "age_75_84": {
+   "pct_per_step": 1.78,
+   "range": [
+    1.67,
+    1.89
+   ]
+  },
+  "age_85_plus": {
+   "pct_per_step": 1.15,
+   "range": [
+    1.03,
+    1.27
+   ]
+  },
+  "median_age": {
+   "pct_per_step": 6.05,
+   "range": [
+    5.93,
+    6.18
+   ]
+  },
+  "hh_alone_65": {
+   "pct_per_step": -0.92,
+   "range": [
+    -1.0,
+    -0.81
+   ]
+  },
+  "hh_alone_under_65": {
+   "pct_per_step": -5.09,
+   "range": [
+    -5.17,
+    -5.0
+   ]
+  },
+  "hh_couple_65": {
+   "pct_per_step": 5.94,
+   "range": [
+    5.87,
+    6.02
+   ]
+  },
+  "hh_couple_no_children": {
+   "pct_per_step": 5.44,
+   "range": [
+    5.36,
+    5.53
+   ]
+  },
+  "hh_young_children": {
+   "pct_per_step": -1.28,
+   "range": [
+    -1.37,
+    -1.2
+   ]
+  },
+  "hh_grown_children": {
+   "pct_per_step": 0.41,
+   "range": [
+    0.35,
+    0.49
+   ]
+  },
+  "hh_lone_parent": {
+   "pct_per_step": -7.22,
+   "range": [
+    -7.28,
+    -7.14
+   ]
+  },
+  "hh_students": {
+   "pct_per_step": -0.04,
+   "range": [
+    -0.17,
+    0.09
+   ]
+  },
+  "own_outright": {
+   "pct_per_step": 7.62,
+   "range": [
+    7.52,
+    7.7
+   ]
+  },
+  "own_mortgage": {
+   "pct_per_step": 2.94,
+   "range": [
+    2.87,
+    3.04
+   ]
+  },
+  "social_rent": {
+   "pct_per_step": -5.75,
+   "range": [
+    -5.8,
+    -5.68
+   ]
+  },
+  "private_rent": {
+   "pct_per_step": -2.25,
+   "range": [
+    -2.35,
+    -2.15
+   ]
+  },
+  "spare_2_bedrooms": {
+   "pct_per_step": 13.17,
+   "range": [
+    13.07,
+    13.26
+   ]
+  },
+  "overcrowded": {
+   "pct_per_step": -8.42,
+   "range": [
+    -8.52,
+    -8.31
+   ]
+  },
+  "retired": {
+   "pct_per_step": 3.57,
+   "range": [
+    3.47,
+    3.67
+   ]
+  },
+  "self_employed": {
+   "pct_per_step": 11.66,
+   "range": [
+    11.55,
+    11.77
+   ]
+  },
+  "unemployed": {
+   "pct_per_step": -7.45,
+   "range": [
+    -7.52,
+    -7.36
+   ]
+  },
+  "students": {
+   "pct_per_step": 0.11,
+   "range": [
+    0.0,
+    0.22
+   ]
+  },
+  "hh_size": {
+   "pct_per_step": 2.87,
+   "range": [
+    2.8,
+    2.97
+   ]
+  },
+  "rooms": {
+   "pct_per_step": 14.67,
+   "range": [
+    14.57,
+    14.8
+   ]
+  },
+  "bedrooms": {
+   "pct_per_step": 11.83,
+   "range": [
+    11.72,
+    11.93
+   ]
+  },
+  "no_central_heating": {
+   "pct_per_step": -3.42,
+   "range": [
+    -3.51,
+    -3.34
+   ]
+  },
+  "no_car": {
+   "pct_per_step": -12.13,
+   "range": [
+    -12.23,
+    -12.03
+   ]
+  },
+  "cars_per_household": {
+   "pct_per_step": 16.67,
+   "range": [
+    16.56,
+    16.8
+   ]
+  },
+  "married": {
+   "pct_per_step": 10.82,
+   "range": [
+    10.71,
+    10.9
+   ]
+  },
+  "separated_divorced": {
+   "pct_per_step": -6.44,
+   "range": [
+    -6.53,
+    -6.38
+   ]
+  },
+  "widowed": {
+   "pct_per_step": -0.36,
+   "range": [
+    -0.45,
+    -0.25
+   ]
+  },
+  "never_married": {
+   "pct_per_step": -8.3,
+   "range": [
+    -8.41,
+    -8.2
+   ]
+  },
+  "bad_health": {
+   "pct_per_step": -4.56,
+   "range": [
+    -4.64,
+    -4.48
+   ]
+  },
+  "limited_a_lot": {
+   "pct_per_step": -3.03,
+   "range": [
+    -3.12,
+    -2.94
+   ]
+  },
+  "carers_20h": {
+   "pct_per_step": -2.92,
+   "range": [
+    -2.98,
+    -2.85
+   ]
+  }
+ },
+ "price_sales": 8041819,
+ "verdict": "do not add it to the model: no gain clear of zero; use it for search and pricing"
+}
