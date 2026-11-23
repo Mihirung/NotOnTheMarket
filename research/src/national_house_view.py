@@ -72,7 +72,21 @@ EXTRA = {"nox": ("Nitrogen oxides in the air", lambda v: f"{v:.0f} µg/m³"),
          "restaurants_1km": ("Restaurants and cafes within 1 km", lambda v: f"{v:.0f}"),
          "takeaways_1km": ("Takeaways within 1 km", lambda v: f"{v:.0f}"),
          "add_m2": ("Floor space that could be added without planning permission (estimate)", lambda v: f"about {v:.0f} m²"),
-         "add_value": ("Value that could add, at 2019 prices (estimate)", lambda v: f"about £{v:,.0f}")}
+         "add_value": ("Value that could add, at 2019 prices (estimate)", lambda v: f"about £{v:,.0f}"),
+         "sun_hours_year": ("Sunshine in a year (estimate)", lambda v: f"about {v:,.0f} hours"),
+         "sun_hours_winter": ("Sunshine in December to February (estimate)", lambda v: f"about {v:.0f} hours"),
+         "cloud_year": ("Sky covered by cloud, on average", lambda v: f"{v:.0f}%"),
+         "rain_year": ("Rain in a year", lambda v: f"{v:,.0f} mm"),
+         "heavy_rain_days": ("Days of heavy rain (10 mm or more) a year", lambda v: f"{v:.0f}"),
+         "warmest_days": ("Summer afternoons, June to August", lambda v: f"{v:.1f} °C on average"),
+         "warmest_days_cool": ("Summer afternoons, June to August", lambda v: f"{v:.1f} °C on average"),
+         "coldest_nights": ("Winter nights, December to February", lambda v: f"{v:.1f} °C on average"),
+         "frost_days": ("Air frosts a year", lambda v: f"{v:.0f}"),
+         "wind": ("Wind, on average", lambda v: f"{v:.1f} m/s"),
+         "warming_2c": ("Warmer by the 2050s (2 °C of global warming)", lambda v: f"+{v:.1f} °C a year on average"),
+         "hot_days_2c": ("Days above 30 °C a year by the 2050s", lambda v: f"about {v:.0f}"),
+         "winter_rain_2c": ("Winter rain by the 2050s", lambda v: f"{v:+.0f}%"),
+         "summer_rain_2c": ("Summer rain by the 2050s", lambda v: f"{v:+.0f}%")}
 
 
 def facts(row, want=()):

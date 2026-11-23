@@ -44,7 +44,18 @@ import signals as SG  # noqa: E402
 
 PANEL, LAB, OUT = "research/data/panel3", "research/outputs/lab", "research/outputs/signals"
 TX = "research/data/transactions.parquet"
-CURRENT = ["BASE", "HIST", "GEO", "VIEW"]
+
+
+def _deployed():
+    """The model a new family has to beat: the one deployed (lab_deploy.json)."""
+    try:
+        d = json.load(open("research/outputs/lab/lab_deploy.json"))
+        return d["name"], d["families"]
+    except (OSError, KeyError, ValueError):
+        return "CURRENT", ["BASE", "HIST", "GEO", "VIEW"]
+
+
+CUR_NAME, CURRENT = _deployed()
 CTRL = ["tenure", "log_price_rel", "leasehold", "is_new", "n_prior", "turnover_3y", "price_rel_nat",
         "ptype_D", "ptype_S", "ptype_T", "ptype_F"]
 NB, BOOT = 512, 200
@@ -163,8 +174,9 @@ def on_top(ch, fam, ref_pred, say):
 def adds_to_model(ch, fam, pct, threads, say):
     t = LE.load_test(PANEL)
     out = Path(LAB)
-    p_cur, _ = ML.predict_cached(ch, out, threads, "CURRENT", pct, CURRENT)
-    p_new, info = ML.predict_cached(ch, out, threads, f"+{fam}", pct, CURRENT + [fam])
+    p_cur, _ = ML.predict_cached(ch, out, threads, CUR_NAME, pct, CURRENT)
+    name = f"+{fam}" if CUR_NAME == "CURRENT" else f"{CUR_NAME}+{fam}"
+    p_new, info = ML.predict_cached(ch, out, threads, name, pct, CURRENT + [fam])
     res = {}
     for name, lo, hi in LE.TENURE:
         L = LE.Local(t, lo, hi)
@@ -234,7 +246,8 @@ def report(fam, R):
         for k, lab in (("all", "All"), ("t0_9", "Under 10 years"), ("t10_19", "10 to 19 years"), ("t20p", "20 years or more")):
             v = R["adds"][k]
             lines.append(f"| {lab} | {v['current']:.3f} | {v['with']:.3f} | {v['gain']:+.3f} | {v['range'][0]:+.3f} to {v['range'][1]:+.3f} |")
-        lines += ["", "Sellers found in the best tenth of each postcode district, times random, 2017 and 2018.", ""]
+        lines += ["", "Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. "
+                  f"The current model is the deployed one: {' + '.join(R.get('against', {}).get('families', CURRENT))}.", ""]
     if "lfl" in R:
         lines += ["## Each column: sale timing, what is left on top of the model, and price", "",
                   "| Column | Sale chance, points a year per step | Same sign in regions | Left on top of the model | Price per step |",
@@ -265,13 +278,14 @@ def main():
         print(msg, flush=True); log.write(msg + "\n"); log.flush()
     ch = ML.Chunks(PANEL)
     assert fam in ch.place, f"{fam} is not a registered place family with a table on disk"
-    R = {"family": fam, "about": SG.FAMILIES[fam]["about"], "when": time.strftime("%Y-%m-%d %H:%M")}
+    R = {"family": fam, "about": SG.FAMILIES[fam]["about"], "when": time.strftime("%Y-%m-%d %H:%M"),
+         "against": {"name": CUR_NAME, "families": CURRENT}}
     say(f"== {fam}: coverage"); R["coverage"] = coverage(ch, fam); say(f"  {R['coverage']}")
     if not a.skip_fit:
         say(f"== {fam}: does it improve the national model ({a.pct}% of homes)?")
         R["adds"], p_cur = adds_to_model(ch, fam, a.pct, a.threads, say)
     else:
-        p_cur, _ = ML.predict_cached(ch, Path(LAB), a.threads, "CURRENT", a.pct, CURRENT)
+        p_cur, _ = ML.predict_cached(ch, Path(LAB), a.threads, CUR_NAME, a.pct, CURRENT)
     say(f"== {fam}: like for like, sale timing"); R["lfl"], R["lfl_rows"], R["lfl_sales"] = like_for_like(ch, fam, say)
     say(f"== {fam}: on top of the national model"); R["on_top"] = on_top(ch, fam, p_cur, say)
     say(f"== {fam}: price"); R["price"], R["price_sales"] = price(fam, say)

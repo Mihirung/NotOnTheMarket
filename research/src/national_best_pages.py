@@ -20,7 +20,8 @@ import national_house_view as NHV  # noqa: E402
 
 BRIEFS = [
     ("The very best of everything", FB.ALL, {},
-     "Every outlook, garden, light and landmark measure, with clean air, a GP and hospital, parks, woods and water nearby."),
+     "Every outlook, garden, light and landmark measure, with clean air, a GP and hospital, parks, woods and water "
+     "nearby, sunshine, dry weather and mild winters."),
     ("The finest views", ["views", "far", "water", "hills"], {},
      "Long views across most of the horizon, the furthest sight-lines, water and hills."),
     ("By the sea, with the evening sun", ["sea", "evening_sun", "garden_sun", "views"], {},
@@ -34,6 +35,14 @@ BRIEFS = [
     ("A village pub, a view and a sunny garden", ["pubs_near", "views", "garden_sun", "near_woods", "clean_air"], {}, None),
     ("Room to grow", ["extension_value", "extension_space", "garden_room", "light"], {"houses_only": True},
      "The most value and space that could be added without planning permission, with room in the garden and good light."),
+    ("Sunny, dry and mild", ["sunny", "sunny_winters", "clear_skies", "dry", "few_downpours", "mild_winters",
+                             "few_frosts", "garden_sun", "light"], {},
+     "The most sunshine, winter included, the fewest grey skies, the least rain and the mildest winters, "
+     "with sun in the garden and on the windows."),
+    ("Ready for a warmer world", ["steady_climate", "few_heatwaves", "cool_summers", "summer_rain_kept",
+                                  "winter_rain_steady", "open_outlook", "near_woods"], {},
+     "Where the climate is changing least by the 2050s: the least warming, the fewest very hot days, "
+     "summers keeping their rain and winters not much wetter, with shade from woods nearby."),
     ("A cathedral or abbey in sight", ["cathedral", "views", "light"], {}, None),
     ("A castle in sight", ["castle", "views", "light"], {}, None),
 ]

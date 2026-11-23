@@ -121,6 +121,7 @@ a{color:var(--accent-deep)}
 .cityswitch button.on{background:var(--accent);color:#fff}
 .cityswitch button:focus-visible{outline:2.5px solid var(--accent);outline-offset:-2px}
 .crit .ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:2px}
+.climrow{margin-top:10px}.climlab{display:inline-block;min-width:96px;font-size:13.5px;font-weight:600;margin-bottom:4px}
 .crit .hint{font-size:13.5px;color:var(--accent-deep);margin-top:6px}
 .chipgroup{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--muted);margin:12px 0 0}
@@ -615,8 +616,52 @@ function near(c, b){
   const p=b.pubs||"any";
   if(p==="near" && c.km_pub!=null && c.km_pub>0.8) return false;
   if(p==="far" && c.km_pub!=null && c.km_pub<0.4) return false;
-  return true; }
+  return climOk(c, b); }
 function setPubs(v){ S.brief.pubs=v; save(); render(); }
+/* Climate: each cell carries its homes' typical sunshine, rain, winter nights, summer afternoons, wind and
+   change by the 2050s. Each choice is a share of all postcodes in England and Wales (DATA.climate_national). */
+const CLIMATE = {
+  sun:    {label:"Sunshine", col:"sun_h", opts:{any:"Don't mind", more:"Sunnier than most", most:"Among the sunniest"},
+           test:{more:[1,"0.5"], most:[1,"0.75"]}},
+  rain:   {label:"Rain", col:"rain_mm", opts:{any:"Don't mind", less:"Drier than most", least:"Among the driest"},
+           test:{less:[-1,"0.5"], least:[-1,"0.25"]}},
+  winter: {label:"Winters", col:"winter_c", opts:{any:"Don't mind", milder:"Milder than most", mildest:"Among the mildest"},
+           test:{milder:[1,"0.5"], mildest:[1,"0.75"]}},
+  summer: {label:"Summers", col:"summer_c", opts:{any:"Don't mind", warm:"Warm summers", cool:"Cooler summers"},
+           test:{warm:[1,"0.75"], cool:[-1,"0.25"]}},
+  wind:   {label:"Wind", col:"wind", opts:{any:"Don't mind", sheltered:"Sheltered"}, test:{sheltered:[-1,"0.5"]}},
+  future: {label:"By the 2050s", col:"warm_2c", opts:{any:"Don't mind", steady:"Changing least"},
+           test:{steady:[-1,"0.5"]}, also:{col:"hot_2c", steady:[-1,"0.5"]}}};
+const CN = () => DATA.climate_national || {};
+function climLimit(k, opt){ const t=CLIMATE[k].test[opt], q=(CN()[CLIMATE[k].col]||{})[t[1]]; return [t[0], q]; }
+function climOk(c, b){
+  const want=b.clim||{};
+  for(const k in CLIMATE){ const opt=want[k]||"any"; if(opt==="any") continue;
+    const [dir,q]=climLimit(k,opt), v=c[CLIMATE[k].col];
+    if(q==null || v==null) continue;
+    if(dir>0 ? v<q : v>q) return false;
+    const a=CLIMATE[k].also; if(a && a[opt]){ const q2=(CN()[a.col]||{})[a[opt][1]], v2=c[a.col];
+      if(q2!=null && v2!=null && (a[opt][0]>0 ? v2<q2 : v2>q2)) return false; } }
+  return true; }
+function climWhy(k){ const opt=((S.brief.clim||{})[k])||"any", n=CN();
+  const f=(col,q,dp=0)=>{ const v=(n[col]||{})[q]; return v==null?"?":Number(v).toLocaleString("en-GB",{maximumFractionDigits:dp}); };
+  switch(k+":"+opt){
+    case "sun:more": return `More than ${f("sun_h","0.5")} hours of sunshine a year: sunnier than half of all places in England and Wales.`;
+    case "sun:most": return `More than ${f("sun_h","0.75")} hours a year: sunnier than 3 in every 4 places.`;
+    case "rain:less": return `Under ${f("rain_mm","0.5")} mm of rain a year: drier than half of all places.`;
+    case "rain:least": return `Under ${f("rain_mm","0.25")} mm a year: drier than 3 in every 4 places.`;
+    case "winter:milder": return `Winter nights average ${f("winter_c","0.5",1)} °C or warmer: milder than half of all places.`;
+    case "winter:mildest": return `Winter nights average ${f("winter_c","0.75",1)} °C or warmer: milder than 3 in every 4 places.`;
+    case "summer:warm": return `Summer afternoons average ${f("summer_c","0.75",1)} °C or more: warmer than 3 in every 4 places.`;
+    case "summer:cool": return `Summer afternoons average ${f("summer_c","0.25",1)} °C or less: cooler than 3 in every 4 places.`;
+    case "wind:sheltered": return `Less windy than half of all places (under ${f("wind","0.5",1)} m/s on average).`;
+    case "future:steady": return `Warming less than half of all places by the time the world is 2 °C warmer (around the 2050s), `
+      + `with fewer days above 30 °C than most.`;
+  }
+  return {sun:"Hours of sunshine in a year, 1991-2020.", rain:"Rain in a year, 1991-2020.",
+          winter:"How cold winter nights get, December to February.", summer:"How warm summer afternoons get, June to August.",
+          wind:"Average wind speed.", future:"How much warmer and hotter it gets once the world is 2 °C warmer."}[k]; }
+function setClim(k, v){ S.brief.clim = {...(S.brief.clim||{}), [k]:v}; save(); render(); }
 function matchCells(b){
   const nx = noxLimit(b), dn = densLimit(b), need = viewNeed(b), out=[];
   for(const c of C().cells){
@@ -884,6 +929,15 @@ function vSearch(){
           <button class="chip ${(b.pubs||"any")===k?"on":""}" aria-pressed="${(b.pubs||"any")===k}" onclick="setPubs('${k}')">${l}</button>`).join("")}</div>
       </div>
       <div class="crit">
+        <div class="lab"><b>Climate</b></div>
+        <div class="why">From the Met Office's 1991-2020 averages and its projections. Sunshine is estimated from satellite
+          cloud and solar energy, checked against the Met Office's own sunshine records.</div>
+        ${Object.entries(CLIMATE).map(([k,d])=>{ const cur=((b.clim||{})[k])||"any"; return `
+        <div class="climrow"><span class="climlab">${d.label}</span><div class="chiprow">${Object.entries(d.opts).map(([o,l])=>`
+          <button class="chip ${cur===o?"on":""}" aria-pressed="${cur===o}" onclick="setClim('${k}','${o}')">${l}</button>`).join("")}</div>
+          ${cur!=="any"?`<div class="hint">${climWhy(k)}</div>`:""}</div>`; }).join("")}
+      </div>
+      <div class="crit">
         <div class="lab"><b>Budget ceiling</b><span class="val" id="val-max">${sliderText("max")}</span></div>
         <div class="why">What you could pay for the <i>right offer</i>, usually 6–20% over today's value.</div>
         <input type="range" min="180000" max="900000" step="25000" value="${b.max}"
@@ -927,22 +981,30 @@ function vSearch(){
    combination of outlook and light, so a brief can be matched nationally
    before an area is chosen. Landmarks belong to an area, so they are left
    out here. */
-function nationRank(b){ const nf=DATA.nation_flags||[], keys=(b.views||[]).filter(k=>nf.includes(k));
-  if(!keys.length) return null; let need=0; keys.forEach(k=>need|=1<<nf.indexOf(k));
-  const rows=[]; for(const r of NATION||[]){ const [sec,area,lad,n,lat,lon,vm]=r; if(n<300) continue;
-    let hit=0; for(let i=0;i<vm.length;i+=2){ if((vm[i]&need)===need) hit+=vm[i+1]; }
-    const f=Math.min(1,hit); /* shares of the sector's homes: rare combinations are trimmed, not re-spread */ if(f>0) rows.push({sec,area,lad,n,f,homes:Math.round(n*f)}); }
+const CLIM_ORDER = ["sun_h","rain_mm","winter_c","summer_c","frosts","wind","warm_2c","hot_2c"];
+function climChosen(b){ return Object.entries(b.clim||{}).filter(([k,o])=>o&&o!=="any"&&CLIMATE[k]); }
+function nationRank(b){ const nf=DATA.nation_flags||[], keys=(b.views||[]).filter(k=>nf.includes(k)), cc=climChosen(b);
+  if(!keys.length && !cc.length) return null; let need=0; keys.forEach(k=>need|=1<<nf.indexOf(k));
+  const rows=[]; for(const r of NATION||[]){ const [sec,area,lad,n,lat,lon,vm,,cl]=r; if(n<300) continue;
+    if(cc.length){ const c={}; (cl||[]).forEach((v,i)=>c[CLIM_ORDER[i]]=v); if(!climOk(c,b)) continue;
+      /* how far past the line each chosen climate is, so the clearest matches come first */
+      var margin=cc.reduce((s,[k,o])=>{ const [dir,q]=climLimit(k,o), v=c[CLIMATE[k].col];
+        return s + (v==null||q==null||!q ? 0 : dir*(v-q)/Math.abs(q)); },0); }
+    let hit=1; if(keys.length){ hit=0; for(let i=0;i<vm.length;i+=2){ if((vm[i]&need)===need) hit+=vm[i+1]; } }
+    const f=Math.min(1,hit); /* shares of the sector's homes: rare combinations are trimmed, not re-spread */
+    if(f>0) rows.push({sec,area,lad,n,f,homes:Math.round(n*f),m:cc.length?margin:0}); }
   const total=rows.reduce((s,r)=>s+r.homes,0);
-  rows.sort((a,b)=>b.f-a.f||b.homes-a.homes); return {keys, rows:rows.slice(0,8), total}; }
+  rows.sort((a,b)=>b.f-a.f||b.m-a.m||b.homes-a.homes); return {keys, cc, rows:rows.slice(0,8), total}; }
 function nationPanel(b){ const R=nationRank(b), nS=(NATION||[]).length;
   if(!nS) return `<div class="panel" style="margin-top:14px"><div class="eyebrow">Anywhere in England and Wales</div><p class="note" style="margin:6px 0 0">Loading every postcode sector in the country…</p></div>`;
   if(!R) return `<div class="panel" style="margin-top:14px"><div class="eyebrow">Anywhere in England and Wales</div>
-    <p class="note" style="margin:6px 0 0">Choose an outlook or the light you want, and this shows where in the whole country it is most common.</p></div>`;
+    <p class="note" style="margin:6px 0 0">Choose an outlook, the light or the climate you want, and this shows where in the whole country it is most common.</p></div>`;
   const area=k=>((DATA.index||[]).find(a=>a.code===k)||{name:k}).name;
   return `<div class="panel" style="margin-top:14px"><div class="eyebrow">Anywhere in England and Wales</div>
     <h4 style="margin:6px 0 4px;font-size:16px">Where it is most common</h4>
-    <p class="note" style="margin:0 0 8px">Share of homes with ${R.keys.length>1?"all of these":"this"}, by postcode sector, of ${nS.toLocaleString()} sectors.
-      About ${R.total.toLocaleString()} homes in the country have it.</p>
+    <p class="note" style="margin:0 0 8px">${R.keys.length?`Share of homes with ${R.keys.length>1?"all of these":"this"}, by postcode sector, of ${nS.toLocaleString()} sectors`
+      :`Postcode sectors with the climate you chose, clearest first, of ${nS.toLocaleString()} sectors`}${R.keys.length&&R.cc.length?", in the climate you chose":""}.
+      About ${R.total.toLocaleString()} homes in the country ${R.keys.length?"have it":"are in them"}.</p>
     ${R.rows.map(r=>`<div class="nrow"><div><b class="mono">${esc(r.sec)}</b> <span class="note">${esc(r.lad||area(r.area))}</span></div>
       <div class="nr"><span class="num" title="${r.homes.toLocaleString()} homes">${Math.round(r.f*100)}% <span class="note">of ${r.n.toLocaleString()}</span></span>
       <button class="seeview" onclick="lookHere('${r.area}','${esc(r.sec)}')">Look here →</button></div></div>`).join("")}</div>`; }
@@ -1006,6 +1068,8 @@ function vResults(){
         <div class="tags"><span class="tag">NOx ${c.nox}</span><span class="tag">${c.min_centre} min to centre</span>
           <span class="tag">GP ${c.km_gp} km</span><span class="tag">${Math.round(c.tenure_med)} yrs owned</span>
           ${c.km_park!=null?`<span class="tag">Park ${Math.round(c.km_park*1000)} m</span>`:""}
+          ${c.sun_h!=null?`<span class="tag" title="Hours of sunshine in a year (estimate) and rain in a year, 1991-2020">${Math.round(c.sun_h).toLocaleString("en-GB")} h sun · ${Math.round(c.rain_mm).toLocaleString("en-GB")} mm rain</span>`:""}
+          ${c.warm_2c!=null?`<span class="tag" title="Warmer by the time the world is 2 °C warmer than before industry, around the 2050s">+${c.warm_2c.toFixed(1)} °C by the 2050s</span>`:""}
           ${c.km_pub!=null?`<span class="tag">Pub ${c.km_pub<1?Math.round(c.km_pub*1000)+" m":c.km_pub+" km"}</span>`:""}
           ${c.add_value?`<span class="tag" title="Typical value a house here could add without planning permission, at 2019 prices (estimate)">Could add ≈ ${GBPk(c.add_value)}</span>`:""}</div>
         ${(()=>{const v=viewOf(c.sector); if(!v) return ""; return `

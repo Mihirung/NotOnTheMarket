@@ -99,7 +99,12 @@ NATION_FLAGS = [k for k, *_ in V4.GENERIC] + [k for k, *_ in V4.LIGHT] + [k for 
 # cells travel as rows; the page turns them back into objects with these names (outcode is the sector's first part)
 CELL_COLS = ["sector", "ptype", "band", "n", "n_top", "exp_sellers", "p_med", "value_med", "offer_med", "premium_med",
              "tenure_med", "nox", "density", "km_gp", "min_centre", "lat", "lon", "vm",
-             "km_hosp", "km_park", "km_blue", "km_pub", "add_value"]
+             "km_hosp", "km_park", "km_blue", "km_pub", "add_value",
+             "sun_h", "rain_mm", "winter_c", "summer_c", "frosts", "wind", "warm_2c", "hot_2c"]
+# climate columns carried by each cell (climate_signals.py), in CELL_COLS order
+CLIM = [("sun_hours_year", "sun_h", 0), ("rain_year", "rain_mm", 0), ("coldest_nights", "winter_c", 1),
+        ("warmest_days", "summer_c", 1), ("frost_days", "frosts", 0), ("wind", "wind", 1), ("warming_2c", "warm_2c", 2),
+        ("hot_days_2c", "hot_2c", 1)]
 
 
 def area_of(pc):
@@ -260,8 +265,12 @@ def med1(s, nd=1):
     return round(float(s.median()), nd) if len(s) else None
 
 
-def export_area(A, cache, geo, lmk, nat, scored, lad, amen):
+def export_area(A, cache, geo, lmk, nat, scored, lad, amen, clim=None):
     H = pd.read_parquet(Path(cache) / "houses" / f"{A}.parquet").reset_index(drop=True)
+    if clim is not None:                              # each house's climate, by its postcode
+        ci, pcs = clim.drop_duplicates("postcode").set_index("postcode"), H.postcode.astype(str)
+        for c, _, _ in CLIM:
+            H[f"clim_{c}"] = pcs.map(ci[c]).to_numpy(dtype="float32")
     Sg = pd.read_parquet(Path(cache) / "houses" / f"{A}_sight.parquet")
     H["key"] = H.cell.astype(np.int64) * 10_000_000 + H.h3
     Sg["key"] = Sg.cell.astype(np.int64) * 10_000_000 + Sg.h3
@@ -309,6 +318,11 @@ def export_area(A, cache, geo, lmk, nat, scored, lad, amen):
     d["postcode"] = d.postcode.astype(str)
     d = d.merge(geo[["postcode", "nox", "pc_within_1km", "km_gp", "km_hospital", "lat", "lon"]], on="postcode", how="left")
     d = d.merge(amen, on="postcode", how="left")
+    if clim is not None:
+        d = d.merge(clim, on="postcode", how="left")
+    for c, _, _ in CLIM:
+        if c not in d.columns:
+            d[c] = np.nan
     pv = H.groupby("postcode").add_value.median().rename("add_value")      # typical value a house there could add
     d = d.merge(pv, left_on="postcode", right_index=True, how="left")
     d = d[d.nox.notna() & d.postcode.str.contains(" ")].copy()
@@ -349,7 +363,8 @@ def export_area(A, cache, geo, lmk, nat, scored, lad, amen):
                       round(float(g.km_gp.median()), 2), int(round(g.mins.median())), round(float(g.lat.median()), 4),
                       round(float(g.lon.median()), 4), vm,
                       med1(g.km_hospital), med1(g.km_park, 2), med1(g.km_blue), med1(g.km_pub, 2),
-                      int(g.add_value.median()) if g.add_value.notna().any() else None])
+                      int(g.add_value.median()) if g.add_value.notna().any() else None]
+                     + [med1(g[c], nd) for c, _, nd in CLIM])
 
     # ---- each sector: shares, and two real houses to draw -----------------
     H["log_reach"] = np.log10(H.u_longest_km.clip(lower=0.05))
@@ -385,7 +400,8 @@ def export_area(A, cache, geo, lmk, nat, scored, lad, amen):
         nation.append([sec, A, lads.idxmax() if len(lads) else "", int(wg.sum()),
                        round(float(g.lat.mean()), 3) if g.lat.notna().any() else None,
                        round(float(g.lon.mean()), 3) if g.lon.notna().any() else None,
-                       vm, round(float(np.average(g.lm_n.fillna(0) > 0, weights=wg)), 2)])
+                       vm, round(float(np.average(g.lm_n.fillna(0) > 0, weights=wg)), 2),
+                       [med1(g[f"clim_{c}"], nd) if f"clim_{c}" in g else None for c, _, nd in CLIM]])
 
     # ---- three owners to show the postcard and offer pages ----------------
     by_pc = H[H.has_garden].reset_index().groupby("postcode").head(1).set_index("postcode")["index"]
@@ -437,6 +453,9 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
     lad = lad_names()
     amen = pd.read_parquet("research/data/signals/amenity_postcode.parquet",
                            columns=["postcode", "km_park", "km_blue", "km_pub"])
+    cp = Path("research/data/signals/climate_postcode.parquet")
+    clim = (pd.read_parquet(cp, columns=["postcode"] + [c for c, _, _ in CLIM]).drop_duplicates("postcode")
+            if cp.exists() else None)
     lab = Path(lab_dir)
     load = lambda f: json.load(open(lab / f)) if (lab / f).exists() else {}
     deploy = load("lab_deploy.json"); pct = deploy.get("pct", 100); name = deploy.get("name", "ALL")
@@ -452,7 +471,7 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
     areas = [a for a in areas if not only or a in only]
     index, nation, first = [], [], None
     for A in areas:
-        entry, nat_rows = export_area(A, cache, geo, lmk, nat, scored, lad, amen)
+        entry, nat_rows = export_area(A, cache, geo, lmk, nat, scored, lad, amen, clim)
         nation += nat_rows
         with open(out / "areas" / f"{A}.json", "w") as fh:
             json.dump(entry, fh, separators=(",", ":"))
@@ -468,6 +487,9 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
     site = {"model": model,
             "nox_national": {str(k): v for k, v in geo.nox.quantile([.1, .25, .5, .75, .9]).round(2).to_dict().items()},
             "density_national": {str(k): v for k, v in geo.pc_within_1km.quantile([.1, .25, .5, .75, .9]).round(0).to_dict().items()},
+            # climate filters: national quarters and halves across every postcode in England and Wales
+            "climate_national": ({short: {str(k): round(float(v), nd) for k, v in clim[c].quantile([.25, .5, .75]).items()}
+                                  for c, short, nd in CLIM} if clim is not None else {}),
             "alph": ALPH, "a_lo": round(float(A_LO), 4), "a_span": round(float(A_SPAN), 4),
             "index": index, "nation_flags": NATION_FLAGS, "default_area": first["code"], "cities": {first["code"]: first}}
     with open(out / "site_data.json", "w") as fh:

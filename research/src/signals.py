@@ -90,6 +90,16 @@ FAMILIES = {
                         "pd_heritage_share", "pd_add_m2", "pd_add_pct", "price_m2", "flat_share", "listed_share"],
                about="What the houses of the postcode could add without planning permission (permitted development, "
                      "planning constraints from planning.data.gov.uk and DataMapWales), and their price per m2"),
+    "CLIMATE": dict(table="research/data/signals/climate_postcode.parquet",
+                    columns=["temp_year", "temp_summer", "temp_winter", "temp_range", "warmest_days", "coldest_nights",
+                             "rain_year", "rain_summer", "rain_winter", "heavy_rain_days", "frost_days", "icing_days",
+                             "summer_days", "sun_hours_year", "sun_hours_summer", "sun_hours_winter", "cloud_year",
+                             "cloud_winter", "solar_year", "wind", "warming_so_far", "warming_2c", "summer_heat_2c",
+                             "winter_nights_2c", "summer_rain_so_far", "summer_rain_2c", "winter_rain_so_far",
+                             "winter_rain_2c", "hot_days_now", "hot_days_2c", "frost_days_lost_2c"],
+                    about="Climate now and how it is changing: Met Office HadUK-Grid 1991-2020 (2 km and 12 km), "
+                          "UKCP18 projections at 2 C of global warming (12 km), CHELSA cloud, solar energy and wind, "
+                          "sunshine hours calibrated on Met Office stations (climate_signals.py)"),
 }
 
 

@@ -63,15 +63,35 @@ CHAR = {
     "extension_space": ("add_m2", True, "floor space that could be added without planning permission"),
     "loft": ("pd_loft", True, "a loft extension allowed without planning permission"),
     "historic": ("historic", True, "in a conservation area or listed"),
+    # climate now and how it is changing, by postcode (CLIMATE family, climate_signals.py)
+    "sunny": ("sun_hours_year", True, "sunshine hours in the year"),
+    "sunny_winters": ("sun_hours_winter", True, "sunshine in winter"),
+    "clear_skies": ("cloud_year", False, "fewest grey, cloudy skies"),
+    "dry": ("rain_year", False, "least rain in the year"),
+    "few_downpours": ("heavy_rain_days", False, "fewest days of heavy rain"),
+    "warm_summers": ("warmest_days", True, "warm summer days"),
+    "cool_summers": ("warmest_days_cool", False, "cooler summer days"),
+    "mild_winters": ("coldest_nights", True, "mild winter nights"),
+    "few_frosts": ("frost_days", False, "fewest frosts"),
+    "sheltered": ("wind", False, "least wind"),
+    "steady_climate": ("warming_2c", False, "least warming by the 2050s"),
+    "few_heatwaves": ("hot_days_2c", False, "fewest very hot days by the 2050s"),
+    "winter_rain_steady": ("winter_rain_2c", False, "least rise in winter rain by the 2050s"),
+    "summer_rain_kept": ("summer_rain_2c", True, "summers drying least by the 2050s"),
 }
 # where each column comes from when it is not one of the house's own measures
 POSTCODE = {"nox": "GEO", "km_gp": "GEO", "km_hospital": "GEO", "km_park": "AMENITY", "park_ha_1km": "AMENITY",
             "km_wood": "AMENITY", "km_blue": "AMENITY", "km_sea": "AMENITY", "km_pub": "AMENITY", "km_pub_far": "AMENITY",
-            "restaurants_1km": "AMENITY", "takeaways_1km": "AMENITY"}
+            "restaurants_1km": "AMENITY", "takeaways_1km": "AMENITY",
+            **{c: "CLIMATE" for c in ("sun_hours_year", "sun_hours_winter", "cloud_year", "rain_year", "heavy_rain_days",
+                                      "warmest_days", "warmest_days_cool", "coldest_nights", "frost_days", "wind",
+                                      "warming_2c", "hot_days_2c", "winter_rain_2c", "summer_rain_2c")}}
 PER_HOUSE_PD = {"add_value", "add_m2", "pd_loft", "historic"}
 # "all": every outlook, garden, light and landmark measure, with clean air, health services, green and blue
-# space. Pubs (near or far), food and building work are matters of taste: they are chosen by name.
-ALL = list(CHAR)[:17] + ["clean_air", "near_gp", "near_hospital", "near_park", "parkland", "near_woods", "near_water"]
+# space, sunshine, dry weather and mild winters. Pubs (near or far), food, building work, warm or cool summers
+# and the other climate measures are matters of taste: they are chosen by name.
+ALL = list(CHAR)[:17] + ["clean_air", "near_gp", "near_hospital", "near_park", "parkland", "near_woods", "near_water",
+                         "sunny", "dry", "mild_winters"]
 REGION_AREAS = {
     "London": "E EC N NW SE SW W WC BR CR DA EN HA IG KT RM SM TW UB WD",
     "South East": "BN CT GU HP ME MK OX PO RG RH SL SO TN",
@@ -128,6 +148,8 @@ def load(cols):
         tab = tab.drop_duplicates("postcode").set_index("postcode")
         if "km_pub" in tab.columns:
             tab["km_pub_far"] = tab.km_pub
+        if "warmest_days" in tab.columns:                # the same measure, for those who like it cooler
+            tab["warmest_days_cool"] = tab.warmest_days
         for c in cols:
             if POSTCODE.get(c) == fam:
                 v = tab[c].reindex(cats).to_numpy(dtype="float32")
@@ -197,7 +219,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--want", nargs="*", default=[], help=" ".join(CHAR))
     ap.add_argument("--all", action="store_true", help="every outlook, garden, light and landmark measure, clean air, "
-                    "health services, green and blue space at once (add others by name, e.g. --all --want pubs_far)")
+                    "health services, green and blue space, sunshine, dry weather and mild winters at once "
+                    "(add others by name, e.g. --all --want pubs_far cool_summers)")
     ap.add_argument("--area", nargs="*", default=[], help="postcode areas to search, e.g. BA BS EX")
     ap.add_argument("--region", default=None, help=", ".join(REGION_AREAS))
     ap.add_argument("--houses-only", action="store_true", help="leave out buildings with several addresses (flats)")

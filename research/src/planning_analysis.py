@@ -118,7 +118,7 @@ def risk_rows(apps, pcs):
     at the start of each year."""
     from panel2 import Panel
     P = Panel("research/data/transactions.parquet")
-    in_study = np.isin(P.pc_names[P.pc], list(pcs))
+    in_study = pd.Index(P.pc_names).isin(pcs)[P.pc]          # by postcode code: a hash lookup, not a string scan
     treated_keys = set(apps.key.dropna().astype("int64").tolist())
     k = P.key
     sample = (np.abs(k) // 7) % 5 == 0                    # every home with an application, one in five of the rest
