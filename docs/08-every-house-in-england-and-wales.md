@@ -10,11 +10,11 @@ home with one command.
 
 | Before | Now |
 |---|---|
-| House-level views, garden sun, window light and landmarks for 401,845 houses in four cities | The same for **HOUSES_TOTAL houses** in England and Wales |
+| House-level views, garden sun, window light and landmarks for 401,845 houses in four cities | The same for **24,114,764 houses** in England and Wales |
 | The national model saw only a 30 m view from each postcode centre | The national model has been offered every house-level measure, averaged over each postcode's addresses |
 | Houses joined to sale records by the nearest postcode centre | Houses joined by their **exact postcode**, from the ONS UPRN Directory |
 | A drawing for every house in four cities | A drawing for every house in the country |
-| A hand-picked list of ten landmarks | **LANDMARKS_TOTAL landmarks**: every cathedral, abbey, castle, lighthouse, folly, tower and Grade I listed church with an English Wikipedia article, and every hill with 30 m or more of prominence |
+| A hand-picked list of ten landmarks | **9,765 landmarks**: every cathedral, abbey, castle, lighthouse, folly, tower and Grade I listed church with an English Wikipedia article, and every hill with 30 m or more of prominence |
 | Each new signal needed new code to test | A signal is a table with one row per postcode; one command says what it is worth |
 
 ## 1. How it was done
@@ -72,9 +72,80 @@ service is back. Those 23 cells and 14 others with any doubt were deleted
 and recomputed. Each cell now records how many tiles were ruled out, and a
 check runs every 50 cells.
 
-RESULTS_PLACEHOLDER
+## 2. What it found
 
-## Finding the best house in the country
+**The run.** 24,114,764 houses at 27,968,320 address positions, with
+37,323,304 landmark sightings, in 75.7 hours of computing over 1,711 cells.
+
+**It matches the city runs.** Every house of the four city runs was found
+again in the national run and compared measure by measure. Storeys, the way
+the house faces, long views, water, hills, how overlooked it is, sun and
+window light all correlate at 0.98 to 1.00 with the city answers, and their
+averages agree to the second decimal place
+(`research/outputs/national/checks.json`).
+
+**It is not a sharper copy of the 30 m view.** Ranked postcode by postcode
+across 1.48 million postcodes, the house-level measures agree with the old
+30 m layer only loosely: 0.26 for long views, 0.45 for the furthest
+sight-line, 0.37 for water in view. Only the sea (0.73) and hills on the
+skyline (0.70) are close. The 30 m layer sees the land from the postcode
+centre; the house-level run sees it from each window, past the
+neighbouring roofs and trees.
+
+## 3. The national model with every house-level signal
+
+Every family was tested the same way, on every home: the national model
+refitted with and without it on all 39,935,433 home-years from 2001 to
+2015, and judged on 2017 and 2018 sales it never saw, ranked inside each
+postcode district as a campaign would rank them. "Times random" is how much
+more common sellers are in the best tenth of each district than in the
+district as a whole.
+
+| Family added to the current model | Sellers in each district's best tenth | Gain | 95% range | Verdict |
+|---|---|---|---|---|
+| None (the current model) | 1.689 times random | | | |
+| House: views, garden, sun, window light, size, landmarks (43 columns) | 1.721 | +0.032 | +0.013 to +0.048 | add |
+| Area character (10 columns) | 1.713 | +0.025 | +0.007 to +0.039 | add |
+| What could be built without permission (11 columns, [09](09-planning-health-and-amenities.md)) | 1.727 | +0.037 | +0.020 to +0.053 | add |
+| Pubs, parks, water, sea, restaurants (11 columns) | 1.693 | +0.005 | -0.010 to +0.020 | search and price only |
+| **House, area and what could be built, together** | **1.741** | **+0.052** | **+0.032 to +0.068** | **deployed** |
+| All of the above and the amenities | 1.720 | -0.020 against the deployed set | -0.035 to -0.006 | no |
+
+Against the model deployed before this work began, the new one finds
++0.059 more (range +0.040 to +0.078). In plain terms, a mailing to the
+best tenth of every district reaches about 3% more real sellers for the same
+number of letters. The gain is clear of zero for owners of under 10 years
+(+0.035, range +0.009 to +0.060) and of 10 to 19 years (+0.027, range +0.004
+to +0.055); for owners of 20 years or more it is larger but less certain,
+because they sell least often (+0.061, range -0.020 to +0.137).
+
+Taken one at a time and comparing like with like, the clearest links are
+the ones the cities suggested: overlooked homes sell more often (the same
+sign in all eight regions), homes with more summer sun sell more often,
+and homes boxed in by a high skyline to the south or west sell less often.
+Once the national score is allowed for, 32 of the 43 house columns still
+carry a link of their own, and all 43 carry a price.
+
+**The house-level views can replace the 30 m views, but both are better.**
+With the 30 m views taken out and the house-level ones put in, the model
+gains +0.018 (range +0.002 to +0.034); with both it gains +0.032. The 30 m
+layer still adds something the house-level one does not.
+
+**The deployed model** has all 137 columns of the base, history, location,
+30 m view, house, area and building families. It is trained on every home,
+2001 to 2018 (50,694,427 home-years, 613 rounds), because a model refreshed
+with recent years finds 2% to 4% more sellers than one that is not. It
+scores 13,790,299 owned homes, and expects 512,042 of them to sell within
+the year.
+
+**Room to run.** Fitting on every home with 137 columns at first ran out of
+memory: the library built a second, row-by-row copy of the table to time two
+ways of training. It now trains column by column, which grows the same
+trees without the copy, and the largest fit peaks at 13 GB on a 16 GB
+machine. Each family takes under an hour to assess on every home.
+
+
+## 4. Finding the best house in the country
 
 Every house is given its national percentile on each of seventeen
 characteristics: long views, the furthest sight-line, water, the sea,
@@ -95,7 +166,7 @@ python research/src/national_best_pages.py best_homes.html best_homes.csv 5
 The last one runs several briefs at once and draws every winner.
 SEARCH_RESULTS
 
-## The site, for every postcode area
+## 5. The site, for every postcode area
 
 The prototype searched Exeter and Bath. It now searches any postcode area
 in England and Wales, with the same measures drawn the same way. Each area
@@ -109,7 +180,7 @@ individual home is published; the drawings are of unnamed houses inside a
 sector.
 SITE_RESULTS
 
-## Adding a signal
+## 6. Adding a signal
 
 A signal is a table with one row per postcode. Register it in
 `research/src/signals.py` and run one command:
