@@ -126,6 +126,12 @@ FAMILIES = {
                            "flats", "terraced", "semis", "detached", "beds_1_2", "beds_4_plus"],
                   about="The homes around the postcode in 2016: when built, type, bedrooms and council tax bands "
                         "(Valuation Office Agency, stock_signals.py)"),
+    "AREA15": dict(table="research/data/signals/area15_postcode.parquet",
+                   columns=["imd_score_15", "income_15", "employment_15", "education_15", "health_15", "crime_15",
+                            "barriers_15", "living_env_15", "idaci_15", "idaopi_15", "rural"],
+                   about="The area family rebuilt from before the test years and without the census area "
+                         "classification: English Indices of Deprivation 2015 and its domains, and rurality "
+                         "(area15_signals.py)"),
     "LIFE": dict(table="research/data/signals/life_postcode.parquet",
                  inputs=["ab_20_24", "ab_25_29", "ab_30_44", "ab_45_59", "ab_60_64", "ab_65_74", "ab_75_84", "ab_85_89",
                          "ab_90_plus", "alone_65", "couple_65", "le65", "health_dep", "older_income_dep"],

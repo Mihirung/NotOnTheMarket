@@ -89,13 +89,17 @@ class Local:
 
 def extra_pairs(lab):
     """Comparisons asked for by new signal families (combine_signals.py): each against the deployed model."""
+    out = []
     f = Path(lab) / "candidates.json"
-    if not f.exists():
-        return []
-    c = json.load(open(f))
-    base = f"{c['deployed']}@100"
-    return [(base, f"{k['name']}@100") for k in c["candidates"]] + \
-        [(f"{a['name']}@100", f"{b['name']}@100") for a, b in zip(c["candidates"], c["candidates"][1:])]
+    if f.exists():
+        c = json.load(open(f))
+        base = f"{c['deployed']}@100"
+        out += [(base, f"{k['name']}@100") for k in c["candidates"]] + \
+            [(f"{a['name']}@100", f"{b['name']}@100") for a, b in zip(c["candidates"], c["candidates"][1:])]
+    g = Path(lab) / "extra_pairs.json"                     # other comparisons, e.g. swapping one family for another
+    if g.exists():
+        out += [tuple(p) for p in json.load(open(g))]
+    return out
 
 
 def main(panel_dir, lab_dir):
