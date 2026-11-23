@@ -126,6 +126,15 @@ FAMILIES = {
                            "flats", "terraced", "semis", "detached", "beds_1_2", "beds_4_plus"],
                   about="The homes around the postcode in 2016: when built, type, bedrooms and council tax bands "
                         "(Valuation Office Agency, stock_signals.py)"),
+    "LIFE": dict(table="research/data/signals/life_postcode.parquet",
+                 inputs=["ab_20_24", "ab_25_29", "ab_30_44", "ab_45_59", "ab_60_64", "ab_65_74", "ab_75_84", "ab_85_89",
+                         "ab_90_plus", "alone_65", "couple_65", "le65", "health_dep", "older_income_dep"],
+                 columns=["owner_age", "p_owner_75", "p_owner_85", "p_exit", "p_exit_alone", "le65", "health_dep",
+                          "older_income_dep", "alone_share"],
+                 rowwise="life_rows",
+                 about="Later life: the owner's likely age from years owned and the 2011 age mix of the output area, "
+                       "and the yearly chance of a death or move into care at that age, moved by local life "
+                       "expectancy (life_signals.py). For the model's ranking only; never shown"),
     "CRIME": dict(table="research/data/signals/crime_postcode.parquet",
                   columns=["crime_all", "burglary", "antisocial", "violence", "vehicle", "damage", "drugs", "theft"],
                   about="Recorded crime and anti-social behaviour per 1,000 residents a year, February 2014 to "
@@ -144,14 +153,52 @@ def available(families=None):
     return [f for f in (families or FAMILIES) if (ROOT / FAMILIES[f]["table"]).exists()]
 
 
+# ---------------------------------------------------------------- families worked out home by home
+# A family with `rowwise` keeps per-postcode `inputs` in its table; its `columns` are worked out for each
+# home-year from those inputs and the home's years of ownership (model_lab.View.take, panel2.full_features).
+LIFE_BANDS = np.array([(20, 25), (25, 30), (30, 45), (45, 60), (60, 65), (65, 75), (75, 85), (85, 90), (90, 100)])
+GOMPERTZ = (-11.34, 0.105)        # ln(yearly chance of death) = A + B * age, through the 2014-16 England and Wales life tables
+LE65_EW = 19.85                   # life expectancy at 65, England and Wales 2014-16, men and women averaged
+CARE_SHARE = 0.5                  # moves into care, as a share of deaths at the same age
+MIN_BUY_AGE = 25
+
+
+def life_rows(M, tenure):
+    """LIFE columns for each home-year: M holds the postcode inputs, tenure the years owned."""
+    M = np.asarray(M, np.float32); ten = np.asarray(tenure, np.float32)
+    ages = np.arange(20, 100, dtype=np.float32)
+    band = np.searchsorted(LIFE_BANDS[:, 1], ages, side="right")             # band of each single year of age
+    width = (LIFE_BANDS[:, 1] - LIFE_BANDS[:, 0]).astype(np.float32)
+    dens = M[:, band] / width[band]                                          # (n, 80): share per year of age
+    lo = np.clip(ten + MIN_BUY_AGE, 20, 95)
+    w = np.where(ages[None, :] >= lo[:, None], dens, 0.0)
+    tot = w.sum(axis=1)
+    tot = np.where(tot > 0, tot, np.nan)
+    alone, couple, le, hd, inc = M[:, 9], M[:, 10], M[:, 11], M[:, 12], M[:, 13]
+    A, B = GOMPERTZ
+    shift = np.exp(-B * np.nan_to_num(le - LE65_EW))                        # longer local lives, lower yearly risk
+    hz = np.minimum((1 + CARE_SHARE) * np.exp(A + B * ages)[None, :] * shift[:, None], 1.0)
+    owner_age = (w * ages).sum(axis=1) / tot
+    p75 = (w * (ages >= 75)).sum(axis=1) / tot
+    p85 = (w * (ages >= 85)).sum(axis=1) / tot
+    p_exit = (w * hz).sum(axis=1) / tot
+    alone_share = alone / np.where(alone + couple > 0, alone + couple, np.nan)
+    return np.column_stack([owner_age, p75, p85, p_exit, p_exit * alone_share, le, hd, inc, alone_share]).astype(np.float32)
+
+
+def rowwise(family, M, tenure):
+    return globals()[FAMILIES[family]["rowwise"]](M, tenure)
+
+
 def lookup(family, postcodes):
-    """(n_postcodes, n_columns) float32 matrix of a family's signals, rows in the order of `postcodes`."""
+    """(n_postcodes, n_columns) float32 matrix of a family's signals, rows in the order of `postcodes`.
+    For a family worked out home by home, its inputs."""
     spec = FAMILIES[family]
     t = pd.read_parquet(ROOT / spec["table"])
     if spec.get("derive"):
         t = globals()[spec["derive"]](t)
     t = t.drop_duplicates("postcode").set_index("postcode").reindex(pd.Index(postcodes))
-    m = np.array(t[spec["columns"]].to_numpy(dtype="float32"), copy=True)
+    m = np.array(t[spec.get("inputs", spec["columns"])].to_numpy(dtype="float32"), copy=True)
     m[~np.isfinite(m)] = np.nan
     return m
 

@@ -95,6 +95,11 @@ class Chunks:
         return [self.names.index(f) for f in want], want
 
 
+def SG_rowwise(f):
+    import signals as SG
+    return bool(SG.FAMILIES.get(f, {}).get("rowwise"))
+
+
 class View:
     """Rows of one chunk with every feature, in Chunks.names order."""
 
@@ -115,7 +120,11 @@ class View:
                 k = len(self.ch.fam[f])
                 sel = (cols >= off) & (cols < off + k)
                 if sel.any():
-                    out[:, sel] = self.ch.lookup(f)[pc][:, cols[sel] - off]
+                    v = self.ch.lookup(f)[pc]
+                    if SG_rowwise(f):                 # worked out home by home from the years owned
+                        import signals as SG
+                        v = SG.rowwise(f, v, np.asarray(self.T[r, self.ch.tv.index("tenure")], np.float32))
+                    out[:, sel] = v[:, cols[sel] - off]
                 off += k
         return out
 

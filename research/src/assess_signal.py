@@ -202,7 +202,8 @@ def price(fam, say, years=(2010, 2019)):
     t = pd.read_parquet(SG.ROOT / spec["table"])
     if spec.get("derive"):
         t = getattr(SG, spec["derive"])(t)
-    t = t.drop_duplicates("postcode").set_index("postcode")[spec["columns"]]
+    cols = spec.get("inputs", spec["columns"])           # a home-by-home family: its postcode inputs
+    t = t.drop_duplicates("postcode").set_index("postcode")[cols]
     tx = tx.join(t, on="postcode", how="inner")
     sec = tx.postcode.str.slice(0, -2)
     y = np.log(tx.price.to_numpy(float))
@@ -214,7 +215,7 @@ def price(fam, say, years=(2010, 2019)):
     yd, Xd = dm(y), dm(Xc)                            # within sector: every sector its own price level
     blk = _blocks(pd.factorize(tx.postcode)[0].astype(np.int64) * 2654435761)
     res = {}
-    for col in spec["columns"]:
+    for col in cols:
         x = tx[col].to_numpy(float); ok = np.isfinite(x)
         if ok.mean() < 0.2 or np.nanstd(x) == 0:
             continue

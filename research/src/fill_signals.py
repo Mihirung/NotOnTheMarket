@@ -30,7 +30,7 @@ def main(fams):
         if not path.exists():
             print(f"{f}: no table, skipped"); continue
         t = pd.read_parquet(path)
-        cols = SG.FAMILIES[f]["columns"]
+        cols = SG.FAMILIES[f].get("inputs", SG.FAMILIES[f]["columns"])
         empty = t[cols].isna().all(axis=1).to_numpy()
         have = ~empty & t.postcode.isin(pos.index).to_numpy()
         need = empty & t.postcode.isin(pos.index).to_numpy()

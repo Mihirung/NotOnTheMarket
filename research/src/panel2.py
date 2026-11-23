@@ -248,7 +248,10 @@ def full_features(panel, s, t, families, lookups=None):
             continue
         if lookups is None or f not in lookups:
             lookups = dict(lookups or {}); lookups[f] = SG.lookup(f, panel.pc_names)
-        parts.append(lookups[f][panel.pc[s]])
+        v = lookups[f][panel.pc[s]]
+        if SG.FAMILIES[f].get("rowwise"):             # worked out home by home from the years owned
+            v = SG.rowwise(f, v, panel.features(s, t, ["tenure"])[:, 0])
+        parts.append(v)
     return np.hstack(parts)
 
 
