@@ -87,6 +87,17 @@ class Local:
         return float(np.average(a, weights=npos[ok]))
 
 
+def extra_pairs(lab):
+    """Comparisons asked for by new signal families (combine_signals.py): each against the deployed model."""
+    f = Path(lab) / "candidates.json"
+    if not f.exists():
+        return []
+    c = json.load(open(f))
+    base = f"{c['deployed']}@100"
+    return [(base, f"{k['name']}@100") for k in c["candidates"]] + \
+        [(f"{a['name']}@100", f"{b['name']}@100") for a, b in zip(c["candidates"], c["candidates"][1:])]
+
+
 def main(panel_dir, lab_dir):
     lab = Path(lab_dir); preds_dir = lab / "preds"
     t = load_test(panel_dir)
@@ -115,7 +126,7 @@ def main(panel_dir, lab_dir):
     draws = [rng.poisson(1.0, N_BLOCKS).astype("float64") for _ in range(BOOT)]
     res["ci"] = {}
     print("\ndifference in local lift@10 (second minus first), 95% interval by block bootstrap over properties")
-    for a, b in PAIRS:
+    for a, b in PAIRS + extra_pairs(lab):
         if a in tops and b in tops:
             entry = {}
             for tn, band in bands.items():

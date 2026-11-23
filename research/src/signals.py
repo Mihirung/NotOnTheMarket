@@ -100,6 +100,36 @@ FAMILIES = {
                     about="Climate now and how it is changing: Met Office HadUK-Grid 1991-2020 (2 km and 12 km), "
                           "UKCP18 projections at 2 C of global warming (12 km), CHELSA cloud, solar energy and wind, "
                           "sunshine hours calibrated on Met Office stations (climate_signals.py)"),
+    "PEOPLE": dict(table="research/data/signals/people_postcode.parquet",
+                   columns=["children", "age_20_29", "age_30_44", "age_45_59", "age_60_64", "age_65_74", "age_75_84",
+                            "age_85_plus", "median_age", "hh_alone_65", "hh_alone_under_65", "hh_couple_65",
+                            "hh_couple_no_children", "hh_young_children", "hh_grown_children", "hh_lone_parent",
+                            "hh_students", "own_outright", "own_mortgage", "social_rent", "private_rent",
+                            "spare_2_bedrooms", "overcrowded", "retired", "self_employed", "unemployed", "students",
+                            "hh_size", "rooms", "bedrooms", "no_central_heating", "no_car", "cars_per_household"],
+                   about="Who lives around the postcode: life stage, household type, tenure, spare bedrooms, work "
+                         "and cars, from the 2011 Census output area (people_signals.py). No ethnicity, religion, "
+                         "marital status or health"),
+    "SCHOOLS": dict(table="research/data/signals/schools_postcode.parquet",
+                    columns=["km_primary_good", "km_primary_outstanding", "km_secondary_good",
+                             "km_secondary_outstanding", "good_primaries_2km", "km_primary", "km_secondary",
+                             "km_grammar", "km_independent"],
+                    about="Schools nearby: Ofsted grades as at August 2016, selective and independent schools "
+                          "(schools_access_signals.py)"),
+    "ACCESS": dict(table="research/data/signals/access_postcode.parquet",
+                   columns=["km_rail", "km_metro", "bus_stops_500m", "km_motorway", "km_a_road"],
+                   about="Transport: railway stations, underground, metro and tram stops, bus stops (NaPTAN), "
+                         "motorways and A roads (OS OpenMap Local) (schools_access_signals.py)"),
+    "STOCK": dict(table="research/data/signals/stock_postcode.parquet",
+                  columns=["built_pre1919", "built_1919_44", "built_1945_64", "built_1965_82", "built_1983_99",
+                           "built_2000_09", "built_2010_16", "one_period", "band_ab", "band_fgh", "bungalows",
+                           "flats", "terraced", "semis", "detached", "beds_1_2", "beds_4_plus"],
+                  about="The homes around the postcode in 2016: when built, type, bedrooms and council tax bands "
+                        "(Valuation Office Agency, stock_signals.py)"),
+    "CRIME": dict(table="research/data/signals/crime_postcode.parquet",
+                  columns=["crime_all", "burglary", "antisocial", "violence", "vehicle", "damage", "drugs", "theft"],
+                  about="Recorded crime and anti-social behaviour per 1,000 residents a year, February 2014 to "
+                        "January 2017 (data.police.uk, crime_signals.py)"),
 }
 
 
