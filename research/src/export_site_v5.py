@@ -498,6 +498,8 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
         json.dump({"flags": NATION_FLAGS, "rows": nation}, fh, separators=(",", ":"))
     print(f"wrote {len(index)} areas and {out / 'site_data.json'} ({(out / 'site_data.json').stat().st_size / 1e6:.1f} MB); "
           f"{len(nation):,} sectors in the national table", flush=True)
+    import export_sectors                                        # the national ranking table the search starts from
+    export_sectors.build(out)
 
 
 if __name__ == "__main__":

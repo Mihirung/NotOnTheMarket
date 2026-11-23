@@ -433,13 +433,25 @@ let LOADING = null, LOAD_ERR = null;
 /* The national sector table sits beside the page and arrives after it. */
 let NATION = DATA.nation || null;
 if(!NATION) fetch("nation.json").then(r=>r.ok?r.json():null).then(j=>{ if(j){ NATION=j.rows; NSEC=null; DATA.nation_flags=j.flags;
-    if((S.brief.anchors||[]).length){ loadTravel(); ensureAreas(); } render(); } }).catch(()=>{});
+    if((S.brief.anchors||[]).length) loadTravel(); sideOrRender(); ensureAreas(); } }).catch(()=>{});
+/* Every postcode sector in the country with what the search ranks on. The search starts here:
+   there is no area to choose. It ranks every sector on the brief, then loads the detail for the
+   few areas that hold the best fits. */
+let SECT = null;
+fetch("sectors.json").then(r=>r.ok?r.json():null).then(j=>{ if(!j) return; const out=[];
+    for(const r of j.rows){ const base={nat:true}; j.cols.forEach((c,i)=>{ if(c!=="types") base[c]=r[i]; });
+      for(const t of r[r.length-1]){ const c={...base}; j.type_cols.forEach((k,i)=>c[k]=t[i]); out.push(c); } }
+    SECT=out; sideOrRender(); ensureAreas(); }).catch(()=>{});
+function sideOrRender(){ if(route().v==="search" && document.getElementById("rail")) refreshSide(); else render(); }
 function areaPicker(){ const by={}; (DATA.index||[]).forEach(a=>(by[a.region]=by[a.region]||[]).push(a));
   return `<label class="areapick"><span class="mono">Area</span><select aria-label="Choose a postcode area" onchange="setCity(this.value)">${
     Object.entries(by).map(([r,l])=>`<optgroup label="${esc(r)}">${[...l].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>
       `<option value="${a.code}" ${a.code===(LOADING||S.city)?"selected":""}>${esc(a.name)} · ${a.code}</option>`).join("")}</optgroup>`).join("")
     }</select>${LOADING?`<span class="mono loadnote">loading…</span>`:LOAD_ERR?`<span class="mono loadnote">${esc(LOAD_ERR)} did not load; choose it again</span>`:""}</label>`; }
 const FLAGS = () => C().flags;
+const FLAG_WHY = {water:"A river, lake, canal, estuary or the sea somewhere in the upstairs view.",
+  hills:"Hills or high ground on the skyline from the upper windows."};
+const SEARCH_FLAGS = () => C().flags.filter(f=>!f.lm && (DATA.nation_flags||[]).includes(f.key)).map(f=>FLAG_WHY[f.key]?{...f, why:FLAG_WHY[f.key]}:f);
 const flagBit = key => FLAGS().findIndex(f=>f.key===key);
 const flagOf = key => FLAGS().find(f=>f.key===key);
 function compass(b){ const d=["north","north-east","east","south-east","south","south-west","west","north-west"]; return d[Math.round(b/45)%8]; }
@@ -785,7 +797,7 @@ const activeAnchors = b => (b.anchors||[]).filter(a=>a.lat!=null && a.prio!=="of
 
 /* every sector in the country, by name: position, homes, nearest stations */
 let NSEC = null;
-function nsec(){ if(!NSEC && NATION){ NSEC=new Map(); NATION.forEach(r=>{ if(r[4]!=null) NSEC.set(r[0],{area:r[1],homes:r[3],lat:r[4],lon:r[5],st:r[9]}); }); } return NSEC; }
+function nsec(){ if(!NSEC && NATION){ NSEC=new Map(); NATION.forEach(r=>{ if(r[4]!=null) NSEC.set(r[0],{area:r[1],homes:r[3],lat:r[4],lon:r[5],vm:r[6],st:r[9]}); }); } return NSEC; }
 const TT = new Map();
 function minsTo(sec, a){ const key=sec.lat+","+sec.lon+"|"+a.lat+","+a.lon+"|"+a.mode; if(TT.has(key)) return TT.get(key);
   const d=kmBetween(sec.lat,sec.lon,a.lat,a.lon); let t;
@@ -799,15 +811,22 @@ function minsTo(sec, a){ const key=sec.lat+","+sec.lon+"|"+a.lat+","+a.lon+"|"+a
         t=Math.min(t, end(sk)+8+leg+end(ak)); } } }
   TT.set(key,t); return t; }
 function cellMins(c, a){ const s=nsec()&&NSEC.get(c.sector); return s?minsTo(s,a):Infinity; }
-/* the postcode areas worth loading: those with homes within reach of every place that matters */
-function reachAreas(b){ const A=activeAnchors(b); if(!A.length || !nsec()) return [];
-  const hard=A.filter(a=>a.prio==="must"||a.prio==="high"), use=hard.length?hard:A, tot={};
-  for(const s of NSEC.values()){ if(use.every(a=>minsTo(s,a)<=a.mins*1.5)) tot[s.area]=(tot[s.area]||0)+s.homes; }
-  return Object.entries(tot).sort((x,y)=>y[1]-x[1]).slice(0,14).map(x=>x[0]); }
+/* The areas worth loading: rank every sector in the country on the brief (places, priorities,
+   budget, kind of home), then take the areas that hold the best fits, enough for three times the
+   homes a first wave needs. */
+function reachAreas(b){ if(!SECT) return [];
+  const key=JSON.stringify(b)+"|"+(NATION?1:0)+"|"+(STATIONS?1:0); if(reachAreas.key===key) return reachAreas.v;
+  const {full, part}=scoreCells(SECT, b), w={}; let cards=0;
+  for(const c of [...full, ...part]){ if(cards>=CARDS_WANTED*3) break; w[c.area]=(w[c.area]||0)+c.n_top; cards+=c.n_top; }
+  reachAreas.fullHomes=full.reduce((t,c)=>t+c.n,0);
+  reachAreas.key=key; reachAreas.v=Object.entries(w).sort((x,y)=>y[1]-x[1]).slice(0,8).map(x=>x[0]); return reachAreas.v; }
 let AREAS_WAITING = 0;
-function ensureAreas(){ const need=reachAreas(S.brief).filter(k=>!DATA.cities[k]); if(!need.length) return;
-  AREAS_WAITING=need.length; render();
-  Promise.allSettled(need.map(loadArea)).then(()=>{ AREAS_WAITING=0; render(); }); }
+const AREA_FAILED = new Set();
+function ensureAreas(){ const need=reachAreas(S.brief).filter(k=>!DATA.cities[k] && !AREA_FAILED.has(k)); if(!need.length) return;
+  AREAS_WAITING=need.length; sideOrRender();
+  Promise.allSettled(need.map(loadArea)).then(res=>{ res.forEach((r,i)=>{ if(r.status==="rejected") AREA_FAILED.add(need[i]); });
+    AREAS_WAITING=0; sideOrRender(); ensureAreas(); }); }
+function scheduleAreas(){ clearTimeout(scheduleAreas.t); scheduleAreas.t=setTimeout(ensureAreas, 350); }
 
 /* ---------- priorities, not filters ----------
    Every criterion has a priority. A must is met first; the important and the
@@ -830,9 +849,12 @@ function prioCtl(k, d){ const cur=prio(k,d);
     title="${prioActive(k)?"":"Set a target first, then say how much it matters"}">${LEVELS.map(([v,l])=>
     `<button class="${cur===v?"on":""}" aria-pressed="${cur===v}" onclick="setPrio('${k}','${v}')">${l}</button>`).join("")}</div>`; }
 const near1 = (v, lim, slack) => v==null ? 0.5 : v<=lim ? 1 : Math.max(0, 1-(v-lim)/(slack*lim));
-function flagShare(c, key){ const city=DATA.cities[c.area]||C(), i=(city.flags||[]).findIndex(f=>f.key===key); if(i<0) return 0;
+function natShare(c, keys){ const nf=DATA.nation_flags||[], s=nsec()&&NSEC.get(c.sector); if(!s||!s.vm) return 0.5;
+  let need=0; for(const k of keys){ const i=nf.indexOf(k); if(i<0) return 0.5; need|=1<<i; }
+  let hit=0; for(let j=0;j<s.vm.length;j+=2) if((s.vm[j]&need)===need) hit+=s.vm[j+1]; return Math.min(1,hit); }
+function flagShare(c, key){ if(c.nat) return natShare(c,[key]); const city=DATA.cities[c.area]||C(), i=(city.flags||[]).findIndex(f=>f.key===key); if(i<0) return 0;
   const vm=c.vm||[]; let hit=0; for(let j=0;j<vm.length;j+=2) if(vm[j]&(1<<i)) hit+=vm[j+1]; return c.n?Math.min(1,hit/c.n):0; }
-function jointShare(c, keys){ if(!keys.length) return 1; const city=DATA.cities[c.area]||C(); let need=0;
+function jointShare(c, keys){ if(!keys.length) return 1; if(c.nat) return natShare(c, keys); const city=DATA.cities[c.area]||C(); let need=0;
   for(const k of keys){ const i=(city.flags||[]).findIndex(f=>f.key===k); if(i<0) return 0; need|=1<<i; }
   const vm=c.vm||[]; let hit=0; for(let j=0;j<vm.length;j+=2) if((vm[j]&need)===need) hit+=vm[j+1]; return c.n?Math.min(1,hit/c.n):0; }
 function criteria(b){ const K=[], A=activeAnchors(b);
@@ -841,7 +863,6 @@ function criteria(b){ const K=[], A=activeAnchors(b);
   K.push({key:"budget", label:`The right offer within ${GBP(b.max)}`, prio:prio("budget","must"), fit:c=>near1(c.offer_med,b.max,0.25)});
   if(airStep(b)>0){ const l=noxLimit(b); K.push({key:"air", label:"Clean air: "+AIR_STEPS[airStep(b)][0].toLowerCase(), prio:prio("air","high"), fit:c=>near1(c.nox,l,0.5)}); }
   if(openStep(b)>0){ const l=densLimit(b); K.push({key:"open", label:"Open surroundings: "+OPEN_STEPS[openStep(b)][0].toLowerCase(), prio:prio("open","high"), fit:c=>near1(c.density,l,0.5)}); }
-  if(!A.length && b.minsCentre<60) K.push({key:"centre", label:`Within ${b.minsCentre} min of ${C().centre_name}`, prio:prio("centre","high"), fit:c=>near1(c.min_centre,b.minsCentre,0.5)});
   if(b.gpKm<6) K.push({key:"gp", label:`A GP within ${b.gpKm} km`, prio:prio("gp","high"), fit:c=>near1(c.km_gp,b.gpKm,1)});
   if((b.hospKm??60)<60) K.push({key:"hosp", label:`A hospital within ${b.hospKm} km`, prio:prio("hosp","high"), fit:c=>near1(c.km_hosp,b.hospKm,0.5)});
   if((b.parkM??2000)<2000) K.push({key:"park", label:`A park within ${b.parkM} m`, prio:prio("park","high"), fit:c=>near1(c.km_park==null?null:c.km_park*1000,b.parkM,1)});
@@ -851,17 +872,16 @@ function criteria(b){ const K=[], A=activeAnchors(b);
   for(const [k,o] of climChosen(b)){ const [dir,q]=climLimit(k,o), col=CLIMATE[k].col, span=Math.abs((CN()[col]||{})["0.75"]-(CN()[col]||{})["0.25"])||1;
     K.push({key:"clim_"+k, label:CLIMATE[k].label+": "+CLIMATE[k].opts[o].toLowerCase(), prio:prio("clim_"+k,"high"),
       fit:c=>{ const v=c[col]; if(v==null||q==null) return 0.5; const gap=dir>0?q-v:v-q; return gap<=0?1:Math.max(0,1-gap/span); }}); }
-  (b.views||[]).forEach(k=>{ const f=(DATA.cities[S.city]||C()).flags.find(x=>x.key===k); if(!f) return;
+  (b.views||[]).forEach(k=>{ const f=SEARCH_FLAGS().find(x=>x.key===k); if(!f) return;
     K.push({key:"view_"+k, view:k, label:f.label, prio:prio("views","high"), fit:c=>flagShare(c,k)}); });
   return K.filter(k=>k.prio!=="off"); }
-function poolCells(b){ const A=activeAnchors(b);
-  if(!A.length) return C().cells.map(c=>({...c, area:c.area||S.city}));
+function poolCells(b){
   const out=[]; for(const k of reachAreas(b)){ const city=DATA.cities[k]; if(city) city.cells.forEach(c=>out.push({...c, area:k})); }
   return out; }
-function cohort(b){
+function scoreCells(cells, b){
   const K=criteria(b), soft=K.filter(k=>k.prio==="high"||k.prio==="nice"), sw=soft.reduce((s,k)=>s+WEIGHT[k.prio],0);
   const mustViews=K.filter(k=>k.prio==="must"&&k.view).map(k=>k.view), all=[];
-  for(const c of poolCells(b)){
+  for(const c of cells){
     if(!b.types.includes(c.ptype)) continue;
     const fits={}; let mf=1;
     for(const k of K){ const f=k.view && k.prio==="must" ? 1 : k.fit(c); fits[k.key]=f; if(k.prio==="must") mf=Math.min(mf,f); }
@@ -874,6 +894,9 @@ function cohort(b){
   }
   const full = all.filter(c=>c.mf>=0.999).sort((x,y)=>y.sc-x.sc||y.p_med-x.p_med);
   const part = all.filter(c=>c.mf<0.999 && c.mf>0).sort((x,y)=>y.mf-x.mf||y.sc-x.sc);
+  return {K, all, full, part}; }
+function cohort(b){
+  const {K, all, full, part} = scoreCells(poolCells(b), b);
   const cells=[]; let cards=0;
   for(const c of [...full, ...part]){ if(cards>=CARDS_WANTED) break; cells.push(c); cards+=c.n_top; }
   const fullHomes = full.reduce((s,c)=>s+c.n,0);
@@ -986,7 +1009,7 @@ function vHome(){
   return `<div class="fadein">
   <div class="hero">
     <div>
-      <div class="eyebrow">Buying, beyond the portals · ${city.name} pilot</div>
+      <div class="eyebrow">Buying, beyond the portals · England and Wales</div>
       <h1 style="margin-top:10px">Describe the life you want. <em>We'll go and ask for it.</em></h1>
       <p class="lede">You don't want a specific house. You want clean air, twenty minutes from town,
         a doctor nearby, a view, and a budget that works. About 97% of the homes that fit are not for sale,
@@ -994,12 +1017,12 @@ function vHome(){
       <a class="btn" href="#/search">Describe where you'd live</a>
       <a class="btn ghost" href="#/results" style="margin-left:8px">See who's already interested</a>
       <div class="statrow">
-        <div class="stat"><div class="v num">${a.n_owned_tracked.toLocaleString()}</div>
-          <div class="k">owned homes tracked in ${city.name}</div></div>
-        <div class="stat"><div class="v num">≈ ${Math.round(a.exp_sellers_12m*UNLOCK).toLocaleString()}</div>
-          <div class="k">would move for the right offer, next 12 months</div></div>
-        <div class="stat"><div class="v num">${a.n_houses_viewed.toLocaleString()}</div>
-          <div class="k">houses whose view we have measured</div></div>
+        <div class="stat"><div class="v num">${(DATA.index||[]).reduce((t,x)=>t+(x.homes||0),0).toLocaleString()}</div>
+          <div class="k">homes measured one by one, across England and Wales</div></div>
+        <div class="stat"><div class="v num">${(DATA.index||[]).reduce((t,x)=>t+(x.sectors||0),0).toLocaleString()}</div>
+          <div class="k">postcode sectors searched at once</div></div>
+        <div class="stat"><div class="v num">24.3M</div>
+          <div class="k">sales the likelihood model learnt from</div></div>
       </div>
     </div>
     <div class="postcard tilt" aria-hidden="true">
@@ -1020,7 +1043,7 @@ function vHome(){
     <div class="howgrid">
       <div class="how"><div class="stepno">STEP 01</div><h3>Describe the life, not the house</h3>
         <p>Air quality, green surroundings, travel time, a GP within reach, your budget. Even whether you
-        can see ${city.centre_name} from the bedroom, or get the evening sun in the garden, worked out house by
+        can see the hills or the sea from the bedroom, or get the evening sun in the garden, worked out house by
         house from a 3-D model of every building, tree and hill. We count every home in the area that fits,
         not the 3% with a For Sale board.</p></div>
       <div class="how"><div class="stepno">STEP 02</div><h3>We ask those owners, quietly</h3>
@@ -1220,6 +1243,11 @@ function qmTip(p, cp, pinned){ const tip=QM.node&&QM.node.querySelector(".qm-tip
   tip.style.left=Math.max(6, Math.min(box.width-w-6, cp.x+12))+"px"; tip.style.top=Math.max(6, Math.min(box.height-h-6, cp.y-h-10<6?cp.y+14:cp.y-h-10))+"px"; }
 function qmOpen(area, sector){ QM.pin=null; openView(sector, area); go("/results"); }
 
+/* after any change, re-frame only if some of the chosen sectors are out of view: a reader's own zoom is kept otherwise */
+function qmKeepInView(){ const map=QM.map; if(!map) return;
+  if(map._animatingZoom || (map._panAnim && map._panAnim._inProgress)){ QM.vt=setTimeout(qmKeepInView, 300); return; }
+  const vb=map.getBounds().pad(-0.04), on=QM.pts.filter(p=>p.on);
+  if(on.length && !on.every(p=>vb.contains([p.lat,p.lon]))) qmFit(true); }
 function qmFit(animate){ const map=QM.map; if(!map) return;
   const on=QM.pts.filter(p=>p.on), use=on.length?on:QM.pts, ll=use.map(p=>[p.lat,p.lon]);
   activeAnchors(S.brief).forEach(a=>ll.push([a.lat,a.lon]));
@@ -1282,12 +1310,13 @@ function mapUpdate(R){ if(!QM.node) return; const s=summarise(R.cells);
   for(const c of R.cells){ const p=byS.get(c.area+"|"+c.sector); if(!p) continue; p.on=true; p.homes+=c.n; p.top+=c.n_top; if(c.mf>=0.999) p.full=true; }
   QM.pts=[...byS.values()]; QM.maxTop=Math.max(1, ...QM.pts.map(p=>p.top));
   if(QM.pin) QM.pin=QM.pts.find(p=>p.area===QM.pin.area&&p.sector===QM.pin.sector)||null;
-  const A=activeAnchors(S.brief), sig=(A.length?"":S.city)+"|"+A.map(a=>a.lat+","+a.lon+","+a.mode).join(";")+"|"+(A.length?Object.keys(DATA.cities).length:0);
-  if(sig!==QM.sig){ const first=!QM.sig; QM.sig=sig; qmFit(!first); }
+  const A=activeAnchors(S.brief), sig=A.map(a=>a.lat+","+a.lon+","+a.mode).join(";");
+  if(sig!==QM.sig || !QM.fitted){ QM.sig=sig; QM.fitted=QM.pts.some(p=>p.on); qmFit(!!QM.fitted); }
+  clearTimeout(QM.vt); QM.vt=setTimeout(qmKeepInView, 400);
   QM.sectors.draw(); }
 
 let LAST_R = null;
-function refreshSide(){ const R=cohort(S.brief), r=document.getElementById("rail"); if(r) r.innerHTML=railHTML(R); mapUpdate(R); }
+function refreshSide(){ const R=cohort(S.brief), r=document.getElementById("rail"); if(r) r.innerHTML=railHTML(R); mapUpdate(R); scheduleAreas(); }
 document.addEventListener("focusin", e=>{ const box=document.getElementById("mapbox");
   if(box && e.target.matches && e.target.matches(".panel input:not([type=range]), .panel select")) box.classList.add("typing"); });
 document.addEventListener("focusout", ()=>{ const box=document.getElementById("mapbox"); if(box) box.classList.remove("typing"); });
@@ -1295,17 +1324,19 @@ document.addEventListener("focusout", ()=>{ const box=document.getElementById("m
 function railHTML(R0){
   const b=S.brief, R=R0||cohort(b), cells=R.cells, s=summarise(cells), A=activeAnchors(b), rep=fitReport(R);
   LAST_R = R;
-  const where = A.length ? `within reach of ${andList(A.map(a=>esc(a.label)))}` : `in ${esc(C().name)}`;
+  const where = A.length ? `within reach of ${andList(A.map(a=>esc(a.label)))}` : `across England and Wales`;
+  if(!SECT || (!cells.length && AREAS_WAITING)) return `      <div class="panel"><div class="eyebrow">The homes to write to</div>
+        <p class="note" style="margin:8px 0 0">Ranking every postcode sector in England and Wales on your brief…</p></div>`;
   return `      <div class="panel">
         <div class="eyebrow">The homes to write to</div>
         <div class="big num">${s.n.toLocaleString()}</div>
-        <div class="sub">homes ${where}, across ${s.sectors} postcode sectors${AREAS_WAITING?` · loading ${AREAS_WAITING} more area${AREAS_WAITING>1?"s":""}…`:""}</div>
+        <div class="sub">homes ${where}, across ${s.sectors} postcode sector${s.sectors===1?"":"s"}${AREAS_WAITING?` · loading ${AREAS_WAITING} more area${AREAS_WAITING>1?"s":""}…`:""}</div>
         <div style="height:1px;background:var(--line);margin:14px 0"></div>
         <div class="kv"><span class="k">Would move for the right offer</span><span class="v num">≈ ${s.likely.toLocaleString()}</span></div>
         <div class="kv"><span class="k">We'd write to</span><span class="v num">${s.nTop.toLocaleString()}</span></div>
         <div class="kv"><span class="k">Replies to expect from a first wave</span><span class="v num">≈ ${s.expReplies.toFixed(1)}</span></div>
         ${R.short?`<p class="note" style="margin:10px 0 0;color:var(--warn)">Fewer homes than a reliable first wave needs: even counting near misses, only these are ${where}. Allow more travel time or relax a must.</p>`
-          : R.fullHomes>s.n?`<p class="note" style="margin:10px 0 0">The best-fitting ${s.n.toLocaleString()} of ${R.fullHomes.toLocaleString()} homes that meet every must: enough for about ${REPLIES_WANTED} replies.</p>`:""}
+          : Math.max(R.fullHomes, reachAreas.fullHomes||0)>s.n?`<p class="note" style="margin:10px 0 0">The best-fitting ${s.n.toLocaleString()} of ${Math.max(R.fullHomes, reachAreas.fullHomes||0).toLocaleString()} homes in England and Wales that meet every must: enough for about ${REPLIES_WANTED} replies.</p>`:""}
         <div class="fitrep">
           <h4>How well they fit</h4>
           ${rep.map(r=>`<div class="fitrow"><div class="fitlab"><span class="plev ${r.k.prio}">${(LEVELS.find(l=>l[0]===r.k.prio)||[])[1]||""}</span> ${esc(r.k.label)}</div>
@@ -1344,7 +1375,7 @@ function vSearch(){
             `<button class="${(a.prio||"must")===v?"on":""}" onclick="setAnchor(${i},'prio','${v}')">${l}</button>`).join("")}</div>
         </div>`).join("")}
         <button class="chip" onclick="addAnchor()">+ ${(b.anchors||[]).length?"Add another place":"Add a place you need to reach"}</button>
-        ${activeAnchors(b).length?"":`<div class="why" style="margin-top:10px">Or look around one postcode area: ${areaPicker()}</div>`}
+        ${activeAnchors(b).length?"":`<div class="why" style="margin-top:10px">No place yet: the search covers all of England and Wales.</div>`}
       </div>
       <div class="crit">
         <div class="lab"><b>Clean air</b><span class="val" id="val-airStep">${sliderText("airStep")}</span></div>
@@ -1363,13 +1394,6 @@ function vSearch(){
           aria-label="openness" oninput="slide('openStep',+this.value)">
         <div class="ticks"><span>${OPEN_STEPS[0][0]}</span><span>${OPEN_STEPS[OPEN_STEPS.length-1][0]}</span></div>
         <div class="hint" id="hint-openStep">${stepHint("openStep")}</div>
-      </div>
-      <div class="crit" ${activeAnchors(b).length?'style="display:none"':""}>
-        <div class="lab"><b>Drive to the centre</b><span class="val" id="val-minsCentre">${sliderText("minsCentre")}</span></div>
-        ${prioCtl("centre","high")}
-        <div class="why">To ${esc(C().centre_name)}. Approximate, from straight-line distance, not routed.</div>
-        <input type="range" min="3" max="60" step="1" value="${b.minsCentre}"
-          aria-label="drive time to the centre" oninput="slide('minsCentre',+this.value)">
       </div>
       <div class="crit">
         <div class="lab"><b>GP within</b><span class="val" id="val-gpKm">${sliderText("gpKm")}</span></div>
@@ -1423,25 +1447,21 @@ function vSearch(){
           aria-label="budget" oninput="slide('max',+this.value)">
       </div>
       <div class="crit">
-        <div class="lab"><b>What you'd like to see</b><span class="val">${(b.views||[]).length?(b.views||[]).map(k=>(flagOf(k)||{}).label).filter(Boolean).join(" · "):"no preference"}</span></div>
+        <div class="lab"><b>What you'd like to see</b><span class="val">${(b.views||[]).length?(b.views||[]).map(k=>(SEARCH_FLAGS().find(f=>f.key===k)||{}).label).filter(Boolean).join(" · "):"no preference"}</span></div>
         ${prioCtl("views","high")}
         <div class="why">Worked out for every house from a 3-D model of the ground, the buildings and the trees: the view from the upper windows and from the garden, and how much sun reaches the windows. No photos needed.</div>
         <div class="chipgroup">Outlook and garden</div>
-        <div class="chiprow">${FLAGS().filter(f=>f.group==="view").map(f=>`
+        <div class="chiprow">${SEARCH_FLAGS().filter(f=>f.group==="view").map(f=>`
           <button class="chip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${f.label}</button>`).join("")}
         </div>
         <div class="chipgroup">Light indoors</div>
-        <div class="chiprow">${FLAGS().filter(f=>f.group==="light").map(f=>`
+        <div class="chiprow">${SEARCH_FLAGS().filter(f=>f.group==="light").map(f=>`
           <button class="chip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${f.label}</button>`).join("")}
         </div>
         <div class="chipgroup">Room to grow, and character</div>
-        <div class="chiprow">${FLAGS().filter(f=>f.group==="build").map(f=>`
+        <div class="chiprow">${SEARCH_FLAGS().filter(f=>f.group==="build").map(f=>`
           <button class="chip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${f.label}</button>`).join("")}
         </div>
-        ${activeAnchors(b).length?"":`<div class="chipgroup">Landmarks in sight from the upper windows</div>
-        <div class="chiprow">${FLAGS().filter(f=>f.lm).map(f=>`
-          <button class="chip lmchip ${(b.views||[]).includes(f.key)?"on":""}" title="${esc(f.why)}" onclick="tglView('${f.key}')">${esc(f.label)}</button>`).join("")}
-        </div>`}
         ${(b.views||[]).length?`<div class="why" style="margin-top:9px">As a must, a home counts only if it has <b>all</b> of these; otherwise homes with more of them rank higher.</div>`:""}
       </div>
       <div class="crit">
@@ -1520,7 +1540,7 @@ function vResults(){
   <section style="margin-bottom:26px">
     <div class="eyebrow">Owners already talking to us</div>
     <h2 style="font-size:22px;margin:6px 0 4px">${warm.length} people who fit your brief have already raised a hand</h2>
-    <p class="note" style="margin:0 0 12px">From our continuous canvassing across ${C().name}: no waiting, no postage, they're already in conversation.</p>
+    <p class="note" style="margin:0 0 12px">From our continuous canvassing: no waiting, no postage, they're already in conversation.</p>
     ${warm.slice(0,4).map(w=>`
       <div class="warm ${w.stage==="ready"?"hot":""}">
         <div><b>${PT1[w.ptype][0].toUpperCase()+PT1[w.ptype].slice(1)}, ${esc(w.sector)}█</b>
@@ -1782,7 +1802,7 @@ function render(){
   document.getElementById("nav").innerHTML = r.v==="offer"
     ? `<span class="mono" style="font-size:11px;color:var(--muted)">A PRIVATE NOTE FROM A REAL BUYER</span>`
     : nav(r.v);
-  document.getElementById("citysw").innerHTML = r.v==="offer" || activeAnchors(S.brief).length ? "" : areaPicker();
+  document.getElementById("citysw").innerHTML = "";            // no area to choose: the search covers the country
   const fa=document.getElementById("footauc"); if(fa) fa.textContent=DATA.model.auc_oot||"";
   const app=document.getElementById("app"), samePage=(location.hash||"#/")===render.lastPage;
   app.innerHTML =
@@ -1790,6 +1810,7 @@ function render(){
     r.v==="results"?vResults() : r.v==="campaign"?vCampaign() : vHome();
   if(samePage && app.firstElementChild) app.firstElementChild.classList.remove("fadein");   // fade in on arrival only
   if(r.v==="search" && LAST_R) mapMount(LAST_R);
+  if(r.v==="search" || r.v==="results") scheduleAreas();
   /* Back to the top only when moving to another page of the site: a button that changes
      the current page (a filter, a chip, a choice of area) leaves the reader where they were. */
   const at=location.hash||"#/";
