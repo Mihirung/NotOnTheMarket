@@ -1,0 +1,1102 @@
+{
+ "family": "CLIMATE",
+ "about": "Climate now and how it is changing: Met Office HadUK-Grid 1991-2020 (2 km and 12 km), UKCP18 projections at 2 C of global warming (12 km), CHELSA cloud, solar energy and wind, sunshine hours calibrated on Met Office stations (climate_signals.py)",
+ "when": "2026-11-23 07:44",
+ "against": {
+  "name": "+HOUSE+AREA+PD",
+  "families": [
+   "BASE",
+   "HIST",
+   "GEO",
+   "VIEW",
+   "HOUSE",
+   "AREA",
+   "PD"
+  ]
+ },
+ "coverage": {
+  "postcodes": 0.9944,
+  "test_home_years": 0.9981
+ },
+ "adds": {
+  "all": {
+   "current": 1.7408,
+   "with": 1.7184,
+   "gain": -0.0224,
+   "range": [
+    -0.0387,
+    -0.0045
+   ]
+  },
+  "t0_9": {
+   "current": 1.7405,
+   "with": 1.7374,
+   "gain": -0.0031,
+   "range": [
+    -0.0257,
+    0.0199
+   ]
+  },
+  "t10_19": {
+   "current": 1.5139,
+   "with": 1.5171,
+   "gain": 0.0033,
+   "range": [
+    -0.0187,
+    0.0269
+   ]
+  },
+  "t20p": {
+   "current": 1.291,
+   "with": 1.328,
+   "gain": 0.037,
+   "range": [
+    -0.0229,
+    0.0985
+   ]
+  },
+  "gain_share": {
+   "BASE": 0.174,
+   "HIST": 0.637,
+   "GEO": 0.026,
+   "VIEW": 0.017,
+   "HOUSE": 0.049,
+   "AREA": 0.019,
+   "PD": 0.04,
+   "CLIMATE": 0.038
+  }
+ },
+ "lfl": {
+  "temp_year": {
+   "points_per_step": -0.0172,
+   "range": [
+    -0.0323,
+    -0.0054
+   ],
+   "step": 0.6976,
+   "by_region": {
+    "London": -0.3933,
+    "South East": -0.1363,
+    "East": -0.0574,
+    "South West": -0.0666,
+    "Midlands": -0.0428,
+    "North West": -0.1118,
+    "Yorkshire and North East": -0.011,
+    "Wales": 0.025
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "temp_summer": {
+   "points_per_step": -0.0165,
+   "range": [
+    -0.0291,
+    -0.0028
+   ],
+   "step": 0.8832,
+   "by_region": {
+    "London": -0.4781,
+    "South East": -0.2936,
+    "East": -0.0804,
+    "South West": -0.0002,
+    "Midlands": -0.0598,
+    "North West": -0.1344,
+    "Yorkshire and North East": 0.0376,
+    "Wales": 0.0817
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "temp_winter": {
+   "points_per_step": -0.0194,
+   "range": [
+    -0.0331,
+    -0.0077
+   ],
+   "step": 0.6521,
+   "by_region": {
+    "London": -0.3717,
+    "South East": -0.0607,
+    "East": -0.0478,
+    "South West": -0.0439,
+    "Midlands": -0.0425,
+    "North West": -0.1084,
+    "Yorkshire and North East": -0.0922,
+    "Wales": -0.0205
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "temp_range": {
+   "points_per_step": 0.0007,
+   "range": [
+    -0.0113,
+    0.0121
+   ],
+   "step": 0.7287,
+   "by_region": {
+    "London": -0.5828,
+    "South East": -0.143,
+    "East": -0.1203,
+    "South West": 0.0265,
+    "Midlands": -0.0233,
+    "North West": -0.1376,
+    "Yorkshire and North East": 0.1165,
+    "Wales": 0.1067
+   },
+   "regions_same_sign": "3 of 8"
+  },
+  "warmest_days": {
+   "points_per_step": 0.0578,
+   "range": [
+    0.0456,
+    0.0701
+   ],
+   "step": 1.1722,
+   "by_region": {
+    "London": -0.4822,
+    "South East": -0.1027,
+    "East": 0.0305,
+    "South West": 0.0559,
+    "Midlands": 0.0987,
+    "North West": -0.1087,
+    "Yorkshire and North East": 0.0921,
+    "Wales": 0.1333
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "coldest_nights": {
+   "points_per_step": -0.0485,
+   "range": [
+    -0.0601,
+    -0.0392
+   ],
+   "step": 0.6322,
+   "by_region": {
+    "London": -0.2129,
+    "South East": -0.0502,
+    "East": -0.0038,
+    "South West": -0.0475,
+    "Midlands": -0.1005,
+    "North West": -0.1059,
+    "Yorkshire and North East": -0.1045,
+    "Wales": -0.0151
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "rain_year": {
+   "points_per_step": -0.005,
+   "range": [
+    -0.0155,
+    0.0065
+   ],
+   "step": 214.956,
+   "by_region": {
+    "London": 0.3505,
+    "South East": 0.2429,
+    "East": -0.0148,
+    "South West": -0.0019,
+    "Midlands": -0.3095,
+    "North West": 0.0524,
+    "Yorkshire and North East": 0.0507,
+    "Wales": -0.0457
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "rain_summer": {
+   "points_per_step": -0.0629,
+   "range": [
+    -0.075,
+    -0.0514
+   ],
+   "step": 41.886,
+   "by_region": {
+    "London": -0.0881,
+    "South East": 0.1843,
+    "East": -0.0316,
+    "South West": 0.0069,
+    "Midlands": -0.2189,
+    "North West": 0.0764,
+    "Yorkshire and North East": 0.0393,
+    "Wales": -0.0465
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "rain_winter": {
+   "points_per_step": 0.0157,
+   "range": [
+    0.0055,
+    0.0266
+   ],
+   "step": 76.8628,
+   "by_region": {
+    "London": 0.4379,
+    "South East": 0.2165,
+    "East": 0.0059,
+    "South West": -0.0092,
+    "Midlands": -0.3396,
+    "North West": 0.0466,
+    "Yorkshire and North East": 0.0548,
+    "Wales": -0.0427
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "heavy_rain_days": {
+   "points_per_step": 0.016,
+   "range": [
+    0.006,
+    0.0267
+   ],
+   "step": 8.8527,
+   "by_region": {
+    "London": 0.3982,
+    "South East": 0.1945,
+    "East": -0.2149,
+    "South West": -0.0104,
+    "Midlands": -0.2828,
+    "North West": 0.0536,
+    "Yorkshire and North East": 0.0577,
+    "Wales": -0.0343
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "frost_days": {
+   "points_per_step": 0.0825,
+   "range": [
+    0.0731,
+    0.0952
+   ],
+   "step": 10.0516,
+   "by_region": {
+    "London": 0.333,
+    "South East": 0.0728,
+    "East": 0.0108,
+    "South West": 0.0417,
+    "Midlands": 0.045,
+    "North West": 0.1021,
+    "Yorkshire and North East": 0.0583,
+    "Wales": 0.0266
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "icing_days": {
+   "points_per_step": 0.0464,
+   "range": [
+    0.0373,
+    0.0572
+   ],
+   "step": 0.531,
+   "by_region": {
+    "London": 0.3311,
+    "South East": 0.0516,
+    "East": -0.0577,
+    "South West": 0.0106,
+    "Midlands": -0.1409,
+    "North West": 0.0377,
+    "Yorkshire and North East": 0.0394,
+    "Wales": 0.0225
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "summer_days": {
+   "points_per_step": -0.0327,
+   "range": [
+    -0.0452,
+    -0.0192
+   ],
+   "step": 6.8614,
+   "by_region": {
+    "London": -0.6111,
+    "South East": -0.1033,
+    "East": -0.0161,
+    "South West": 0.0388,
+    "Midlands": 0.1039,
+    "North West": -0.2549,
+    "Yorkshire and North East": 0.1319,
+    "Wales": 0.235
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "sun_hours_year": {
+   "points_per_step": 0.1104,
+   "range": [
+    0.0995,
+    0.1218
+   ],
+   "step": 115.4718,
+   "by_region": {
+    "London": 0.5147,
+    "South East": 0.0454,
+    "East": 0.0572,
+    "South West": -0.0156,
+    "Midlands": 0.3587,
+    "North West": -0.1356,
+    "Yorkshire and North East": 0.0039,
+    "Wales": -0.0475
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "sun_hours_summer": {
+   "points_per_step": 0.1231,
+   "range": [
+    0.1112,
+    0.1353
+   ],
+   "step": 44.7152,
+   "by_region": {
+    "London": 0.754,
+    "South East": 0.0538,
+    "East": 0.0524,
+    "South West": -0.0119,
+    "Midlands": 0.4014,
+    "North West": -0.1614,
+    "Yorkshire and North East": 0.0448,
+    "Wales": -0.0364
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "sun_hours_winter": {
+   "points_per_step": 0.0744,
+   "range": [
+    0.0645,
+    0.0849
+   ],
+   "step": 16.4373,
+   "by_region": {
+    "London": 0.0481,
+    "South East": 0.0107,
+    "East": 0.0791,
+    "South West": 0.0015,
+    "Midlands": 0.1897,
+    "North West": -0.0907,
+    "Yorkshire and North East": -0.0078,
+    "Wales": -0.0313
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "cloud_year": {
+   "points_per_step": -0.108,
+   "range": [
+    -0.1198,
+    -0.0966
+   ],
+   "step": 1.6982,
+   "by_region": {
+    "London": -0.6944,
+    "South East": -0.0491,
+    "East": -0.0639,
+    "South West": 0.0034,
+    "Midlands": -0.2609,
+    "North West": 0.0881,
+    "Yorkshire and North East": 0.0017,
+    "Wales": -0.008
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "cloud_winter": {
+   "points_per_step": -0.0215,
+   "range": [
+    -0.0315,
+    -0.0101
+   ],
+   "step": 1.6629,
+   "by_region": {
+    "London": -0.1698,
+    "South East": 0.011,
+    "East": -0.0123,
+    "South West": -0.0063,
+    "Midlands": -0.179,
+    "North West": 0.0543,
+    "Yorkshire and North East": 0.0244,
+    "Wales": 0.0099
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "solar_year": {
+   "points_per_step": 0.1192,
+   "range": [
+    0.1081,
+    0.1295
+   ],
+   "step": 212.7265,
+   "by_region": {
+    "London": 0.5235,
+    "South East": 0.0562,
+    "East": 0.0622,
+    "South West": -0.0218,
+    "Midlands": 0.354,
+    "North West": -0.2582,
+    "Yorkshire and North East": 0.0465,
+    "Wales": -0.1049
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "wind": {
+   "points_per_step": 0.1535,
+   "range": [
+    0.142,
+    0.1652
+   ],
+   "step": 0.7232,
+   "by_region": {
+    "London": 0.2864,
+    "South East": 0.0653,
+    "East": 0.1323,
+    "South West": 0.0018,
+    "Midlands": 0.2183,
+    "North West": 0.0972,
+    "Yorkshire and North East": 0.0816,
+    "Wales": -0.0167
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "warming_so_far": {
+   "points_per_step": -0.0171,
+   "range": [
+    -0.03,
+    -0.005
+   ],
+   "step": 0.046,
+   "by_region": {
+    "London": -0.4006,
+    "South East": -0.0063,
+    "East": 0.0979,
+    "South West": 0.0302,
+    "Midlands": -0.3688,
+    "North West": -0.069,
+    "Yorkshire and North East": 0.1358,
+    "Wales": 0.073
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "warming_2c": {
+   "points_per_step": 0.0085,
+   "range": [
+    -0.0038,
+    0.0211
+   ],
+   "step": 0.0851,
+   "by_region": {
+    "London": -1.2206,
+    "South East": -0.1103,
+    "East": 0.0725,
+    "South West": 0.0526,
+    "Midlands": -0.2376,
+    "North West": -0.0596,
+    "Yorkshire and North East": 0.1464,
+    "Wales": 0.1495
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "summer_heat_2c": {
+   "points_per_step": 0.1733,
+   "range": [
+    0.1642,
+    0.1849
+   ],
+   "step": 0.253,
+   "by_region": {
+    "London": 0.4639,
+    "South East": 0.0544,
+    "East": -0.0295,
+    "South West": 0.0439,
+    "Midlands": 0.0637,
+    "North West": -0.0546,
+    "Yorkshire and North East": 0.0819,
+    "Wales": 0.0805
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "winter_nights_2c": {
+   "points_per_step": -0.1023,
+   "range": [
+    -0.1131,
+    -0.0914
+   ],
+   "step": 0.4649,
+   "by_region": {
+    "London": 0.4054,
+    "South East": -0.0071,
+    "East": 0.0263,
+    "South West": 0.0549,
+    "Midlands": -0.3308,
+    "North West": 0.0408,
+    "Yorkshire and North East": -0.0821,
+    "Wales": 0.0219
+   },
+   "regions_same_sign": "3 of 8"
+  },
+  "summer_rain_so_far": {
+   "points_per_step": -0.0528,
+   "range": [
+    -0.0639,
+    -0.0425
+   ],
+   "step": 2.6803,
+   "by_region": {
+    "London": -0.3318,
+    "South East": -0.0804,
+    "East": -0.0408,
+    "South West": 0.0073,
+    "Midlands": -0.0096,
+    "North West": 0.0099,
+    "Yorkshire and North East": -0.1191,
+    "Wales": -0.0025
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "summer_rain_2c": {
+   "points_per_step": -0.0947,
+   "range": [
+    -0.1061,
+    -0.0846
+   ],
+   "step": 4.8378,
+   "by_region": {
+    "London": -0.6698,
+    "South East": -0.1363,
+    "East": 0.0021,
+    "South West": 0.0288,
+    "Midlands": 0.1928,
+    "North West": 0.1621,
+    "Yorkshire and North East": -0.1011,
+    "Wales": -0.0726
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "winter_rain_so_far": {
+   "points_per_step": 0.015,
+   "range": [
+    0.0056,
+    0.0246
+   ],
+   "step": 1.6442,
+   "by_region": {
+    "London": 0.2071,
+    "South East": -0.0114,
+    "East": -0.0401,
+    "South West": 0.0145,
+    "Midlands": -0.1549,
+    "North West": 0.0485,
+    "Yorkshire and North East": 0.0732,
+    "Wales": 0.0033
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "winter_rain_2c": {
+   "points_per_step": 0.0931,
+   "range": [
+    0.0816,
+    0.1044
+   ],
+   "step": 3.1949,
+   "by_region": {
+    "London": -0.0779,
+    "South East": 0.0407,
+    "East": -0.0509,
+    "South West": 0.0212,
+    "Midlands": -0.3706,
+    "North West": 0.0705,
+    "Yorkshire and North East": 0.1583,
+    "Wales": 0.0071
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "hot_days_now": {
+   "points_per_step": -0.017,
+   "range": [
+    -0.0294,
+    -0.0025
+   ],
+   "step": 1.6328,
+   "by_region": {
+    "London": -0.3764,
+    "South East": -0.0765,
+    "East": -0.0347,
+    "South West": 0.0449,
+    "Midlands": 0.1083,
+    "North West": -0.1397,
+    "Yorkshire and North East": 0.1533,
+    "Wales": 0.2901
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "hot_days_2c": {
+   "points_per_step": 0.0317,
+   "range": [
+    0.0189,
+    0.0456
+   ],
+   "step": 3.0186,
+   "by_region": {
+    "London": -0.1975,
+    "South East": -0.0403,
+    "East": -0.0136,
+    "South West": 0.0424,
+    "Midlands": 0.1397,
+    "North West": -0.2073,
+    "Yorkshire and North East": 0.1429,
+    "Wales": 0.2775
+   },
+   "regions_same_sign": "4 of 8"
+  },
+  "frost_days_lost_2c": {
+   "points_per_step": -0.0825,
+   "range": [
+    -0.0939,
+    -0.0708
+   ],
+   "step": 2.322,
+   "by_region": {
+    "London": -0.288,
+    "South East": 0.0714,
+    "East": -0.078,
+    "South West": 0.052,
+    "Midlands": -0.3507,
+    "North West": 0.0365,
+    "Yorkshire and North East": -0.0205,
+    "Wales": 0.0233
+   },
+   "regions_same_sign": "4 of 8"
+  }
+ },
+ "lfl_rows": 11875967,
+ "lfl_sales": 458268,
+ "on_top": {
+  "temp_year": {
+   "points_per_step": -0.2266,
+   "range": [
+    -0.2446,
+    -0.2059
+   ]
+  },
+  "temp_summer": {
+   "points_per_step": -0.2559,
+   "range": [
+    -0.2755,
+    -0.2355
+   ]
+  },
+  "temp_winter": {
+   "points_per_step": -0.1441,
+   "range": [
+    -0.1655,
+    -0.1214
+   ]
+  },
+  "temp_range": {
+   "points_per_step": -0.1945,
+   "range": [
+    -0.2186,
+    -0.1739
+   ]
+  },
+  "warmest_days": {
+   "points_per_step": -0.2592,
+   "range": [
+    -0.2817,
+    -0.2372
+   ]
+  },
+  "coldest_nights": {
+   "points_per_step": -0.1174,
+   "range": [
+    -0.1404,
+    -0.0968
+   ]
+  },
+  "rain_year": {
+   "points_per_step": 0.188,
+   "range": [
+    0.1626,
+    0.216
+   ]
+  },
+  "rain_summer": {
+   "points_per_step": 0.2491,
+   "range": [
+    0.2257,
+    0.278
+   ]
+  },
+  "rain_winter": {
+   "points_per_step": 0.1533,
+   "range": [
+    0.13,
+    0.1826
+   ]
+  },
+  "heavy_rain_days": {
+   "points_per_step": 0.1613,
+   "range": [
+    0.1371,
+    0.19
+   ]
+  },
+  "frost_days": {
+   "points_per_step": 0.0528,
+   "range": [
+    0.0309,
+    0.0754
+   ]
+  },
+  "icing_days": {
+   "points_per_step": 0.0675,
+   "range": [
+    0.0455,
+    0.0873
+   ]
+  },
+  "summer_days": {
+   "points_per_step": -0.267,
+   "range": [
+    -0.288,
+    -0.2482
+   ]
+  },
+  "sun_hours_year": {
+   "points_per_step": -0.1669,
+   "range": [
+    -0.1887,
+    -0.1431
+   ]
+  },
+  "sun_hours_summer": {
+   "points_per_step": -0.1859,
+   "range": [
+    -0.209,
+    -0.1604
+   ]
+  },
+  "sun_hours_winter": {
+   "points_per_step": -0.1203,
+   "range": [
+    -0.1419,
+    -0.0962
+   ]
+  },
+  "cloud_year": {
+   "points_per_step": 0.1933,
+   "range": [
+    0.1673,
+    0.2143
+   ]
+  },
+  "cloud_winter": {
+   "points_per_step": 0.0581,
+   "range": [
+    0.0336,
+    0.0805
+   ]
+  },
+  "solar_year": {
+   "points_per_step": -0.1517,
+   "range": [
+    -0.1767,
+    -0.1267
+   ]
+  },
+  "wind": {
+   "points_per_step": 0.107,
+   "range": [
+    0.0821,
+    0.1315
+   ]
+  },
+  "warming_so_far": {
+   "points_per_step": -0.2372,
+   "range": [
+    -0.2601,
+    -0.2172
+   ]
+  },
+  "warming_2c": {
+   "points_per_step": -0.2454,
+   "range": [
+    -0.2677,
+    -0.2234
+   ]
+  },
+  "summer_heat_2c": {
+   "points_per_step": -0.0455,
+   "range": [
+    -0.069,
+    -0.0223
+   ]
+  },
+  "winter_nights_2c": {
+   "points_per_step": 0.1146,
+   "range": [
+    0.0902,
+    0.1353
+   ]
+  },
+  "summer_rain_so_far": {
+   "points_per_step": -0.1679,
+   "range": [
+    -0.1901,
+    -0.1428
+   ]
+  },
+  "summer_rain_2c": {
+   "points_per_step": -0.0433,
+   "range": [
+    -0.0677,
+    -0.0186
+   ]
+  },
+  "winter_rain_so_far": {
+   "points_per_step": 0.0357,
+   "range": [
+    0.0118,
+    0.0607
+   ]
+  },
+  "winter_rain_2c": {
+   "points_per_step": -0.14,
+   "range": [
+    -0.1611,
+    -0.116
+   ]
+  },
+  "hot_days_now": {
+   "points_per_step": -0.2482,
+   "range": [
+    -0.2699,
+    -0.2297
+   ]
+  },
+  "hot_days_2c": {
+   "points_per_step": -0.2505,
+   "range": [
+    -0.272,
+    -0.2306
+   ]
+  },
+  "frost_days_lost_2c": {
+   "points_per_step": 0.1404,
+   "range": [
+    0.1177,
+    0.161
+   ]
+  }
+ },
+ "price": {
+  "temp_year": {
+   "pct_per_step": -3.75,
+   "range": [
+    -4.06,
+    -3.41
+   ]
+  },
+  "temp_summer": {
+   "pct_per_step": -3.98,
+   "range": [
+    -4.31,
+    -3.6
+   ]
+  },
+  "temp_winter": {
+   "pct_per_step": -4.76,
+   "range": [
+    -5.11,
+    -4.34
+   ]
+  },
+  "temp_range": {
+   "pct_per_step": 0.1,
+   "range": [
+    -0.34,
+    0.5
+   ]
+  },
+  "warmest_days": {
+   "pct_per_step": -3.8,
+   "range": [
+    -4.26,
+    -3.17
+   ]
+  },
+  "coldest_nights": {
+   "pct_per_step": -1.86,
+   "range": [
+    -2.23,
+    -1.47
+   ]
+  },
+  "rain_year": {
+   "pct_per_step": 2.18,
+   "range": [
+    1.69,
+    2.65
+   ]
+  },
+  "rain_summer": {
+   "pct_per_step": 1.43,
+   "range": [
+    1.05,
+    1.82
+   ]
+  },
+  "rain_winter": {
+   "pct_per_step": 2.91,
+   "range": [
+    2.31,
+    3.44
+   ]
+  },
+  "heavy_rain_days": {
+   "pct_per_step": 3.97,
+   "range": [
+    3.43,
+    4.5
+   ]
+  },
+  "frost_days": {
+   "pct_per_step": 6.66,
+   "range": [
+    6.23,
+    7.08
+   ]
+  },
+  "icing_days": {
+   "pct_per_step": 3.76,
+   "range": [
+    3.53,
+    4.03
+   ]
+  },
+  "summer_days": {
+   "pct_per_step": -10.02,
+   "range": [
+    -10.63,
+    -9.49
+   ]
+  },
+  "sun_hours_year": {
+   "pct_per_step": -3.84,
+   "range": [
+    -4.3,
+    -3.31
+   ]
+  },
+  "sun_hours_summer": {
+   "pct_per_step": -5.79,
+   "range": [
+    -6.57,
+    -5.0
+   ]
+  },
+  "sun_hours_winter": {
+   "pct_per_step": -1.99,
+   "range": [
+    -2.21,
+    -1.75
+   ]
+  },
+  "cloud_year": {
+   "pct_per_step": 4.27,
+   "range": [
+    3.93,
+    4.69
+   ]
+  },
+  "cloud_winter": {
+   "pct_per_step": 3.45,
+   "range": [
+    3.18,
+    3.74
+   ]
+  },
+  "solar_year": {
+   "pct_per_step": -0.62,
+   "range": [
+    -1.26,
+    0.09
+   ]
+  },
+  "wind": {
+   "pct_per_step": 7.4,
+   "range": [
+    7.26,
+    7.58
+   ]
+  },
+  "warming_so_far": {
+   "pct_per_step": 1.44,
+   "range": [
+    0.57,
+    2.62
+   ]
+  },
+  "warming_2c": {
+   "pct_per_step": 8.06,
+   "range": [
+    6.89,
+    9.7
+   ]
+  },
+  "summer_heat_2c": {
+   "pct_per_step": 0.53,
+   "range": [
+    0.07,
+    1.08
+   ]
+  },
+  "winter_nights_2c": {
+   "pct_per_step": 0.3,
+   "range": [
+    -0.21,
+    0.77
+   ]
+  },
+  "summer_rain_so_far": {
+   "pct_per_step": -0.62,
+   "range": [
+    -1.17,
+    -0.14
+   ]
+  },
+  "summer_rain_2c": {
+   "pct_per_step": -1.78,
+   "range": [
+    -2.51,
+    -1.0
+   ]
+  },
+  "winter_rain_so_far": {
+   "pct_per_step": 0.84,
+   "range": [
+    0.35,
+    1.25
+   ]
+  },
+  "winter_rain_2c": {
+   "pct_per_step": 1.23,
+   "range": [
+    0.52,
+    1.93
+   ]
+  },
+  "hot_days_now": {
+   "pct_per_step": -2.94,
+   "range": [
+    -3.53,
+    -2.32
+   ]
+  },
+  "hot_days_2c": {
+   "pct_per_step": -3.07,
+   "range": [
+    -3.64,
+    -2.35
+   ]
+  },
+  "frost_days_lost_2c": {
+   "pct_per_step": 2.44,
+   "range": [
+    2.07,
+    2.83
+   ]
+  }
+ },
+ "price_sales": 8041819,
+ "verdict": "do not add it to the model: no gain clear of zero; use it for search and pricing"
+}
