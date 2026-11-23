@@ -164,7 +164,22 @@ python research/src/national_best_pages.py best_homes.html best_homes.csv 5
 ```
 
 The last one runs several briefs at once and draws every winner.
-SEARCH_RESULTS
+The search now covers 33 characteristics for all 24,114,764 houses: the
+seventeen above, and clean air, a GP, a hospital, a park and parkland,
+woods and water within reach, pubs near or pubs far, restaurants, few
+takeaways, and what could be added without planning permission
+([09](09-planning-health-and-amenities.md)). A house with a measure missing
+ranks last on it, never first. The full report, with each winner's drawing
+and postcode, stays on this machine and is not published; in outline:
+
+| Brief | Where the winners are |
+|---|---|
+| The very best of everything | The Tamar above Saltash and Plymouth, the Somerset coast at Weston, Torbay |
+| The finest views | The Llŷn peninsula, the Burry estuary, the north Somerset levels and coast |
+| By the sea, with the evening sun | The Northumberland coast, Walney and Barrow, Whitby, Holderness, west Cumbria |
+| A cathedral or abbey in sight | The Fens around Ely |
+| A castle in sight | The Cumbrian and Northumbrian border |
+| Salisbury Cathedral in sight | 11,485 houses; the best on the downs north of Salisbury and towards Romsey |
 
 ## 5. The site, for every postcode area
 
