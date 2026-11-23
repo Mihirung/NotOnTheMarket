@@ -1,0 +1,15 @@
+{
+ "deployed": "+HOUSE+AREA+PD",
+ "deployed_families": [
+  "BASE",
+  "HIST",
+  "GEO",
+  "VIEW",
+  "HOUSE",
+  "AREA",
+  "PD"
+ ],
+ "passed": [],
+ "singles": [],
+ "candidates": []
+}
