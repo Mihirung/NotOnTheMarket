@@ -1129,7 +1129,9 @@ function render(){
   document.getElementById("app").innerHTML =
     r.v==="offer"?vOffer(r.code) : r.v==="search"?vSearch() :
     r.v==="results"?vResults() : r.v==="campaign"?vCampaign() : vHome();
-  window.scrollTo({top:0});
+  /* Back to the top only when moving to another page of the site. */
+  const at=location.hash||"#/";
+  if(at!==render.lastPage){ window.scrollTo({top:0}); render.lastPage=at; }
   for(const id of ["heroQR","cardQR"]){
     const el=document.getElementById(id);
     if(el && window.QRCode){ try{
