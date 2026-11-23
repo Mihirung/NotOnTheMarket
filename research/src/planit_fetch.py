@@ -1,4 +1,4 @@
-"""Planning applications for a sample of council areas, from UK PlanIt.
+"""Planning applications for every council in England and Wales, from UK PlanIt.
 
 PlanIt (planit.org.uk) gathers the planning registers of UK councils. It is
 free and run by one person, and asks bulk users to:
@@ -17,7 +17,12 @@ of the types that touch a home: full, outline, heritage (listed building
 and conservation consents), amendments and other. Discharges of
 conditions, adverts, telecoms and tree works are left out.
 
-    PLANIT_CONTACT=<email> python planit_fetch.py <out_dir> [areas...]
+At about 20 requests a council for 2003 to 2019, the whole of England and
+Wales (383 authorities as PlanIt lists them, old districts and new unitaries
+both, which overlap) takes about four weeks of nights.
+
+    PLANIT_CONTACT=<email> python planit_fetch.py <out_dir>             (every England and Wales authority)
+    PLANIT_CONTACT=<email> python planit_fetch.py <out_dir> [areas...]  (only these)
     python planit_fetch.py <out_dir> --status
 """
 import datetime as dt
@@ -44,6 +49,26 @@ SELECT = ("name,area_name,uid,address,postcode,description,app_type,app_size,app
 AREAS = ["Exeter", "Bath", "Bristol", "Plymouth", "Cheltenham", "Brighton", "York", "Cambridge", "Norwich",
          "Canterbury", "Guildford", "Reading", "Trafford", "Stockport", "Nottingham", "Cardiff", "Newcastle upon Tyne",
          "Harrogate", "Richmond", "Wandsworth", "Barnet", "Leeds", "Cornwall", "Wiltshire"]
+
+
+# After the priority list: every planning authority in England and Wales that decides householder
+# applications, in this order. County councils (minerals and waste), regions, nations and national
+# infrastructure are left out; so are the two Scottish National Parks.
+EW_TYPES = ["English Unitary Authority", "Metropolitan Borough", "London Borough", "English District",
+            "Welsh Principal Area", "Council District", "National Park", "Other Planning Entity",
+            "Combined Planning Authority"]
+EW_OTHER = {"London Legacy", "Old Oak Park Royal"}               # planning authorities for parts of London
+NOT_EW = {"Cairngorms", "Loch Lomond"}
+
+
+def england_and_wales(areas):
+    """Every England and Wales planning authority PlanIt lists, priority list first."""
+    rank = {t: i for i, t in enumerate(EW_TYPES)}
+    rest = sorted((r.get("area_type"), n) for n, r in areas.items()
+                  if r.get("area_type") in rank and n not in NOT_EW
+                  and (r.get("area_type") != "Other Planning Entity" or n in EW_OTHER))
+    rest.sort(key=lambda tn: (rank[tn[0]], tn[1]))
+    return AREAS + [n for _, n in rest if n not in AREAS]
 
 
 def uk_hour():
@@ -155,6 +180,10 @@ def fetch(out, areas):
     if "@" not in contact:
         sys.exit("set PLANIT_CONTACT to the contact email PlanIt asks for")
     st = State(out); cl = Client(contact, st)
+    if areas == ["--all"]:                            # the whole of England and Wales (needs the area list once)
+        resolve_areas(cl, st, AREAS[:1])
+        areas = england_and_wales(st.s["areas"])
+        log(f"{len(areas)} planning authorities in England and Wales to fetch, priority list first")
     for area in resolve_areas(cl, st, areas):
         for y0, y1 in YEARS:
             unit = f"{area}|{y0}-{y1}"
@@ -207,4 +236,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 2 and sys.argv[2] == "--status":
         status(sys.argv[1])
     else:
-        fetch(sys.argv[1], sys.argv[2:] or AREAS)
+        fetch(sys.argv[1], sys.argv[2:] or ["--all"])

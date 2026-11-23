@@ -157,7 +157,9 @@ def load_raw():
         d = json.load(gzip.open(f))
         rows += d.get("records", [])
     t = pd.DataFrame(rows)
-    return t.drop_duplicates("name")
+    # an application can be listed under an old district, a new unitary and a joint planning service at once
+    t = t.drop_duplicates("name")
+    return t.drop_duplicates(["uid", "address"]) if {"uid", "address"} <= set(t.columns) else t
 
 
 def main():
