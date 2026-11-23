@@ -178,6 +178,11 @@ def dataset(ch, pct, families, years, neg_keep=None):
                        params={"max_bin": 63, "min_data_in_bin": 20, "verbose": -1}), len(y)
 
 
+# The fit's own randomness (row and column sampling). QM_SEED refits with another seed to measure how much
+# two fits of the same model differ; cached results for any other seed are kept apart (~s<seed>).
+SEED = int(__import__("os").environ.get("QM_SEED", 7))
+
+
 def params(n_rows, threads):
     # force_col_wise: left to choose, the library builds a second, row-wise copy
     # of the whole table to time both ways, which does not fit in memory once the
@@ -186,7 +191,7 @@ def params(n_rows, threads):
     return dict(objective="binary", learning_rate=0.08, num_leaves=leaves,
                 min_data_in_leaf=int(np.clip(n_rows / 8000, 80, 1200)), max_bin=63,
                 feature_fraction=0.8, bagging_fraction=0.7, bagging_freq=1, lambda_l2=5.0,
-                num_threads=threads, verbose=-1, seed=7, force_col_wise=True)
+                num_threads=threads, verbose=-1, seed=SEED, force_col_wise=True)
 
 
 def valid_set(ch, cols, chunks=(0, 1), batch=262_144):
@@ -316,7 +321,7 @@ def predict_cached(ch, out, threads, name, pct, fams):
     """Test-set predictions for one (feature set, sample size), fitted once and
     kept on disk so that later experiments can compare against it."""
     cache = out / "preds"; cache.mkdir(exist_ok=True)
-    key = f"{name.replace(' ', '_')}@{pct}"
+    key = f"{name.replace(' ', '_')}@{pct}" + (f"~s{SEED}" if SEED != 7 else "")
     fp, fj = cache / f"{key}.npy", cache / f"{key}.json"
     if fp.exists() and fj.exists():
         return np.load(fp), json.load(open(fj))

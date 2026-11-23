@@ -1,0 +1,244 @@
+{
+ "family": "ACCESS",
+ "about": "Transport: railway stations, underground, metro and tram stops, bus stops (NaPTAN), motorways and A roads (OS OpenMap Local) (schools_access_signals.py)",
+ "when": "2026-11-23 17:43",
+ "against": {
+  "name": "+HOUSE+AREA+PD",
+  "families": [
+   "BASE",
+   "HIST",
+   "GEO",
+   "VIEW",
+   "HOUSE",
+   "AREA",
+   "PD"
+  ]
+ },
+ "coverage": {
+  "postcodes": 0.9944,
+  "test_home_years": 0.9981
+ },
+ "adds": {
+  "all": {
+   "current": 1.7408,
+   "with": 1.7183,
+   "gain": -0.0225,
+   "range": [
+    -0.0357,
+    -0.0089
+   ]
+  },
+  "t0_9": {
+   "current": 1.7405,
+   "with": 1.7418,
+   "gain": 0.0013,
+   "range": [
+    -0.0183,
+    0.0226
+   ]
+  },
+  "t10_19": {
+   "current": 1.5139,
+   "with": 1.5361,
+   "gain": 0.0223,
+   "range": [
+    -0.0001,
+    0.0451
+   ]
+  },
+  "t20p": {
+   "current": 1.291,
+   "with": 1.32,
+   "gain": 0.029,
+   "range": [
+    -0.0398,
+    0.0941
+   ]
+  },
+  "gain_share": {
+   "BASE": 0.156,
+   "HIST": 0.65,
+   "GEO": 0.035,
+   "VIEW": 0.026,
+   "HOUSE": 0.059,
+   "AREA": 0.019,
+   "PD": 0.043,
+   "ACCESS": 0.011
+  }
+ },
+ "lfl": {
+  "km_rail": {
+   "points_per_step": 0.082,
+   "range": [
+    0.0717,
+    0.0939
+   ],
+   "step": 3.3343,
+   "by_region": {
+    "London": -0.0406,
+    "South East": 0.0775,
+    "East": 0.0788,
+    "South West": 0.0267,
+    "Midlands": 0.0981,
+    "North West": -0.0213,
+    "Yorkshire and North East": 0.0107,
+    "Wales": -0.0254
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "km_metro": {
+   "points_per_step": 0.1032,
+   "range": [
+    0.0914,
+    0.1138
+   ],
+   "step": 14.5968,
+   "by_region": {
+    "London": 0.9768,
+    "South East": -0.0417,
+    "East": 0.0205,
+    "South West": 0.0096,
+    "Midlands": 0.2084,
+    "North West": -0.0451,
+    "Yorkshire and North East": 0.0533,
+    "Wales": -0.0442
+   },
+   "regions_same_sign": "5 of 8"
+  },
+  "bus_stops_500m": {
+   "points_per_step": -0.1257,
+   "range": [
+    -0.1361,
+    -0.1137
+   ],
+   "step": 7.5038,
+   "by_region": {
+    "London": -0.1498,
+    "South East": -0.0801,
+    "East": -0.1193,
+    "South West": -0.0512,
+    "Midlands": -0.108,
+    "North West": -0.0876,
+    "Yorkshire and North East": -0.0656,
+    "Wales": -0.0653
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "km_motorway": {
+   "points_per_step": 0.1137,
+   "range": [
+    0.1007,
+    0.1262
+   ],
+   "step": 13.9267,
+   "by_region": {
+    "London": 0.0751,
+    "South East": 0.0477,
+    "East": 0.0625,
+    "South West": -0.0042,
+    "Midlands": 0.223,
+    "North West": 0.1245,
+    "Yorkshire and North East": 0.0271,
+    "Wales": -0.0392
+   },
+   "regions_same_sign": "6 of 8"
+  },
+  "km_a_road": {
+   "points_per_step": 0.0552,
+   "range": [
+    0.0454,
+    0.0677
+   ],
+   "step": 0.9555,
+   "by_region": {
+    "London": 0.2027,
+    "South East": 0.0063,
+    "East": 0.0306,
+    "South West": -0.0001,
+    "Midlands": 0.0438,
+    "North West": -0.0031,
+    "Yorkshire and North East": 0.0061,
+    "Wales": -0.0075
+   },
+   "regions_same_sign": "5 of 8"
+  }
+ },
+ "lfl_rows": 11875967,
+ "lfl_sales": 458268,
+ "on_top": {
+  "km_rail": {
+   "points_per_step": 0.0771,
+   "range": [
+    0.0568,
+    0.0987
+   ]
+  },
+  "km_metro": {
+   "points_per_step": 0.1104,
+   "range": [
+    0.0891,
+    0.1348
+   ]
+  },
+  "bus_stops_500m": {
+   "points_per_step": -0.0145,
+   "range": [
+    -0.0384,
+    0.0066
+   ]
+  },
+  "km_motorway": {
+   "points_per_step": -0.0141,
+   "range": [
+    -0.0357,
+    0.0126
+   ]
+  },
+  "km_a_road": {
+   "points_per_step": 0.0324,
+   "range": [
+    0.012,
+    0.0583
+   ]
+  }
+ },
+ "price": {
+  "km_rail": {
+   "pct_per_step": 4.88,
+   "range": [
+    4.64,
+    5.11
+   ]
+  },
+  "km_metro": {
+   "pct_per_step": 0.0,
+   "range": [
+    -1.16,
+    1.05
+   ]
+  },
+  "bus_stops_500m": {
+   "pct_per_step": -5.53,
+   "range": [
+    -5.64,
+    -5.44
+   ]
+  },
+  "km_motorway": {
+   "pct_per_step": 3.85,
+   "range": [
+    2.79,
+    4.88
+   ]
+  },
+  "km_a_road": {
+   "pct_per_step": 2.57,
+   "range": [
+    2.45,
+    2.68
+   ]
+  }
+ },
+ "price_sales": 8041819,
+ "verdict": "do not add it to the model: no gain clear of zero; use it for search and pricing"
+}
