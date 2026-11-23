@@ -1,0 +1,343 @@
+{
+ "family": "CRIME",
+ "about": "Recorded crime and anti-social behaviour per 1,000 residents a year, February 2014 to January 2017 (data.police.uk, crime_signals.py)",
+ "when": "2026-11-23 19:01",
+ "against": {
+  "name": "+HOUSE+AREA+PD",
+  "families": [
+   "BASE",
+   "HIST",
+   "GEO",
+   "VIEW",
+   "HOUSE",
+   "AREA",
+   "PD"
+  ]
+ },
+ "coverage": {
+  "postcodes": 0.9942,
+  "test_home_years": 0.9979
+ },
+ "adds": {
+  "all": {
+   "current": 1.7408,
+   "with": 1.7243,
+   "gain": -0.0165,
+   "range": [
+    -0.0304,
+    -0.0012
+   ]
+  },
+  "t0_9": {
+   "current": 1.7405,
+   "with": 1.7455,
+   "gain": 0.005,
+   "range": [
+    -0.0184,
+    0.0268
+   ]
+  },
+  "t10_19": {
+   "current": 1.5139,
+   "with": 1.5169,
+   "gain": 0.0031,
+   "range": [
+    -0.0197,
+    0.0298
+   ]
+  },
+  "t20p": {
+   "current": 1.291,
+   "with": 1.2797,
+   "gain": -0.0113,
+   "range": [
+    -0.0682,
+    0.0546
+   ]
+  },
+  "gain_share": {
+   "BASE": 0.176,
+   "HIST": 0.627,
+   "GEO": 0.036,
+   "VIEW": 0.027,
+   "HOUSE": 0.059,
+   "AREA": 0.02,
+   "PD": 0.044,
+   "CRIME": 0.011
+  }
+ },
+ "lfl": {
+  "crime_all": {
+   "points_per_step": -0.1585,
+   "range": [
+    -0.1695,
+    -0.1492
+   ],
+   "step": 135.7166,
+   "by_region": {
+    "London": -0.1166,
+    "South East": -0.2661,
+    "East": -0.2312,
+    "South West": -0.1372,
+    "Midlands": -0.0885,
+    "North West": -0.1039,
+    "Yorkshire and North East": -0.0879,
+    "Wales": -0.1209
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "burglary": {
+   "points_per_step": -0.1926,
+   "range": [
+    -0.203,
+    -0.183
+   ],
+   "step": 5.182,
+   "by_region": {
+    "London": -0.1075,
+    "South East": -0.2398,
+    "East": -0.2181,
+    "South West": -0.1104,
+    "Midlands": -0.1179,
+    "North West": -0.1197,
+    "Yorkshire and North East": -0.1134,
+    "Wales": -0.057
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "antisocial": {
+   "points_per_step": -0.1478,
+   "range": [
+    -0.1598,
+    -0.1367
+   ],
+   "step": 46.4452,
+   "by_region": {
+    "London": -0.2295,
+    "South East": -0.2455,
+    "East": -0.2891,
+    "South West": -0.1157,
+    "Midlands": -0.0561,
+    "North West": -0.1009,
+    "Yorkshire and North East": -0.0706,
+    "Wales": -0.1307
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "violence": {
+   "points_per_step": -0.1724,
+   "range": [
+    -0.1829,
+    -0.1616
+   ],
+   "step": 22.8296,
+   "by_region": {
+    "London": -0.1524,
+    "South East": -0.2401,
+    "East": -0.2003,
+    "South West": -0.1491,
+    "Midlands": -0.1372,
+    "North West": -0.1177,
+    "Yorkshire and North East": -0.0865,
+    "Wales": -0.1282
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "vehicle": {
+   "points_per_step": -0.1791,
+   "range": [
+    -0.1898,
+    -0.1695
+   ],
+   "step": 5.4402,
+   "by_region": {
+    "London": -0.0809,
+    "South East": -0.3351,
+    "East": -0.1826,
+    "South West": -0.1409,
+    "Midlands": -0.1105,
+    "North West": -0.0978,
+    "Yorkshire and North East": -0.0667,
+    "Wales": 0.0179
+   },
+   "regions_same_sign": "7 of 8"
+  },
+  "damage": {
+   "points_per_step": -0.2031,
+   "range": [
+    -0.2133,
+    -0.1935
+   ],
+   "step": 8.0215,
+   "by_region": {
+    "London": -0.1183,
+    "South East": -0.2135,
+    "East": -0.1904,
+    "South West": -0.124,
+    "Midlands": -0.1474,
+    "North West": -0.1564,
+    "Yorkshire and North East": -0.1641,
+    "Wales": -0.1199
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "drugs": {
+   "points_per_step": -0.1439,
+   "range": [
+    -0.1539,
+    -0.1332
+   ],
+   "step": 5.1462,
+   "by_region": {
+    "London": -0.0736,
+    "South East": -0.1959,
+    "East": -0.2299,
+    "South West": -0.1632,
+    "Midlands": -0.1477,
+    "North West": -0.1132,
+    "Yorkshire and North East": -0.0909,
+    "Wales": -0.0876
+   },
+   "regions_same_sign": "8 of 8"
+  },
+  "theft": {
+   "points_per_step": -0.1135,
+   "range": [
+    -0.1255,
+    -0.1029
+   ],
+   "step": 21.0295,
+   "by_region": {
+    "London": -0.0496,
+    "South East": -0.2559,
+    "East": -0.239,
+    "South West": -0.1883,
+    "Midlands": -0.1078,
+    "North West": -0.0894,
+    "Yorkshire and North East": -0.0674,
+    "Wales": -0.115
+   },
+   "regions_same_sign": "8 of 8"
+  }
+ },
+ "lfl_rows": 11875967,
+ "lfl_sales": 458268,
+ "on_top": {
+  "crime_all": {
+   "points_per_step": -0.0312,
+   "range": [
+    -0.0532,
+    -0.0078
+   ]
+  },
+  "burglary": {
+   "points_per_step": -0.0061,
+   "range": [
+    -0.0276,
+    0.0139
+   ]
+  },
+  "antisocial": {
+   "points_per_step": 0.0092,
+   "range": [
+    -0.0151,
+    0.0309
+   ]
+  },
+  "violence": {
+   "points_per_step": -0.0286,
+   "range": [
+    -0.0543,
+    -0.0065
+   ]
+  },
+  "vehicle": {
+   "points_per_step": -0.0623,
+   "range": [
+    -0.0805,
+    -0.0423
+   ]
+  },
+  "damage": {
+   "points_per_step": 0.0446,
+   "range": [
+    0.0176,
+    0.0671
+   ]
+  },
+  "drugs": {
+   "points_per_step": -0.0492,
+   "range": [
+    -0.0723,
+    -0.0246
+   ]
+  },
+  "theft": {
+   "points_per_step": -0.0788,
+   "range": [
+    -0.0993,
+    -0.0571
+   ]
+  }
+ },
+ "price": {
+  "crime_all": {
+   "pct_per_step": -1.2,
+   "range": [
+    -1.37,
+    -1.03
+   ]
+  },
+  "burglary": {
+   "pct_per_step": 0.73,
+   "range": [
+    0.6,
+    0.84
+   ]
+  },
+  "antisocial": {
+   "pct_per_step": -1.92,
+   "range": [
+    -2.08,
+    -1.73
+   ]
+  },
+  "violence": {
+   "pct_per_step": -2.01,
+   "range": [
+    -2.2,
+    -1.83
+   ]
+  },
+  "vehicle": {
+   "pct_per_step": 1.02,
+   "range": [
+    0.87,
+    1.14
+   ]
+  },
+  "damage": {
+   "pct_per_step": -3.15,
+   "range": [
+    -3.28,
+    -3.03
+   ]
+  },
+  "drugs": {
+   "pct_per_step": -0.56,
+   "range": [
+    -0.73,
+    -0.42
+   ]
+  },
+  "theft": {
+   "pct_per_step": 0.35,
+   "range": [
+    0.2,
+    0.52
+   ]
+  }
+ },
+ "price_sales": 8041819,
+ "verdict": "do not add it to the model: no gain clear of zero; use it for search and pricing"
+}
