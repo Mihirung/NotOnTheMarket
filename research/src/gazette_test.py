@@ -1,4 +1,4 @@
-"""Do homes named in a deceased-estate notice sell soon after? A first test on a sample of notices.
+"""Do homes named in a deceased-estate or bankruptcy notice sell soon after? A first test on a sample of notices.
 
 Each notice (gazette_fetch.py) is joined to the home whose sales we know, by
 postcode, house number or name, and flat, the same key as the sale records.
@@ -9,9 +9,9 @@ next 12 months) asked of these homes alone.
 
 Nothing about a person or an address is written out: only counts and rates.
 
-    python gazette_test.py
+    python gazette_test.py [deceased|bankruptcy]
 
-Writes research/outputs/signals/GAZETTE_TEST.json and .md.
+Writes research/outputs/signals/GAZETTE_TEST.json and .md (deceased) or BANKRUPTCY_TEST.json and .md.
 """
 import json
 import sys
@@ -25,17 +25,21 @@ import assess_signal as A  # noqa: E402
 import local_eval as LE  # noqa: E402
 from planning_link import key_of, readings  # noqa: E402
 
-NOTICES = Path("research/data/gazette/notices.jsonl")
-STATE = Path("research/data/gazette/state.json")
+KIND = sys.argv[1] if len(sys.argv) > 1 else "deceased"
+DIR = Path("research/data/gazette" if KIND == "deceased" else "research/data/gazette_bankruptcy")
+NOTICES, STATE = DIR / "notices.jsonl", DIR / "state.json"
+EVENT = {"deceased": ("died", "death", "Deceased-estate notices", "GAZETTE_TEST"),
+         "bankruptcy": ("ordered", "bankruptcy order", "Bankruptcy orders", "BANKRUPTCY_TEST")}[KIND]
 TX = "research/data/transactions.parquet"
 OUT = Path(A.OUT)
 
 
 def load_notices():
     n = pd.DataFrame([json.loads(l) for l in open(NOTICES)])
-    for c in ("address", "a1", "a2", "postcode", "died", "edition"):
+    for c in ("address", "a1", "a2", "postcode", "died", "ordered", "edition"):
         if c not in n:
             n[c] = None
+    n["died"] = n[EVENT[0]]                                   # the dated event: the death, or the bankruptcy order
     n = n[n.edition.fillna("").str.contains("London") & n.postcode.notna() & n.died.notna()].copy()
     n["addr"] = n.address.fillna(n.a1.fillna("") + np.where(n.a2.notna(), ", " + n.a2.fillna(""), ""))
     n["pub"] = pd.to_datetime(n.published, errors="coerce"); n["dod"] = pd.to_datetime(n.died, errors="coerce")
@@ -122,20 +126,20 @@ def main():
         R["scale"] = {"notices_a_year": round(per_year), "homes_at_risk": int(homes_at_risk), "sales_a_year": round(sales),
                       "sellers_these_notices_point_to_a_year": round(found),
                       "share_of_all_sellers": round(found / sales, 4)}
-    json.dump(R, open(OUT / "GAZETTE_TEST.json", "w"), indent=1)
-    md = ["# Deceased-estate notices: do the homes sell?", "",
+    json.dump(R, open(OUT / f"{EVENT[3]}.json", "w"), indent=1)
+    md = [f"# {EVENT[2]}: do the homes sell?", "",
           f"A sample of {R['notices_read']:,} notices from The Gazette. {R['london_gazette_with_address']:,} are for England and Wales with an address; "
           f"{R['linked_to_a_home_with_sales']:,} ({100 * R['link_share']:.0f}%) match a home with a sale record, and "
-          f"{R['last_bought_before_the_death']:,} of those were last bought before the death.", "",
+          f"{R['last_bought_before_the_death']:,} of those were last bought before the {EVENT[1]}.", "",
           "| Year scored | Homes still in the same hands | Sold in that year (95% range) | Homes owned as long sell at | Times |",
           "|---|---|---|---|---|", *rows_md, "",
-          "Sold within so many months of the death: " + ", ".join(f"{m} months {100 * v:.0f}%" for m, v in R["sold_within_months_of_death"].items()) + ".",
-          f"The notice appears a median of {R['months_death_to_notice_median']:.0f} months after the death.", ""]
+          f"Sold within so many months of the {EVENT[1]}: " + ", ".join(f"{m} months {100 * v:.0f}%" for m, v in R["sold_within_months_of_death"].items()) + ".",
+          f"The notice appears a median of {R['months_death_to_notice_median']:.0f} months after the {EVENT[1]}.", ""]
     if "scale" in R:
         s = R["scale"]
         md += [f"Scale: about {s['notices_a_year']:,} notices a year point to about {s['sellers_these_notices_point_to_a_year']:,} "
                f"sellers in the following year, {100 * s['share_of_all_sellers']:.1f}% of all sellers among homes with a sale record.", ""]
-    (OUT / "GAZETTE_TEST.md").write_text("\n".join(md))
+    (OUT / f"{EVENT[3]}.md").write_text("\n".join(md))
     print("\n".join(md))
 
 
