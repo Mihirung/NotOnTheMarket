@@ -57,7 +57,8 @@ def main():
     if facts:
         import epc2_signals as E2
         assert json.load(open(PANEL / "test_EPC2.json")) == E2.COLS, "run screen_facts.py first"
-        X = np.hstack([X, np.load(PANEL / "test_EPC2.npy")]); names += [f"epc2_{c}" for c in E2.COLS]
+        N = np.clip(np.load(PANEL / "test_EPC2.npy"), -6e4, 6e4).astype("float16").astype("float32")     # as a stored row family
+        X = np.hstack([X, N]); names += [f"epc2_{c}" for c in E2.COLS]
     keep = t["year"] <= 2018
     tk = {k: v[keep] for k, v in t.items()}
     X, ym = X[keep], ym[keep]

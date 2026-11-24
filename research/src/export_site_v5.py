@@ -112,8 +112,12 @@ def area_of(pc):
 
 
 # ---------------------------------------------------------------- stage 1
-def score(tx_path, model_path, deploy_json, cache_dir, batch=1_000_000):
-    """Every currently owned home in England and Wales, scored in batches."""
+def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1_000_000):
+    """Every currently owned home in England and Wales, scored in batches.
+
+    With `second_json` (stack_late.py's lab_second.json) the model's prediction is passed through the second
+    step, aimed at homes not yet on the market: p_sale is then the chance of a sale completing between July
+    of the year and June of the next, and p_year keeps the model's own calendar-year figure."""
     import lightgbm as lgb
     import signals as SG
     from panel2 import NY, Panel, Y0, full_features
@@ -122,6 +126,14 @@ def score(tx_path, model_path, deploy_json, cache_dir, batch=1_000_000):
     panel = Panel(tx_path)
     bst = lgb.Booster(model_file=model_path)
     assert bst.feature_name() == SG.columns(fams), "model features do not match its families"
+    second, row_fams = None, []
+    if second_json:
+        sj = json.load(open(second_json))
+        assert sj["passes"], "the second step did not pass its test"
+        second = lgb.Booster(model_file=str(Path(second_json).with_name(Path(second_json).name.replace("lab_", "model_")).with_suffix(".txt")))
+        row_fams = [f for f in SG.ROW_FAMILIES if SG.ROW_FAMILIES[f]["columns"][0] in sj["columns"]]
+        want = ["first_step", "tenure"] + [c for f in row_fams for c in SG.ROW_FAMILIES[f]["columns"]]
+        assert second.feature_name() == sj["columns"] == want, "the second step's columns do not match the row families"
     lookups = {f: SG.lookup(f, panel.pc_names) for f in fams if f not in SG.TIME_VARYING}
     s_all = np.nonzero(~panel.sold & (panel.ptype >= 0))[0]
     parts = []
@@ -129,12 +141,18 @@ def score(tx_path, model_path, deploy_json, cache_dir, batch=1_000_000):
         s = s_all[a:a + batch]
         t = np.full(len(s), V4.SCORE_YEAR, dtype="int32")
         p = bst.predict(full_features(panel, s, t, fams, lookups), num_threads=4)
+        p_year = p
+        if second is not None:                        # the columns as the second step was fitted on them (stored at half precision)
+            lp = np.clip(p, 1e-6, 1 - 1e-6); lp = np.log(lp / (1 - lp))
+            R = [np.clip(SG.row_features(f, panel, s, t), -6e4, 6e4).astype("float16").astype("float32") for f in row_fams]
+            p = second.predict(np.column_stack([lp, (V4.SCORE_YEAR - panel.year[s]).astype("float64")] + R), num_threads=4)
         d, byi = panel.oc[s], panel.year[s] - Y0
         est = panel.price[s] * panel.d_med[d, NY - 1] / np.maximum(panel.d_med[d, byi], 1)
         parts.append(pd.DataFrame({
             "pc": panel.pc[s].astype("int32"), "ptype": np.array(list("DSTF"))[panel.ptype[s]],
             "tenure": (V4.SCORE_YEAR - panel.year[s]).astype("int16"), "price": panel.price[s].astype("int32"),
-            "p_sale": p.astype("float32"), "est_value": np.clip(est, 30_000, 5_000_000).astype("float32")}))
+            "p_sale": p.astype("float32"), "p_year": p_year.astype("float32"),
+            "est_value": np.clip(est, 30_000, 5_000_000).astype("float32")}))
         print(f"  scored {a + len(s):,} of {len(s_all):,}", flush=True)
     out = pd.concat(parts, ignore_index=True)
     out["postcode"] = pd.Categorical.from_codes(out.pc.to_numpy(), categories=pd.Index(panel.pc_names).astype(str))
