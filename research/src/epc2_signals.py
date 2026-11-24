@@ -7,8 +7,10 @@ field is read: a certificate is placed by its UPRN, and everything is worked out
 1 January of the year scored from certificates lodged before it.
 
 Intent, on the home's own UPRN (homes whose UPRN is known):
-  own_sale_n        sale certificates lodged six months or more after the purchase: the owner
-                    prepared a sale and did not complete one (a withdrawn listing)
+  own_sale_n        sale certificates lodged six months or more after the purchase and more than
+                    twelve months ago: the owner prepared a sale and did not complete one (a
+                    withdrawn listing). Fresher ones are epc_signals' own_sale_12m: a home that is
+                    on the market now, which is a different thing from one about to come to it
   own_sale_age      months since the latest of them
   own_rent_age      months since the latest private-rental certificate since the purchase
   own_rent_before   rental certificates on the home before this owner bought it
@@ -162,8 +164,10 @@ class Epc2:
                 continue
             ua = u[anc]; bought = e.ym[r][anc]; sa = sel[anc]; end = np.full(len(ua), t0)
             age = lambda k, lo: (lambda m: np.where(m >= 0, t0 - m, np.nan))(_latest(self.k_key, (ua * 8 + k) * M, lo, end))   # noqa: E731
-            out[sa, ix["own_sale_n"]] = ES._win(self.k_key, (ua * 8 + SALE) * M, bought + 6, end)
-            out[sa, ix["own_sale_age"]] = age(SALE, bought + 6)
+            past = end - 12                                                    # fresher sale certificates mark a listing, not intent
+            out[sa, ix["own_sale_n"]] = np.maximum(ES._win(self.k_key, (ua * 8 + SALE) * M, bought + 6, past), 0)
+            m = _latest(self.k_key, (ua * 8 + SALE) * M, bought + 6, past)
+            out[sa, ix["own_sale_age"]] = np.where(m >= 0, t0 - m, np.nan)
             out[sa, ix["own_rent_age"]] = age(RENT, bought + 1)
             out[sa, ix["own_rent_before"]] = ES._win(self.k_key, (ua * 8 + RENT) * M, np.zeros(len(ua), np.int64), bought)
             out[sa, ix["own_grant_n"]] = ES._win(self.k_key, (ua * 8 + GRANT_K) * M, bought + 1, end)
