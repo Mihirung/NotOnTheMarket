@@ -1,0 +1,107 @@
+{
+ "entries": 475605,
+ "rows": 2591431,
+ "with_entry_since": 23692,
+ "since": [
+  {
+   "g": "an entry since the last standard sale",
+   "home_years": 23692,
+   "sells_later": 0.030685463447577242,
+   "sells_in_year": 0.043812257302042884,
+   "model_said": 0.043314949969412535
+  },
+  {
+   "g": "none",
+   "home_years": 2567739,
+   "sells_later": 0.0389619038383574,
+   "sells_in_year": 0.040102985544870406,
+   "model_said": 0.03993728739460191
+  }
+ ],
+ "recent": [
+  {
+   "g": "an entry in the last 24 months",
+   "home_years": 14456,
+   "sells_later": 0.029399557277255118,
+   "sells_in_year": 0.05105146651909242,
+   "model_said": 0.0435047092240348
+  },
+  {
+   "g": "none or older",
+   "home_years": 2576975,
+   "sells_later": 0.03893945420502721,
+   "sells_in_year": 0.040075670117094654,
+   "model_said": 0.03994832860833356
+  }
+ ],
+ "bands": {
+  "all": {
+   "second step": 1.6553,
+   "with certificates": 1.7007,
+   "with category B": 1.6663,
+   "with both": 1.7014,
+   "deployed": 1.662,
+   "gain": [
+    0.011,
+    0.0006,
+    0.0223
+   ],
+   "gain_over_certificates": [
+    0.0007,
+    -0.0101,
+    0.0111
+   ]
+  },
+  "t0_9": {
+   "second step": 1.6146,
+   "with certificates": 1.6387,
+   "with category B": 1.6175,
+   "with both": 1.6441,
+   "deployed": 1.6202,
+   "gain": [
+    0.0029,
+    -0.0105,
+    0.0172
+   ],
+   "gain_over_certificates": [
+    0.0054,
+    -0.0102,
+    0.0221
+   ]
+  },
+  "t10_19": {
+   "second step": 1.4702,
+   "with certificates": 1.592,
+   "with category B": 1.4873,
+   "with both": 1.5964,
+   "deployed": 1.4861,
+   "gain": [
+    0.0171,
+    0.0009,
+    0.0325
+   ],
+   "gain_over_certificates": [
+    0.0044,
+    -0.0086,
+    0.0222
+   ]
+  },
+  "t20p": {
+   "second step": 1.2363,
+   "with certificates": 1.4956,
+   "with category B": 1.2646,
+   "with both": 1.562,
+   "deployed": 1.3144,
+   "gain": [
+    0.0283,
+    -0.0274,
+    0.0845
+   ],
+   "gain_over_certificates": [
+    0.0664,
+    0.0252,
+    0.1087
+   ]
+  }
+ }
+}
