@@ -34,17 +34,19 @@ import panel2 as P2  # noqa: E402
 TX, EPC = "research/data/transactions.parquet", Path("research/data/epc")
 FORM = {"Detached": 0, "Semi-Detached": 1, "Mid-Terrace": 2, "End-Terrace": 2, "Enclosed Mid-Terrace": 2, "Enclosed End-Terrace": 2}
 KIND = {"marketed sale": 0, "non marketed sale": 0, "rental (private)": 1, "rental": 1}          # everything else: 2 (other)
-SKIP = {"new dwelling", "rental (social)"}
+SKIP = {"new dwelling", "rental (social)"}                    # after lower-casing: the wording changes from year to year
 CANDS = ["cert_sale_3m", "cert_sale_6m", "cert_sale_12m", "cert_sale_24m", "cert_rent_24m", "cert_other_12m",
-         "sales_3m", "sales_6m", "sales_12m", "homes_kind", "uprn_pc", "cert_homes_kind",
+         "sales_3m", "sales_6m", "sales_12m", "homes_kind", "uprn_pc", "cert_any_24m",
          "unsold_6m", "unsold_12m", "unsold_6m_share", "unsold_12m_share", "months_owned"]
 
 
 def certificates(pc_names, years):
     """Certificates of those years as (postcode code, kind of home, kind of certificate, month index)."""
-    t = pd.concat([pd.read_parquet(EPC / f"certificates_{y}.parquet", columns=["uprn", "lodged", "transaction", "ptype", "form"])
+    t = pd.concat([pd.read_parquet(EPC / f"certificates_{y}.parquet", columns=["uprn", "lodged", "transaction", "tenure", "ptype", "form"])
                    for y in years], ignore_index=True)
-    t = t[~t.transaction.isin(SKIP)]
+    t["transaction"] = t.transaction.str.lower().str.replace("-", " ").str.strip()
+    social = t.tenure.fillna("").str.lower().str.contains("social")            # "Rental" covers council and housing-association lets in later years
+    t = t[~t.transaction.isin(SKIP) & ~(social & t.transaction.fillna("").str.startswith("rental"))]
     home = np.where(t.ptype.isin(["Flat", "Maisonette"]), 3, t.form.map(FORM).fillna(-1)).astype(np.int8)
     kind = t.transaction.map(KIND).fillna(2).astype(np.int8).to_numpy()
     u = pd.read_parquet("research/data/onsud/uprn_postcode.parquet")
@@ -75,9 +77,10 @@ def main():
     ckeys = [np.sort(G(cpc[ckind == k], chome[ckind == k]) * 100_000 + cym[ckind == k]) for k in range(3)]
     skey = np.sort(G(panel.pc, panel.ptype) * 100_000 + ym_tx)
     first = np.ones(len(panel.key), bool); first[1:] = panel.key[1:] != panel.key[:-1]
-    homes_kind = np.bincount(G(panel.pc[first], panel.ptype[first]), minlength=len(panel.pc_names) * 4)
-    cu = pd.DataFrame({"g": G(cpc, chome), "u": cuprn}).drop_duplicates()
-    cert_homes = np.bincount(cu.g.to_numpy(), minlength=len(panel.pc_names) * 4)
+    # homes of each kind in each postcode with a sale on record before the year scored (nothing from later)
+    homes_kind = {T: np.bincount(G(panel.pc[first & (panel.year < T)], panel.ptype[first & (panel.year < T)]),
+                                 minlength=len(panel.pc_names) * 4) for T in (2017, 2018, 2019)}
+    print({k: int((ckind == k).sum()) for k in range(3)}, "certificates for sale, rental, other", flush=True)
 
     parts = []
     for c in (0, 1):
@@ -95,7 +98,9 @@ def main():
         f["cert_rent_24m"] = window(ckeys[1], base, t0, 0, 24); f["cert_other_12m"] = window(ckeys[2], base, t0, 0, 12)
         for k in (3, 6, 12):                             # sales already completed there (the home's own purchase is not one)
             f[f"sales_{k}m"] = np.maximum(window(skey, base, t0, 0, k) - (owned <= k), 0)
-        f["homes_kind"] = homes_kind[g]; f["uprn_pc"] = n_uprn[panel.pc[rows]]; f["cert_homes_kind"] = cert_homes[g]
+        f["homes_kind"] = np.select([years == T for T in homes_kind], [homes_kind[T][g] for T in homes_kind])
+        f["uprn_pc"] = n_uprn[panel.pc[rows]]
+        f["cert_any_24m"] = sum(window(ckeys[k], base, t0, 0, 24) for k in range(3))
         for k in (6, 12):                                # certificates lodged for a sale that has not happened yet
             f[f"unsold_{k}m"] = np.maximum(f[f"cert_sale_{k}m"] - f[f"sales_{k}m"], 0)
             f[f"unsold_{k}m_share"] = f[f"unsold_{k}m"] / np.maximum(f["homes_kind"], 1)

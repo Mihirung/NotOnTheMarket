@@ -1,0 +1,192 @@
+{
+ "candidates": [
+  "cert_sale_3m",
+  "cert_sale_6m",
+  "cert_sale_12m",
+  "cert_sale_24m",
+  "cert_rent_24m",
+  "cert_other_12m",
+  "sales_3m",
+  "sales_6m",
+  "sales_12m",
+  "homes_kind",
+  "uprn_pc",
+  "cert_any_24m",
+  "unsold_6m",
+  "unsold_12m",
+  "unsold_6m_share",
+  "unsold_12m_share",
+  "months_owned"
+ ],
+ "gain_share": {
+  "2017": {
+   "model": 0.539,
+   "tenure": 0.01,
+   "cert_sale_3m": 0.014,
+   "cert_sale_6m": 0.031,
+   "cert_sale_12m": 0.008,
+   "cert_sale_24m": 0.015,
+   "cert_rent_24m": 0.006,
+   "cert_other_12m": 0.005,
+   "sales_3m": 0.003,
+   "sales_6m": 0.005,
+   "sales_12m": 0.008,
+   "homes_kind": 0.035,
+   "uprn_pc": 0.051,
+   "cert_any_24m": 0.011,
+   "unsold_6m": 0.001,
+   "unsold_12m": 0.001,
+   "unsold_6m_share": 0.064,
+   "unsold_12m_share": 0.091,
+   "months_owned": 0.103
+  },
+  "2018": {
+   "model": 0.532,
+   "tenure": 0.011,
+   "cert_sale_3m": 0.006,
+   "cert_sale_6m": 0.035,
+   "cert_sale_12m": 0.012,
+   "cert_sale_24m": 0.015,
+   "cert_rent_24m": 0.005,
+   "cert_other_12m": 0.001,
+   "sales_3m": 0.004,
+   "sales_6m": 0.004,
+   "sales_12m": 0.011,
+   "homes_kind": 0.039,
+   "uprn_pc": 0.047,
+   "cert_any_24m": 0.01,
+   "unsold_6m": 0.001,
+   "unsold_12m": 0.001,
+   "unsold_6m_share": 0.062,
+   "unsold_12m_share": 0.093,
+   "months_owned": 0.11
+  }
+ },
+ "rows": 2591431,
+ "plain": [
+  {
+   "unsold_certificates_6m": 0,
+   "homes_of_this_kind_in_postcode": "1-2",
+   "home_years": 146100.0,
+   "sold": 0.0296,
+   "model_said": 0.0332
+  },
+  {
+   "unsold_certificates_6m": 0,
+   "homes_of_this_kind_in_postcode": "3-5",
+   "home_years": 229120.0,
+   "sold": 0.0325,
+   "model_said": 0.0357
+  },
+  {
+   "unsold_certificates_6m": 0,
+   "homes_of_this_kind_in_postcode": "6-10",
+   "home_years": 324586.0,
+   "sold": 0.0334,
+   "model_said": 0.037
+  },
+  {
+   "unsold_certificates_6m": 0,
+   "homes_of_this_kind_in_postcode": "11+",
+   "home_years": 628640.0,
+   "sold": 0.0362,
+   "model_said": 0.0403
+  },
+  {
+   "unsold_certificates_6m": 1,
+   "homes_of_this_kind_in_postcode": "1-2",
+   "home_years": 3586.0,
+   "sold": 0.1431,
+   "model_said": 0.0346
+  },
+  {
+   "unsold_certificates_6m": 1,
+   "homes_of_this_kind_in_postcode": "3-5",
+   "home_years": 13526.0,
+   "sold": 0.0984,
+   "model_said": 0.0356
+  },
+  {
+   "unsold_certificates_6m": 1,
+   "homes_of_this_kind_in_postcode": "6-10",
+   "home_years": 31620.0,
+   "sold": 0.0751,
+   "model_said": 0.0362
+  },
+  {
+   "unsold_certificates_6m": 1,
+   "homes_of_this_kind_in_postcode": "11+",
+   "home_years": 88156.0,
+   "sold": 0.0561,
+   "model_said": 0.0383
+  },
+  {
+   "unsold_certificates_6m": 2,
+   "homes_of_this_kind_in_postcode": "1-2",
+   "home_years": 201.0,
+   "sold": 0.1045,
+   "model_said": 0.0333
+  },
+  {
+   "unsold_certificates_6m": 2,
+   "homes_of_this_kind_in_postcode": "3-5",
+   "home_years": 911.0,
+   "sold": 0.1218,
+   "model_said": 0.0354
+  },
+  {
+   "unsold_certificates_6m": 2,
+   "homes_of_this_kind_in_postcode": "6-10",
+   "home_years": 3048.0,
+   "sold": 0.106,
+   "model_said": 0.0358
+  },
+  {
+   "unsold_certificates_6m": 2,
+   "homes_of_this_kind_in_postcode": "11+",
+   "home_years": 16214.0,
+   "sold": 0.0709,
+   "model_said": 0.0384
+  }
+ ],
+ "all": {
+  "deployed": 1.7408,
+  "second step, no certificates": 1.7282,
+  "second step, with certificates": 1.9957,
+  "gain_from_certificates": 0.2675,
+  "range": [
+   0.2427,
+   0.2972
+  ]
+ },
+ "t0_9": {
+  "deployed": 1.7405,
+  "second step, no certificates": 1.7443,
+  "second step, with certificates": 1.8075,
+  "gain_from_certificates": 0.0632,
+  "range": [
+   0.0404,
+   0.0924
+  ]
+ },
+ "t10_19": {
+  "deployed": 1.5139,
+  "second step, no certificates": 1.504,
+  "second step, with certificates": 2.0846,
+  "gain_from_certificates": 0.5806,
+  "range": [
+   0.5405,
+   0.6227
+  ]
+ },
+ "t20p": {
+  "deployed": 1.291,
+  "second step, no certificates": 1.2234,
+  "second step, with certificates": 2.2085,
+  "gain_from_certificates": 0.9851,
+  "range": [
+   0.8633,
+   1.0984
+  ]
+ }
+}
