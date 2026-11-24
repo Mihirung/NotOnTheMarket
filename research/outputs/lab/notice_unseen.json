@@ -1,0 +1,11 @@
+{
+ "what": "share first sold in the calendar year, by months from the notice to 1 January; homes with no sale on record",
+ "years": [
+  2017,
+  2018
+ ],
+ "min_homes": 300,
+ "rates": {
+  "bk": {}
+ }
+}

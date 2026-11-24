@@ -1,0 +1,38 @@
+{
+ "first_step": "+HOUSE+AREA+PD",
+ "label": "sells in the calendar year",
+ "target": "year",
+ "score": "log-odds = the first step's log-odds + each part's raw output, for homes where the part's first column is present",
+ "parts": [
+  {
+   "kind": "bk",
+   "file": "model_second_notice_bk.txt",
+   "columns": [
+    "notice_bk_months",
+    "notice_bk_owned",
+    "notice_bk_n"
+   ],
+   "rounds": 36
+  }
+ ],
+ "columns": [
+  "notice_bk_months",
+  "notice_bk_owned",
+  "notice_bk_n"
+ ],
+ "row_families": [
+  "NOTICE"
+ ],
+ "kinds": [
+  "bk"
+ ],
+ "window_months": 48,
+ "rows": 9126882,
+ "fitted_on": "every home-year of 2017 and 2018 with a notice, first step fitted to 2015",
+ "passes": true,
+ "clear_of_zero": false,
+ "lift_top10": {
+  "deployed": 1.7408,
+  "with_notices": 1.7406
+ }
+}

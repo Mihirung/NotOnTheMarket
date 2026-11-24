@@ -1,0 +1,70 @@
+{
+ "years": [
+  2017,
+  2018
+ ],
+ "homes_on_record_sell_at": 0.0401,
+ "kinds": {
+  "bk": {
+   "notices_in_england_and_wales": 81725,
+   "share_with_no_home_on_record": 0.501,
+   "bands": [
+    {
+     "published": "1 to 6 months before",
+     "homes": 7327,
+     "first_sold_in_the_year": 83,
+     "rate": 0.0113,
+     "range": [
+      0.009,
+      0.0136
+     ],
+     "completes_july_to_june": 0.0126
+    },
+    {
+     "published": "7 to 12 months before",
+     "homes": 7230,
+     "first_sold_in_the_year": 92,
+     "rate": 0.0127,
+     "range": [
+      0.0102,
+      0.0154
+     ],
+     "completes_july_to_june": 0.0127
+    },
+    {
+     "published": "13 to 24 months before",
+     "homes": 14726,
+     "first_sold_in_the_year": 218,
+     "rate": 0.0148,
+     "range": [
+      0.0129,
+      0.0167
+     ],
+     "completes_july_to_june": 0.016
+    },
+    {
+     "published": "25 to 36 months before",
+     "homes": 16462,
+     "first_sold_in_the_year": 245,
+     "rate": 0.0149,
+     "range": [
+      0.0131,
+      0.0168
+     ],
+     "completes_july_to_june": 0.0148
+    },
+    {
+     "published": "37 to 48 months before",
+     "homes": 19463,
+     "first_sold_in_the_year": 274,
+     "rate": 0.0141,
+     "range": [
+      0.0125,
+      0.0158
+     ],
+     "completes_july_to_june": 0.0135
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,559 @@
+{
+ "when": "2026-11-24",
+ "first_step": "+HOUSE+AREA+PD",
+ "columns": [
+  "notice_bk_months",
+  "notice_bk_owned",
+  "notice_bk_n",
+  "notice_dec_months",
+  "notice_dec_owned",
+  "notice_dec_n"
+ ],
+ "kinds": [
+  "bk"
+ ],
+ "window_months": 48,
+ "seeds": [
+  7,
+  8,
+  9
+ ],
+ "rows": 9126882,
+ "rows_in_test_chunks": 2591431,
+ "notices": {
+  "bk": {
+   "notices": 90804,
+   "with_an_address": 90804,
+   "linked_to_a_home": 40404,
+   "by_year": {
+    "2013": [
+     23314,
+     11374
+    ],
+    "2014": [
+     19185,
+     8853
+    ],
+    "2015": [
+     16493,
+     6986
+    ],
+    "2016": [
+     15648,
+     6545
+    ],
+    "2017": [
+     15568,
+     6425
+    ],
+    "2019": [
+     596,
+     221
+    ]
+   }
+  }
+ },
+ "sold_against_expected": {
+  "test chunks": 1.0042,
+  "other chunks": 1.0011
+ },
+ "what_the_notices_say": [
+  {
+   "kind": "bk",
+   "notice": "1 to 6 months before",
+   "rows": 2067,
+   "home_years": 5961,
+   "sold": 226,
+   "rate": 0.0379,
+   "rate_range": [
+    0.0329,
+    0.0429
+   ],
+   "model_said": 0.0405,
+   "times": 0.94,
+   "times_range": [
+    0.81,
+    1.06
+   ]
+  },
+  {
+   "kind": "bk",
+   "notice": "7 to 12 months before",
+   "rows": 2023,
+   "home_years": 5665,
+   "sold": 267,
+   "rate": 0.0471,
+   "rate_range": [
+    0.0416,
+    0.0529
+   ],
+   "model_said": 0.0413,
+   "times": 1.14,
+   "times_range": [
+    1.0,
+    1.28
+   ]
+  },
+  {
+   "kind": "bk",
+   "notice": "13 to 24 months before",
+   "rows": 3977,
+   "home_years": 11018,
+   "sold": 598,
+   "rate": 0.0543,
+   "rate_range": [
+    0.0499,
+    0.059
+   ],
+   "model_said": 0.0415,
+   "times": 1.31,
+   "times_range": [
+    1.2,
+    1.42
+   ]
+  },
+  {
+   "kind": "bk",
+   "notice": "25 to 36 months before",
+   "rows": 4318,
+   "home_years": 11965,
+   "sold": 585,
+   "rate": 0.0489,
+   "rate_range": [
+    0.045,
+    0.0532
+   ],
+   "model_said": 0.0404,
+   "times": 1.21,
+   "times_range": [
+    1.11,
+    1.31
+   ]
+  },
+  {
+   "kind": "bk",
+   "notice": "37 to 48 months before",
+   "rows": 5077,
+   "home_years": 13936,
+   "sold": 727,
+   "rate": 0.0522,
+   "rate_range": [
+    0.0485,
+    0.0563
+   ],
+   "model_said": 0.0404,
+   "times": 1.29,
+   "times_range": [
+    1.2,
+    1.39
+   ]
+  },
+  {
+   "kind": "bk",
+   "notice": "Any time in the window, about an earlier owner",
+   "rows": 2620,
+   "home_years": 7468,
+   "sold": 267,
+   "rate": 0.0358,
+   "rate_range": [
+    0.0315,
+    0.0405
+   ],
+   "model_said": 0.0327,
+   "times": 1.09,
+   "times_range": [
+    0.96,
+    1.24
+   ]
+  }
+ ],
+ "rounds_chosen": {
+  "bk": [
+   18,
+   18,
+   26,
+   29,
+   31,
+   33,
+   35,
+   35,
+   36,
+   39
+  ]
+ },
+ "bands": {
+  "all": {
+   "year": {
+    "deployed": 1.7408,
+    "bk": 1.7406,
+    "gain_bk": {
+     "gain": -0.0002,
+     "range": [
+      -0.0016,
+      0.0014
+     ],
+     "by_seed": [
+      -0.0002,
+      0.0002,
+      -0.0019
+     ],
+     "range_with_fit_noise": [
+      -0.0027,
+      0.0026
+     ]
+    }
+   },
+   "later": {
+    "deployed": 1.662,
+    "bk": 1.66,
+    "gain_bk": {
+     "gain": -0.0021,
+     "range": [
+      -0.0037,
+      -0.0007
+     ],
+     "by_seed": [
+      -0.0021,
+      0.0,
+      -0.0015
+     ],
+     "range_with_fit_noise": [
+      -0.0048,
+      0.0004
+     ]
+    }
+   },
+   "not_listed": {
+    "deployed": 1.6912,
+    "bk": 1.6894,
+    "gain_bk": {
+     "gain": -0.0018,
+     "range": [
+      -0.0033,
+      -0.0003
+     ],
+     "by_seed": [
+      -0.0018,
+      0.0003,
+      -0.0015
+     ],
+     "range_with_fit_noise": [
+      -0.0045,
+      0.0008
+     ]
+    }
+   }
+  },
+  "t0_9": {
+   "year": {
+    "deployed": 1.7405,
+    "bk": 1.7389,
+    "gain_bk": {
+     "gain": -0.0015,
+     "range": [
+      -0.003,
+      0.0
+     ],
+     "by_seed": [
+      -0.0015,
+      -0.0017,
+      -0.0015
+     ],
+     "range_with_fit_noise": [
+      -0.003,
+      0.0
+     ]
+    }
+   },
+   "later": {
+    "deployed": 1.6202,
+    "bk": 1.6186,
+    "gain_bk": {
+     "gain": -0.0015,
+     "range": [
+      -0.0032,
+      -0.0
+     ],
+     "by_seed": [
+      -0.0015,
+      -0.0019,
+      -0.0008
+     ],
+     "range_with_fit_noise": [
+      -0.0036,
+      0.0003
+     ]
+    }
+   },
+   "not_listed": {
+    "deployed": 1.6358,
+    "bk": 1.6344,
+    "gain_bk": {
+     "gain": -0.0014,
+     "range": [
+      -0.0032,
+      0.0001
+     ],
+     "by_seed": [
+      -0.0014,
+      -0.0019,
+      -0.0007
+     ],
+     "range_with_fit_noise": [
+      -0.0036,
+      0.0005
+     ]
+    }
+   }
+  },
+  "t10_19": {
+   "year": {
+    "deployed": 1.5139,
+    "bk": 1.5117,
+    "gain_bk": {
+     "gain": -0.0022,
+     "range": [
+      -0.005,
+      0.0006
+     ],
+     "by_seed": [
+      -0.0022,
+      0.0004,
+      -0.0017
+     ],
+     "range_with_fit_noise": [
+      -0.0061,
+      0.0018
+     ]
+    }
+   },
+   "later": {
+    "deployed": 1.4861,
+    "bk": 1.4833,
+    "gain_bk": {
+     "gain": -0.0028,
+     "range": [
+      -0.0058,
+      0.0001
+     ],
+     "by_seed": [
+      -0.0028,
+      -0.0035,
+      0.0007
+     ],
+     "range_with_fit_noise": [
+      -0.0082,
+      0.0025
+     ]
+    }
+   },
+   "not_listed": {
+    "deployed": 1.519,
+    "bk": 1.5163,
+    "gain_bk": {
+     "gain": -0.0027,
+     "range": [
+      -0.0057,
+      0.0005
+     ],
+     "by_seed": [
+      -0.0027,
+      -0.0028,
+      0.0006
+     ],
+     "range_with_fit_noise": [
+      -0.0075,
+      0.0023
+     ]
+    }
+   }
+  },
+  "t20p": {
+   "year": {
+    "deployed": 1.291,
+    "bk": 1.2974,
+    "gain_bk": {
+     "gain": 0.0064,
+     "range": [
+      -0.0072,
+      0.0203
+     ],
+     "by_seed": [
+      0.0064,
+      -0.0016,
+      0.0113
+     ],
+     "range_with_fit_noise": [
+      -0.0122,
+      0.0253
+     ]
+    }
+   },
+   "later": {
+    "deployed": 1.3144,
+    "bk": 1.3178,
+    "gain_bk": {
+     "gain": 0.0033,
+     "range": [
+      -0.0094,
+      0.019
+     ],
+     "by_seed": [
+      0.0033,
+      0.0033,
+      0.015
+     ],
+     "range_with_fit_noise": [
+      -0.0146,
+      0.0242
+     ]
+    }
+   },
+   "not_listed": {
+    "deployed": 1.3338,
+    "bk": 1.3376,
+    "gain_bk": {
+     "gain": 0.0038,
+     "range": [
+      -0.0092,
+      0.0201
+     ],
+     "by_seed": [
+      0.0038,
+      0.0071,
+      0.015
+     ],
+     "range_with_fit_noise": [
+      -0.0131,
+      0.0239
+     ]
+    }
+   }
+  }
+ },
+ "log_loss_with_a_notice": {
+  "bk": {
+   "rows": 20082,
+   "home_years": 56013,
+   "sold": 2670,
+   "deployed_expected": 2223,
+   "second_step_expected": 2564,
+   "before": 0.19144,
+   "after": 0.19072,
+   "change": -0.00072,
+   "range": [
+    -0.00116,
+    -0.00031
+   ],
+   "by_seed": [
+    -0.00072,
+    -0.00048,
+    -0.00083
+   ]
+  }
+ },
+ "homes_with_a_notice": [
+  {
+   "kind": "bk",
+   "notice": "1 to 6 months before",
+   "home_years": 5961,
+   "sold_in_year": 0.0379,
+   "deployed_said": 0.0405,
+   "second_step_says": 0.0416,
+   "test_home_years": 566,
+   "sold_later_not_listed": 0.0486,
+   "in_best_tenth_before": 0.113,
+   "in_best_tenth_after": 0.106
+  },
+  {
+   "kind": "bk",
+   "notice": "7 to 12 months before",
+   "home_years": 5665,
+   "sold_in_year": 0.0471,
+   "deployed_said": 0.0413,
+   "second_step_says": 0.0472,
+   "test_home_years": 568,
+   "sold_later_not_listed": 0.0428,
+   "in_best_tenth_before": 0.136,
+   "in_best_tenth_after": 0.217
+  },
+  {
+   "kind": "bk",
+   "notice": "13 to 24 months before",
+   "home_years": 11018,
+   "sold_in_year": 0.0543,
+   "deployed_said": 0.0415,
+   "second_step_says": 0.0493,
+   "test_home_years": 1085,
+   "sold_later_not_listed": 0.0459,
+   "in_best_tenth_before": 0.122,
+   "in_best_tenth_after": 0.229
+  },
+  {
+   "kind": "bk",
+   "notice": "25 to 36 months before",
+   "home_years": 11965,
+   "sold_in_year": 0.0489,
+   "deployed_said": 0.0404,
+   "second_step_says": 0.0476,
+   "test_home_years": 1244,
+   "sold_later_not_listed": 0.0375,
+   "in_best_tenth_before": 0.095,
+   "in_best_tenth_after": 0.201
+  },
+  {
+   "kind": "bk",
+   "notice": "37 to 48 months before",
+   "home_years": 13936,
+   "sold_in_year": 0.0522,
+   "deployed_said": 0.0404,
+   "second_step_says": 0.0488,
+   "test_home_years": 1476,
+   "sold_later_not_listed": 0.0427,
+   "in_best_tenth_before": 0.077,
+   "in_best_tenth_after": 0.234
+  },
+  {
+   "kind": "bk",
+   "notice": "Any, owner bought before it",
+   "home_years": 48545,
+   "sold_in_year": 0.0495,
+   "deployed_said": 0.0408,
+   "second_step_says": 0.0475,
+   "test_home_years": 4939,
+   "sold_later_not_listed": 0.0428,
+   "in_best_tenth_before": 0.102,
+   "in_best_tenth_after": 0.208
+  },
+  {
+   "kind": "bk",
+   "notice": "Any, about an earlier owner",
+   "home_years": 7468,
+   "sold_in_year": 0.0358,
+   "deployed_said": 0.0327,
+   "second_step_says": 0.0342,
+   "test_home_years": 764,
+   "sold_later_not_listed": 0.0425,
+   "in_best_tenth_before": 0.069,
+   "in_best_tenth_after": 0.099
+  }
+ ],
+ "clear_of_zero": false,
+ "passes_by_kind": {
+  "bk": true
+ },
+ "passes": true,
+ "verdict": "add the notices: homes with a notice are scored better on homes and a year the step was not fitted on, and the best tenth is no worse (too few homes carry a notice to move it measurably)",
+ "product": [
+  {
+   "kind": "bk",
+   "file": "model_second_notice_bk.txt",
+   "columns": [
+    "notice_bk_months",
+    "notice_bk_owned",
+    "notice_bk_n"
+   ],
+   "rounds": 36
+  }
+ ]
+}
