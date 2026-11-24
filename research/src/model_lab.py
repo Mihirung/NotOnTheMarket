@@ -506,14 +506,16 @@ def exp_deploy(ch, out, threads, pct=20, fams=None, ref_name="ALL"):
     """The model the prototype scores with, trained on 2001-2018 (2019 is
     left out because its file undercounts late registrations)."""
     fams = fams or ["BASE", "HIST", "GEO", "VIEW"]
-    ref = out / "preds" / f"{ref_name}@{pct}.json"
+    sfx = "" if LABEL == "y" else f"~{LABEL}"         # another target has its own tested fit and its own files
+    ref = out / "preds" / f"{ref_name}@{pct}{sfx}.json"
     if not ref.exists():                              # a smaller sample than any tested: rounds from the full fit
-        ref = out / "preds" / f"{ref_name}@100.json"
+        ref = out / "preds" / f"{ref_name}@100{sfx}.json"
     nr = int((json.load(open(ref))["rounds"] if ref.exists() else 350) * 1.1)
     bst, n = fit(ch, pct, fams, threads, (2001, 2018), n_rounds=nr, tag="deploy<=2018")
-    bst.save_model(str(out / "model_deploy.txt"))
-    json.dump({"name": ref_name, "pct": pct, "train_rows": n, "rounds": nr, "families": fams, "features": bst.feature_name()},
-              open(out / "lab_deploy.json", "w"), indent=1)
+    tag = "" if LABEL == "y" else f"_{LABEL}"
+    bst.save_model(str(out / f"model_deploy{tag}.txt"))
+    json.dump({"name": ref_name, "pct": pct, "label": LABEL, "train_rows": n, "rounds": nr, "families": fams,
+               "features": bst.feature_name()}, open(out / f"lab_deploy{tag}.json", "w"), indent=1)
 
 
 if __name__ == "__main__":
