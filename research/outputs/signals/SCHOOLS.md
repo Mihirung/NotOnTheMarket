@@ -2,7 +2,7 @@
 
 Schools nearby: Ofsted grades as at August 2016, selective and independent schools (schools_access_signals.py)
 
-**Verdict:** do not add it to the model: no gain clear of zero; use it for search and pricing
+**Verdict:** do not add it to the model: no gain clear of zero and of the fit's own noise; use it for search and pricing
 
 Coverage: 99.4% of postcodes, 99.8% of the home-years the model is tested on.
 
@@ -10,12 +10,12 @@ Coverage: 99.4% of postcodes, 99.8% of the home-years the model is tested on.
 
 | Owners | Current model | With this family | Gain | 95% range |
 |---|---|---|---|---|
-| All | 1.741 | 1.728 | -0.013 | -0.025 to -0.001 |
-| Under 10 years | 1.740 | 1.739 | -0.001 | -0.021 to +0.021 |
-| 10 to 19 years | 1.514 | 1.521 | +0.007 | -0.017 to +0.028 |
-| 20 years or more | 1.291 | 1.260 | -0.031 | -0.099 to +0.034 |
+| All | 1.741 | 1.728 | -0.013 | -0.046 to +0.020 |
+| Under 10 years | 1.740 | 1.739 | -0.001 | -0.030 to +0.030 |
+| 10 to 19 years | 1.514 | 1.521 | +0.007 | -0.029 to +0.040 |
+| 20 years or more | 1.291 | 1.260 | -0.031 | -0.102 to +0.037 |
 
-Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. The current model is the deployed one: BASE + HIST + GEO + VIEW + HOUSE + AREA + PD.
+Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. The current model is the deployed one: BASE + HIST + GEO + VIEW + HOUSE + AREA + PD. The range includes the fit's own randomness (SEED_NOISE.md): two fits of the same model differ by up to about 0.02, so a gain smaller than that is not evidence.
 
 ## Each column: sale timing, what is left on top of the model, and price
 

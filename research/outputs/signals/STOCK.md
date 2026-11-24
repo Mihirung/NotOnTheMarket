@@ -2,7 +2,7 @@
 
 The homes around the postcode in 2016: when built, type, bedrooms and council tax bands (Valuation Office Agency, stock_signals.py)
 
-**Verdict:** do not add it to the model: no gain clear of zero; use it for search and pricing
+**Verdict:** do not add it to the model: no gain clear of zero and of the fit's own noise; use it for search and pricing
 
 Coverage: 99.4% of postcodes, 99.8% of the home-years the model is tested on.
 
@@ -10,12 +10,12 @@ Coverage: 99.4% of postcodes, 99.8% of the home-years the model is tested on.
 
 | Owners | Current model | With this family | Gain | 95% range |
 |---|---|---|---|---|
-| All | 1.741 | 1.726 | -0.015 | -0.029 to +0.001 |
-| Under 10 years | 1.740 | 1.743 | +0.003 | -0.015 to +0.025 |
-| 10 to 19 years | 1.514 | 1.515 | +0.001 | -0.021 to +0.027 |
-| 20 years or more | 1.291 | 1.330 | +0.039 | -0.044 to +0.119 |
+| All | 1.741 | 1.726 | -0.015 | -0.048 to +0.020 |
+| Under 10 years | 1.740 | 1.743 | +0.003 | -0.025 to +0.035 |
+| 10 to 19 years | 1.514 | 1.515 | +0.001 | -0.033 to +0.038 |
+| 20 years or more | 1.291 | 1.330 | +0.039 | -0.047 to +0.122 |
 
-Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. The current model is the deployed one: BASE + HIST + GEO + VIEW + HOUSE + AREA + PD.
+Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. The current model is the deployed one: BASE + HIST + GEO + VIEW + HOUSE + AREA + PD. The range includes the fit's own randomness (SEED_NOISE.md): two fits of the same model differ by up to about 0.02, so a gain smaller than that is not evidence.
 
 ## Each column: sale timing, what is left on top of the model, and price
 

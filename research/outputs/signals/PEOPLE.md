@@ -2,7 +2,7 @@
 
 Who lives around the postcode: life stage, household type, tenure, spare bedrooms, work, cars, marital status and health, from the 2011 Census output area (people_signals.py)
 
-**Verdict:** do not add it to the model: no gain clear of zero; use it for search and pricing
+**Verdict:** do not add it to the model: no gain clear of zero and of the fit's own noise; use it for search and pricing
 
 Coverage: 99.4% of postcodes, 99.8% of the home-years the model is tested on.
 
@@ -10,12 +10,12 @@ Coverage: 99.4% of postcodes, 99.8% of the home-years the model is tested on.
 
 | Owners | Current model | With this family | Gain | 95% range |
 |---|---|---|---|---|
-| All | 1.741 | 1.739 | -0.002 | -0.020 to +0.014 |
-| Under 10 years | 1.740 | 1.760 | +0.019 | -0.002 to +0.043 |
-| 10 to 19 years | 1.514 | 1.543 | +0.029 | +0.001 to +0.056 |
-| 20 years or more | 1.291 | 1.272 | -0.019 | -0.093 to +0.045 |
+| All | 1.741 | 1.739 | -0.002 | -0.038 to +0.032 |
+| Under 10 years | 1.740 | 1.760 | +0.019 | -0.011 to +0.052 |
+| 10 to 19 years | 1.514 | 1.543 | +0.029 | -0.010 to +0.066 |
+| 20 years or more | 1.291 | 1.272 | -0.019 | -0.096 to +0.048 |
 
-Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. The current model is the deployed one: BASE + HIST + GEO + VIEW + HOUSE + AREA + PD.
+Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. The current model is the deployed one: BASE + HIST + GEO + VIEW + HOUSE + AREA + PD. The range includes the fit's own randomness (SEED_NOISE.md): two fits of the same model differ by up to about 0.02, so a gain smaller than that is not evidence.
 
 ## Each column: sale timing, what is left on top of the model, and price
 

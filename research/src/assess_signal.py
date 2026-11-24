@@ -27,6 +27,10 @@ tests, all on the whole of England and Wales:
 Writes research/outputs/signals/<FAMILY>.json and <FAMILY>.md. The verdict
 line says whether to add the family to the deployed model: only if test 4
 shows a gain whose range is clear of zero, so the model can never get worse.
+The range counts two kinds of chance: which homes fall in the test years (the
+bootstrap) and the fit's own randomness (two fits of the same model differ;
+measured by seed_noise.py and seed_ensemble.py). Without the second, a lucky
+or unlucky fit reads as a real gain or loss.
 """
 import argparse
 import json
@@ -171,6 +175,16 @@ def on_top(ch, fam, ref_pred, say):
     return res
 
 
+def fit_noise(group):
+    """Spread (standard deviation) of the best-tenth lift across fits of the deployed model, or None if not measured."""
+    f = Path(OUT) / "ENSEMBLE.json"
+    try:
+        R = json.load(open(f))
+        return R["results"][group]["seed_sd"] if R.get("deployed") == CUR_NAME else None
+    except (OSError, KeyError, ValueError):
+        return None
+
+
 def adds_to_model(ch, fam, pct, threads, say):
     t = LE.load_test(PANEL)
     out = Path(LAB)
@@ -188,8 +202,15 @@ def adds_to_model(ch, fam, pct, threads, say):
             da.append(L.lift(mb, w) - L.lift(ma, w))
         res[name] = {"current": round(a, 4), "with": round(b, 4), "gain": round(b - a, 4),
                      "range": [round(float(np.percentile(da, q)), 4) for q in (2.5, 97.5)]}
+        sd = fit_noise(name)
+        if sd is not None:                            # both sides are single fits: their difference carries sd * sqrt(2)
+            lo_, hi_ = res[name]["range"]
+            half = float(np.hypot((hi_ - lo_) / 2, 1.96 * sd * np.sqrt(2)))
+            mid = (lo_ + hi_) / 2
+            res[name]["range_with_fit_noise"] = [round(mid - half, 4), round(mid + half, 4)]
+        r = res[name].get("range_with_fit_noise", res[name]["range"])
         say(f"  {name:6s} best tenth of each district: {a:.3f} -> {b:.3f} times random "
-            f"(gain {b - a:+.3f}, range {res[name]['range'][0]:+.3f} to {res[name]['range'][1]:+.3f})")
+            f"(gain {b - a:+.3f}, range {r[0]:+.3f} to {r[1]:+.3f}{' incl. fit noise' if sd is not None else ''})")
     res["gain_share"] = info.get("gain_by_family")
     return res, p_cur
 
@@ -257,9 +278,12 @@ def report(fam, R):
                   "| Owners | Current model | With this family | Gain | 95% range |", "|---|---|---|---|---|"]
         for k, lab in (("all", "All"), ("t0_9", "Under 10 years"), ("t10_19", "10 to 19 years"), ("t20p", "20 years or more")):
             v = R["adds"][k]
-            lines.append(f"| {lab} | {v['current']:.3f} | {v['with']:.3f} | {v['gain']:+.3f} | {v['range'][0]:+.3f} to {v['range'][1]:+.3f} |")
+            r = v.get("range_with_fit_noise", v["range"])
+            lines.append(f"| {lab} | {v['current']:.3f} | {v['with']:.3f} | {v['gain']:+.3f} | {r[0]:+.3f} to {r[1]:+.3f} |")
         lines += ["", "Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. "
-                  f"The current model is the deployed one: {' + '.join(R.get('against', {}).get('families', CURRENT))}.", ""]
+                  f"The current model is the deployed one: {' + '.join(R.get('against', {}).get('families', CURRENT))}."
+                  + (" The range includes the fit's own randomness (SEED_NOISE.md): two fits of the same model differ "
+                     "by up to about 0.02, so a gain smaller than that is not evidence." if "range_with_fit_noise" in R["adds"]["all"] else ""), ""]
     if "lfl" in R:
         lines += ["## Each column: sale timing, what is left on top of the model, and price", "",
                   "| Column | Sale chance, points a year per step | Same sign in regions | Left on top of the model | Price per step |",
@@ -304,7 +328,8 @@ def main():
     say(f"== {fam}: price"); R["price"], R["price_sales"] = price(fam, say)
     if "adds" in R:
         g = R["adds"]["all"]
-        R["verdict"] = ("add it: the model finds more sellers and the range is clear of zero" if g["range"][0] > 0 else
+        rng = g.get("range_with_fit_noise", g["range"])
+        R["verdict"] = ("add it: the model finds more sellers and the range is clear of zero" if rng[0] > 0 else
                         "do not add it to the model: no gain clear of zero" + (
                             "; it stays out of search and pricing too (model ranking only)" if SG.FAMILIES[fam].get("never_shown") else
                             "; measured only: never a search filter or a pricing input" if SG.FAMILIES[fam].get("no_auto_deploy") else

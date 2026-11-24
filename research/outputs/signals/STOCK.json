@@ -26,6 +26,10 @@
    "range": [
     -0.0287,
     0.0008
+   ],
+   "range_with_fit_noise": [
+    -0.0481,
+    0.0202
    ]
   },
   "t0_9": {
@@ -35,6 +39,10 @@
    "range": [
     -0.0153,
     0.0252
+   ],
+   "range_with_fit_noise": [
+    -0.0247,
+    0.0346
    ]
   },
   "t10_19": {
@@ -44,6 +52,10 @@
    "range": [
     -0.0215,
     0.0267
+   ],
+   "range_with_fit_noise": [
+    -0.0329,
+    0.0381
    ]
   },
   "t20p": {
@@ -53,6 +65,10 @@
    "range": [
     -0.0445,
     0.1195
+   ],
+   "range_with_fit_noise": [
+    -0.0466,
+    0.1216
    ]
   },
   "gain_share": {
@@ -636,5 +652,5 @@
   }
  },
  "price_sales": 8041819,
- "verdict": "do not add it to the model: no gain clear of zero; use it for search and pricing"
+ "verdict": "do not add it to the model: no gain clear of zero and of the fit's own noise; use it for search and pricing"
 }

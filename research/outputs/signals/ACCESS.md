@@ -2,7 +2,7 @@
 
 Transport: railway stations, underground, metro and tram stops, bus stops (NaPTAN), motorways and A roads (OS OpenMap Local) (schools_access_signals.py)
 
-**Verdict:** do not add it to the model: no gain clear of zero; use it for search and pricing
+**Verdict:** do not add it to the model: no gain clear of zero and of the fit's own noise; use it for search and pricing
 
 Coverage: 99.4% of postcodes, 99.8% of the home-years the model is tested on.
 
@@ -10,12 +10,12 @@ Coverage: 99.4% of postcodes, 99.8% of the home-years the model is tested on.
 
 | Owners | Current model | With this family | Gain | 95% range |
 |---|---|---|---|---|
-| All | 1.741 | 1.718 | -0.022 | -0.036 to -0.009 |
-| Under 10 years | 1.740 | 1.742 | +0.001 | -0.018 to +0.023 |
-| 10 to 19 years | 1.514 | 1.536 | +0.022 | -0.000 to +0.045 |
-| 20 years or more | 1.291 | 1.320 | +0.029 | -0.040 to +0.094 |
+| All | 1.741 | 1.718 | -0.022 | -0.056 to +0.011 |
+| Under 10 years | 1.740 | 1.742 | +0.001 | -0.028 to +0.032 |
+| 10 to 19 years | 1.514 | 1.536 | +0.022 | -0.012 to +0.057 |
+| 20 years or more | 1.291 | 1.320 | +0.029 | -0.042 to +0.097 |
 
-Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. The current model is the deployed one: BASE + HIST + GEO + VIEW + HOUSE + AREA + PD.
+Sellers found in the best tenth of each postcode district, times random, 2017 and 2018. The current model is the deployed one: BASE + HIST + GEO + VIEW + HOUSE + AREA + PD. The range includes the fit's own randomness (SEED_NOISE.md): two fits of the same model differ by up to about 0.02, so a gain smaller than that is not evidence.
 
 ## Each column: sale timing, what is left on top of the model, and price
 
