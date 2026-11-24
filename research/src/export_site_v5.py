@@ -508,6 +508,12 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
              "train_rows": deploy.get("train_rows"), "sample_pct": pct, "n_signals": len(deploy.get("features", [])),
              "families": deploy.get("families"),
              "trained_on": "HM Land Registry Price Paid Data 1995-2019, 24.3M transactions"}
+    if (cache / "second.json").exists():                  # a second step was used to score (notice_step.py): its own headline
+        sec = json.load(open(cache / "second.json"))
+        if sec.get("lift_top10"):
+            model["lift_top10"] = round(sec["lift_top10"]["with_notices"], 2)
+        model["second_step"] = {"reads": sec.get("row_families"), "homes_with_a_notice": sec.get("homes_with_a_notice"),
+                                "homes_with_no_sale_on_record": sec.get("unseen_homes")}
     areas = sorted(p.stem for p in (cache / "houses").glob("*.parquet") if not p.stem.endswith("_sight"))
     areas = [a for a in areas if not only or a in only]
     index, nation, first = [], [], None
