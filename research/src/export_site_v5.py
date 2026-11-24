@@ -174,16 +174,17 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
     out = pd.concat(parts, ignore_index=True)
     out["postcode"] = pd.Categorical.from_codes(out.pc.to_numpy(), categories=pd.Index(panel.pc_names).astype(str))
     out = out.drop(columns="pc"); out["unseen"] = False
+    n_notice = int(out.notice.sum())                      # scored homes with a notice, before any others are added
     if second is not None and "NOTICE" in row_fams:       # homes named in a notice that the sale records do not hold
         import notice_signals as NS
         u = NS.unseen_homes(V4.SCORE_YEAR, out)
-        print(f"{int(out.notice.sum()):,} scored homes have a notice; {len(u):,} more homes named in a notice have no sale on record "
+        print(f"{n_notice:,} scored homes have a notice; {len(u):,} more homes named in a notice have no sale on record "
               f"(expected sellers {u.p_sale.sum():,.0f})", flush=True)
         if len(u):
             u["postcode"] = pd.Categorical(u.postcode, categories=out.postcode.cat.categories)
             out = pd.concat([out, u[out.columns]], ignore_index=True)
     if second_json:
-        json.dump({**sj, "homes_with_a_notice": int(out.notice.sum()), "unseen_homes": int(out.unseen.sum())},
+        json.dump({**sj, "homes_with_a_notice": n_notice, "unseen_homes": int(out.unseen.sum())},
                   open(cache / "second.json", "w"), indent=1)
     elif (cache / "second.json").exists():
         (cache / "second.json").unlink()
