@@ -43,7 +43,8 @@ TX = "research/data/transactions.parquet"
 
 def linked(kind, tx_keys=None, refresh=False, every=False):
     """(home key, month published) for every notice whose address is a home with a sale record. With `every`,
-    the notices that match no such home are returned too (has = False, with their postcode).
+    the notices that match no such home are returned too (has = False, with their postcode; key is then the key
+    of the likeliest reading of the address, which tells two notices for one home apart from two homes).
     Kept in <dir>/linked.parquet and rebuilt when the listing has grown."""
     from planning_link import key_of, readings
     d = DIRS[kind]; src, out, info = d / "listing.jsonl", d / "linked.parquet", d / "linked.json"
@@ -60,8 +61,10 @@ def linked(kind, tx_keys=None, refresh=False, every=False):
                 rows.append((i, rank, pc, paon, saon))
         r = pd.DataFrame(rows, columns=["i", "rank", "pc", "paon", "saon"])
         r["key"] = key_of(r.pc, r.paon, r.saon)
-        r = r[r.key.isin(tx_keys)].sort_values(["i", "rank"]).drop_duplicates("i")    # the first reading that is a known home
+        r0 = r.sort_values(["i", "rank"]).drop_duplicates("i")                        # the likeliest reading, a known home or not
         key = np.zeros(len(n), np.int64); has = np.zeros(len(n), bool)
+        key[r0.i.to_numpy()] = r0.key.to_numpy()
+        r = r[r.key.isin(tx_keys)].sort_values(["i", "rank"]).drop_duplicates("i")    # the first reading that is a known home
         key[r.i.to_numpy()] = r.key.to_numpy(); has[r.i.to_numpy()] = True
         t = pd.DataFrame({"key": key, "has": has, "ym": (n.pub.dt.year * 12 + n.pub.dt.month - 1).to_numpy().astype("int32"),
                           "postcode": n.postcode.to_numpy()})
@@ -110,6 +113,40 @@ class Notices:
             out[ok, 3 * j + 1] = (last - bought)[ok]
             out[ok, 3 * j + 2] = n[ok]
         return out
+
+
+def unseen_homes(score_year, scored, rates_json="research/outputs/lab/notice_unseen.json"):
+    """Homes named in a notice in the window before 1 January of `score_year` that have no sale on record, as rows
+    like `scored` (export_site_v5.score): each at the rate measured for its kind and months since the notice
+    (notice_unseen.py), with the commonest kind of home and the median value of its postcode."""
+    if not Path(rates_json).exists():
+        return scored.iloc[:0]
+    rates = json.load(open(rates_json))["rates"]
+    t0 = score_year * 12
+    parts = []
+    for k in KINDS:
+        if not rates.get(k) or not (DIRS[k] / "listing.jsonl").exists():
+            continue
+        t = linked(k, every=True)
+        t = t[~t.has & (t.key != 0) & (t.ym < t0) & (t.ym >= t0 - WINDOW)].sort_values("ym").drop_duplicates("key", keep="last")
+        mo = (t0 - t.ym).to_numpy(); p = np.full(len(t), np.nan)
+        for band, r in rates[k].items():
+            a, b = (int(x) for x in band.split("-"))
+            p[(mo >= a) & (mo <= b)] = r
+        parts.append(pd.DataFrame({"key": t.key.to_numpy(), "postcode": t.postcode.to_numpy(), "p_sale": p}).dropna())
+    if not parts:
+        return scored.iloc[:0]
+    u = pd.concat(parts).sort_values("p_sale").drop_duplicates("key", keep="last")       # both kinds at one home: the higher rate
+    place = pd.DataFrame({"postcode": scored.postcode.astype(str).to_numpy(), "ptype": scored.ptype.to_numpy(),
+                          "est_value": scored.est_value.to_numpy()})
+    kind = place.groupby("postcode").ptype.agg(lambda v: v.mode().iloc[0])
+    value = place.groupby(["postcode", "ptype"]).est_value.median()
+    u = u[u.postcode.isin(kind.index)].copy()                                           # a postcode with no scored home cannot be placed
+    u["ptype"] = u.postcode.map(kind).to_numpy()
+    u["est_value"] = value.reindex(pd.MultiIndex.from_arrays([u.postcode, u.ptype])).to_numpy().astype("float32")
+    u["tenure"] = np.int16(score_year - 1995)                                           # no sale since the records began
+    u["price"] = np.int32(0); u["p_sale"] = u.p_sale.astype("float32"); u["p_year"] = u.p_sale; u["notice"] = True; u["unseen"] = True
+    return u.drop(columns="key")
 
 
 if __name__ == "__main__":

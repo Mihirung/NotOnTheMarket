@@ -97,8 +97,9 @@ def features():
 
 def load():
     d = {k: [] for k in ("y", "late", "year", "tenure", "block", "district", "w", "chunk", "N")}
-    P = {s: [] for s in SEEDS if (D / f"p{s}_0.npy").exists()}
-    for c in range(len(json.load(open(PANEL / "meta.json"))["chunks"])):
+    n_chunks = len(json.load(open(PANEL / "meta.json"))["chunks"])
+    P = {s: [] for s in SEEDS if all((D / f"p{s}_{c}.npy").exists() for c in range(n_chunks))}      # fits scored for every chunk
+    for c in range(n_chunks):
         yr = np.load(PANEL / f"year_{c}.npy"); m = (yr >= YEARS[0]) & (yr <= YEARS[1])
         for k in ("y", "late", "year", "tenure", "block", "district", "w"):
             d[k].append(np.load(PANEL / f"{k}_{c}.npy")[m])

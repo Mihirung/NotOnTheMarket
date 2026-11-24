@@ -142,7 +142,7 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
         s = s_all[a:a + batch]
         t = np.full(len(s), V4.SCORE_YEAR, dtype="int32")
         p = bst.predict(full_features(panel, s, t, fams, lookups), num_threads=4)
-        p_year = p
+        p_year = p; flag = np.zeros(len(s), bool)
         if second is not None:                        # the columns as the second step was fitted on them (stored at half precision)
             lp = np.clip(p, 1e-6, 1 - 1e-6); lp = np.log(lp / (1 - lp))
             have = {"first_step": lp, "tenure": (V4.SCORE_YEAR - panel.year[s]).astype("float64")}
@@ -150,18 +150,34 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
                 R = np.clip(SG.row_features(f, panel, s, t), -6e4, 6e4).astype("float16").astype("float32")
                 have.update({c: R[:, i] for i, c in enumerate(SG.ROW_FAMILIES[f]["columns"])})
             raw = second.predict(np.column_stack([have[c] for c in sj["columns"]]), num_threads=4, raw_score=True)
+            for c in sj["columns"]:                       # a home with a notice: scored, but never shown as an example
+                if c.startswith("notice_") and c.endswith("_months"):
+                    flag |= np.isfinite(have[c])
             p = 1 / (1 + np.exp(-(lp + raw)))             # the second step adds to the first step's log-odds
         d, byi = panel.oc[s], panel.year[s] - Y0
         est = panel.price[s] * panel.d_med[d, NY - 1] / np.maximum(panel.d_med[d, byi], 1)
         parts.append(pd.DataFrame({
             "pc": panel.pc[s].astype("int32"), "ptype": np.array(list("DSTF"))[panel.ptype[s]],
             "tenure": (V4.SCORE_YEAR - panel.year[s]).astype("int16"), "price": panel.price[s].astype("int32"),
-            "p_sale": p.astype("float32"), "p_year": p_year.astype("float32"),
+            "p_sale": p.astype("float32"), "p_year": p_year.astype("float32"), "notice": flag,
             "est_value": np.clip(est, 30_000, 5_000_000).astype("float32")}))
         print(f"  scored {a + len(s):,} of {len(s_all):,}", flush=True)
     out = pd.concat(parts, ignore_index=True)
     out["postcode"] = pd.Categorical.from_codes(out.pc.to_numpy(), categories=pd.Index(panel.pc_names).astype(str))
-    out = out.drop(columns="pc")
+    out = out.drop(columns="pc"); out["unseen"] = False
+    if second is not None and "NOTICE" in row_fams:       # homes named in a notice that the sale records do not hold
+        import notice_signals as NS
+        u = NS.unseen_homes(V4.SCORE_YEAR, out)
+        print(f"{int(out.notice.sum()):,} scored homes have a notice; {len(u):,} more homes named in a notice have no sale on record "
+              f"(expected sellers {u.p_sale.sum():,.0f})", flush=True)
+        if len(u):
+            u["postcode"] = pd.Categorical(u.postcode, categories=out.postcode.cat.categories)
+            out = pd.concat([out, u[out.columns]], ignore_index=True)
+    if second_json:
+        json.dump({**sj, "homes_with_a_notice": int(out.notice.sum()), "unseen_homes": int(out.unseen.sum())},
+                  open(cache / "second.json", "w"), indent=1)
+    elif (cache / "second.json").exists():
+        (cache / "second.json").unlink()
     out.to_parquet(cache / "scored_all.parquet", index=False)
     print(f"{len(out):,} owned homes scored, mean p {out.p_sale.mean():.4f}, expected sellers {out.p_sale.sum():,.0f}",
           flush=True)
@@ -429,7 +445,9 @@ def export_area(A, cache, geo, lmk, nat, scored, lad, amen, clim=None):
     # ---- three owners to show the postcard and offer pages ----------------
     by_pc = H[H.has_garden].reset_index().groupby("postcode").head(1).set_index("postcode")["index"]
     rng = np.random.RandomState({"EX": 42, "BA": 7}.get(A, zlib.crc32(A.encode()) % 2**31))
-    pool = d[d.top & d.ptype.isin(["S", "T", "D"]) & d.est_value.between(200_000, 700_000)
+    if "notice" not in d:
+        d["notice"] = False
+    pool = d[d.top & ~d.notice.astype(bool) & d.ptype.isin(["S", "T", "D"]) & d.est_value.between(200_000, 700_000)
              & d.sector.isin(list(views))].nlargest(400, "p_sale")
     ex_rows, seen_sec = [], set()
     for _, r in pool.iterrows():
