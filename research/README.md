@@ -304,7 +304,7 @@ python src/gazette_list.py data/gazette deceased 2013 2014 2015 2016 2017 2018 2
 python src/notice_step.py first                 # the deployed model's figure for every home-year of 2017 and 2018 (once)
 python src/notice_step.py features              # months since a notice at each home
 python src/notice_step.py                       # the second step: fitted on 18 chunks, tested on the 2 test chunks
-python src/notice_unseen.py                     # homes named in a notice that have no sale on record
+python src/notice_unseen.py                     # homes named in a notice with no sale on record: rates, and the model that scores them
 python src/export_site_v5.py score data/transactions.parquet outputs/lab/model_deploy.txt outputs/lab/lab_deploy.json outputs/site5_cache outputs/lab/lab_second_notice.json
 ```
 
@@ -316,8 +316,12 @@ no notice keeps its place. Because a notice touches a few homes in a
 thousand, the step is judged on whether those homes are better scored (log
 loss on homes and a year it was not fitted on) as well as on the best
 tenth. Homes named in a notice with no sale since 1995 are outside the
-model altogether; `notice_unseen.py` measures how often they sell and the
-scorer counts them in at that rate where it is clearly above average.
+model altogether. `notice_unseen.py` measures how often they sell and, where
+that is clearly above a home on record, fits a small model of its own for
+them: months since the notice, whether the address is a flat, and how the
+postcode's homes are owned and how many have a sale on record. Care and
+nursing homes are dropped first. The scorer adds each such home at that
+model's figure when it is above the average home's.
 
 **Judge a signal on homes not yet listed.** A home scored on 1 January that
 completes a sale by June was almost certainly for sale already, so "sells

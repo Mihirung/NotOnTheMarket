@@ -39,6 +39,14 @@ COLS = [f"{k}_{c}" for k in KINDS for c in ("months", "owned", "n")]
 WINDOW = 48
 M = 100_000                                             # month indices are below this
 TX = "research/data/transactions.parquet"
+LINK_VERSION = 2
+# two facts read off the address and kept beside the link: a care or nursing home, and a flat or a named block
+CARE = r"nursing|care home|care centre|residential home|rest home|hospice|hospital|\bcare\b"
+FLAT = r"\bflat\b|\bapartment\b|\bcourt\b|\bhouse,"
+SIG = Path("research/data/signals")
+# what a home with no sale on record is scored on (notice_unseen.py): the notice, the address, and its postcode
+UNSEEN_COLS = ["months", "n", "flat", "own_outright", "own_mortgage", "social_rent", "private_rent", "hh_alone_65",
+               "age_75_84", "age_85_plus", "flats", "bungalows", "detached", "n_addr", "on_record"]
 
 
 def linked(kind, tx_keys=None, refresh=False, every=False):
@@ -49,7 +57,8 @@ def linked(kind, tx_keys=None, refresh=False, every=False):
     from planning_link import key_of, readings
     d = DIRS[kind]; src, out, info = d / "listing.jsonl", d / "linked.parquet", d / "linked.json"
     n_lines = sum(1 for _ in open(src))
-    if not (out.exists() and info.exists() and json.load(open(info))["notices"] == n_lines and not refresh):
+    old = json.load(open(info)) if out.exists() and info.exists() else {}
+    if not (old.get("notices") == n_lines and old.get("version") == LINK_VERSION and not refresh):
         n = pd.DataFrame([json.loads(l) for l in open(src)]).drop_duplicates("id")
         n["pub"] = pd.to_datetime(n.published, errors="coerce")
         n = n.dropna(subset=["pub", "postcode", "address"]).reset_index(drop=True)
@@ -66,11 +75,14 @@ def linked(kind, tx_keys=None, refresh=False, every=False):
         key[r0.i.to_numpy()] = r0.key.to_numpy()
         r = r[r.key.isin(tx_keys)].sort_values(["i", "rank"]).drop_duplicates("i")    # the first reading that is a known home
         key[r.i.to_numpy()] = r.key.to_numpy(); has[r.i.to_numpy()] = True
+        low = n.address.str.lower()
+        care = low.str.contains(CARE, regex=True).to_numpy()
         t = pd.DataFrame({"key": key, "has": has, "ym": (n.pub.dt.year * 12 + n.pub.dt.month - 1).to_numpy().astype("int32"),
-                          "postcode": n.postcode.to_numpy()})
+                          "postcode": n.postcode.to_numpy(), "care": care,
+                          "flat": low.str.contains(FLAT, regex=True).to_numpy() & ~care})
         t.to_parquet(out, index=False)
         by = pd.DataFrame({"y": n.pub.dt.year.to_numpy(), "got": has}).groupby("y").got.agg(["size", "sum"])
-        json.dump({"notices": n_lines, "with_an_address": int(len(n)), "linked_to_a_home": int(has.sum()),
+        json.dump({"version": LINK_VERSION, "notices": n_lines, "with_an_address": int(len(n)), "linked_to_a_home": int(has.sum()),
                    "by_year": {int(y): [int(a), int(b)] for y, a, b in zip(by.index, by["size"], by["sum"])}},
                   open(info, "w"), indent=1)
     t = pd.read_parquet(out)
@@ -115,28 +127,64 @@ class Notices:
         return out
 
 
-def unseen_homes(score_year, scored, rates_json="research/outputs/lab/notice_unseen.json"):
+def sales(columns=("key", "year", "month", "postcode")):
+    """The sale records as the functions below read them: one row per sale, with its month index."""
+    tx = pd.read_parquet(TX, columns=list(columns))
+    tx["ym"] = tx.year.astype(np.int64) * 12 + tx.month.astype(np.int64) - 1
+    return tx
+
+
+def unseen_rows(kind, year, tx):
+    """Homes named in a notice in the WINDOW months before 1 January of `year` that had no sale on record on that
+    day: one row per address, with UNSEEN_COLS and whether its first sale on record came in that year (`sold`) or
+    between July and the next June (`late`). Care and nursing homes are left out: they are not sold with the estate.
+    `tx` is sales(). Everything about the postcode uses only sales before that day."""
+    t0 = year * 12
+    t = linked(kind, every=True)
+    first = tx[tx.key.isin(set(t.key[t.has]))].groupby("key").ym.min()
+    f = np.where(t.has, t.key.map(first).fillna(10**9).to_numpy(), 10**9).astype(np.int64)     # month of the first sale on record
+    ew = set(tx.postcode.cat.categories.astype(str))                                         # England and Wales
+    m = ((t.ym < t0) & (t.ym >= t0 - WINDOW) & (f >= t0) & (t.key != 0) & ~t.care & t.postcode.isin(ew)).to_numpy()
+    w = t[m].assign(f=f[m])
+    w["n"] = w.groupby("key").key.transform("size").astype("float32")
+    w = w.sort_values("ym").drop_duplicates("key", keep="last").reset_index(drop=True)
+    w["months"] = (t0 - w.ym).astype("float32")
+    w["sold"] = (w.f >= t0) & (w.f < t0 + 12); w["late"] = (w.f >= t0 + 6) & (w.f < t0 + 18)
+    w["flat"] = w.flat.astype("float32")
+    before = tx[tx.ym < t0]
+    on_record = before.groupby("postcode", observed=True).key.nunique()                      # homes with a sale by then
+    on_record.index = on_record.index.astype(str)
+    for name, cols in (("people", ["own_outright", "own_mortgage", "social_rent", "private_rent", "hh_alone_65", "age_75_84", "age_85_plus"]),
+                       ("stock", ["flats", "bungalows", "detached"]), ("now", ["n_addr"])):
+        w = w.merge(pd.read_parquet(SIG / f"{name}_postcode.parquet", columns=["postcode"] + cols).drop_duplicates("postcode"),
+                    on="postcode", how="left")
+    w["on_record"] = (w.postcode.map(on_record).fillna(0) / w.n_addr.clip(lower=1)).clip(upper=2).astype("float32")
+    return w[["key", "postcode", "ym", "sold", "late"] + UNSEEN_COLS]
+
+
+def unseen_homes(score_year, scored, spec_json="research/outputs/lab/notice_unseen.json"):
     """Homes named in a notice in the window before 1 January of `score_year` that have no sale on record, as rows
-    like `scored` (export_site_v5.score): each at the rate measured for its kind and months since the notice
-    (notice_unseen.py), with the commonest kind of home and the median value of its postcode."""
-    if not Path(rates_json).exists():
+    like `scored` (export_site_v5.score). Each is scored by the model notice_unseen.py fitted for its kind of notice
+    and kept only if that is above what a home on record sells at; it is given the commonest kind of home and the
+    median value of its postcode."""
+    import lightgbm as lgb
+    if not Path(spec_json).exists():
         return scored.iloc[:0]
-    rates = json.load(open(rates_json))["rates"]
-    t0 = score_year * 12
-    parts = []
+    spec = json.load(open(spec_json)).get("kinds", {})
+    parts, tx = [], None
     for k in KINDS:
-        if not rates.get(k) or not (DIRS[k] / "listing.jsonl").exists():
+        q = spec.get(k)
+        if not q or not q.get("file") or not (DIRS[k] / "listing.jsonl").exists():
             continue
-        t = linked(k, every=True)
-        t = t[~t.has & (t.key != 0) & (t.ym < t0) & (t.ym >= t0 - WINDOW)].sort_values("ym").drop_duplicates("key", keep="last")
-        mo = (t0 - t.ym).to_numpy(); p = np.full(len(t), np.nan)
-        for band, r in rates[k].items():
-            a, b = (int(x) for x in band.split("-"))
-            p[(mo >= a) & (mo <= b)] = r
-        parts.append(pd.DataFrame({"key": t.key.to_numpy(), "postcode": t.postcode.to_numpy(), "p_sale": p}).dropna())
+        tx = sales() if tx is None else tx
+        r = unseen_rows(k, score_year, tx)
+        b = lgb.Booster(model_file=str(Path(spec_json).parent / q["file"]))
+        assert b.feature_name() == q["columns"] == UNSEEN_COLS, "the model for homes with no sale on record does not match its columns"
+        r["p_sale"] = b.predict(r[UNSEEN_COLS].to_numpy(np.float32), num_threads=4)
+        parts.append(r.loc[r.p_sale >= q["min_p"], ["key", "postcode", "p_sale"]])
     if not parts:
         return scored.iloc[:0]
-    u = pd.concat(parts).sort_values("p_sale").drop_duplicates("key", keep="last")       # both kinds at one home: the higher rate
+    u = pd.concat(parts).sort_values("p_sale").drop_duplicates("key", keep="last")       # both kinds at one home: the higher figure
     place = pd.DataFrame({"postcode": scored.postcode.astype(str).to_numpy(), "ptype": scored.ptype.to_numpy(),
                           "est_value": scored.est_value.to_numpy()})
     kind = place.groupby("postcode").ptype.agg(lambda v: v.mode().iloc[0])
