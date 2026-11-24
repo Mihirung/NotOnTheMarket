@@ -131,10 +131,14 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
     if second_json:
         sj = json.load(open(second_json))
         assert sj["passes"], "the second step did not pass its test"
-        second = lgb.Booster(model_file=str(Path(second_json).with_name(Path(second_json).name.replace("lab_", "model_")).with_suffix(".txt")))
+        if sj.get("parts"):                           # several small steps, each for the homes where its first column is present
+            second = [(lgb.Booster(model_file=str(Path(second_json).parent / q["file"])), q["columns"], True) for q in sj["parts"]]
+        else:                                         # one step read by every home
+            one = Path(second_json).with_name(Path(second_json).name.replace("lab_", "model_")).with_suffix(".txt")
+            second = [(lgb.Booster(model_file=str(one)), sj["columns"], False)]
         row_fams = [f for f in SG.ROW_FAMILIES if set(SG.ROW_FAMILIES[f]["columns"]) & set(sj["columns"])]
         known = {"first_step", "tenure"} | {c for f in row_fams for c in SG.ROW_FAMILIES[f]["columns"]}
-        assert second.feature_name() == sj["columns"] and set(sj["columns"]) <= known, "the second step's columns are not all known"
+        assert all(b.feature_name() == cols for b, cols, _ in second) and set(sj["columns"]) <= known, "the second step's columns are not all known"
     lookups = {f: SG.lookup(f, panel.pc_names) for f in fams if f not in SG.TIME_VARYING}
     s_all = np.nonzero(~panel.sold & (panel.ptype >= 0))[0]
     parts = []
@@ -149,7 +153,12 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
             for f in row_fams:
                 R = np.clip(SG.row_features(f, panel, s, t), -6e4, 6e4).astype("float16").astype("float32")
                 have.update({c: R[:, i] for i, c in enumerate(SG.ROW_FAMILIES[f]["columns"])})
-            raw = second.predict(np.column_stack([have[c] for c in sj["columns"]]), num_threads=4, raw_score=True)
+            raw = np.zeros(len(s))
+            for b2, cols, where_present in second:
+                Z = np.column_stack([have[c] for c in cols])
+                m = np.isfinite(Z[:, 0]) if where_present else np.ones(len(s), bool)
+                if m.any():
+                    raw[m] += b2.predict(Z[m], num_threads=4, raw_score=True)
             for c in sj["columns"]:                       # a home with a notice: scored, but never shown as an example
                 if c.startswith("notice_") and c.endswith("_months"):
                     flag |= np.isfinite(have[c])
