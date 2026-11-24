@@ -115,9 +115,10 @@ def area_of(pc):
 def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1_000_000):
     """Every currently owned home in England and Wales, scored in batches.
 
-    With `second_json` (stack_late.py's lab_second.json) the model's prediction is passed through the second
-    step, aimed at homes not yet on the market: p_sale is then the chance of a sale completing between July
-    of the year and June of the next, and p_year keeps the model's own calendar-year figure."""
+    With `second_json` the model's prediction is passed through a second step, which adds to its log-odds:
+    p_sale is then the second step's figure and p_year keeps the model's own. notice_step.py's
+    lab_second_notice.json adds the Gazette notices and keeps the calendar-year meaning; stack_late.py's
+    lab_second.json aims at homes not yet on the market (a sale completing between July and June)."""
     import lightgbm as lgb
     import signals as SG
     from panel2 import NY, Panel, Y0, full_features
@@ -131,9 +132,9 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
         sj = json.load(open(second_json))
         assert sj["passes"], "the second step did not pass its test"
         second = lgb.Booster(model_file=str(Path(second_json).with_name(Path(second_json).name.replace("lab_", "model_")).with_suffix(".txt")))
-        row_fams = [f for f in SG.ROW_FAMILIES if SG.ROW_FAMILIES[f]["columns"][0] in sj["columns"]]
-        want = ["first_step", "tenure"] + [c for f in row_fams for c in SG.ROW_FAMILIES[f]["columns"]]
-        assert second.feature_name() == sj["columns"] == want, "the second step's columns do not match the row families"
+        row_fams = [f for f in SG.ROW_FAMILIES if set(SG.ROW_FAMILIES[f]["columns"]) & set(sj["columns"])]
+        known = {"first_step", "tenure"} | {c for f in row_fams for c in SG.ROW_FAMILIES[f]["columns"]}
+        assert second.feature_name() == sj["columns"] and set(sj["columns"]) <= known, "the second step's columns are not all known"
     lookups = {f: SG.lookup(f, panel.pc_names) for f in fams if f not in SG.TIME_VARYING}
     s_all = np.nonzero(~panel.sold & (panel.ptype >= 0))[0]
     parts = []
@@ -144,8 +145,11 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
         p_year = p
         if second is not None:                        # the columns as the second step was fitted on them (stored at half precision)
             lp = np.clip(p, 1e-6, 1 - 1e-6); lp = np.log(lp / (1 - lp))
-            R = [np.clip(SG.row_features(f, panel, s, t), -6e4, 6e4).astype("float16").astype("float32") for f in row_fams]
-            raw = second.predict(np.column_stack([lp, (V4.SCORE_YEAR - panel.year[s]).astype("float64")] + R), num_threads=4, raw_score=True)
+            have = {"first_step": lp, "tenure": (V4.SCORE_YEAR - panel.year[s]).astype("float64")}
+            for f in row_fams:
+                R = np.clip(SG.row_features(f, panel, s, t), -6e4, 6e4).astype("float16").astype("float32")
+                have.update({c: R[:, i] for i, c in enumerate(SG.ROW_FAMILIES[f]["columns"])})
+            raw = second.predict(np.column_stack([have[c] for c in sj["columns"]]), num_threads=4, raw_score=True)
             p = 1 / (1 + np.exp(-(lp + raw)))             # the second step adds to the first step's log-odds
         d, byi = panel.oc[s], panel.year[s] - Y0
         est = panel.price[s] * panel.d_med[d, NY - 1] / np.maximum(panel.d_med[d, byi], 1)

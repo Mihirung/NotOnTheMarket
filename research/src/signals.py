@@ -234,6 +234,11 @@ def _epc2_cols():
     return [f"epc2_{c}" for c in COLS]
 
 
+def _notice_cols():
+    from notice_signals import COLS
+    return [f"notice_{c}" for c in COLS]
+
+
 ROW_FAMILIES = {
     "EPC": {"columns": _epc_cols(),
             "label": "Energy certificates lodged before a sale (by UPRN; no address field is used)",
@@ -241,6 +246,11 @@ ROW_FAMILIES = {
     "EPC2": {"columns": _epc2_cols(),
              "label": "Past intent and facts about the home from its energy certificates (by UPRN; no address field is used)",
              "source": "MHCLG energy performance of buildings data (OGL, address fields excluded); ONS UPRN Directory"},
+    # ranking only: never shown as a reason, never a search filter. Not stored beside the chunks (the notices begin in
+    # 2012, after most training years), so it enters through a second step (notice_step.py), not the main fit.
+    "NOTICE": {"columns": _notice_cols(),
+               "label": "Bankruptcy orders and deceased-estate notices at the home (months since, by home; no name is held)",
+               "source": "The Gazette (OGL)", "ranking_only": True},
 }
 
 
@@ -256,6 +266,11 @@ def row_features(family, panel, rows, years):
             import epc2_signals as E2
             panel._epc2 = E2.Epc2(panel._epc)
         return panel._epc2.features(rows, years)
+    if family == "NOTICE":
+        if not hasattr(panel, "_notice"):
+            import notice_signals as NS
+            panel._notice = NS.Notices(panel)
+        return panel._notice.features(rows, years)
     raise KeyError(family)
 
 
