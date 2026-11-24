@@ -439,7 +439,8 @@ if(!NATION) fetch("nation.json").then(r=>r.ok?r.json():null).then(j=>{ if(j){ NA
    few areas that hold the best fits. */
 let SECT = null;
 fetch("sectors.json").then(r=>r.ok?r.json():null).then(j=>{ if(!j) return; const out=[];
-    for(const r of j.rows){ const base={nat:true}; j.cols.forEach((c,i)=>{ if(c!=="types") base[c]=r[i]; });
+    SECN=j.national||{};
+    for(const r of j.rows){ const base={nat:true}; j.cols.forEach((c,i)=>{ if(c!=="types") base[c]=r[i]; }); SECV.set(base.sector, base);
       for(const t of r[r.length-1]){ const c={...base}; j.type_cols.forEach((k,i)=>c[k]=t[i]); out.push(c); } }
     SECT=out; sideOrRender(); ensureAreas(); }).catch(()=>{});
 function sideOrRender(){ if(route().v==="search" && document.getElementById("rail")) refreshSide(); else render(); }
@@ -704,7 +705,7 @@ function near(c, b){
   const p=b.pubs||"any";
   if(p==="near" && c.km_pub!=null && c.km_pub>0.8) return false;
   if(p==="far" && c.km_pub!=null && c.km_pub<0.4) return false;
-  return climOk(c, b); }
+  return climOk(c, b) && nbOk(c, b); }
 function setPubs(v){ S.brief.pubs=v; save(); render(); }
 /* Climate: each cell carries its homes' typical sunshine, rain, winter nights, summer afternoons, wind and
    change by the 2050s. Each choice is a share of all postcodes in England and Wales (DATA.climate_national). */
@@ -750,6 +751,42 @@ function climWhy(k){ const opt=((S.brief.clim||{})[k])||"any", n=CN();
           winter:"How cold winter nights get, December to February.", summer:"How warm summer afternoons get, June to August.",
           wind:"Average wind speed.", future:"How much warmer and hotter it gets once the world is 2 °C warmer."}[k]; }
 function setClim(k, v){ S.brief.clim = {...(S.brief.clim||{}), [k]:v}; save(); render(); }
+/* Crime, transport and schools: today's picture for every sector (sectors.json), with quarters across every
+   home in England and Wales (SECN). Cells from an area file take their sector's values. A test is
+   [direction, national quarter or a fixed limit, column]. */
+let SECN = {}; const SECV = new Map();
+const NB = {
+  crime:     {label:"Crime", opts:{any:"Don't mind", lower:"Lower than most", lowest:"Among the lowest"},
+              test:{lower:[-1,"0.5","crime"], lowest:[-1,"0.25","crime"]}},
+  burglary:  {label:"Burglary", opts:{any:"Don't mind", lower:"Fewer than most"}, test:{lower:[-1,"0.5","burglary"]}},
+  rail:      {label:"Station", opts:{any:"Don't mind", walk:"Within 1.5 km", near:"Within 5 km"},
+              test:{walk:[-1,1.5,"km_rail"], near:[-1,5,"km_rail"]}},
+  bus:       {label:"Buses", opts:{any:"Don't mind", good:"More stops than most"}, test:{good:[1,"0.5","bus_500m"]}},
+  primary:   {label:"Primary", opts:{any:"Don't mind", near:"A good one within 1 km", choice:"A choice of good ones"},
+              test:{near:[-1,1,"km_prim_good"], choice:[1,"0.75","good_prim_2km"]}},
+  secondary: {label:"Secondary", opts:{any:"Don't mind", near:"A good one within 3 km"}, test:{near:[-1,3,"km_sec_good"]}}};
+function nbLimit(k, o){ const [dir,q,col]=NB[k].test[o]; return [dir, typeof q==="number"?q:(SECN[col]||{})[q], col]; }
+function sv(c, col){ const v=c[col]; return v!==undefined?v:(SECV.get(c.sector)||{})[col]; }
+function nbChosen(b){ return Object.entries(b.nb||{}).filter(([k,o])=>o&&o!=="any"&&NB[k]&&NB[k].test[o]); }
+function nbOk(c, b){ for(const [k,o] of nbChosen(b)){ const [dir,q,col]=nbLimit(k,o), v=sv(c,col);
+    if(q==null || v==null) continue; if(dir>0 ? v<q : v>q) return false; } return true; }
+function nbFit(k, o){ const [dir,q,col]=nbLimit(k,o), n=SECN[col]||{}, span=Math.abs((n["0.75"]??0)-(n["0.25"]??0))||Math.abs(q)||1;
+  return c=>{ const v=sv(c,col); if(v==null||q==null) return 0.5; const gap=dir>0?q-v:v-q; return gap<=0?1:Math.max(0,1-gap/span); }; }
+function nbWhy(k){ const o=((S.brief.nb||{})[k])||"any";
+  const f=(col,q,dp=0)=>{ const v=(SECN[col]||{})[q]; return v==null?"?":Number(v).toLocaleString("en-GB",{maximumFractionDigits:dp}); };
+  switch(k+":"+o){
+    case "crime:lower": return `Fewer than ${f("crime","0.5")} crimes a year for every 1,000 residents, counting anti-social behaviour: lower than where half of all homes are.`;
+    case "crime:lowest": return `Fewer than ${f("crime","0.25")} a year for every 1,000 residents: lower than where 3 in every 4 homes are.`;
+    case "burglary:lower": return `Fewer than ${f("burglary","0.5",1)} burglaries a year for every 1,000 residents: fewer than where half of all homes are.`;
+    case "rail:walk": return "A railway station within 1.5 km, about a 20-minute walk.";
+    case "rail:near": return "A railway station within 5 km.";
+    case "bus:good": return `At least ${f("bus_500m","0.5")} bus stops within 500 m: more than half of all homes have.`;
+    case "primary:near": return "A state primary rated good or better within 1 km.";
+    case "primary:choice": return `At least ${f("good_prim_2km","0.75")} state primaries rated good or better within 2 km: more choice than 3 in every 4 homes have.`;
+    case "secondary:near": return "A state secondary rated good or better within 3 km.";
+  }
+  return ""; }
+function setNb(k, v){ S.brief.nb = {...(S.brief.nb||{}), [k]:v}; save(); render(); }
 /* ---------- where people need to get to ----------
    A search starts from the places someone needs to reach (work, school,
    family), each with a way of travelling and a time. Every postcode sector
@@ -872,6 +909,7 @@ function criteria(b){ const K=[], A=activeAnchors(b);
   for(const [k,o] of climChosen(b)){ const [dir,q]=climLimit(k,o), col=CLIMATE[k].col, span=Math.abs((CN()[col]||{})["0.75"]-(CN()[col]||{})["0.25"])||1;
     K.push({key:"clim_"+k, label:CLIMATE[k].label+": "+CLIMATE[k].opts[o].toLowerCase(), prio:prio("clim_"+k,"high"),
       fit:c=>{ const v=c[col]; if(v==null||q==null) return 0.5; const gap=dir>0?q-v:v-q; return gap<=0?1:Math.max(0,1-gap/span); }}); }
+  for(const [k,o] of nbChosen(b)) K.push({key:"nb_"+k, label:NB[k].label+": "+NB[k].opts[o].toLowerCase(), prio:prio("nb_"+k,"high"), fit:nbFit(k,o)});
   (b.views||[]).forEach(k=>{ const f=SEARCH_FLAGS().find(x=>x.key===k); if(!f) return;
     K.push({key:"view_"+k, view:k, label:f.label, prio:prio("views","high"), fit:c=>flagShare(c,k)}); });
   return K.filter(k=>k.prio!=="off"); }
@@ -1354,7 +1392,7 @@ function vSearch(){
   <h1 style="font-size:32px;margin:8px 0 6px">What would make a place right?</h1>
   <p style="color:var(--muted);margin:0 0 20px;max-width:52em">Start with where you need to get to, then say how much
     each thing matters. Nothing is a filter: we always find enough homes to write to, the best fits first, and show
-    how well they fit. Air, distances, climate and views are measured for every home in England and Wales.</p>
+    how well they fit. Air, distances, crime, transport, schools, climate and views are measured for every home in England and Wales.</p>
   <div class="searchgrid">
     <div class="panel">
       <div class="crit anchors">
@@ -1438,6 +1476,16 @@ function vSearch(){
         <div class="climrow"><span class="climlab">${d.label}</span><div class="chiprow">${Object.entries(d.opts).map(([o,l])=>`
           <button class="chip ${cur===o?"on":""}" aria-pressed="${cur===o}" onclick="setClim('${k}','${o}')">${l}</button>`).join("")}</div>
           ${cur!=="any"?`<div class="hint">${climWhy(k)}</div>${prioCtl("clim_"+k,"high")}`:""}</div>`; }).join("")}
+      </div>
+      <div class="crit">
+        <div class="lab"><b>Crime, transport and schools</b></div>
+        <div class="why">Police-recorded crime over the three years to September 2026, every station and bus stop in the
+          national register, and state schools as rated at their latest Ofsted inspection (to October 2026). Welsh schools
+          are inspected without grades, so Welsh places are not judged on schools.</div>
+        ${Object.entries(NB).map(([k,d])=>{ const cur=((b.nb||{})[k])||"any"; return `
+        <div class="climrow"><span class="climlab">${d.label}</span><div class="chiprow">${Object.entries(d.opts).map(([o,l])=>`
+          <button class="chip ${cur===o?"on":""}" aria-pressed="${cur===o}" onclick="setNb('${k}','${o}')">${l}</button>`).join("")}</div>
+          ${cur!=="any"?`<div class="hint">${nbWhy(k)}</div>${prioCtl("nb_"+k,"high")}`:""}</div>`; }).join("")}
       </div>
       <div class="crit">
         <div class="lab"><b>Budget ceiling</b><span class="val" id="val-max">${sliderText("max")}</span></div>
@@ -1576,6 +1624,9 @@ function vResults(){
           ${c.sun_h!=null?`<span class="tag" title="Hours of sunshine in a year (estimate) and rain in a year, 1991-2020">${Math.round(c.sun_h).toLocaleString("en-GB")} h sun · ${Math.round(c.rain_mm).toLocaleString("en-GB")} mm rain</span>`:""}
           ${c.warm_2c!=null?`<span class="tag" title="Warmer by the time the world is 2 °C warmer than before industry, around the 2050s">+${c.warm_2c.toFixed(1)} °C by the 2050s</span>`:""}
           ${c.km_pub!=null?`<span class="tag">Pub ${c.km_pub<1?Math.round(c.km_pub*1000)+" m":c.km_pub+" km"}</span>`:""}
+          ${sv(c,"crime")!=null?`<span class="tag" title="Police-recorded crime and anti-social behaviour a year for every 1,000 residents, October 2023 to September 2026">${sv(c,"crime")} crimes per 1,000</span>`:""}
+          ${sv(c,"km_rail")!=null?`<span class="tag">Station ${sv(c,"km_rail")<1?Math.round(sv(c,"km_rail")*1000)+" m":sv(c,"km_rail")+" km"}</span>`:""}
+          ${sv(c,"good_prim_2km")!=null?`<span class="tag" title="State primaries rated good or better at their latest Ofsted inspection, within 2 km">${Math.round(sv(c,"good_prim_2km"))} good primaries</span>`:""}
           ${c.add_value?`<span class="tag" title="Typical value a house here could add without planning permission, at 2019 prices (estimate)">Could add ≈ ${GBPk(c.add_value)}</span>`:""}</div>
         ${(()=>{const v=viewOf(c.sector,c.area); if(!v) return ""; return `
         <div class="panomini">${panoSVG(v.homes[0].up,{mini:true,label:"Typical upstairs view in "+c.sector})}</div>

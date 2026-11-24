@@ -7,6 +7,9 @@ and climate, and per kind of home its count, the homes we would write to,
 expected sellers, the typical chance to sell and the typical offer.
 
 Built from the area files export_site_v5.py writes, so it always matches them.
+Crime, transport and schools come straight from the postcode tables (today's
+picture: now_signals.py and the ACCESS table), averaged over each sector's
+addresses, with national quarters across every home for the page's filters.
 
 Usage: python export_sectors.py <site_dir>      (writes <site_dir>/sectors.json)
 """
@@ -21,6 +24,33 @@ PLACE = ["nox", "density", "km_gp", "km_hosp", "km_park", "km_blue", "km_pub",
          "sun_h", "rain_mm", "winter_c", "summer_c", "frosts", "wind", "warm_2c", "hot_2c"]
 ROUND = {"nox": 1, "density": 0, "km_gp": 2, "km_hosp": 1, "km_park": 2, "km_blue": 2, "km_pub": 2,
          "sun_h": 0, "rain_mm": 0, "winter_c": 1, "summer_c": 1, "frosts": 0, "wind": 2, "warm_2c": 1, "hot_2c": 1}
+
+
+# crime, transport and schools: column, source table, source column, decimals
+NEIGH = [("crime", "now", "crime_all", 0), ("burglary", "now", "burglary", 1),
+         ("km_rail", "access", "km_rail", 1), ("bus_500m", "access", "bus_stops_500m", 0),
+         ("good_prim_2km", "now", "good_primaries_2km", 1), ("km_prim_good", "now", "km_primary_good", 2),
+         ("km_sec_good", "now", "km_secondary_good", 1)]
+SIG = Path("research/data/signals")
+
+
+def neighbourhood():
+    """Each sector's address-weighted crime, transport and schools, and national quarters across homes."""
+    import pandas as pd
+    now = pd.read_parquet(SIG / "now_postcode.parquet")
+    acc = pd.read_parquet(SIG / "access_postcode.parquet", columns=["postcode", "km_rail", "bus_stops_500m"])
+    t = now.merge(acc, on="postcode", how="left")
+    t = t[t.n_addr > 0]
+    t["sector"] = t.postcode.str.slice(0, -2)
+    w = t.n_addr.to_numpy(float)
+    sec, nat = {}, {}
+    for col, _, src, nd in NEIGH:
+        v = t[src].to_numpy(float); ok = np.isfinite(v)
+        o = np.argsort(v[ok]); c = np.cumsum(w[ok][o]) / w[ok].sum()
+        nat[col] = {q: round(float(v[ok][o][np.searchsorted(c, float(q))]), nd) for q in ("0.25", "0.5", "0.75")}
+        d = pd.DataFrame({"s": t.sector[ok].to_numpy(), "vw": v[ok] * w[ok], "w": w[ok]}).groupby("s").sum()
+        sec[col] = (d.vw / d.w).round(nd)
+    return pd.DataFrame(sec), nat
 
 
 def wmean(v, w):
@@ -41,6 +71,10 @@ def wmedian(v, w):
 
 def build(site_dir):
     site_dir = Path(site_dir)
+    nb, nat = neighbourhood()
+    nbd = {k: [None if not np.isfinite(x) else (int(x) if nd == 0 else float(x)) for x, (_, _, _, nd) in zip(r, NEIGH)]
+           for k, r in zip(nb.index, nb[[c for c, *_ in NEIGH]].to_numpy(float))}
+    blank = [None] * len(NEIGH)
     rows = []
     for f in sorted((site_dir / "areas").glob("*.json")):
         d = json.loads(f.read_text())
@@ -67,9 +101,10 @@ def build(site_dir):
                               round(sum(c[ix["exp_sellers"]] for c in tc), 2),
                               round(wmean([c[ix["p_med"]] for c in tc], tn) or 0, 4),
                               int(round(wmedian([c[ix["offer_med"]] for c in tc], tn) or 0, -3))])
-            rows.append([sec, d["code"], round(lat, 4), round(lon, 4), *place, types])
+            rows.append([sec, d["code"], round(lat, 4), round(lon, 4), *place, *nbd.get(sec, blank), types])
     out = site_dir / "sectors.json"
-    out.write_text(json.dumps({"cols": ["sector", "area", "lat", "lon", *PLACE, "types"],
+    out.write_text(json.dumps({"cols": ["sector", "area", "lat", "lon", *PLACE, *[c for c, *_ in NEIGH], "types"],
+                               "national": nat,
                                "type_cols": ["ptype", "n", "n_top", "exp_sellers", "p_med", "offer_med"],
                                "rows": rows}, separators=(",", ":")))
     print(f"{len(rows):,} sectors -> {out} ({out.stat().st_size / 1e6:.2f} MB)")
