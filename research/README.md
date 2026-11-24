@@ -278,7 +278,31 @@ python src/export_site_v5.py houses outputs/national outputs/site5_cache
 python src/export_site_v5.py export outputs/site5_cache data/geo_postcode.parquet outputs/national outputs/lab outputs/site5
 python src/export_travel.py outputs/site5      # stations, place names, postcode positions, sectors' nearest stations
 python ../web/build.py outputs/site5/site_data.json ../web/template_v5.html outputs/site5/index.html
+
+# 22. Signals from dated events on a home (energy certificates), and the
+#     measure that matters for homes not on the market. The token file is
+#     kept outside the repository; no address field of a certificate is read.
+EPC_TOKEN_FILE=<file> python src/epc_fetch.py fetch
+python src/panel2.py data/transactions.parquet data/panel3 rowfam EPC
+python src/assess_rowfam.py EPC                 # sellers in the calendar year
+python src/late_sale.py EPC                     # the same gain, by the quarter the sale completed
+python src/panel2.py data/transactions.parquet data/panel3 late
+QM_LABEL=late python src/assess_late.py         # the whole model refitted on sales completing July to June
+python src/listed_truth.py                      # which later sellers were already listed on the scoring day
+python src/stack_late.py                        # the deployed model plus a second step, judged on homes not yet listed
+python src/screen_facts.py                      # past intent and home facts from the certificates
+python src/stack_late.py facts
+python src/gazette_fetch.py data/gazette deceased days 12 2016
+python src/gazette_test.py deceased             # do homes in a deceased-estate notice sell soon after?
 ```
+
+**Judge a signal on homes not yet listed.** A home scored on 1 January that
+completes a sale by June was almost certainly for sale already, so "sells
+in the calendar year" rewards a signal for spotting listings. Energy
+certificates show it: 1.74 to 2.06 times random on the calendar year, and
+no gain (1.691 to 1.690) on later sellers that were not yet listed
+(`outputs/signals/EPC.md`, `LATE_EPC.md`, `STACK_LATE.md`). A new signal
+should be read on the second measure before anything is deployed.
 
 **Adding a signal.** Write a table with one row per postcode, add an entry
 to `FAMILIES` in `src/signals.py`, and run `python src/assess_signal.py
