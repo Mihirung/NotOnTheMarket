@@ -229,20 +229,33 @@ def _epc_cols():
     return [f"epc_{c}" for c in COLS]
 
 
+def _epc2_cols():
+    from epc2_signals import COLS
+    return [f"epc2_{c}" for c in COLS]
+
+
 ROW_FAMILIES = {
     "EPC": {"columns": _epc_cols(),
             "label": "Energy certificates lodged before a sale (by UPRN; no address field is used)",
             "source": "MHCLG energy performance of buildings data (OGL, address fields excluded); ONS UPRN Directory"},
+    "EPC2": {"columns": _epc2_cols(),
+             "label": "Past intent and facts about the home from its energy certificates (by UPRN; no address field is used)",
+             "source": "MHCLG energy performance of buildings data (OGL, address fields excluded); ONS UPRN Directory"},
 }
 
 
 def row_features(family, panel, rows, years):
     """A row family's columns for spells `rows` scored at `years`; the events are loaded once per panel."""
-    if family == "EPC":
+    if family in ("EPC", "EPC2"):
         if not hasattr(panel, "_epc"):
             import epc_signals as ES
             panel._epc = ES.Epc(panel, panel.month)
-        return panel._epc.features(rows, years)
+        if family == "EPC":
+            return panel._epc.features(rows, years)
+        if not hasattr(panel, "_epc2"):
+            import epc2_signals as E2
+            panel._epc2 = E2.Epc2(panel._epc)
+        return panel._epc2.features(rows, years)
     raise KeyError(family)
 
 
