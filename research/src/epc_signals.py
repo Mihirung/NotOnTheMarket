@@ -85,6 +85,7 @@ class Epc:
         keep = (pc >= 0) & (home >= 0) & ~social & np.isfinite(cym)
         say(f"certificates {len(t):,}; used (placed in a postcode with sales, kind of home known, not social rent): {keep.mean():.1%}")
         del t, uu, upc
+        self.keep = keep                                                      # which certificates are used, in file order (epc2_signals.py)
         self.c_g = pc[keep].astype(np.int64) * 4 + home[keep]; self.c_k = ck[keep]; self.c_ym = cym[keep].astype(np.int64); self.c_u = cu[keep]
         self.last_month = int(self.c_ym.max())
         self._anchor(say)
