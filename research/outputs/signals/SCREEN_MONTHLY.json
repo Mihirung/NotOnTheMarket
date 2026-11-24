@@ -1,0 +1,76 @@
+{
+ "candidates": [
+  "months_owned",
+  "buy_month",
+  "prev_gap_m",
+  "pc_last_m",
+  "pc_sales_3m",
+  "pc_sales_6m",
+  "sec_q4_share"
+ ],
+ "gain_share": {
+  "2017": {
+   "model": 0.482,
+   "tenure": 0.017,
+   "months_owned": 0.127,
+   "buy_month": 0.043,
+   "prev_gap_m": 0.098,
+   "pc_last_m": 0.091,
+   "pc_sales_3m": 0.005,
+   "pc_sales_6m": 0.012,
+   "sec_q4_share": 0.125
+  },
+  "2018": {
+   "model": 0.482,
+   "tenure": 0.017,
+   "months_owned": 0.131,
+   "buy_month": 0.043,
+   "prev_gap_m": 0.096,
+   "pc_last_m": 0.091,
+   "pc_sales_3m": 0.004,
+   "pc_sales_6m": 0.01,
+   "sec_q4_share": 0.126
+  }
+ },
+ "rows": 2591431,
+ "all": {
+  "deployed": 1.7408,
+  "second step, no candidates": 1.6977,
+  "second step, with candidates": 1.6885,
+  "gain_from_candidates": -0.0092,
+  "range": [
+   -0.0265,
+   0.0057
+  ]
+ },
+ "t0_9": {
+  "deployed": 1.7405,
+  "second step, no candidates": 1.7006,
+  "second step, with candidates": 1.7087,
+  "gain_from_candidates": 0.0081,
+  "range": [
+   -0.0182,
+   0.0337
+  ]
+ },
+ "t10_19": {
+  "deployed": 1.5139,
+  "second step, no candidates": 1.4866,
+  "second step, with candidates": 1.4896,
+  "gain_from_candidates": 0.003,
+  "range": [
+   -0.0206,
+   0.0308
+  ]
+ },
+ "t20p": {
+  "deployed": 1.291,
+  "second step, no candidates": 1.2089,
+  "second step, with candidates": 1.2153,
+  "gain_from_candidates": 0.0064,
+  "range": [
+   -0.0995,
+   0.0858
+  ]
+ }
+}
