@@ -234,12 +234,32 @@ def main():
                 "in_best_tenth_before": round(float(top0[m].mean()), 3), "in_best_tenth_after": round(float(top1[m].mean()), 3)})
             print(R["homes_with_a_notice"][-1], flush=True)
 
+    # is the chance of a sale better stated for the homes with a notice? Log loss on those test homes, before and after
+    p0 = np.clip(P[7][test], 1e-6, 1 - 1e-6); yy = Y["year"]
+    R["log_loss_with_a_notice"] = {}
+    for a in sets:
+        cols = cols_of(sets[a]); m = np.isfinite(Nt[:, cols[::3]]).any(axis=1)
+        pa = np.clip(1 / (1 + np.exp(-arms[7][a])), 1e-6, 1 - 1e-6)
+        ll = lambda p_: -(yy[m] * np.log(p_[m]) + (1 - yy[m]) * np.log(1 - p_[m]))      # noqa: E731
+        dlt = ll(pa) - ll(p0); blk = t["block"][m]
+        S, Nn = np.bincount(blk, dlt, LE.N_BLOCKS), np.bincount(blk, minlength=LE.N_BLOCKS)
+        g = np.random.default_rng(3).poisson(1.0, (1000, LE.N_BLOCKS)); bs = (g @ S) / np.maximum(g @ Nn, 1)
+        R["log_loss_with_a_notice"][a] = {
+            "home_years": int(m.sum()), "sold": int(yy[m].sum()), "deployed_expected": round(float(p0[m].sum()), 1),
+            "second_step_expected": round(float(pa[m].sum()), 1), "before": round(float(ll(p0).mean()), 5), "after": round(float(ll(pa).mean()), 5),
+            "change": round(float(dlt.mean()), 5), "range": [round(float(np.percentile(bs, q)), 5) for q in (2.5, 97.5)]}
+        print("log loss on homes with a notice,", a, R["log_loss_with_a_notice"][a], flush=True)
+
     A = R["bands"]["all"]; gy = A["year"][f"gain_{main_arm}"]; gn = A["not_listed"][f"gain_{main_arm}"]
-    ry = gy.get("range_with_fit_noise", gy["range"])
-    R["passes"] = bool(ry[0] > 0 and gn["gain"] >= 0)
-    R["verdict"] = ("add the notices: the best tenth finds more sellers, the range is clear of zero and of the fit's own noise, and it "
-                    "finds no fewer homes that are not yet listed" if R["passes"] else
-                    "do not add the notices: the best tenth does not clearly find more sellers")
+    ry = gy.get("range_with_fit_noise", gy["range"]); LL = R["log_loss_with_a_notice"][main_arm]
+    R["clear_of_zero"] = bool(ry[0] > 0)
+    # the notices touch a few homes in a thousand, so the test of the step is whether those homes are better scored:
+    # their log loss falls (whole range below zero) on homes and a year it was not fitted on, and no list gets worse
+    R["passes"] = bool(LL["range"][1] < 0 and gy["gain"] >= 0 and gn["gain"] >= 0)
+    R["verdict"] = (("add the notices: homes with a notice are scored better on homes and a year the step was not fitted on, and "
+                     + ("the best tenth finds more sellers, clear of zero and of the fit's own noise" if R["clear_of_zero"] else
+                        "the best tenth finds no fewer sellers (too few homes carry a notice to move it measurably)")) if R["passes"] else
+                    "do not add the notices: homes with a notice are not clearly better scored")
 
     # the second step for the product: every chunk, both years, first step = the deployed fit
     cols = cols_of(kinds); allrows = np.ones(len(d["y"]), bool)
@@ -253,7 +273,9 @@ def main():
                "score": "log-odds = the first step's log-odds + this model's raw output",
                "columns": [NAMES[i] for i in cols], "row_families": ["NOTICE"], "kinds": kinds, "window_months": NS.WINDOW,
                "rounds": ROUNDS, "rows": int(len(d["y"])), "fitted_on": "every home-year of 2017 and 2018, first step fitted to 2015",
-               "passes": R["passes"], "shift_without_a_notice": round(blank, 4)}, open(LAB / "lab_second_notice.json", "w"), indent=1)
+               "passes": R["passes"], "clear_of_zero": R["clear_of_zero"], "shift_without_a_notice": round(blank, 4),
+               "lift_top10": {"deployed": A["year"]["deployed"], "with_notices": A["year"][main_arm]}},
+              open(LAB / "lab_second_notice.json", "w"), indent=1)
 
     OUT.mkdir(parents=True, exist_ok=True)
     json.dump(R, open(OUT / "NOTICE_STEP.json", "w"), indent=1)
@@ -287,6 +309,13 @@ def main():
     md += [f"| {KIND[r['kind']]} | {r['notice']} | {r['home_years']:,} | {pc(r['sold_in_year'])} | {pc(r['sold_later_not_listed'])} | "
            f"{pc(r['deployed_said'])} | {pc(r['second_step_says'])} | {100 * r['in_best_tenth_before']:.0f}% | {100 * r['in_best_tenth_after']:.0f}% |"
            for r in R["homes_with_a_notice"]]
+    md += ["", "## Are the homes with a notice better scored?", "",
+           "Log loss on the test homes with a notice (lower is better), each scored by a step fitted on other homes in the other year.", "",
+           "| Notices | Home-years | Sold | Deployed model expected | Second step expected | Log loss before | After | Change (95% range) |",
+           "|---|---|---|---|---|---|---|---|"]
+    md += [f"| {'Both' if a == 'both' else KIND[a] + 's'} | {v['home_years']:,} | {v['sold']:,} | {v['deployed_expected']:,.0f} | {v['second_step_expected']:,.0f} | "
+           f"{v['before']:.4f} | {v['after']:.4f} | {v['change']:+.4f} ({v['range'][0]:+.4f} to {v['range'][1]:+.4f}) |"
+           for a, v in R["log_loss_with_a_notice"].items()]
     md += ["", f"A home with no notice moves by {blank:+.4f} in log-odds, the same for every such home, so its place in the ranking is unchanged.", ""]
     (OUT / "NOTICE_STEP.md").write_text("\n".join(md))
     print("\n".join(md))

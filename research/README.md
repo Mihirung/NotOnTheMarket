@@ -294,7 +294,30 @@ python src/screen_facts.py                      # past intent and home facts fro
 python src/stack_late.py facts
 python src/gazette_fetch.py data/gazette deceased days 12 2016
 python src/gazette_test.py deceased             # do homes in a deceased-estate notice sell soon after?
+
+# 23. Notices in The Gazette (bankruptcy orders, deceased estates) in the
+#     ranking. The search listing gives 100 notices a request, so a year
+#     takes about an hour at the site's 10-second crawl delay. No name is
+#     kept; the notices rank homes and are never shown as a reason.
+python src/gazette_list.py data/gazette_bankruptcy bankruptcy 2013 2014 2015 2016 2017 2018 2019
+python src/gazette_list.py data/gazette deceased 2013 2014 2015 2016 2017 2018 2019
+python src/notice_step.py first                 # the deployed model's figure for every home-year of 2017 and 2018 (once)
+python src/notice_step.py features              # months since a notice at each home
+python src/notice_step.py                       # the second step: fitted on 18 chunks, tested on the 2 test chunks
+python src/notice_unseen.py                     # homes named in a notice that have no sale on record
+python src/export_site_v5.py score data/transactions.parquet outputs/lab/model_deploy.txt outputs/lab/lab_deploy.json outputs/site5_cache outputs/lab/lab_second_notice.json
 ```
+
+**Signals that begin after the training years.** The notices reach back to
+2012, so the main model (fitted on 2001 to 2015) cannot be refitted with
+them. `notice_step.py` keeps the model and fits a small second step that
+reads only the notice columns and adds to the model's log-odds; a home with
+no notice keeps its place. Because a notice touches a few homes in a
+thousand, the step is judged on whether those homes are better scored (log
+loss on homes and a year it was not fitted on) as well as on the best
+tenth. Homes named in a notice with no sale since 1995 are outside the
+model altogether; `notice_unseen.py` measures how often they sell and the
+scorer counts them in at that rate where it is clearly above average.
 
 **Judge a signal on homes not yet listed.** A home scored on 1 January that
 completes a sale by June was almost certainly for sale already, so "sells

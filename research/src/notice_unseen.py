@@ -29,13 +29,17 @@ YEARS = (2017, 2018)
 MONTHS = [(1, 6), (7, 12), (13, 24), (25, 36), (37, 48)]
 KIND = {"bk": "Bankruptcy order", "dec": "Deceased-estate notice"}
 MIN_HOMES = 300                                         # a band needs this many homes before the product uses its rate
+PANEL = Path("research/data/panel3")
 
 
 def main():
     tx = pd.read_parquet(NS.TX, columns=["key", "year", "month", "postcode"])
     ew = set(tx.postcode.cat.categories.astype(str))    # postcodes with a sale on record: England and Wales
     tx["ym"] = tx.year.astype(np.int64) * 12 + tx.month.astype(np.int64) - 1
-    R, rates, md_rows = {"years": list(YEARS), "kinds": {}}, {}, []
+    import local_eval as LE
+    te = LE.load_test(PANEL, years=YEARS)
+    base = float(te["y"].mean())                        # what a home with a sale on record sells at in those years
+    R, rates, md_rows = {"years": list(YEARS), "homes_on_record_sell_at": round(base, 4), "kinds": {}}, {}, []
     for k in NS.KINDS:
         if not (NS.DIRS[k] / "listing.jsonl").exists():
             continue
@@ -60,7 +64,7 @@ def main():
             r = {"published": f"{a} to {b} months before", "homes": n, "first_sold_in_the_year": s, "rate": round(s / n, 4),
                  "range": [round(float(np.percentile(bs, q)), 4) for q in (2.5, 97.5)], "completes_july_to_june": round(late / n, 4)}
             res.append(r)
-            if n >= MIN_HOMES:
+            if n >= MIN_HOMES and r["range"][0] > base:          # counted in only where they clearly sell more often than a home on record
                 got[f"{a}-{b}"] = r["rate"]
             md_rows.append(f"| {KIND[k]} | {r['published']} | {n:,} | {100 * r['rate']:.1f}% ({100 * r['range'][0]:.1f} to {100 * r['range'][1]:.1f}) | "
                            f"{100 * r['completes_july_to_june']:.1f}% |")
@@ -74,7 +78,8 @@ def main():
     md = ["# Homes named in a notice that the sale records do not hold", "",
           "The model scores only homes with a sale on record since 1995. These are the others: homes named in a notice with no",
           f"sale on record when the year began, {YEARS[0]} and {YEARS[1]} together. A home with no notice and no sale on record",
-          "cannot be measured the same way; homes that do have a record sell at about 4.4% a year.", "",
+          f"cannot be measured the same way; homes that do have a record sell at {100 * base:.1f}% a year. The product counts a",
+          "home in only where the whole range is above that.", "",
           "| Notice | Published | Homes | First sold in the year (95% range) | Completes July to June |", "|---|---|---|---|---|", *md_rows, "",
           "Lower bounds: an address that fails to match its later sale record counts as not sold.", ""]
     (OUT / "NOTICE_UNSEEN.md").write_text("\n".join(md))
