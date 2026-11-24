@@ -1,0 +1,98 @@
+{
+ "notices_read": 632,
+ "london_gazette_with_address": 608,
+ "linked_to_a_home_with_sales": 280,
+ "last_bought_before_the_death": 266,
+ "by_year_after": {
+  "the calendar year after the notice": {
+   "homes_still_in_the_same_hands": 261,
+   "sold_in_the_year": 14,
+   "share_sold": 0.0536,
+   "range": [
+    0.0307,
+    0.0843
+   ],
+   "same_tenure_homes_sell_at": 0.0435,
+   "all_homes_sell_at": 0.0413,
+   "times_same_tenure": 1.2
+  },
+  "the year after that": {
+   "homes_still_in_the_same_hands": 247,
+   "sold_in_the_year": 16,
+   "share_sold": 0.0648,
+   "range": [
+    0.0364,
+    0.0972
+   ],
+   "same_tenure_homes_sell_at": 0.0415,
+   "all_homes_sell_at": 0.039,
+   "times_same_tenure": 1.6
+  }
+ },
+ "link_share": 0.461,
+ "no_sale_on_record_before": {
+  "homes": 342,
+  "the calendar year after the notice": {
+   "homes_not_yet_sold": 342,
+   "first_sold_in_the_year": 4,
+   "share": 0.0117,
+   "range": [
+    0.0029,
+    0.0234
+   ]
+  },
+  "the year after that": {
+   "homes_not_yet_sold": 338,
+   "first_sold_in_the_year": 3,
+   "share": 0.0089,
+   "range": [
+    0.0,
+    0.0207
+   ]
+  },
+  "sold_by_end_2019": 0.041
+ },
+ "from_the_notice": {
+  "Homes the model covers (bought before)": {
+   "homes": 266,
+   "sold_within_12m": 0.0376,
+   "range_12m": [
+    0.015,
+    0.0602
+   ],
+   "sold_within_24m": 0.1015,
+   "range_24m": [
+    0.0677,
+    0.1391
+   ]
+  },
+  "Homes with no sale on record before": {
+   "homes": 342,
+   "sold_within_12m": 0.0058,
+   "range_12m": [
+    0.0,
+    0.0146
+   ],
+   "sold_within_24m": 0.0146,
+   "range_24m": [
+    0.0029,
+    0.0292
+   ]
+  }
+ },
+ "sold_within_months_of_death": {
+  "6": 0.0,
+  "12": 0.019,
+  "18": 0.057,
+  "24": 0.075,
+  "36": 0.17
+ },
+ "months_death_to_notice_median": 0.0,
+ "scale": {
+  "notices_a_year": 13704,
+  "homes_at_risk": 12771600,
+  "sales_a_year": 527970,
+  "sellers_these_notices_point_to_a_year": 321,
+  "share_of_all_sellers": 0.0006
+ }
+}
