@@ -64,7 +64,8 @@ def main():
     n = load_notices()
     tx = pd.read_parquet(TX, columns=["key", "year", "month"])
     key, has = link(n, set(tx.key.unique()))
-    n = n.assign(key=key)[has]
+    n_all = n.assign(key=key, has=has)
+    n = n_all[has].copy()
     t = tx[tx.key.isin(set(n.key))].copy()
     t["ym"] = t.year.astype(int) * 12 + t.month.astype(int) - 1
     by = t.groupby("key").ym.apply(lambda s: np.sort(s.to_numpy()))
@@ -108,6 +109,46 @@ def main():
         rows_md.append(f"| {lab.capitalize()} | {res['homes_still_in_the_same_hands']:,} | {100 * (res['share_sold'] or 0):.1f}% "
                        f"({100 * res['range'][0]:.1f} to {100 * res['range'][1]:.1f}) | {100 * (res['same_tenure_homes_sell_at'] or 0):.1f}% | "
                        f"{res.get('times_same_tenure', 0):.1f} |")
+    # homes the model cannot see: no sale on record (since 1995) before the event. The sale records hold only
+    # homes sold at least once, so a long-held home appears for the first time when it is sold. Notices that
+    # match no sale record at all count as not sold (some are address mismatches, so the shares are lower bounds).
+    n_all = n_all.merge(n[["id", "bought", "next"]], on="id", how="left")
+    unseen = n_all[~(n_all.bought >= 0)].copy()
+    unseen["next"] = unseen.next.fillna(-1)
+    R["no_sale_on_record_before"] = {"homes": int(len(unseen))}
+    rows_unseen = []
+    for lag, lab in ((1, "the calendar year after the notice"), (2, "the year after that")):
+        o = unseen.copy(); o["T"] = o.pub.dt.year + lag
+        o = o[(o["T"] <= 2018) & ((o.next < 0) | (o.next >= o["T"] * 12))]
+        sold = ((o.next >= o["T"] * 12) & (o.next < (o["T"] + 1) * 12)).to_numpy()
+        rng = np.random.default_rng(3); bs = [sold[rng.integers(0, len(sold), len(sold))].mean() for _ in range(2000)] if len(sold) else [np.nan]
+        R["no_sale_on_record_before"][lab] = {"homes_not_yet_sold": int(len(o)), "first_sold_in_the_year": int(sold.sum()),
+                                              "share": round(float(sold.mean()), 4) if len(sold) else None,
+                                              "range": [round(float(np.percentile(bs, q)), 4) for q in (2.5, 97.5)]}
+        rows_unseen.append(f"| {lab.capitalize()} | {len(o):,} | {100 * (sold.mean() if len(sold) else 0):.1f}% "
+                           f"({100 * np.percentile(bs, 2.5):.1f} to {100 * np.percentile(bs, 97.5):.1f}) |")
+    by_end = unseen[unseen.pub.dt.year <= 2016]
+    R["no_sale_on_record_before"]["sold_by_end_2019"] = round(float((by_end.next >= 0).mean()), 3) if len(by_end) else None
+
+    # the product's own clock: the 12 months from the month the notice appears (a campaign can act on a notice
+    # the week it is published; the model's calendar-year scoring misses homes sold before the next 1 January)
+    n_all["pub_ym"] = n_all.pub.dt.year * 12 + n_all.pub.dt.month - 1
+    R["from_the_notice"] = {}; rows_pub = []
+    for lab, g in (("Homes the model covers (bought before)", n_all[n_all.bought >= 0]),
+                   ("Homes with no sale on record before", n_all[~(n_all.bought >= 0)])):
+        g = g[g.pub.dt.year <= 2017].copy(); g["next"] = g.next.fillna(-1)
+        g = g[(g.next < 0) | (g.next >= g.pub_ym)]              # not already sold when the notice appears
+        res = {"homes": int(len(g))}
+        for m in (12, 24):
+            sold = ((g.next >= g.pub_ym) & (g.next < g.pub_ym + m)).to_numpy()
+            rng = np.random.default_rng(3); bs = [sold[rng.integers(0, len(sold), len(sold))].mean() for _ in range(2000)] if len(sold) else [np.nan]
+            res[f"sold_within_{m}m"] = round(float(sold.mean()), 4) if len(sold) else None
+            res[f"range_{m}m"] = [round(float(np.percentile(bs, q)), 4) for q in (2.5, 97.5)]
+        R["from_the_notice"][lab] = res
+        if len(g):
+            rows_pub.append(f"| {lab} | {len(g):,} | {100 * res['sold_within_12m']:.1f}% ({100 * res['range_12m'][0]:.1f} to {100 * res['range_12m'][1]:.1f}) | "
+                            f"{100 * res['sold_within_24m']:.1f}% ({100 * res['range_24m'][0]:.1f} to {100 * res['range_24m'][1]:.1f}) |")
+
     # how long after the death the home is sold (homes whose notice is old enough to see three years)
     o = owned[owned.dod_ym <= 2016 * 12]
     mo = np.where(o.next >= 0, o.next - o.dod_ym, 10**6)
@@ -135,6 +176,15 @@ def main():
           "|---|---|---|---|---|", *rows_md, "",
           f"Sold within so many months of the {EVENT[1]}: " + ", ".join(f"{m} months {100 * v:.0f}%" for m, v in R["sold_within_months_of_death"].items()) + ".",
           f"The notice appears a median of {R['months_death_to_notice_median']:.0f} months after the {EVENT[1]}.", ""]
+    md += ["## Homes with no sale on record before", "",
+           f"{R['no_sale_on_record_before']['homes']:,} notices are for homes with no sale since 1995 before the {EVENT[1]}. "
+           "The model does not cover these homes: the sale records hold a home only once it has been sold.", "",
+           "| Year | Homes not yet sold | First sold in that year (95% range) |", "|---|---|---|", *rows_unseen, "",
+           f"Sold by the end of 2019 (notices to 2016): {100 * (R['no_sale_on_record_before']['sold_by_end_2019'] or 0):.0f}%. "
+           "Lower bounds: an address that fails to match counts as not sold.", ""]
+    md += ["## From the month the notice appears", "",
+           "The product can act on a notice when it is published, so this is its own clock. All homes sell at about 4.4% a year.", "",
+           "| Homes | Not yet sold when the notice appears | Sold within 12 months (95% range) | Sold within 24 months |", "|---|---|---|---|", *rows_pub, ""]
     if "scale" in R:
         s = R["scale"]
         md += [f"Scale: about {s['notices_a_year']:,} notices a year point to about {s['sellers_these_notices_point_to_a_year']:,} "
