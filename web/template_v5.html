@@ -393,10 +393,12 @@ details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
       Wales 1 m LIDAR, OS OpenMap Local buildings, OS Open UPRN and Copernicus terrain. Each address joins its sale
       records through its exact postcode (ONS UPRN Directory), so counts of homes with a given view are estimates.
       Likelihood figures come from a real model trained on HM Land Registry Price Paid Data (England &amp; Wales,
-      1995–2019, 24.3M transactions; out-of-time AUC <span id="footauc"></span>). Air quality and health-access figures
+      1995–2019, 24.3M transactions; out-of-time AUC <span id="footauc"></span>). A home named in a bankruptcy order in The Gazette
+      has its likelihood adjusted; the notices are used for ranking only and are never shown. Air quality and health-access figures
       are real, from AHAH v4 inputs. Drive times are approximated from straight-line distance, not routed. Offer figures
       use a proof-of-concept pricing rule, an assumption until campaign data exists.</div>
     <div class="mono" style="margin-top:8px">Contains HM Land Registry data © Crown copyright (OGL v3.0) ·
+      The Gazette (OGL v3.0) ·
       ONS postcode geography and UPRN Directory (OGL) · AHAH v4, Geographic Data Service · Environment Agency LIDAR (OGL) ·
       Natural Resources Wales and Welsh Government LIDAR (OGL) · Wikidata (CC0) · Database of British and Irish Hills (CC BY 4.0) ·
       OS OpenMap Local, OS Open UPRN, OS Open Built Up Areas and OS Open Names © Crown copyright and database right · ONS Countries boundaries (OGL) · Leaflet (BSD-2-Clause) · Copernicus DEM © DLR/Airbus, ESA.</div>
@@ -1826,7 +1828,7 @@ function vOffer(code){
     <div id="faqs" style="margin-top:32px">
       <div class="eyebrow">Fair questions</div>
       <details class="faq" open><summary>How did you get my address, and what do you know?</summary>
-        <p>Only public records: HM Land Registry's sale history, energy-certificate data, published
+        <p>Only public records: HM Land Registry's sale history, energy-certificate data, public notices in The Gazette, published
         environmental data and the Environment Agency's aerial laser survey of the ground, addressed to
         "The Homeowner". We know when homes on your street last sold and for what, and the shape of the roofs
         and trees around you. We don't know your name, and we haven't looked in your windows.</p></details>
