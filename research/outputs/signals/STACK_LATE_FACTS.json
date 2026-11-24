@@ -1,0 +1,858 @@
+{
+ "when": "2026-11-24",
+ "first_step": "+HOUSE+AREA+PD",
+ "columns": [
+  "first_step",
+  "tenure",
+  "epc_months_owned",
+  "epc_anchored",
+  "epc_own_sale_12m",
+  "epc_own_sale_24m",
+  "epc_own_rent",
+  "epc_own_other_12m",
+  "epc_own_cert_age",
+  "epc_pool_sale_3m",
+  "epc_pool_sale_6m",
+  "epc_pool_sale_12m",
+  "epc_pool_sale_24m",
+  "epc_pool_sales_6m",
+  "epc_pool_sales_12m",
+  "epc_pool_homes",
+  "epc_pool_share_6m",
+  "epc_pool_share_12m",
+  "epc_homes_kind",
+  "epc_uprn_pc",
+  "epc_cert_rent_24m",
+  "epc_cert_other_12m",
+  "epc2_own_sale_n",
+  "epc2_own_sale_age",
+  "epc2_own_rent_age",
+  "epc2_own_rent_before",
+  "epc2_own_grant_n",
+  "epc2_own_grant_age",
+  "epc2_own_none_age",
+  "epc2_own_score",
+  "epc2_own_area",
+  "epc2_own_rooms",
+  "epc2_own_built",
+  "epc2_own_bungalow",
+  "epc2_own_let",
+  "epc2_pool_sale_60m",
+  "epc2_pool_sales_60m",
+  "epc2_pool_share_60m",
+  "epc2_pool_share_old",
+  "epc2_pool_rent_share",
+  "epc2_pool_grant_60m",
+  "epc2_pk_score",
+  "epc2_pk_area",
+  "epc2_pk_rooms",
+  "epc2_pk_built",
+  "epc2_pk_bungalow",
+  "epc2_pk_let",
+  "epc2_pk_certs"
+ ],
+ "rounds": 250,
+ "seeds": [
+  7,
+  8,
+  9
+ ],
+ "rows": 2591431,
+ "later_sellers": 100771,
+ "of_them_not_yet_listed": 0.9532,
+ "bands": {
+  "all": {
+   "not_listed": {
+    "deployed": 1.6902,
+    "aimed": 1.686,
+    "second": 1.7113,
+    "aim": {
+     "gain": -0.0042,
+     "range": [
+      -0.0205,
+      0.0104
+     ],
+     "by_seed": [
+      -0.0042,
+      0.0002,
+      -0.0053
+     ],
+     "seed_sd": 0.0029,
+     "range_with_fit_noise": [
+      -0.0215,
+      0.0114
+     ]
+    },
+    "certificates": {
+     "gain": 0.0253,
+     "range": [
+      0.0068,
+      0.0443
+     ],
+     "by_seed": [
+      0.0253,
+      0.0246,
+      0.0307
+     ],
+     "seed_sd": 0.0033,
+     "range_with_fit_noise": [
+      0.0057,
+      0.0455
+     ]
+    },
+    "both": {
+     "gain": 0.0211,
+     "range": [
+      0.004,
+      0.0399
+     ],
+     "by_seed": [
+      0.0211,
+      0.0248,
+      0.0254
+     ],
+     "seed_sd": 0.0023,
+     "range_with_fit_noise": [
+      0.0035,
+      0.0405
+     ]
+    }
+   },
+   "later": {
+    "deployed": 1.662,
+    "aimed": 1.658,
+    "second": 1.6562,
+    "aim": {
+     "gain": -0.0041,
+     "range": [
+      -0.0206,
+      0.0103
+     ],
+     "by_seed": [
+      -0.0041,
+      -0.0013,
+      -0.0046
+     ],
+     "seed_sd": 0.0018,
+     "range_with_fit_noise": [
+      -0.021,
+      0.0107
+     ]
+    },
+    "certificates": {
+     "gain": -0.0018,
+     "range": [
+      -0.0198,
+      0.0165
+     ],
+     "by_seed": [
+      -0.0018,
+      -0.0001,
+      0.0026
+     ],
+     "seed_sd": 0.0022,
+     "range_with_fit_noise": [
+      -0.0203,
+      0.0171
+     ]
+    },
+    "both": {
+     "gain": -0.0059,
+     "range": [
+      -0.0234,
+      0.0141
+     ],
+     "by_seed": [
+      -0.0059,
+      -0.0014,
+      -0.002
+     ],
+     "seed_sd": 0.0024,
+     "range_with_fit_noise": [
+      -0.024,
+      0.0146
+     ]
+    }
+   },
+   "far": {
+    "deployed": 1.6454,
+    "aimed": 1.6463,
+    "second": 1.6426,
+    "aim": {
+     "gain": 0.0008,
+     "range": [
+      -0.0173,
+      0.0164
+     ],
+     "by_seed": [
+      0.0008,
+      -0.0082,
+      0.0038
+     ],
+     "seed_sd": 0.0063,
+     "range_with_fit_noise": [
+      -0.0213,
+      0.0204
+     ]
+    },
+    "certificates": {
+     "gain": -0.0036,
+     "range": [
+      -0.0236,
+      0.02
+     ],
+     "by_seed": [
+      -0.0036,
+      0.0091,
+      -0.0033
+     ],
+     "seed_sd": 0.0073,
+     "range_with_fit_noise": [
+      -0.0278,
+      0.0243
+     ]
+    },
+    "both": {
+     "gain": -0.0028,
+     "range": [
+      -0.0207,
+      0.0219
+     ],
+     "by_seed": [
+      -0.0028,
+      0.0008,
+      0.0004
+     ],
+     "seed_sd": 0.002,
+     "range_with_fit_noise": [
+      -0.021,
+      0.0223
+     ]
+    }
+   },
+   "list": {
+    "deployed": {
+     "not_yet_listed": 0.0626,
+     "sells_later_already_listed": 0.002,
+     "under_way": 0.0327,
+     "calendar_year": 1.7408
+    },
+    "second": {
+     "not_yet_listed": 0.0634,
+     "sells_later_already_listed": 0.001,
+     "under_way": 0.0321,
+     "calendar_year": 1.7073
+    }
+   }
+  },
+  "t0_9": {
+   "not_listed": {
+    "deployed": 1.6383,
+    "aimed": 1.6281,
+    "second": 1.6549,
+    "aim": {
+     "gain": -0.0102,
+     "range": [
+      -0.0327,
+      0.0116
+     ],
+     "by_seed": [
+      -0.0102,
+      -0.0075,
+      -0.0119
+     ],
+     "seed_sd": 0.0022,
+     "range_with_fit_noise": [
+      -0.0331,
+      0.012
+     ]
+    },
+    "certificates": {
+     "gain": 0.0268,
+     "range": [
+      0.001,
+      0.0558
+     ],
+     "by_seed": [
+      0.0268,
+      0.0223,
+      0.029
+     ],
+     "seed_sd": 0.0034,
+     "range_with_fit_noise": [
+      0.0002,
+      0.0566
+     ]
+    },
+    "both": {
+     "gain": 0.0167,
+     "range": [
+      -0.0075,
+      0.0456
+     ],
+     "by_seed": [
+      0.0167,
+      0.0149,
+      0.0171
+     ],
+     "seed_sd": 0.0012,
+     "range_with_fit_noise": [
+      -0.0076,
+      0.0457
+     ]
+    }
+   },
+   "later": {
+    "deployed": 1.6202,
+    "aimed": 1.6084,
+    "second": 1.6101,
+    "aim": {
+     "gain": -0.0118,
+     "range": [
+      -0.0344,
+      0.0099
+     ],
+     "by_seed": [
+      -0.0118,
+      -0.0069,
+      -0.0135
+     ],
+     "seed_sd": 0.0034,
+     "range_with_fit_noise": [
+      -0.0354,
+      0.0109
+     ]
+    },
+    "certificates": {
+     "gain": 0.0017,
+     "range": [
+      -0.0253,
+      0.0285
+     ],
+     "by_seed": [
+      0.0017,
+      -0.0025,
+      0.0015
+     ],
+     "seed_sd": 0.0024,
+     "range_with_fit_noise": [
+      -0.0257,
+      0.029
+     ]
+    },
+    "both": {
+     "gain": -0.01,
+     "range": [
+      -0.0326,
+      0.019
+     ],
+     "by_seed": [
+      -0.01,
+      -0.0094,
+      -0.012
+     ],
+     "seed_sd": 0.0013,
+     "range_with_fit_noise": [
+      -0.0327,
+      0.0191
+     ]
+    }
+   },
+   "far": {
+    "deployed": 1.5942,
+    "aimed": 1.5888,
+    "second": 1.5858,
+    "aim": {
+     "gain": -0.0054,
+     "range": [
+      -0.0301,
+      0.0226
+     ],
+     "by_seed": [
+      -0.0054,
+      -0.0105,
+      -0.0062
+     ],
+     "seed_sd": 0.0027,
+     "range_with_fit_noise": [
+      -0.0306,
+      0.0231
+     ]
+    },
+    "certificates": {
+     "gain": -0.003,
+     "range": [
+      -0.0328,
+      0.0271
+     ],
+     "by_seed": [
+      -0.003,
+      0.0019,
+      0.017
+     ],
+     "seed_sd": 0.0104,
+     "range_with_fit_noise": [
+      -0.0391,
+      0.0334
+     ]
+    },
+    "both": {
+     "gain": -0.0083,
+     "range": [
+      -0.0359,
+      0.024
+     ],
+     "by_seed": [
+      -0.0083,
+      -0.0086,
+      0.0108
+     ],
+     "seed_sd": 0.0111,
+     "range_with_fit_noise": [
+      -0.043,
+      0.0311
+     ]
+    }
+   },
+   "list": {
+    "deployed": {
+     "not_yet_listed": 0.0684,
+     "sells_later_already_listed": 0.002,
+     "under_way": 0.0355,
+     "calendar_year": 1.7405
+    },
+    "second": {
+     "not_yet_listed": 0.0691,
+     "sells_later_already_listed": 0.0009,
+     "under_way": 0.0348,
+     "calendar_year": 1.7114
+    }
+   }
+  },
+  "t10_19": {
+   "not_listed": {
+    "deployed": 1.5192,
+    "aimed": 1.509,
+    "second": 1.5533,
+    "aim": {
+     "gain": -0.0101,
+     "range": [
+      -0.0344,
+      0.0129
+     ],
+     "by_seed": [
+      -0.0101,
+      -0.0052,
+      0.0076
+     ],
+     "seed_sd": 0.0092,
+     "range_with_fit_noise": [
+      -0.0404,
+      0.0189
+     ]
+    },
+    "certificates": {
+     "gain": 0.0443,
+     "range": [
+      0.0151,
+      0.0732
+     ],
+     "by_seed": [
+      0.0443,
+      0.0116,
+      0.0288
+     ],
+     "seed_sd": 0.0164,
+     "range_with_fit_noise": [
+      0.0009,
+      0.0874
+     ]
+    },
+    "both": {
+     "gain": 0.0341,
+     "range": [
+      0.007,
+      0.0622
+     ],
+     "by_seed": [
+      0.0341,
+      0.0064,
+      0.0365
+     ],
+     "seed_sd": 0.0167,
+     "range_with_fit_noise": [
+      -0.0082,
+      0.0775
+     ]
+    }
+   },
+   "later": {
+    "deployed": 1.4861,
+    "aimed": 1.4805,
+    "second": 1.512,
+    "aim": {
+     "gain": -0.0056,
+     "range": [
+      -0.0296,
+      0.0173
+     ],
+     "by_seed": [
+      -0.0056,
+      -0.0056,
+      0.0124
+     ],
+     "seed_sd": 0.0104,
+     "range_with_fit_noise": [
+      -0.0372,
+      0.0249
+     ]
+    },
+    "certificates": {
+     "gain": 0.0315,
+     "range": [
+      0.0041,
+      0.0603
+     ],
+     "by_seed": [
+      0.0315,
+      -0.0007,
+      0.0098
+     ],
+     "seed_sd": 0.0164,
+     "range_with_fit_noise": [
+      -0.0105,
+      0.0749
+     ]
+    },
+    "both": {
+     "gain": 0.0259,
+     "range": [
+      0.0018,
+      0.0539
+     ],
+     "by_seed": [
+      0.0259,
+      -0.0063,
+      0.0222
+     ],
+     "seed_sd": 0.0176,
+     "range_with_fit_noise": [
+      -0.0154,
+      0.0711
+     ]
+    }
+   },
+   "far": {
+    "deployed": 1.4885,
+    "aimed": 1.4746,
+    "second": 1.5242,
+    "aim": {
+     "gain": -0.0139,
+     "range": [
+      -0.0406,
+      0.0135
+     ],
+     "by_seed": [
+      -0.0139,
+      0.0086,
+      0.0122
+     ],
+     "seed_sd": 0.0142,
+     "range_with_fit_noise": [
+      -0.0523,
+      0.0252
+     ]
+    },
+    "certificates": {
+     "gain": 0.0496,
+     "range": [
+      0.0166,
+      0.0857
+     ],
+     "by_seed": [
+      0.0496,
+      0.0126,
+      0.0258
+     ],
+     "seed_sd": 0.0188,
+     "range_with_fit_noise": [
+      0.0006,
+      0.1016
+     ]
+    },
+    "both": {
+     "gain": 0.0357,
+     "range": [
+      0.005,
+      0.0721
+     ],
+     "by_seed": [
+      0.0357,
+      0.0212,
+      0.038
+     ],
+     "seed_sd": 0.0091,
+     "range_with_fit_noise": [
+      0.0005,
+      0.0766
+     ]
+    }
+   },
+   "list": {
+    "deployed": {
+     "not_yet_listed": 0.0525,
+     "sells_later_already_listed": 0.0018,
+     "under_way": 0.0279,
+     "calendar_year": 1.5139
+    },
+    "second": {
+     "not_yet_listed": 0.0537,
+     "sells_later_already_listed": 0.0016,
+     "under_way": 0.0284,
+     "calendar_year": 1.5365
+    }
+   }
+  },
+  "t20p": {
+   "not_listed": {
+    "deployed": 1.334,
+    "aimed": 1.2701,
+    "second": 1.4134,
+    "aim": {
+     "gain": -0.0639,
+     "range": [
+      -0.1349,
+      0.0088
+     ],
+     "by_seed": [
+      -0.0639,
+      -0.0466,
+      -0.0908
+     ],
+     "seed_sd": 0.0223,
+     "range_with_fit_noise": [
+      -0.1471,
+      0.021
+     ]
+    },
+    "certificates": {
+     "gain": 0.1433,
+     "range": [
+      0.0476,
+      0.2392
+     ],
+     "by_seed": [
+      0.1433,
+      0.0993,
+      0.0691
+     ],
+     "seed_sd": 0.0373,
+     "range_with_fit_noise": [
+      0.0229,
+      0.2639
+     ]
+    },
+    "both": {
+     "gain": 0.0794,
+     "range": [
+      -0.0024,
+      0.1672
+     ],
+     "by_seed": [
+      0.0794,
+      0.0527,
+      -0.0217
+     ],
+     "seed_sd": 0.0524,
+     "range_with_fit_noise": [
+      -0.0508,
+      0.2155
+     ]
+    }
+   },
+   "later": {
+    "deployed": 1.3144,
+    "aimed": 1.2413,
+    "second": 1.3776,
+    "aim": {
+     "gain": -0.0731,
+     "range": [
+      -0.1406,
+      0.002
+     ],
+     "by_seed": [
+      -0.0731,
+      -0.0482,
+      -0.0831
+     ],
+     "seed_sd": 0.018,
+     "range_with_fit_noise": [
+      -0.1489,
+      0.0102
+     ]
+    },
+    "certificates": {
+     "gain": 0.1363,
+     "range": [
+      0.0352,
+      0.2229
+     ],
+     "by_seed": [
+      0.1363,
+      0.0997,
+      0.0681
+     ],
+     "seed_sd": 0.0341,
+     "range_with_fit_noise": [
+      0.0139,
+      0.2443
+     ]
+    },
+    "both": {
+     "gain": 0.0631,
+     "range": [
+      -0.0143,
+      0.1454
+     ],
+     "by_seed": [
+      0.0631,
+      0.0515,
+      -0.015
+     ],
+     "seed_sd": 0.0421,
+     "range_with_fit_noise": [
+      -0.0493,
+      0.1804
+     ]
+    }
+   },
+   "far": {
+    "deployed": 1.36,
+    "aimed": 1.3107,
+    "second": 1.4186,
+    "aim": {
+     "gain": -0.0492,
+     "range": [
+      -0.1433,
+      0.0427
+     ],
+     "by_seed": [
+      -0.0492,
+      -0.0539,
+      -0.0258
+     ],
+     "seed_sd": 0.0151,
+     "range_with_fit_noise": [
+      -0.1479,
+      0.0473
+     ]
+    },
+    "certificates": {
+     "gain": 0.1079,
+     "range": [
+      -0.0168,
+      0.2035
+     ],
+     "by_seed": [
+      0.1079,
+      0.0961,
+      0.0094
+     ],
+     "seed_sd": 0.0538,
+     "range_with_fit_noise": [
+      -0.0591,
+      0.2458
+     ]
+    },
+    "both": {
+     "gain": 0.0586,
+     "range": [
+      -0.0334,
+      0.1611
+     ],
+     "by_seed": [
+      0.0586,
+      0.0422,
+      -0.0164
+     ],
+     "seed_sd": 0.0394,
+     "range_with_fit_noise": [
+      -0.0604,
+      0.1881
+     ]
+    }
+   },
+   "list": {
+    "deployed": {
+     "not_yet_listed": 0.0337,
+     "sells_later_already_listed": 0.0017,
+     "under_way": 0.0154,
+     "calendar_year": 1.291
+    },
+    "second": {
+     "not_yet_listed": 0.0357,
+     "sells_later_already_listed": 0.0014,
+     "under_way": 0.0179,
+     "calendar_year": 1.3956
+    }
+   }
+  }
+ },
+ "forward_2018": {
+  "deployed": 1.6989,
+  "aimed": 1.6881,
+  "second": 1.7127
+ },
+ "passes": true,
+ "verdict": "add the second step: it finds more homes that are not yet on the market, the range is clear of zero and of the fit's own noise, it is no worse nine months out or more, and its lists hold fewer homes whose sale is already under way",
+ "gain_share": {
+  "first_step": 0.584,
+  "epc_months_owned": 0.076,
+  "epc2_pk_area": 0.035,
+  "epc2_pk_built": 0.031,
+  "epc2_pk_rooms": 0.03,
+  "epc2_pool_rent_share": 0.02,
+  "epc2_pk_score": 0.019,
+  "epc2_pk_let": 0.018,
+  "tenure": 0.015,
+  "epc_uprn_pc": 0.015,
+  "epc2_pool_share_old": 0.014,
+  "epc2_pk_certs": 0.011,
+  "epc_pool_homes": 0.011,
+  "epc2_pk_bungalow": 0.01,
+  "epc2_own_sale_age": 0.01,
+  "epc_homes_kind": 0.009,
+  "epc2_pool_share_60m": 0.009,
+  "epc_pool_share_6m": 0.009,
+  "epc_own_cert_age": 0.007,
+  "epc_pool_sale_24m": 0.007,
+  "epc2_pool_sales_60m": 0.006,
+  "epc_pool_share_12m": 0.006,
+  "epc2_own_area": 0.006,
+  "epc2_pool_sale_60m": 0.006,
+  "epc_pool_sales_12m": 0.005,
+  "epc2_own_score": 0.005,
+  "epc_own_sale_24m": 0.003,
+  "epc2_own_built": 0.003,
+  "epc_pool_sales_6m": 0.003,
+  "epc2_pool_grant_60m": 0.002,
+  "epc_cert_other_12m": 0.002,
+  "epc2_own_sale_n": 0.002,
+  "epc2_own_rooms": 0.002,
+  "epc_own_sale_12m": 0.001,
+  "epc_pool_sale_12m": 0.001,
+  "epc_cert_rent_24m": 0.001,
+  "epc_pool_sale_6m": 0.001,
+  "epc2_own_let": 0.001,
+  "epc_pool_sale_3m": 0.001,
+  "epc2_own_none_age": 0.0,
+  "epc2_own_bungalow": 0.0,
+  "epc2_own_rent_age": 0.0,
+  "epc2_own_grant_age": 0.0,
+  "epc2_own_rent_before": 0.0,
+  "epc_anchored": 0.0,
+  "epc_own_rent": 0.0,
+  "epc_own_other_12m": 0.0,
+  "epc2_own_grant_n": 0.0
+ }
+}

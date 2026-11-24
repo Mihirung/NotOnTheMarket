@@ -1,0 +1,33 @@
+{
+ "first_step": "+HOUSE+AREA+PD",
+ "label": "not yet listed: completes July to June, certificate not lodged by the scoring day",
+ "columns": [
+  "first_step",
+  "tenure",
+  "epc_months_owned",
+  "epc_anchored",
+  "epc_own_sale_12m",
+  "epc_own_sale_24m",
+  "epc_own_rent",
+  "epc_own_other_12m",
+  "epc_own_cert_age",
+  "epc_pool_sale_3m",
+  "epc_pool_sale_6m",
+  "epc_pool_sale_12m",
+  "epc_pool_sale_24m",
+  "epc_pool_sales_6m",
+  "epc_pool_sales_12m",
+  "epc_pool_homes",
+  "epc_pool_share_6m",
+  "epc_pool_share_12m",
+  "epc_homes_kind",
+  "epc_uprn_pc",
+  "epc_cert_rent_24m",
+  "epc_cert_other_12m"
+ ],
+ "rounds": 250,
+ "rows": 2591431,
+ "fitted_on": "test homes of 2017 and 2018 (a tenth of homes), first step fitted to 2015",
+ "passes": false,
+ "rate": 0.03707
+}
