@@ -1,0 +1,244 @@
+{
+ "rows": 2591431,
+ "later_sellers": 100771,
+ "gain_share": {
+  "2017": {
+   "model": 0.619,
+   "tenure": 0.018,
+   "months_owned": 0.094,
+   "anchored": 0.0,
+   "own_sale_12m": 0.004,
+   "own_sale_24m": 0.007,
+   "own_rent": 0.001,
+   "own_other_12m": 0.001,
+   "own_cert_age": 0.028,
+   "pool_sale_3m": 0.004,
+   "pool_sale_6m": 0.003,
+   "pool_sale_12m": 0.008,
+   "pool_sale_24m": 0.016,
+   "pool_sales_6m": 0.008,
+   "pool_sales_12m": 0.011,
+   "pool_homes": 0.025,
+   "pool_share_6m": 0.013,
+   "pool_share_12m": 0.035,
+   "homes_kind": 0.03,
+   "uprn_pc": 0.055,
+   "cert_rent_24m": 0.01,
+   "cert_other_12m": 0.009
+  },
+  "2018": {
+   "model": 0.616,
+   "tenure": 0.014,
+   "months_owned": 0.095,
+   "anchored": 0.0,
+   "own_sale_12m": 0.004,
+   "own_sale_24m": 0.007,
+   "own_rent": 0.0,
+   "own_other_12m": 0.0,
+   "own_cert_age": 0.031,
+   "pool_sale_3m": 0.002,
+   "pool_sale_6m": 0.006,
+   "pool_sale_12m": 0.013,
+   "pool_sale_24m": 0.016,
+   "pool_sales_6m": 0.006,
+   "pool_sales_12m": 0.013,
+   "pool_homes": 0.037,
+   "pool_share_6m": 0.018,
+   "pool_share_12m": 0.025,
+   "homes_kind": 0.033,
+   "uprn_pc": 0.054,
+   "cert_rent_24m": 0.009,
+   "cert_other_12m": 0.002
+  }
+ },
+ "bands": {
+  "all": {
+   "arms": {
+    "deployed model": {
+     "later": 1.662,
+     "July to September": 1.703,
+     "October to December": 1.705,
+     "January to March, next year": 1.5687,
+     "April to June, next year": 1.645,
+     "under_way_share_of_list": 0.0327,
+     "later_share_of_list": 0.0646
+    },
+    "deployed model refitted with certificates": {
+     "later": 1.6207,
+     "July to September": 1.8098,
+     "October to December": 1.6471,
+     "January to March, next year": 1.4918,
+     "April to June, next year": 1.4683,
+     "under_way_share_of_list": 0.045,
+     "later_share_of_list": 0.063
+    },
+    "second step aimed at later sales, no certificates": {
+     "later": 1.6553,
+     "July to September": 1.6717,
+     "October to December": 1.6879,
+     "January to March, next year": 1.5847,
+     "April to June, next year": 1.6607,
+     "under_way_share_of_list": 0.0315,
+     "later_share_of_list": 0.0644
+    },
+    "second step aimed at later sales, with certificates": {
+     "later": 1.7007,
+     "July to September": 1.7826,
+     "October to December": 1.7272,
+     "January to March, next year": 1.6078,
+     "April to June, next year": 1.6511,
+     "under_way_share_of_list": 0.039,
+     "later_share_of_list": 0.0661
+    }
+   },
+   "certificates": {
+    "gain": 0.0454,
+    "range": [
+     0.0294,
+     0.0645
+    ]
+   }
+  },
+  "t0_9": {
+   "arms": {
+    "deployed model": {
+     "later": 1.6202,
+     "July to September": 1.6858,
+     "October to December": 1.6639,
+     "January to March, next year": 1.5174,
+     "April to June, next year": 1.5827,
+     "under_way_share_of_list": 0.0355,
+     "later_share_of_list": 0.0704
+    },
+    "deployed model refitted with certificates": {
+     "later": 1.5691,
+     "July to September": 1.7191,
+     "October to December": 1.6217,
+     "January to March, next year": 1.4503,
+     "April to June, next year": 1.4347,
+     "under_way_share_of_list": 0.0419,
+     "later_share_of_list": 0.0682
+    },
+    "second step aimed at later sales, no certificates": {
+     "later": 1.6146,
+     "July to September": 1.6729,
+     "October to December": 1.6789,
+     "January to March, next year": 1.5174,
+     "April to June, next year": 1.5575,
+     "under_way_share_of_list": 0.0343,
+     "later_share_of_list": 0.0702
+    },
+    "second step aimed at later sales, with certificates": {
+     "later": 1.6387,
+     "July to September": 1.7211,
+     "October to December": 1.6825,
+     "January to March, next year": 1.5524,
+     "April to June, next year": 1.5664,
+     "under_way_share_of_list": 0.0395,
+     "later_share_of_list": 0.0712
+    }
+   },
+   "certificates": {
+    "gain": 0.0241,
+    "range": [
+     0.0004,
+     0.0515
+    ]
+   }
+  },
+  "t10_19": {
+   "arms": {
+    "deployed model": {
+     "later": 1.4861,
+     "July to September": 1.4803,
+     "October to December": 1.5156,
+     "January to March, next year": 1.4675,
+     "April to June, next year": 1.4746,
+     "under_way_share_of_list": 0.0279,
+     "later_share_of_list": 0.0543
+    },
+    "deployed model refitted with certificates": {
+     "later": 1.5689,
+     "July to September": 1.8306,
+     "October to December": 1.5546,
+     "January to March, next year": 1.4365,
+     "April to June, next year": 1.3619,
+     "under_way_share_of_list": 0.0486,
+     "later_share_of_list": 0.0573
+    },
+    "second step aimed at later sales, no certificates": {
+     "later": 1.4702,
+     "July to September": 1.4748,
+     "October to December": 1.4868,
+     "January to March, next year": 1.431,
+     "April to June, next year": 1.481,
+     "under_way_share_of_list": 0.0273,
+     "later_share_of_list": 0.0537
+    },
+    "second step aimed at later sales, with certificates": {
+     "later": 1.592,
+     "July to September": 1.727,
+     "October to December": 1.613,
+     "January to March, next year": 1.5429,
+     "April to June, next year": 1.431,
+     "under_way_share_of_list": 0.0419,
+     "later_share_of_list": 0.0581
+    }
+   },
+   "certificates": {
+    "gain": 0.1218,
+    "range": [
+     0.0875,
+     0.1547
+    ]
+   }
+  },
+  "t20p": {
+   "arms": {
+    "deployed model": {
+     "later": 1.3144,
+     "July to September": 1.2037,
+     "October to December": 1.4702,
+     "January to March, next year": 1.3209,
+     "April to June, next year": 1.2555,
+     "under_way_share_of_list": 0.0154,
+     "later_share_of_list": 0.0354
+    },
+    "deployed model refitted with certificates": {
+     "later": 1.5271,
+     "July to September": 1.7456,
+     "October to December": 1.53,
+     "January to March, next year": 1.5031,
+     "April to June, next year": 1.2477,
+     "under_way_share_of_list": 0.0373,
+     "later_share_of_list": 0.0411
+    },
+    "second step aimed at later sales, no certificates": {
+     "later": 1.2363,
+     "July to September": 1.1238,
+     "October to December": 1.4105,
+     "January to March, next year": 1.2298,
+     "April to June, next year": 1.1692,
+     "under_way_share_of_list": 0.0155,
+     "later_share_of_list": 0.0333
+    },
+    "second step aimed at later sales, with certificates": {
+     "later": 1.4956,
+     "July to September": 1.6087,
+     "October to December": 1.6196,
+     "January to March, next year": 1.3665,
+     "April to June, next year": 1.3105,
+     "under_way_share_of_list": 0.0318,
+     "later_share_of_list": 0.0403
+    }
+   },
+   "certificates": {
+    "gain": 0.2593,
+    "range": [
+     0.157,
+     0.3542
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,302 @@
+{
+ "family": "EPC",
+ "deployed": "+HOUSE+AREA+PD",
+ "bands": {
+  "all": {
+   "January to March": {
+    "sellers": 22681,
+    "current": 1.795,
+    "with": 2.717,
+    "gain": 0.922,
+    "range": [
+     0.855,
+     0.986
+    ],
+    "share_of_top_current": 0.225,
+    "share_of_top_with": 0.287
+   },
+   "April to June": {
+    "sellers": 24749,
+    "current": 1.775,
+    "with": 2.222,
+    "gain": 0.446,
+    "range": [
+     0.386,
+     0.498
+    ],
+    "share_of_top_current": 0.243,
+    "share_of_top_with": 0.256
+   },
+   "July to September": {
+    "sellers": 29121,
+    "current": 1.703,
+    "with": 1.81,
+    "gain": 0.107,
+    "range": [
+     0.058,
+     0.161
+    ],
+    "share_of_top_current": 0.274,
+    "share_of_top_with": 0.246
+   },
+   "October to December": {
+    "sellers": 27461,
+    "current": 1.705,
+    "with": 1.647,
+    "gain": -0.058,
+    "range": [
+     -0.105,
+     -0.009
+    ],
+    "share_of_top_current": 0.259,
+    "share_of_top_with": 0.211
+   },
+   "July to December": {
+    "sellers": 56582,
+    "current": 1.704,
+    "with": 1.731,
+    "gain": 0.027,
+    "range": [
+     -0.006,
+     0.062
+    ],
+    "share_of_top_current": 0.532,
+    "share_of_top_with": 0.456
+   },
+   "Whole year": {
+    "sellers": 104012,
+    "current": 1.741,
+    "with": 2.063,
+    "gain": 0.322,
+    "range": [
+     0.296,
+     0.35
+    ],
+    "share_of_top_current": 1.0,
+    "share_of_top_with": 1.0
+   }
+  },
+  "t0_9": {
+   "January to March": {
+    "sellers": 10868,
+    "current": 1.862,
+    "with": 2.365,
+    "gain": 0.502,
+    "range": [
+     0.427,
+     0.59
+    ],
+    "share_of_top_current": 0.224,
+    "share_of_top_with": 0.262
+   },
+   "April to June": {
+    "sellers": 12381,
+    "current": 1.785,
+    "with": 1.965,
+    "gain": 0.18,
+    "range": [
+     0.101,
+     0.247
+    ],
+    "share_of_top_current": 0.244,
+    "share_of_top_with": 0.248
+   },
+   "July to September": {
+    "sellers": 14717,
+    "current": 1.686,
+    "with": 1.719,
+    "gain": 0.033,
+    "range": [
+     -0.016,
+     0.095
+    ],
+    "share_of_top_current": 0.274,
+    "share_of_top_with": 0.258
+   },
+   "October to December": {
+    "sellers": 13979,
+    "current": 1.664,
+    "with": 1.622,
+    "gain": -0.042,
+    "range": [
+     -0.101,
+     0.029
+    ],
+    "share_of_top_current": 0.257,
+    "share_of_top_with": 0.231
+   },
+   "July to December": {
+    "sellers": 28696,
+    "current": 1.675,
+    "with": 1.672,
+    "gain": -0.003,
+    "range": [
+     -0.043,
+     0.046
+    ],
+    "share_of_top_current": 0.532,
+    "share_of_top_with": 0.489
+   },
+   "Whole year": {
+    "sellers": 51945,
+    "current": 1.74,
+    "with": 1.887,
+    "gain": 0.146,
+    "range": [
+     0.113,
+     0.184
+    ],
+    "share_of_top_current": 1.0,
+    "share_of_top_with": 1.0
+   }
+  },
+  "t10_19": {
+   "January to March": {
+    "sellers": 10415,
+    "current": 1.558,
+    "with": 3.036,
+    "gain": 1.478,
+    "range": [
+     1.379,
+     1.59
+    ],
+    "share_of_top_current": 0.234,
+    "share_of_top_with": 0.321
+   },
+   "April to June": {
+    "sellers": 10972,
+    "current": 1.508,
+    "with": 2.321,
+    "gain": 0.813,
+    "range": [
+     0.718,
+     0.904
+    ],
+    "share_of_top_current": 0.239,
+    "share_of_top_with": 0.258
+   },
+   "July to September": {
+    "sellers": 12646,
+    "current": 1.48,
+    "with": 1.831,
+    "gain": 0.35,
+    "range": [
+     0.269,
+     0.434
+    ],
+    "share_of_top_current": 0.27,
+    "share_of_top_with": 0.235
+   },
+   "October to December": {
+    "sellers": 11804,
+    "current": 1.516,
+    "with": 1.555,
+    "gain": 0.039,
+    "range": [
+     -0.053,
+     0.117
+    ],
+    "share_of_top_current": 0.258,
+    "share_of_top_with": 0.186
+   },
+   "July to December": {
+    "sellers": 24450,
+    "current": 1.497,
+    "with": 1.697,
+    "gain": 0.2,
+    "range": [
+     0.142,
+     0.26
+    ],
+    "share_of_top_current": 0.528,
+    "share_of_top_with": 0.421
+   },
+   "Whole year": {
+    "sellers": 45837,
+    "current": 1.514,
+    "with": 2.151,
+    "gain": 0.637,
+    "range": [
+     0.588,
+     0.681
+    ],
+    "share_of_top_current": 1.0,
+    "share_of_top_with": 1.0
+   }
+  },
+  "t20p": {
+   "January to March": {
+    "sellers": 1398,
+    "current": 1.212,
+    "with": 3.364,
+    "gain": 2.152,
+    "range": [
+     1.864,
+     2.397
+    ],
+    "share_of_top_current": 0.211,
+    "share_of_top_with": 0.336
+   },
+   "April to June": {
+    "sellers": 1396,
+    "current": 1.264,
+    "with": 2.622,
+    "gain": 1.358,
+    "range": [
+     1.112,
+     1.63
+    ],
+    "share_of_top_current": 0.219,
+    "share_of_top_with": 0.261
+   },
+   "July to September": {
+    "sellers": 1758,
+    "current": 1.204,
+    "with": 1.746,
+    "gain": 0.542,
+    "range": [
+     0.319,
+     0.756
+    ],
+    "share_of_top_current": 0.263,
+    "share_of_top_with": 0.219
+   },
+   "October to December": {
+    "sellers": 1678,
+    "current": 1.47,
+    "with": 1.53,
+    "gain": 0.06,
+    "range": [
+     -0.129,
+     0.273
+    ],
+    "share_of_top_current": 0.307,
+    "share_of_top_with": 0.183
+   },
+   "July to December": {
+    "sellers": 3436,
+    "current": 1.334,
+    "with": 1.64,
+    "gain": 0.306,
+    "range": [
+     0.163,
+     0.448
+    ],
+    "share_of_top_current": 0.57,
+    "share_of_top_with": 0.403
+   },
+   "Whole year": {
+    "sellers": 6230,
+    "current": 1.291,
+    "with": 2.247,
+    "gain": 0.956,
+    "range": [
+     0.842,
+     1.074
+    ],
+    "share_of_top_current": 1.0,
+    "share_of_top_with": 1.0
+   }
+  }
+ }
+}
