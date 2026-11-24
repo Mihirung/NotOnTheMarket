@@ -1,89 +1,98 @@
 {
- "notices_read": 51,
- "london_gazette_with_address": 40,
- "linked_to_a_home_with_sales": 18,
- "last_bought_before_the_death": 4,
+ "notices_read": 205,
+ "london_gazette_with_address": 169,
+ "linked_to_a_home_with_sales": 82,
+ "last_bought_before_the_death": 27,
  "by_year_after": {
   "the calendar year after the notice": {
-   "homes_still_in_the_same_hands": 3,
-   "sold_in_the_year": 0,
-   "share_sold": 0.0,
+   "homes_still_in_the_same_hands": 14,
+   "sold_in_the_year": 3,
+   "share_sold": 0.2143,
    "range": [
     0.0,
-    0.0
+    0.4286
    ],
-   "same_tenure_homes_sell_at": 0.044,
-   "all_homes_sell_at": 0.0413
+   "same_tenure_homes_sell_at": 0.0394,
+   "all_homes_sell_at": 0.0413,
+   "times_same_tenure": 5.4
   },
   "the year after that": {
-   "homes_still_in_the_same_hands": 3,
-   "sold_in_the_year": 0,
-   "share_sold": 0.0,
+   "homes_still_in_the_same_hands": 11,
+   "sold_in_the_year": 2,
+   "share_sold": 0.1818,
    "range": [
     0.0,
-    0.0
+    0.4545
    ],
-   "same_tenure_homes_sell_at": 0.0425,
-   "all_homes_sell_at": 0.039
+   "same_tenure_homes_sell_at": 0.0398,
+   "all_homes_sell_at": 0.039,
+   "times_same_tenure": 4.6
   }
  },
- "link_share": 0.45,
+ "link_share": 0.485,
  "no_sale_on_record_before": {
-  "homes": 36,
+  "homes": 142,
   "the calendar year after the notice": {
-   "homes_not_yet_sold": 24,
-   "first_sold_in_the_year": 2,
-   "share": 0.0833,
+   "homes_not_yet_sold": 99,
+   "first_sold_in_the_year": 8,
+   "share": 0.0808,
    "range": [
-    0.0,
-    0.2083
+    0.0303,
+    0.1414
    ]
   },
   "the year after that": {
-   "homes_not_yet_sold": 22,
-   "first_sold_in_the_year": 0,
-   "share": 0.0,
+   "homes_not_yet_sold": 91,
+   "first_sold_in_the_year": 3,
+   "share": 0.033,
    "range": [
     0.0,
-    0.0
+    0.0769
    ]
   },
-  "sold_by_end_2019": 0.389
+  "sold_by_end_2019": 0.387
  },
  "from_the_notice": {
   "Homes the model covers (bought before)": {
-   "homes": 4,
-   "sold_within_12m": 0.25,
+   "homes": 27,
+   "sold_within_12m": 0.4815,
    "range_12m": [
-    0.0,
-    0.75
+    0.2963,
+    0.6667
    ],
-   "sold_within_24m": 0.25,
+   "sold_within_24m": 0.5926,
    "range_24m": [
-    0.0,
-    0.75
+    0.4074,
+    0.7778
    ]
   },
   "Homes with no sale on record before": {
-   "homes": 34,
-   "sold_within_12m": 0.2941,
+   "homes": 138,
+   "sold_within_12m": 0.2826,
    "range_12m": [
-    0.1471,
-    0.4412
+    0.2101,
+    0.3551
    ],
-   "sold_within_24m": 0.3529,
+   "sold_within_24m": 0.3406,
    "range_24m": [
-    0.2059,
-    0.5294
+    0.2609,
+    0.4203
    ]
   }
  },
  "sold_within_months_of_death": {
-  "6": 0.0,
-  "12": 0.25,
-  "18": 0.25,
-  "24": 0.25,
-  "36": 0.25
+  "6": 0.074,
+  "12": 0.481,
+  "18": 0.556,
+  "24": 0.593,
+  "36": 0.593
  },
- "months_death_to_notice_median": 3.5
+ "months_death_to_notice_median": 3.0,
+ "scale": {
+  "notices_a_year": 35757,
+  "homes_at_risk": 12771600,
+  "sales_a_year": 527970,
+  "sellers_these_notices_point_to_a_year": 1224,
+  "share_of_all_sellers": 0.0023
+ }
 }

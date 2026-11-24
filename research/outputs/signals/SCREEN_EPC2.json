@@ -1,0 +1,174 @@
+{
+ "columns": [
+  "months_owned",
+  "anchored",
+  "own_sale_12m",
+  "own_sale_24m",
+  "own_rent",
+  "own_other_12m",
+  "own_cert_age",
+  "pool_sale_3m",
+  "pool_sale_6m",
+  "pool_sale_12m",
+  "pool_sale_24m",
+  "pool_sales_6m",
+  "pool_sales_12m",
+  "pool_homes",
+  "pool_share_6m",
+  "pool_share_12m",
+  "homes_kind",
+  "uprn_pc",
+  "cert_rent_24m",
+  "cert_other_12m"
+ ],
+ "gain_share": {
+  "2017": {
+   "model": 0.524,
+   "tenure": 0.012,
+   "months_owned": 0.082,
+   "anchored": 0.0,
+   "own_sale_12m": 0.02,
+   "own_sale_24m": 0.022,
+   "own_rent": 0.0,
+   "own_other_12m": 0.001,
+   "own_cert_age": 0.033,
+   "pool_sale_3m": 0.009,
+   "pool_sale_6m": 0.018,
+   "pool_sale_12m": 0.027,
+   "pool_sale_24m": 0.021,
+   "pool_sales_6m": 0.004,
+   "pool_sales_12m": 0.006,
+   "pool_homes": 0.02,
+   "pool_share_6m": 0.037,
+   "pool_share_12m": 0.08,
+   "homes_kind": 0.025,
+   "uprn_pc": 0.047,
+   "cert_rent_24m": 0.006,
+   "cert_other_12m": 0.005
+  },
+  "2018": {
+   "model": 0.514,
+   "tenure": 0.015,
+   "months_owned": 0.09,
+   "anchored": 0.0,
+   "own_sale_12m": 0.023,
+   "own_sale_24m": 0.021,
+   "own_rent": 0.0,
+   "own_other_12m": 0.0,
+   "own_cert_age": 0.039,
+   "pool_sale_3m": 0.003,
+   "pool_sale_6m": 0.029,
+   "pool_sale_12m": 0.02,
+   "pool_sale_24m": 0.016,
+   "pool_sales_6m": 0.004,
+   "pool_sales_12m": 0.008,
+   "pool_homes": 0.021,
+   "pool_share_6m": 0.043,
+   "pool_share_12m": 0.078,
+   "homes_kind": 0.026,
+   "uprn_pc": 0.044,
+   "cert_rent_24m": 0.005,
+   "cert_other_12m": 0.002
+  }
+ },
+ "rows": 2591431,
+ "known_uprn_share": 0.1538,
+ "own": [
+  {
+   "g": "no sale certificate on the home in the last 12 months",
+   "home_years": 395776,
+   "sold": 0.04054060882923674,
+   "model_said": 0.04155792766193653
+  },
+  {
+   "g": "a sale certificate on the home in the last 12 months",
+   "home_years": 2902,
+   "sold": 0.2932460372157133,
+   "model_said": 0.04479605724106316
+  }
+ ],
+ "pool": [
+  {
+   "g": "none",
+   "home_years": 1964131,
+   "sold": 0.036866685572398174,
+   "model_said": 0.039744348675259875
+  },
+  {
+   "g": "under 0.1",
+   "home_years": 126968,
+   "sold": 0.05350954571230546,
+   "model_said": 0.040592625532251306
+  },
+  {
+   "g": "0.1 to 0.2",
+   "home_years": 62126,
+   "sold": 0.0679103756881177,
+   "model_said": 0.03759870577034795
+  },
+  {
+   "g": "0.2 to 0.34",
+   "home_years": 29906,
+   "sold": 0.08707282819501104,
+   "model_said": 0.036710951247572725
+  },
+  {
+   "g": "0.34 to 0.5",
+   "home_years": 945,
+   "sold": 0.0962962962962963,
+   "model_said": 0.03644137104046802
+  },
+  {
+   "g": "0.5 to 1",
+   "home_years": 5863,
+   "sold": 0.10762408323383933,
+   "model_said": 0.03626825864413369
+  },
+  {
+   "g": "1 or more",
+   "home_years": 2814,
+   "sold": 0.1300639658848614,
+   "model_said": 0.035264772683294
+  }
+ ],
+ "all": {
+  "deployed": 1.7408,
+  "second step, no certificates": 1.7282,
+  "second step, with certificates": 2.0314,
+  "gain_from_certificates": 0.3032,
+  "range": [
+   0.279,
+   0.3314
+  ]
+ },
+ "t0_9": {
+  "deployed": 1.7405,
+  "second step, no certificates": 1.7443,
+  "second step, with certificates": 1.8901,
+  "gain_from_certificates": 0.1458,
+  "range": [
+   0.1205,
+   0.1763
+  ]
+ },
+ "t10_19": {
+  "deployed": 1.5139,
+  "second step, no certificates": 1.504,
+  "second step, with certificates": 2.1033,
+  "gain_from_certificates": 0.5993,
+  "range": [
+   0.5552,
+   0.6381
+  ]
+ },
+ "t20p": {
+  "deployed": 1.291,
+  "second step, no certificates": 1.2234,
+  "second step, with certificates": 2.2842,
+  "gain_from_certificates": 1.0608,
+  "range": [
+   0.9503,
+   1.1841
+  ]
+ }
+}

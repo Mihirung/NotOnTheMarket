@@ -56,7 +56,12 @@ class Chunks:
         self.fam = {k: v for k, v in self.meta["families"].items()}
         for f in self.place:
             self.fam[f] = SG.FAMILIES[f]["columns"]
-        self.names = self.tv + [c for f in self.place for c in self.fam[f]]
+        # row families: worked out from dated events and stored beside each chunk (panel2.write_row_family)
+        self.rowfam = [f for f in SG.ROW_FAMILIES
+                       if all((self.dir / f"R_{f}_{c['id']}.npy").exists() for c in self.meta["chunks"])]
+        for f in self.rowfam:
+            self.fam[f] = SG.ROW_FAMILIES[f]["columns"]
+        self.names = self.tv + [c for f in self.place + self.rowfam for c in self.fam[f]]
         self.n_chunks = len(self.meta["chunks"])
         self.presampled = {c["id"]: c.get("presampled", False) for c in self.meta["chunks"]}
         self.postcodes = pd.read_parquet(self.dir / "postcodes.parquet").postcode.to_numpy()
@@ -106,6 +111,7 @@ class View:
     def __init__(self, ch, c):
         self.ch, self.c = ch, c
         self.T = np.load(ch.dir / f"T_{c}.npy", mmap_mode="r")
+        self.R = {f: np.load(ch.dir / f"R_{f}_{c}.npy", mmap_mode="r") for f in ch.rowfam}
         self.pc = ch.col("pc", c)
 
     def take(self, r, cols):
@@ -125,6 +131,12 @@ class View:
                         import signals as SG
                         v = SG.rowwise(f, v, np.asarray(self.T[r, self.ch.tv.index("tenure")], np.float32))
                     out[:, sel] = v[:, cols[sel] - off]
+                off += k
+            for f in self.ch.rowfam:                  # stored row for row
+                k = len(self.ch.fam[f])
+                sel = (cols >= off) & (cols < off + k)
+                if sel.any():
+                    out[:, sel] = np.asarray(self.R[f][r])[:, cols[sel] - off]
                 off += k
         return out
 

@@ -220,8 +220,34 @@ def lookup(family, postcodes):
     return m
 
 
+# ---------------------------------------------------------------- families worked out row by row from dated events
+# A row family has a value for each home in each year, worked out from dated events (energy certificates).
+# It cannot be looked up from a postcode table: panel2.write_row_family stores it beside the panel's chunks
+# (R_<family>_<chunk>.npy) and row_features() works it out for any homes and years when scoring.
+def _epc_cols():
+    from epc_signals import COLS
+    return [f"epc_{c}" for c in COLS]
+
+
+ROW_FAMILIES = {
+    "EPC": {"columns": _epc_cols(),
+            "label": "Energy certificates lodged before a sale (by UPRN; no address field is used)",
+            "source": "MHCLG energy performance of buildings data (OGL, address fields excluded); ONS UPRN Directory"},
+}
+
+
+def row_features(family, panel, rows, years):
+    """A row family's columns for spells `rows` scored at `years`; the events are loaded once per panel."""
+    if family == "EPC":
+        if not hasattr(panel, "_epc"):
+            import epc_signals as ES
+            panel._epc = ES.Epc(panel, panel.month)
+        return panel._epc.features(rows, years)
+    raise KeyError(family)
+
+
 def columns(families):
     out = []
     for f in families:
-        out += TIME_VARYING[f] if f in TIME_VARYING else FAMILIES[f]["columns"]
+        out += TIME_VARYING[f] if f in TIME_VARYING else ROW_FAMILIES[f]["columns"] if f in ROW_FAMILIES else FAMILIES[f]["columns"]
     return out

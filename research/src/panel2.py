@@ -101,6 +101,7 @@ class Panel:
         self.lease = tx["leasehold"].to_numpy()
         self.oc = tx["outcode"].cat.codes.to_numpy().astype("int32")
         self.pc = tx["postcode"].cat.codes.to_numpy().astype("int32")
+        self.month = tx["month"].to_numpy().astype("int8")           # for dated events (signals.row_features)
         self.oc_names = np.asarray(tx["outcode"].cat.categories)
         self.pc_names = np.asarray(tx["postcode"].cat.categories)
         n_oc, n_pc = len(self.oc_names), len(self.pc_names)
@@ -246,6 +247,9 @@ def full_features(panel, s, t, families, lookups=None):
     for f in families:
         if f in SG.TIME_VARYING:
             continue
+        if f in SG.ROW_FAMILIES:                      # worked out from dated events for these homes and years
+            parts.append(SG.row_features(f, panel, np.asarray(s), np.asarray(t)))
+            continue
         if lookups is None or f not in lookups:
             lookups = dict(lookups or {}); lookups[f] = SG.lookup(f, panel.pc_names)
         v = lookups[f][panel.pc[s]]
@@ -253,6 +257,34 @@ def full_features(panel, s, t, families, lookups=None):
             v = SG.rowwise(f, v, panel.features(s, t, ["tenure"])[:, 0])
         parts.append(v)
     return np.hstack(parts)
+
+
+def chunk_rows(panel, c):
+    """The rows of chunk c, in the order they are stored: (spell, year, label, weight, rows before sampling)."""
+    lo, hi = c * CHUNK_BUCKETS, (c + 1) * CHUNK_BUCKETS
+    spells = np.nonzero((panel.bucket >= lo) & (panel.bucket < hi))[0]
+    rows, years, label = panel.expand(spells)
+    n_all = len(rows)
+    w = np.ones(n_all, np.float32)
+    if c >= PRESAMPLE_FROM:                           # the same rule model_lab.dataset() applies, on the full row index
+        idx = np.arange(n_all, dtype=np.int64)
+        keep = (label == 1) | ((((idx + 1) * 2654435761) >> 9) % NEG_KEEP == 0)
+        rows, years, label = rows[keep], years[keep], label[keep]
+        w = np.where(label == 1, 1.0, float(NEG_KEEP)).astype(np.float32)
+    return rows, years, label, w, n_all
+
+
+def write_row_family(panel, out_dir, family):
+    """Store a row family (signals.ROW_FAMILIES) beside every chunk already on disk, row for row."""
+    import signals as SG
+    out = Path(out_dir); meta = json.load(open(out / "meta.json"))
+    for ch in meta["chunks"]:
+        c = ch["id"]
+        rows, years, label, _, _ = chunk_rows(panel, c)
+        assert np.array_equal(label, np.load(out / f"y_{c}.npy")), f"chunk {c}: rows are not in the stored order"
+        X = SG.row_features(family, panel, rows, years)
+        np.save(out / f"R_{family}_{c}.npy", np.clip(X, -6e4, 6e4).astype("float16"))
+        print(f"chunk {c}: {family} for {len(rows):,} rows; {np.isfinite(X).any(axis=1).mean():.0%} with a value", flush=True)
 
 
 def write_chunks(panel, out_dir, n_chunks, start=0):
@@ -265,15 +297,7 @@ def write_chunks(panel, out_dir, n_chunks, start=0):
         meta["chunks"] = [c for c in json.load(open(out / "meta.json"))["chunks"] if c["id"] < start]
     for c in range(start, n_chunks):
         lo, hi = c * CHUNK_BUCKETS, (c + 1) * CHUNK_BUCKETS
-        spells = np.nonzero((panel.bucket >= lo) & (panel.bucket < hi))[0]
-        rows, years, label = panel.expand(spells)
-        n_all = len(rows)
-        w = np.ones(n_all, np.float32)
-        if c >= PRESAMPLE_FROM:                       # the same rule model_lab.dataset() applies, on the full row index
-            idx = np.arange(n_all, dtype=np.int64)
-            keep = (label == 1) | ((((idx + 1) * 2654435761) >> 9) % NEG_KEEP == 0)
-            rows, years, label = rows[keep], years[keep], label[keep]
-            w = np.where(label == 1, 1.0, float(NEG_KEEP)).astype(np.float32)
+        rows, years, label, w, n_all = chunk_rows(panel, c)
         n = len(rows)
         X = np.lib.format.open_memmap(out / f"T_{c}.npy", mode="w+", dtype="float16", shape=(n, len(ALL)))
         for a in range(0, n, 2_000_000):
@@ -298,4 +322,7 @@ def write_chunks(panel, out_dir, n_chunks, start=0):
 if __name__ == "__main__":
     tx, out_dir, n_chunks = sys.argv[1:4]
     panel = Panel(tx)
-    write_chunks(panel, out_dir, int(n_chunks), int(sys.argv[4]) if len(sys.argv) > 4 else 0)
+    if n_chunks == "rowfam":                          # python panel2.py <transactions> <out_dir> rowfam <FAMILY>
+        write_row_family(panel, out_dir, sys.argv[4])
+    else:
+        write_chunks(panel, out_dir, int(n_chunks), int(sys.argv[4]) if len(sys.argv) > 4 else 0)
