@@ -1,0 +1,239 @@
+{
+ "when": "2026-11-24",
+ "deployed": "+HOUSE+AREA+PD",
+ "families": [
+  "BASE",
+  "HIST",
+  "GEO",
+  "VIEW",
+  "HOUSE",
+  "AREA",
+  "PD"
+ ],
+ "pct": 100,
+ "rounds": {
+  "aimed": 206,
+  "aimed_epc": 252
+ },
+ "gain_share_epc": 0.093,
+ "seeds_for_noise": 3,
+ "bands": {
+  "all": {
+   "deployed": {
+    "later": 1.662,
+    "calendar_year": 1.7408,
+    "later_share_of_list": 0.0646,
+    "under_way_share_of_list": 0.0327
+   },
+   "aimed": {
+    "later": 1.6158,
+    "calendar_year": 1.6683,
+    "later_share_of_list": 0.0628,
+    "under_way_share_of_list": 0.0309
+   },
+   "aimed_epc": {
+    "later": 1.6956,
+    "calendar_year": 1.9268,
+    "later_share_of_list": 0.0659,
+    "under_way_share_of_list": 0.0386
+   },
+   "re_aim": {
+    "gain": -0.0462,
+    "range": [
+     -0.0618,
+     -0.0288
+    ],
+    "range_with_fit_noise": [
+     -0.07,
+     -0.0206
+    ]
+   },
+   "certificates": {
+    "gain": 0.0798,
+    "range": [
+     0.0618,
+     0.1014
+    ],
+    "range_with_fit_noise": [
+     0.0546,
+     0.1085
+    ]
+   },
+   "both": {
+    "gain": 0.0336,
+    "range": [
+     0.0139,
+     0.0541
+    ],
+    "range_with_fit_noise": [
+     0.0068,
+     0.0612
+    ]
+   },
+   "seed_sd": 0.0066
+  },
+  "t0_9": {
+   "deployed": {
+    "later": 1.6202,
+    "calendar_year": 1.7405,
+    "later_share_of_list": 0.0704,
+    "under_way_share_of_list": 0.0355
+   },
+   "aimed": {
+    "later": 1.6015,
+    "calendar_year": 1.6906,
+    "later_share_of_list": 0.0696,
+    "under_way_share_of_list": 0.0338
+   },
+   "aimed_epc": {
+    "later": 1.6404,
+    "calendar_year": 1.8677,
+    "later_share_of_list": 0.0713,
+    "under_way_share_of_list": 0.0399
+   },
+   "re_aim": {
+    "gain": -0.0187,
+    "range": [
+     -0.0456,
+     0.0085
+    ],
+    "range_with_fit_noise": [
+     -0.0526,
+     0.0155
+    ]
+   },
+   "certificates": {
+    "gain": 0.0389,
+    "range": [
+     0.0153,
+     0.0664
+    ],
+    "range_with_fit_noise": [
+     0.008,
+     0.0737
+    ]
+   },
+   "both": {
+    "gain": 0.0202,
+    "range": [
+     -0.007,
+     0.0491
+    ],
+    "range_with_fit_noise": [
+     -0.0138,
+     0.0559
+    ]
+   },
+   "seed_sd": 0.0074
+  },
+  "t10_19": {
+   "deployed": {
+    "later": 1.4861,
+    "calendar_year": 1.5139,
+    "later_share_of_list": 0.0543,
+    "under_way_share_of_list": 0.0279
+   },
+   "aimed": {
+    "later": 1.4268,
+    "calendar_year": 1.4486,
+    "later_share_of_list": 0.0521,
+    "under_way_share_of_list": 0.0264
+   },
+   "aimed_epc": {
+    "later": 1.5771,
+    "calendar_year": 1.9039,
+    "later_share_of_list": 0.0576,
+    "under_way_share_of_list": 0.0396
+   },
+   "re_aim": {
+    "gain": -0.0593,
+    "range": [
+     -0.0872,
+     -0.033
+    ],
+    "range_with_fit_noise": [
+     -0.1039,
+     -0.0163
+    ]
+   },
+   "certificates": {
+    "gain": 0.1503,
+    "range": [
+     0.1134,
+     0.18
+    ],
+    "range_with_fit_noise": [
+     0.0988,
+     0.1946
+    ]
+   },
+   "both": {
+    "gain": 0.091,
+    "range": [
+     0.0599,
+     0.124
+    ],
+    "range_with_fit_noise": [
+     0.0449,
+     0.139
+    ]
+   },
+   "seed_sd": 0.0124
+  },
+  "t20p": {
+   "deployed": {
+    "later": 1.3144,
+    "calendar_year": 1.291,
+    "later_share_of_list": 0.0354,
+    "under_way_share_of_list": 0.0154
+   },
+   "aimed": {
+    "later": 1.2679,
+    "calendar_year": 1.2169,
+    "later_share_of_list": 0.0341,
+    "under_way_share_of_list": 0.0155
+   },
+   "aimed_epc": {
+    "later": 1.6135,
+    "calendar_year": 2.1538,
+    "later_share_of_list": 0.0434,
+    "under_way_share_of_list": 0.0327
+   },
+   "re_aim": {
+    "gain": -0.0465,
+    "range": [
+     -0.1187,
+     0.0371
+    ],
+    "range_with_fit_noise": [
+     -0.1195,
+     0.038
+    ]
+   },
+   "certificates": {
+    "gain": 0.3456,
+    "range": [
+     0.2446,
+     0.4711
+    ],
+    "range_with_fit_noise": [
+     0.244,
+     0.4717
+    ]
+   },
+   "both": {
+    "gain": 0.2991,
+    "range": [
+     0.1982,
+     0.4094
+    ],
+    "range_with_fit_noise": [
+     0.1976,
+     0.41
+    ]
+   },
+   "seed_sd": 0.0042
+  }
+ },
+ "verdict": "deploy the model aimed at later sales, with certificates: it finds more homes not yet on the market and the range is clear of zero and of the fit's own noise"
+}
