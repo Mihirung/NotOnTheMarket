@@ -8,7 +8,10 @@ homes already on the market can be told from the homes about to come to it. It l
 from the scoring day (it is a label, never a signal).
 
   Exact. The home's UPRN is known by the time of the sale: the latest sale certificate on it,
-  lodged while the seller owned it, dates the listing.
+  lodged while the seller owned it, dates the listing. Nine sales in ten complete within twelve
+  months of their certificate, so a certificate more than twelve months old on the scoring day
+  is an earlier attempt that was withdrawn, not a home on the market that day: such a home
+  counts as not yet listed.
 
   By postcode. Otherwise: sale certificates for that kind of home in the postcode in the 18
   months up to the sale, less one for each other sale there in that time (earliest first).
@@ -68,7 +71,7 @@ def main():
     amb = sold & ~ex & (avail > 0)
     frac[amb] = np.minimum(post[amb], avail[amb]) / avail[amb]
     known = sold & ex & (list_ym > 0)
-    frac[known] = (list_ym[known] >= t0[known]).astype(np.float32)
+    frac[known] = ((list_ym[known] >= t0[known]) | (list_ym[known] < t0[known] - 12)).astype(np.float32)
     frac[~sold] = 1
     np.save(PANEL / "test_listed_after.npy", frac); np.save(PANEL / "test_list_ym.npy", list_ym.astype(np.int32))
 
@@ -80,7 +83,8 @@ def main():
         R["bands"][nm] = {
             "later_sellers": int(k.sum()),
             "exact_listing_date": round(float((k & known).sum() / k.sum()), 4),
-            "exact_and_already_listed": round(float((k & known & (list_ym < t0)).sum() / max((k & known).sum(), 1)), 4),
+            "exact_and_already_listed": round(float((k & known & (list_ym < t0) & (list_ym >= t0 - 12)).sum() / max((k & known).sum(), 1)), 4),
+            "exact_and_an_earlier_attempt": round(float((k & known & (list_ym < t0 - 12)).sum() / max((k & known).sum(), 1)), 4),
             "home_known_certificate_reused": round(float((k & reused).sum() / k.sum()), 4),
             "by_postcode": round(float((k & amb).sum() / k.sum()), 4),
             "no_fresh_certificate_in_postcode": round(float((k & ~ex & (avail <= 0)).sum() / k.sum()), 4),

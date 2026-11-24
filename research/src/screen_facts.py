@@ -89,8 +89,8 @@ def main():
     for a, c in ((2017, 2018), (2018, 2017)):
         tr, te = year == a, year == c
         for k, cols in sets.items():
-            m = lgb.train(par, lgb.Dataset(Z[tr][:, cols], late[tr], feature_name=[names[i] for i in cols]), 250)
-            pred[k][te] = m.predict(Z[te][:, cols])
+            m = lgb.train(par, lgb.Dataset(Z[tr][:, cols], late[tr], feature_name=[names[i] for i in cols], init_score=Z[tr, 0]), 250)
+            pred[k][te] = Z[te, 0] + m.predict(Z[te][:, cols], raw_score=True)      # the first step's figure plus what the second adds
             if k == "with all":
                 g = m.feature_importance("gain"); gains[a] = {names[i]: round(float(v / g.sum()), 3) for i, v in zip(cols, g)}
     R = {"first_step": first, "rows": int(len(late)), "later_sellers": int(late.sum()), "what_the_columns_say": tabs,

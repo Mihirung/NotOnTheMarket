@@ -48,11 +48,14 @@ def logit(p):
 
 
 def cross_fit(Z, y, year, cols):
-    """Each test year scored by a second step fitted on the other."""
+    """Each test year scored by a second step fitted on the other. The second step starts from the first
+    step's own figure (column 0, as log-odds) and learns only what to add to it, so where it finds
+    nothing it leaves the deployed ranking as it is. Returns the score as log-odds."""
     out = np.empty(len(y))
     for a, b in ((2017, 2018), (2018, 2017)):
         tr, te = year == a, year == b
-        out[te] = lgb.train(PAR, lgb.Dataset(Z[tr][:, cols], y[tr]), ROUNDS).predict(Z[te][:, cols])
+        bst = lgb.train(PAR, lgb.Dataset(Z[tr][:, cols], y[tr], init_score=Z[tr, 0]), ROUNDS)
+        out[te] = Z[te, 0] + bst.predict(Z[te][:, cols], raw_score=True)
     return out
 
 
@@ -138,10 +141,11 @@ def main():
                     "do not add the second step: it does not clearly find more homes that are not yet on the market")
     # the second step for the product: fitted on both test years, first step = the deployed fit
     Z = np.column_stack([logit(first[7]), ten, X])
-    bst = lgb.train(PAR, lgb.Dataset(Z, target, feature_name=names), ROUNDS)
+    bst = lgb.train(PAR, lgb.Dataset(Z, target, feature_name=names, init_score=Z[:, 0]), ROUNDS)   # score = first step + this
     bst.save_model(str(LAB / f"model_second{sfx}.txt"))
     g = bst.feature_importance("gain"); R["gain_share"] = {n: round(float(v / g.sum()), 3) for n, v in sorted(zip(names, g), key=lambda kv: -kv[1])}
-    json.dump({"first_step": SL.CUR, "label": "not yet listed: completes July to June, certificate not lodged by the scoring day",
+    json.dump({"first_step": SL.CUR, "label": "not yet listed: completes July to June, certificate not lodged in the year before the scoring day",
+               "score": "log-odds = the first step's log-odds + this model's raw output",
                "columns": names, "rounds": ROUNDS, "rows": int(len(later)),
                "fitted_on": "test homes of 2017 and 2018 (a tenth of homes), first step fitted to 2015", "passes": R["passes"],
                "rate": round(float(target.mean()), 5)}, open(LAB / f"lab_second{sfx}.json", "w"), indent=1)

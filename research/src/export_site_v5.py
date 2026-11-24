@@ -145,7 +145,8 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
         if second is not None:                        # the columns as the second step was fitted on them (stored at half precision)
             lp = np.clip(p, 1e-6, 1 - 1e-6); lp = np.log(lp / (1 - lp))
             R = [np.clip(SG.row_features(f, panel, s, t), -6e4, 6e4).astype("float16").astype("float32") for f in row_fams]
-            p = second.predict(np.column_stack([lp, (V4.SCORE_YEAR - panel.year[s]).astype("float64")] + R), num_threads=4)
+            raw = second.predict(np.column_stack([lp, (V4.SCORE_YEAR - panel.year[s]).astype("float64")] + R), num_threads=4, raw_score=True)
+            p = 1 / (1 + np.exp(-(lp + raw)))             # the second step adds to the first step's log-odds
         d, byi = panel.oc[s], panel.year[s] - Y0
         est = panel.price[s] * panel.d_med[d, NY - 1] / np.maximum(panel.d_med[d, byi], 1)
         parts.append(pd.DataFrame({
