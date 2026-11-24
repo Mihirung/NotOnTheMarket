@@ -319,10 +319,29 @@ def write_chunks(panel, out_dir, n_chunks, start=0):
     json.dump(meta, open(out / "meta.json", "w"))
 
 
+def write_late_label(panel, out_dir):
+    """Store, beside every chunk, whether each home-year's sale completes between July of that year and June of
+    the next ("late"). On 1 January such a home was, with few exceptions, not yet on the market; a home whose
+    sale completes in January to June mostly was. Needs sales up to June of the year after the row."""
+    out = Path(out_dir); meta = json.load(open(out / "meta.json"))
+    n = len(panel.month)
+    for ch in meta["chunks"]:
+        c = ch["id"]
+        rows, years, label, _, _ = chunk_rows(panel, c)
+        assert np.array_equal(label, np.load(out / f"y_{c}.npy")), f"chunk {c}: rows are not in the stored order"
+        end = panel.end_year[rows].astype(np.int64) * 12 + panel.month[np.minimum(rows + 1, n - 1)] - 1   # rows: by home, then date
+        t0 = years.astype(np.int64) * 12
+        late = (panel.sold[rows] & (end >= t0 + 6) & (end < t0 + 18)).astype("uint8")
+        np.save(out / f"late_{c}.npy", late)
+        print(f"chunk {c}: {int(late.sum()):,} later sales against {int(label.sum()):,} sales in the year", flush=True)
+
+
 if __name__ == "__main__":
     tx, out_dir, n_chunks = sys.argv[1:4]
     panel = Panel(tx)
     if n_chunks == "rowfam":                          # python panel2.py <transactions> <out_dir> rowfam <FAMILY>
         write_row_family(panel, out_dir, sys.argv[4])
+    elif n_chunks == "late":                          # python panel2.py <transactions> <out_dir> late
+        write_late_label(panel, out_dir)
     else:
         write_chunks(panel, out_dir, int(n_chunks), int(sys.argv[4]) if len(sys.argv) > 4 else 0)

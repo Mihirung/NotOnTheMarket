@@ -184,6 +184,8 @@ def dataset(ch, pct, families, years, neg_keep=None):
                 keep = (y == 1) | ((((rows + 1) * 2654435761) >> 9) % neg_keep == 0)
                 rows, y = rows[keep], y[keep]
             w = np.where(y == 1, 1.0, float(neg_keep)).astype("float32")
+        if LABEL != "y":                              # another target on the same rows, sample and weights
+            y = ch.col(LABEL, c)[rows]
         seqs.append(Seq(ch.X(c), rows, cols)); ys.append(y); ws.append(w)
     y = np.concatenate(ys); w = np.concatenate(ws).astype("float32")
     return lgb.Dataset(seqs, label=y, weight=w, feature_name=names, free_raw_data=True,
@@ -193,6 +195,10 @@ def dataset(ch, pct, families, years, neg_keep=None):
 # The fit's own randomness (row and column sampling). QM_SEED refits with another seed to measure how much
 # two fits of the same model differ; cached results for any other seed are kept apart (~s<seed>).
 SEED = int(__import__("os").environ.get("QM_SEED", 7))
+# What the model is asked. "y": the home sells in the calendar year. "late" (QM_LABEL=late): the sale completes
+# between July of the year and June of the next, so the home was not yet on the market on the scoring day
+# (panel2.write_late_label). Fits for another target are cached apart (~<label>).
+LABEL = __import__("os").environ.get("QM_LABEL", "y")
 
 
 def params(n_rows, threads):
@@ -216,7 +222,7 @@ def valid_set(ch, cols, chunks=(0, 1), batch=262_144):
         V = ch.X(c)
         for i in range(0, len(r), batch):
             b = r[i:i + batch]; X[at:at + len(b)] = V.take(b, cols); at += len(b)
-    return X, np.concatenate([ch.col("y", c)[r] for c, r in zip(chunks, rows)])
+    return X, np.concatenate([ch.col(LABEL, c)[r] for c, r in zip(chunks, rows)])
 
 
 def test_set(ch, families, years, chunks=(0, 1)):
@@ -333,7 +339,7 @@ def predict_cached(ch, out, threads, name, pct, fams):
     """Test-set predictions for one (feature set, sample size), fitted once and
     kept on disk so that later experiments can compare against it."""
     cache = out / "preds"; cache.mkdir(exist_ok=True)
-    key = f"{name.replace(' ', '_')}@{pct}" + (f"~s{SEED}" if SEED != 7 else "")
+    key = f"{name.replace(' ', '_')}@{pct}" + (f"~s{SEED}" if SEED != 7 else "") + (f"~{LABEL}" if LABEL != "y" else "")
     fp, fj = cache / f"{key}.npy", cache / f"{key}.json"
     if fp.exists() and fj.exists():
         return np.load(fp), json.load(open(fj))
