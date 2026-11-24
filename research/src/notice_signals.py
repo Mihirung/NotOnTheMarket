@@ -50,7 +50,8 @@ UNSEEN_COLS = ["months", "n", "flat", "own_outright", "own_mortgage", "social_re
 
 
 def linked(kind, tx_keys=None, refresh=False, every=False):
-    """(home key, month published) for every notice whose address is a home with a sale record. With `every`,
+    """(home key, month published) for every notice whose address is a home with a sale record, care and nursing
+    homes apart. With `every`,
     the notices that match no such home are returned too (has = False, with their postcode; key is then the key
     of the likeliest reading of the address, which tells two notices for one home apart from two homes).
     Kept in <dir>/linked.parquet and rebuilt when the listing has grown."""
@@ -86,7 +87,7 @@ def linked(kind, tx_keys=None, refresh=False, every=False):
                    "by_year": {int(y): [int(a), int(b)] for y, a, b in zip(by.index, by["size"], by["sum"])}},
                   open(info, "w"), indent=1)
     t = pd.read_parquet(out)
-    return t if every else t[t.has][["key", "ym"]].reset_index(drop=True)
+    return t if every else t[t.has & ~t.care][["key", "ym"]].reset_index(drop=True)      # a care home is not the estate's to sell
 
 
 class Notices:
