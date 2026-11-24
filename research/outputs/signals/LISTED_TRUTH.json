@@ -4,11 +4,12 @@
   "all": {
    "later_sellers": 100771,
    "exact_listing_date": 0.2801,
-   "exact_and_already_listed": 0.1136,
+   "exact_and_already_listed": 0.0994,
+   "exact_and_an_earlier_attempt": 0.0142,
    "home_known_certificate_reused": 0.12,
    "by_postcode": 0.1172,
    "no_fresh_certificate_in_postcode": 0.4828,
-   "not_yet_listed_share": 0.9532,
+   "not_yet_listed_share": 0.9571,
    "months_certificate_to_completion": [
     1,
     2,
@@ -20,11 +21,12 @@
   "t0_9": {
    "later_sellers": 51865,
    "exact_listing_date": 0.2295,
-   "exact_and_already_listed": 0.1347,
+   "exact_and_already_listed": 0.1027,
+   "exact_and_an_earlier_attempt": 0.0319,
    "home_known_certificate_reused": 0.2315,
    "by_postcode": 0.0655,
    "no_fresh_certificate_in_postcode": 0.4735,
-   "not_yet_listed_share": 0.9609,
+   "not_yet_listed_share": 0.9682,
    "months_certificate_to_completion": [
     0,
     2,
@@ -36,11 +38,12 @@
   "t10_19": {
    "later_sellers": 42871,
    "exact_listing_date": 0.3267,
-   "exact_and_already_listed": 0.0996,
+   "exact_and_already_listed": 0.0983,
+   "exact_and_an_earlier_attempt": 0.0014,
    "home_known_certificate_reused": 0.0019,
    "by_postcode": 0.1681,
    "no_fresh_certificate_in_postcode": 0.5033,
-   "not_yet_listed_share": 0.9459,
+   "not_yet_listed_share": 0.9463,
    "months_certificate_to_completion": [
     1,
     2,
@@ -52,11 +55,12 @@
   "t20p": {
    "later_sellers": 6035,
    "exact_listing_date": 0.3838,
-   "exact_and_already_listed": 0.0894,
+   "exact_and_already_listed": 0.0889,
+   "exact_and_an_earlier_attempt": 0.0004,
    "home_known_certificate_reused": 0.0008,
    "by_postcode": 0.1992,
    "no_fresh_certificate_in_postcode": 0.4162,
-   "not_yet_listed_share": 0.9384,
+   "not_yet_listed_share": 0.9386,
    "months_certificate_to_completion": [
     1,
     2,
