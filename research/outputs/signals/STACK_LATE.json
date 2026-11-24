@@ -33,542 +33,542 @@
  ],
  "rows": 2591431,
  "later_sellers": 100771,
- "of_them_not_yet_listed": 0.9532,
+ "of_them_not_yet_listed": 0.9571,
  "bands": {
   "all": {
    "not_listed": {
-    "deployed": 1.6902,
-    "aimed": 1.686,
-    "second": 1.6925,
+    "deployed": 1.6912,
+    "aimed": 1.6833,
+    "second": 1.6899,
     "aim": {
-     "gain": -0.0042,
+     "gain": -0.0079,
      "range": [
-      -0.0205,
-      0.0104
+      -0.0229,
+      0.0066
      ],
      "by_seed": [
-      -0.0042,
-      0.0002,
-      -0.0053
+      -0.0079,
+      0.004,
+      -0.0023
      ],
-     "seed_sd": 0.0029,
+     "seed_sd": 0.006,
      "range_with_fit_noise": [
-      -0.0215,
-      0.0114
+      -0.027,
+      0.0106
      ]
     },
     "certificates": {
-     "gain": 0.0065,
+     "gain": 0.0066,
      "range": [
-      -0.011,
-      0.0221
+      -0.0081,
+      0.0234
      ],
      "by_seed": [
-      0.0065,
-      -0.0011,
-      0.0168
+      0.0066,
+      -0.0095,
+      0.0129
      ],
-     "seed_sd": 0.0089,
+     "seed_sd": 0.0116,
      "range_with_fit_noise": [
-      -0.0186,
-      0.0296
+      -0.02,
+      0.0352
      ]
     },
     "both": {
-     "gain": 0.0023,
+     "gain": -0.0013,
      "range": [
-      -0.0138,
-      0.0191
+      -0.0171,
+      0.0148
      ],
      "by_seed": [
-      0.0023,
-      -0.0009,
-      0.0115
+      -0.0013,
+      -0.0055,
+      0.0107
      ],
-     "seed_sd": 0.0064,
+     "seed_sd": 0.0084,
      "range_with_fit_noise": [
-      -0.0181,
-      0.0233
+      -0.0241,
+      0.0218
      ]
     }
    },
    "later": {
     "deployed": 1.662,
-    "aimed": 1.658,
-    "second": 1.6424,
+    "aimed": 1.6533,
+    "second": 1.641,
     "aim": {
-     "gain": -0.0041,
+     "gain": -0.0087,
      "range": [
-      -0.0206,
-      0.0103
+      -0.0231,
+      0.0053
      ],
      "by_seed": [
-      -0.0041,
-      -0.0013,
-      -0.0046
+      -0.0087,
+      0.0029,
+      -0.0028
      ],
-     "seed_sd": 0.0018,
+     "seed_sd": 0.0058,
      "range_with_fit_noise": [
-      -0.021,
-      0.0107
+      -0.0271,
+      0.0093
      ]
     },
     "certificates": {
-     "gain": -0.0156,
+     "gain": -0.0123,
      "range": [
-      -0.032,
-      0.0012
+      -0.0261,
+      0.0035
      ],
      "by_seed": [
-      -0.0156,
-      -0.0224,
-      -0.0085
+      -0.0123,
+      -0.0277,
+      -0.0068
      ],
-     "seed_sd": 0.0069,
+     "seed_sd": 0.0108,
      "range_with_fit_noise": [
-      -0.0369,
-      0.0061
+      -0.0371,
+      0.0146
      ]
     },
     "both": {
-     "gain": -0.0196,
+     "gain": -0.021,
      "range": [
-      -0.0364,
-      -0.004
+      -0.0371,
+      -0.0044
      ],
      "by_seed": [
-      -0.0196,
-      -0.0237,
-      -0.0131
+      -0.021,
+      -0.0248,
+      -0.0096
      ],
-     "seed_sd": 0.0054,
+     "seed_sd": 0.0079,
      "range_with_fit_noise": [
-      -0.0395,
-      -0.0009
+      -0.0433,
+      0.0017
      ]
     }
    },
    "far": {
     "deployed": 1.6454,
-    "aimed": 1.6463,
-    "second": 1.6317,
+    "aimed": 1.6422,
+    "second": 1.6326,
     "aim": {
-     "gain": 0.0008,
+     "gain": -0.0032,
      "range": [
-      -0.0173,
-      0.0164
+      -0.0207,
+      0.0122
      ],
      "by_seed": [
-      0.0008,
-      -0.0082,
-      0.0038
+      -0.0032,
+      -0.0042,
+      0.0064
      ],
-     "seed_sd": 0.0063,
+     "seed_sd": 0.0059,
      "range_with_fit_noise": [
-      -0.0213,
-      0.0204
+      -0.0243,
+      0.0159
      ]
     },
     "certificates": {
-     "gain": -0.0145,
+     "gain": -0.0096,
      "range": [
-      -0.0314,
-      0.0062
+      -0.0271,
+      0.0088
      ],
      "by_seed": [
-      -0.0145,
-      -0.0181,
-      -0.0144
+      -0.0096,
+      -0.0225,
+      -0.0128
      ],
-     "seed_sd": 0.0021,
+     "seed_sd": 0.0067,
      "range_with_fit_noise": [
-      -0.0319,
-      0.0067
+      -0.0313,
+      0.0131
      ]
     },
     "both": {
-     "gain": -0.0137,
+     "gain": -0.0128,
      "range": [
-      -0.0318,
-      0.0064
+      -0.0312,
+      0.0056
      ],
      "by_seed": [
-      -0.0137,
-      -0.0264,
-      -0.0106
+      -0.0128,
+      -0.0267,
+      -0.0064
      ],
-     "seed_sd": 0.0084,
+     "seed_sd": 0.0103,
      "range_with_fit_noise": [
-      -0.0378,
-      0.0125
+      -0.0401,
+      0.0146
      ]
     }
    },
    "list": {
     "deployed": {
-     "not_yet_listed": 0.0626,
-     "sells_later_already_listed": 0.002,
+     "not_yet_listed": 0.0629,
+     "sells_later_already_listed": 0.0017,
      "under_way": 0.0327,
      "calendar_year": 1.7408
     },
     "second": {
-     "not_yet_listed": 0.0627,
-     "sells_later_already_listed": 0.0011,
-     "under_way": 0.0311,
-     "calendar_year": 1.6826
+     "not_yet_listed": 0.0629,
+     "sells_later_already_listed": 0.0009,
+     "under_way": 0.0316,
+     "calendar_year": 1.689
     }
    }
   },
   "t0_9": {
    "not_listed": {
-    "deployed": 1.6383,
-    "aimed": 1.6281,
-    "second": 1.6531,
+    "deployed": 1.6358,
+    "aimed": 1.6301,
+    "second": 1.6382,
     "aim": {
-     "gain": -0.0102,
+     "gain": -0.0057,
      "range": [
-      -0.0327,
-      0.0116
+      -0.0266,
+      0.0162
      ],
      "by_seed": [
-      -0.0102,
-      -0.0075,
-      -0.0119
+      -0.0057,
+      -0.0154,
+      -0.0128
      ],
-     "seed_sd": 0.0022,
+     "seed_sd": 0.005,
      "range_with_fit_noise": [
-      -0.0331,
-      0.012
+      -0.0288,
+      0.0184
      ]
     },
     "certificates": {
-     "gain": 0.025,
+     "gain": 0.0081,
      "range": [
-      0.0006,
-      0.0483
+      -0.0109,
+      0.0313
      ],
      "by_seed": [
-      0.025,
-      0.0074,
-      0.0042
+      0.0081,
+      0.0217,
+      0.0156
      ],
-     "seed_sd": 0.0112,
+     "seed_sd": 0.0068,
      "range_with_fit_noise": [
-      -0.0079,
-      0.0568
+      -0.0147,
+      0.0351
      ]
     },
     "both": {
-     "gain": 0.0148,
+     "gain": 0.0024,
      "range": [
-      -0.0113,
-      0.0397
+      -0.0221,
+      0.025
      ],
      "by_seed": [
-      0.0148,
-      -0.0,
-      -0.0077
+      0.0024,
+      0.0063,
+      0.0028
      ],
-     "seed_sd": 0.0114,
+     "seed_sd": 0.0021,
      "range_with_fit_noise": [
-      -0.0198,
-      0.0482
+      -0.0225,
+      0.0254
      ]
     }
    },
    "later": {
     "deployed": 1.6202,
-    "aimed": 1.6084,
-    "second": 1.6092,
+    "aimed": 1.6157,
+    "second": 1.604,
     "aim": {
-     "gain": -0.0118,
+     "gain": -0.0044,
      "range": [
-      -0.0344,
-      0.0099
+      -0.0248,
+      0.017
      ],
      "by_seed": [
-      -0.0118,
-      -0.0069,
-      -0.0135
+      -0.0044,
+      -0.0133,
+      -0.0147
      ],
-     "seed_sd": 0.0034,
+     "seed_sd": 0.0056,
      "range_with_fit_noise": [
-      -0.0354,
-      0.0109
+      -0.0274,
+      0.0197
      ]
     },
     "certificates": {
-     "gain": 0.0008,
+     "gain": -0.0118,
      "range": [
-      -0.0243,
-      0.025
+      -0.0317,
+      0.0106
      ],
      "by_seed": [
-      0.0008,
-      -0.0199,
-      -0.0229
+      -0.0118,
+      -0.0021,
+      -0.0056
      ],
-     "seed_sd": 0.0129,
+     "seed_sd": 0.0049,
      "range_with_fit_noise": [
-      -0.0349,
-      0.0356
+      -0.0337,
+      0.0126
      ]
     },
     "both": {
-     "gain": -0.011,
+     "gain": -0.0162,
      "range": [
-      -0.0353,
-      0.014
+      -0.0385,
+      0.0059
      ],
      "by_seed": [
-      -0.011,
-      -0.0268,
-      -0.0364
+      -0.0162,
+      -0.0154,
+      -0.0202
      ],
-     "seed_sd": 0.0128,
+     "seed_sd": 0.0026,
      "range_with_fit_noise": [
-      -0.0458,
-      0.0246
+      -0.0391,
+      0.0064
      ]
     }
    },
    "far": {
     "deployed": 1.5942,
-    "aimed": 1.5888,
-    "second": 1.5896,
+    "aimed": 1.5977,
+    "second": 1.5804,
     "aim": {
-     "gain": -0.0054,
+     "gain": 0.0035,
      "range": [
-      -0.0301,
-      0.0226
+      -0.0208,
+      0.0297
      ],
      "by_seed": [
-      -0.0054,
-      -0.0105,
-      -0.0062
+      0.0035,
+      -0.0137,
+      -0.0035
      ],
-     "seed_sd": 0.0027,
+     "seed_sd": 0.0087,
      "range_with_fit_noise": [
-      -0.0306,
-      0.0231
+      -0.026,
+      0.0348
      ]
     },
     "certificates": {
-     "gain": 0.0008,
+     "gain": -0.0172,
      "range": [
-      -0.0296,
-      0.029
+      -0.0428,
+      0.0097
      ],
      "by_seed": [
-      0.0008,
-      -0.014,
-      -0.0202
+      -0.0172,
+      0.0013,
+      -0.0019
      ],
-     "seed_sd": 0.0108,
+     "seed_sd": 0.0099,
      "range_with_fit_noise": [
-      -0.0364,
-      0.0359
+      -0.0492,
+      0.0161
      ]
     },
     "both": {
-     "gain": -0.0046,
+     "gain": -0.0137,
      "range": [
-      -0.0348,
-      0.0236
+      -0.0452,
+      0.0102
      ],
      "by_seed": [
-      -0.0046,
-      -0.0245,
-      -0.0264
+      -0.0137,
+      -0.0124,
+      -0.0054
      ],
-     "seed_sd": 0.0121,
+     "seed_sd": 0.0045,
      "range_with_fit_noise": [
-      -0.0432,
-      0.032
+      -0.0465,
+      0.0115
      ]
     }
    },
    "list": {
     "deployed": {
-     "not_yet_listed": 0.0684,
-     "sells_later_already_listed": 0.002,
+     "not_yet_listed": 0.0688,
+     "sells_later_already_listed": 0.0016,
      "under_way": 0.0355,
      "calendar_year": 1.7405
     },
     "second": {
-     "not_yet_listed": 0.069,
-     "sells_later_already_listed": 0.0009,
-     "under_way": 0.0334,
-     "calendar_year": 1.6868
+     "not_yet_listed": 0.0689,
+     "sells_later_already_listed": 0.0008,
+     "under_way": 0.0337,
+     "calendar_year": 1.6864
     }
    }
   },
   "t10_19": {
    "not_listed": {
-    "deployed": 1.5192,
-    "aimed": 1.509,
-    "second": 1.5282,
+    "deployed": 1.519,
+    "aimed": 1.5065,
+    "second": 1.5333,
     "aim": {
-     "gain": -0.0101,
+     "gain": -0.0125,
      "range": [
-      -0.0344,
-      0.0129
+      -0.0368,
+      0.0111
      ],
      "by_seed": [
-      -0.0101,
-      -0.0052,
-      0.0076
+      -0.0125,
+      -0.0075,
+      0.0074
      ],
-     "seed_sd": 0.0092,
+     "seed_sd": 0.0104,
      "range_with_fit_noise": [
-      -0.0404,
-      0.0189
+      -0.0442,
+      0.0185
      ]
     },
     "certificates": {
-     "gain": 0.0192,
+     "gain": 0.0268,
      "range": [
-      -0.0083,
-      0.0442
+      0.0001,
+      0.0525
      ],
      "by_seed": [
-      0.0192,
-      0.0135,
-      0.0017
+      0.0268,
+      -0.0003,
+      -0.0
      ],
-     "seed_sd": 0.0089,
+     "seed_sd": 0.0156,
      "range_with_fit_noise": [
-      -0.0135,
-      0.0494
+      -0.0139,
+      0.0666
      ]
     },
     "both": {
-     "gain": 0.009,
+     "gain": 0.0143,
      "range": [
-      -0.0169,
-      0.0297
+      -0.0132,
+      0.0368
      ],
      "by_seed": [
-      0.009,
-      0.0083,
-      0.0094
+      0.0143,
+      -0.0078,
+      0.0074
      ],
-     "seed_sd": 0.0005,
+     "seed_sd": 0.0113,
      "range_with_fit_noise": [
-      -0.0169,
-      0.0298
+      -0.0217,
+      0.0452
      ]
     }
    },
    "later": {
     "deployed": 1.4861,
-    "aimed": 1.4805,
-    "second": 1.4943,
+    "aimed": 1.4807,
+    "second": 1.5015,
     "aim": {
-     "gain": -0.0056,
+     "gain": -0.0054,
      "range": [
-      -0.0296,
-      0.0173
+      -0.0261,
+      0.0177
      ],
      "by_seed": [
-      -0.0056,
-      -0.0056,
-      0.0124
+      -0.0054,
+      -0.0086,
+      0.0096
      ],
-     "seed_sd": 0.0104,
+     "seed_sd": 0.0097,
      "range_with_fit_noise": [
-      -0.0372,
-      0.0249
+      -0.0332,
+      0.0248
      ]
     },
     "certificates": {
-     "gain": 0.0138,
+     "gain": 0.0208,
      "range": [
-      -0.0138,
-      0.0394
+      -0.0068,
+      0.047
      ],
      "by_seed": [
-      0.0138,
-      0.0075,
-      -0.0098
+      0.0208,
+      -0.0065,
+      -0.0072
      ],
-     "seed_sd": 0.0122,
+     "seed_sd": 0.016,
      "range_with_fit_noise": [
-      -0.023,
-      0.0486
+      -0.0211,
+      0.0614
      ]
     },
     "both": {
-     "gain": 0.0082,
+     "gain": 0.0154,
      "range": [
-      -0.0155,
-      0.0294
+      -0.008,
+      0.0389
      ],
      "by_seed": [
-      0.0082,
-      0.0019,
-      0.0026
+      0.0154,
+      -0.0152,
+      0.0023
      ],
-     "seed_sd": 0.0035,
+     "seed_sd": 0.0153,
      "range_with_fit_noise": [
-      -0.0165,
-      0.0304
+      -0.0226,
+      0.0536
      ]
     }
    },
    "far": {
     "deployed": 1.4885,
-    "aimed": 1.4746,
-    "second": 1.4935,
+    "aimed": 1.4716,
+    "second": 1.4951,
     "aim": {
-     "gain": -0.0139,
+     "gain": -0.0169,
      "range": [
-      -0.0406,
-      0.0135
+      -0.0437,
+      0.0101
      ],
      "by_seed": [
-      -0.0139,
+      -0.0169,
       0.0086,
-      0.0122
+      0.006
      ],
-     "seed_sd": 0.0142,
+     "seed_sd": 0.014,
      "range_with_fit_noise": [
-      -0.0523,
-      0.0252
+      -0.0553,
+      0.0217
      ]
     },
     "certificates": {
-     "gain": 0.0189,
+     "gain": 0.0235,
      "range": [
-      -0.009,
-      0.0501
+      -0.0101,
+      0.0546
      ],
      "by_seed": [
-      0.0189,
-      0.0046,
-      -0.0023
+      0.0235,
+      -0.0093,
+      0.005
      ],
-     "seed_sd": 0.0108,
+     "seed_sd": 0.0164,
      "range_with_fit_noise": [
-      -0.0158,
-      0.0569
+      -0.0234,
+      0.0679
      ]
     },
     "both": {
-     "gain": 0.005,
+     "gain": 0.0066,
      "range": [
-      -0.0236,
-      0.0306
+      -0.0215,
+      0.0356
      ],
      "by_seed": [
-      0.005,
-      0.0132,
-      0.0099
+      0.0066,
+      -0.0007,
+      0.0109
      ],
-     "seed_sd": 0.0042,
+     "seed_sd": 0.0059,
      "range_with_fit_noise": [
-      -0.0248,
-      0.0318
+      -0.0238,
+      0.0378
      ]
     }
    },
@@ -580,179 +580,179 @@
      "calendar_year": 1.5139
     },
     "second": {
-     "not_yet_listed": 0.0528,
+     "not_yet_listed": 0.053,
      "sells_later_already_listed": 0.0018,
-     "under_way": 0.0279,
-     "calendar_year": 1.5173
+     "under_way": 0.0284,
+     "calendar_year": 1.5374
     }
    }
   },
   "t20p": {
    "not_listed": {
-    "deployed": 1.334,
-    "aimed": 1.2701,
-    "second": 1.4255,
+    "deployed": 1.3338,
+    "aimed": 1.2864,
+    "second": 1.427,
     "aim": {
-     "gain": -0.0639,
+     "gain": -0.0474,
      "range": [
-      -0.1349,
-      0.0088
+      -0.1167,
+      0.031
      ],
      "by_seed": [
-      -0.0639,
-      -0.0466,
-      -0.0908
+      -0.0474,
+      -0.0498,
+      -0.1108
      ],
-     "seed_sd": 0.0223,
+     "seed_sd": 0.0359,
      "range_with_fit_noise": [
-      -0.1471,
-      0.021
+      -0.1449,
+      0.0593
      ]
     },
     "certificates": {
-     "gain": 0.1554,
+     "gain": 0.1406,
      "range": [
-      0.069,
-      0.2372
+      0.0466,
+      0.2309
      ],
      "by_seed": [
-      0.1554,
-      0.1161,
-      0.1815
+      0.1406,
+      0.1155,
+      0.1765
      ],
-     "seed_sd": 0.0329,
+     "seed_sd": 0.0307,
      "range_with_fit_noise": [
-      0.0471,
-      0.2591
+      0.0287,
+      0.2487
      ]
     },
     "both": {
-     "gain": 0.0915,
+     "gain": 0.0932,
      "range": [
-      -0.0,
-      0.1706
+      0.0041,
+      0.173
      ],
      "by_seed": [
-      0.0915,
-      0.0695,
-      0.0908
+      0.0932,
+      0.0657,
+      0.0657
      ],
-     "seed_sd": 0.0125,
+     "seed_sd": 0.0159,
      "range_with_fit_noise": [
-      -0.0035,
-      0.174
+      -0.0015,
+      0.1786
      ]
     }
    },
    "later": {
     "deployed": 1.3144,
-    "aimed": 1.2413,
-    "second": 1.3892,
+    "aimed": 1.2546,
+    "second": 1.3875,
     "aim": {
-     "gain": -0.0731,
+     "gain": -0.0598,
      "range": [
-      -0.1406,
-      0.002
+      -0.1263,
+      0.0166
      ],
      "by_seed": [
-      -0.0731,
+      -0.0598,
       -0.0482,
-      -0.0831
+      -0.1014
      ],
-     "seed_sd": 0.018,
+     "seed_sd": 0.028,
      "range_with_fit_noise": [
-      -0.1489,
-      0.0102
+      -0.1449,
+      0.0352
      ]
     },
     "certificates": {
-     "gain": 0.1479,
+     "gain": 0.1329,
      "range": [
-      0.056,
-      0.2274
+      0.0469,
+      0.2171
      ],
      "by_seed": [
-      0.1479,
-      0.108,
-      0.1562
+      0.1329,
+      0.0997,
+      0.1612
      ],
-     "seed_sd": 0.0258,
+     "seed_sd": 0.0308,
      "range_with_fit_noise": [
-      0.0422,
-      0.2412
+      0.0277,
+      0.2363
      ]
     },
     "both": {
-     "gain": 0.0748,
+     "gain": 0.0731,
      "range": [
-      -0.0098,
+      -0.0111,
       0.1502
      ],
      "by_seed": [
-      0.0748,
-      0.0598,
-      0.0731
+      0.0731,
+      0.0515,
+      0.0598
      ],
-     "seed_sd": 0.0082,
+     "seed_sd": 0.0109,
      "range_with_fit_noise": [
-      -0.0114,
-      0.1518
+      -0.0139,
+      0.153
      ]
     }
    },
    "far": {
     "deployed": 1.36,
-    "aimed": 1.3107,
-    "second": 1.442,
+    "aimed": 1.3248,
+    "second": 1.4561,
     "aim": {
-     "gain": -0.0492,
+     "gain": -0.0352,
      "range": [
-      -0.1433,
-      0.0427
+      -0.1193,
+      0.0646
      ],
      "by_seed": [
-      -0.0492,
-      -0.0539,
-      -0.0258
+      -0.0352,
+      -0.0703,
+      -0.0539
      ],
-     "seed_sd": 0.0151,
+     "seed_sd": 0.0176,
      "range_with_fit_noise": [
-      -0.1479,
-      0.0473
+      -0.1256,
+      0.0709
      ]
     },
     "certificates": {
      "gain": 0.1313,
      "range": [
-      0.0181,
-      0.2342
+      0.0288,
+      0.238
      ],
      "by_seed": [
       0.1313,
-      0.0891,
-      0.1313
+      0.1172,
+      0.1102
      ],
-     "seed_sd": 0.0244,
+     "seed_sd": 0.0107,
      "range_with_fit_noise": [
-      0.008,
-      0.2443
+      0.0267,
+      0.2401
      ]
     },
     "both": {
-     "gain": 0.0821,
+     "gain": 0.0961,
      "range": [
-      -0.0113,
-      0.193
+      -0.003,
+      0.1923
      ],
      "by_seed": [
-      0.0821,
-      0.0352,
-      0.1055
+      0.0961,
+      0.0469,
+      0.0563
      ],
-     "seed_sd": 0.0358,
+     "seed_sd": 0.0261,
      "range_with_fit_noise": [
-      -0.0331,
-      0.2148
+      -0.0156,
+      0.205
      ]
     }
    },
@@ -764,43 +764,43 @@
      "calendar_year": 1.291
     },
     "second": {
-     "not_yet_listed": 0.036,
-     "sells_later_already_listed": 0.0014,
-     "under_way": 0.0191,
-     "calendar_year": 1.4584
+     "not_yet_listed": 0.0361,
+     "sells_later_already_listed": 0.0013,
+     "under_way": 0.0189,
+     "calendar_year": 1.4471
     }
    }
   }
  },
  "forward_2018": {
-  "deployed": 1.6989,
-  "aimed": 1.6881,
-  "second": 1.7036
+  "deployed": 1.6994,
+  "aimed": 1.6754,
+  "second": 1.6886
  },
  "passes": false,
  "verdict": "do not add the second step: it does not clearly find more homes that are not yet on the market",
  "gain_share": {
-  "first_step": 0.717,
-  "epc_months_owned": 0.085,
-  "epc_uprn_pc": 0.036,
-  "epc_pool_homes": 0.021,
-  "epc_own_cert_age": 0.021,
-  "tenure": 0.02,
-  "epc_homes_kind": 0.019,
-  "epc_pool_sale_24m": 0.013,
-  "epc_pool_share_6m": 0.012,
-  "epc_pool_share_12m": 0.011,
-  "epc_pool_sales_12m": 0.011,
-  "epc_cert_rent_24m": 0.008,
-  "epc_own_sale_24m": 0.007,
-  "epc_cert_other_12m": 0.005,
-  "epc_pool_sales_6m": 0.005,
-  "epc_pool_sale_12m": 0.003,
-  "epc_pool_sale_6m": 0.002,
-  "epc_pool_sale_3m": 0.002,
-  "epc_own_rent": 0.0,
-  "epc_own_sale_12m": 0.0,
-  "epc_anchored": 0.0,
-  "epc_own_other_12m": 0.0
+  "epc_months_owned": 0.201,
+  "first_step": 0.195,
+  "epc_uprn_pc": 0.118,
+  "epc_pool_homes": 0.071,
+  "epc_homes_kind": 0.066,
+  "epc_own_cert_age": 0.053,
+  "tenure": 0.046,
+  "epc_pool_share_6m": 0.038,
+  "epc_pool_sale_24m": 0.037,
+  "epc_pool_share_12m": 0.035,
+  "epc_pool_sales_12m": 0.029,
+  "epc_cert_rent_24m": 0.027,
+  "epc_pool_sales_6m": 0.017,
+  "epc_cert_other_12m": 0.017,
+  "epc_pool_sale_12m": 0.014,
+  "epc_own_sale_12m": 0.014,
+  "epc_pool_sale_6m": 0.009,
+  "epc_pool_sale_3m": 0.007,
+  "epc_own_sale_24m": 0.004,
+  "epc_own_rent": 0.002,
+  "epc_own_other_12m": 0.0,
+  "epc_anchored": 0.0
  }
 }

@@ -1,6 +1,7 @@
 {
  "first_step": "+HOUSE+AREA+PD",
- "label": "not yet listed: completes July to June, certificate not lodged by the scoring day",
+ "label": "not yet listed: completes July to June, certificate not lodged in the year before the scoring day",
+ "score": "log-odds = the first step's log-odds + this model's raw output",
  "columns": [
   "first_step",
   "tenure",
@@ -29,5 +30,5 @@
  "rows": 2591431,
  "fitted_on": "test homes of 2017 and 2018 (a tenth of homes), first step fitted to 2015",
  "passes": false,
- "rate": 0.03707
+ "rate": 0.03722
 }

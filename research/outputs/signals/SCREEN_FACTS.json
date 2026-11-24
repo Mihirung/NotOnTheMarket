@@ -1,26 +1,26 @@
 {
  "first_step": "+HOUSE+AREA+PD@100.npy",
  "rows": 2591431,
- "later_sellers": 96051,
+ "later_sellers": 96451,
  "what_the_columns_say": [
   {
    "homes": "UPRN known",
    "home_years": 398678,
-   "sells_later": 0.0404,
+   "sells_later": 0.0413,
    "nine_months_out": 0.0306,
    "first_step_said": 0.0416
   },
   {
    "homes": "UPRN known, a sale certificate over a year old and no sale",
    "home_years": 8101,
-   "sells_later": 0.0126,
+   "sells_later": 0.0537,
    "nine_months_out": 0.0399,
    "first_step_said": 0.0473
   },
   {
    "homes": "UPRN known, that certificate over 24 months old",
    "home_years": 6214,
-   "sells_later": 0.0114,
+   "sells_later": 0.0489,
    "nine_months_out": 0.037,
    "first_step_said": 0.0475
   },
@@ -34,28 +34,28 @@
   {
    "homes": "UPRN known, a rental certificate since buying",
    "home_years": 4262,
-   "sells_later": 0.034,
+   "sells_later": 0.0347,
    "nine_months_out": 0.026,
    "first_step_said": 0.0453
   },
   {
    "homes": "UPRN known, a grant-scheme certificate since buying",
    "home_years": 14827,
-   "sells_later": 0.0379,
+   "sells_later": 0.0392,
    "nine_months_out": 0.0302,
    "first_step_said": 0.0416
   },
   {
    "homes": "UPRN known, let privately when last assessed",
    "home_years": 8764,
-   "sells_later": 0.0329,
+   "sells_later": 0.0342,
    "nine_months_out": 0.0244,
    "first_step_said": 0.0417
   },
   {
    "homes": "UPRN known, a bungalow",
    "home_years": 49427,
-   "sells_later": 0.0343,
+   "sells_later": 0.0351,
    "nine_months_out": 0.0259,
    "first_step_said": 0.0385
   },
@@ -69,7 +69,7 @@
   {
    "homes": "UPRN not known, left-over sale certificates 24 to 60 months old",
    "home_years": 444557,
-   "sells_later": 0.0356,
+   "sells_later": 0.0357,
    "nine_months_out": 0.0267,
    "first_step_said": 0.0362
   },
@@ -83,269 +83,269 @@
  ],
  "gain_share": {
   "2017": {
-   "model": 0.505,
-   "tenure": 0.015,
-   "months_owned": 0.072,
+   "model": 0.087,
+   "tenure": 0.02,
+   "months_owned": 0.109,
    "anchored": 0.0,
-   "own_sale_12m": 0.0,
-   "own_sale_24m": 0.004,
+   "own_sale_12m": 0.002,
+   "own_sale_24m": 0.002,
    "own_rent": 0.0,
    "own_other_12m": 0.0,
-   "own_cert_age": 0.01,
-   "pool_sale_3m": 0.001,
-   "pool_sale_6m": 0.001,
-   "pool_sale_12m": 0.002,
-   "pool_sale_24m": 0.007,
-   "pool_sales_6m": 0.005,
-   "pool_sales_12m": 0.004,
-   "pool_homes": 0.013,
-   "pool_share_6m": 0.011,
-   "pool_share_12m": 0.006,
-   "homes_kind": 0.014,
-   "uprn_pc": 0.025,
-   "cert_rent_24m": 0.002,
-   "cert_other_12m": 0.003,
-   "own_sale_n": 0.004,
-   "own_sale_age": 0.004,
+   "own_cert_age": 0.025,
+   "pool_sale_3m": 0.002,
+   "pool_sale_6m": 0.002,
+   "pool_sale_12m": 0.004,
+   "pool_sale_24m": 0.016,
+   "pool_sales_6m": 0.008,
+   "pool_sales_12m": 0.009,
+   "pool_homes": 0.027,
+   "pool_share_6m": 0.02,
+   "pool_share_12m": 0.012,
+   "homes_kind": 0.028,
+   "uprn_pc": 0.05,
+   "cert_rent_24m": 0.006,
+   "cert_other_12m": 0.005,
+   "own_sale_n": 0.0,
+   "own_sale_age": 0.005,
    "own_rent_age": 0.0,
    "own_rent_before": 0.0,
    "own_grant_n": 0.0,
-   "own_grant_age": 0.001,
+   "own_grant_age": 0.002,
    "own_none_age": 0.0,
-   "own_score": 0.009,
-   "own_area": 0.009,
-   "own_rooms": 0.002,
-   "own_built": 0.004,
+   "own_score": 0.017,
+   "own_area": 0.02,
+   "own_rooms": 0.003,
+   "own_built": 0.008,
    "own_bungalow": 0.001,
-   "own_let": 0.001,
-   "pool_sale_60m": 0.007,
-   "pool_sales_60m": 0.012,
-   "pool_share_60m": 0.011,
-   "pool_share_old": 0.018,
-   "pool_rent_share": 0.022,
-   "pool_grant_60m": 0.004,
-   "pk_score": 0.031,
-   "pk_area": 0.034,
-   "pk_rooms": 0.036,
-   "pk_built": 0.04,
-   "pk_bungalow": 0.011,
-   "pk_let": 0.023,
-   "pk_certs": 0.016
+   "own_let": 0.003,
+   "pool_sale_60m": 0.013,
+   "pool_sales_60m": 0.019,
+   "pool_share_60m": 0.023,
+   "pool_share_old": 0.035,
+   "pool_rent_share": 0.044,
+   "pool_grant_60m": 0.01,
+   "pk_score": 0.063,
+   "pk_area": 0.063,
+   "pk_rooms": 0.07,
+   "pk_built": 0.069,
+   "pk_bungalow": 0.022,
+   "pk_let": 0.042,
+   "pk_certs": 0.034
   },
   "2018": {
-   "model": 0.492,
-   "tenure": 0.011,
-   "months_owned": 0.072,
+   "model": 0.085,
+   "tenure": 0.018,
+   "months_owned": 0.095,
    "anchored": 0.0,
-   "own_sale_12m": 0.0,
-   "own_sale_24m": 0.003,
+   "own_sale_12m": 0.002,
+   "own_sale_24m": 0.002,
    "own_rent": 0.0,
    "own_other_12m": 0.0,
-   "own_cert_age": 0.011,
+   "own_cert_age": 0.021,
    "pool_sale_3m": 0.001,
-   "pool_sale_6m": 0.001,
-   "pool_sale_12m": 0.003,
-   "pool_sale_24m": 0.007,
+   "pool_sale_6m": 0.003,
+   "pool_sale_12m": 0.005,
+   "pool_sale_24m": 0.016,
    "pool_sales_6m": 0.004,
-   "pool_sales_12m": 0.005,
-   "pool_homes": 0.015,
-   "pool_share_6m": 0.008,
-   "pool_share_12m": 0.009,
-   "homes_kind": 0.013,
-   "uprn_pc": 0.023,
-   "cert_rent_24m": 0.002,
-   "cert_other_12m": 0.001,
-   "own_sale_n": 0.001,
-   "own_sale_age": 0.008,
-   "own_rent_age": 0.0,
+   "pool_sales_12m": 0.01,
+   "pool_homes": 0.03,
+   "pool_share_6m": 0.015,
+   "pool_share_12m": 0.019,
+   "homes_kind": 0.026,
+   "uprn_pc": 0.05,
+   "cert_rent_24m": 0.003,
+   "cert_other_12m": 0.002,
+   "own_sale_n": 0.0,
+   "own_sale_age": 0.007,
+   "own_rent_age": 0.001,
    "own_rent_before": 0.0,
    "own_grant_n": 0.0,
-   "own_grant_age": 0.001,
+   "own_grant_age": 0.002,
    "own_none_age": 0.001,
-   "own_score": 0.007,
-   "own_area": 0.009,
-   "own_rooms": 0.002,
-   "own_built": 0.005,
+   "own_score": 0.015,
+   "own_area": 0.021,
+   "own_rooms": 0.005,
+   "own_built": 0.01,
    "own_bungalow": 0.001,
    "own_let": 0.0,
-   "pool_sale_60m": 0.005,
-   "pool_sales_60m": 0.01,
-   "pool_share_60m": 0.009,
-   "pool_share_old": 0.019,
-   "pool_rent_share": 0.025,
-   "pool_grant_60m": 0.005,
-   "pk_score": 0.031,
-   "pk_area": 0.045,
-   "pk_rooms": 0.041,
-   "pk_built": 0.044,
-   "pk_bungalow": 0.011,
-   "pk_let": 0.021,
-   "pk_certs": 0.02
+   "pool_sale_60m": 0.01,
+   "pool_sales_60m": 0.02,
+   "pool_share_60m": 0.018,
+   "pool_share_old": 0.041,
+   "pool_rent_share": 0.05,
+   "pool_grant_60m": 0.01,
+   "pk_score": 0.061,
+   "pk_area": 0.079,
+   "pk_rooms": 0.076,
+   "pk_built": 0.07,
+   "pk_bungalow": 0.021,
+   "pk_let": 0.035,
+   "pk_certs": 0.04
   }
  },
  "bands": {
   "all": {
-   "second step": 1.6925,
-   "with all": 1.7064,
-   "with intent on the home": 1.6923,
-   "with facts about the home": 1.6968,
-   "with intent in the pool": 1.7008,
-   "with facts for the postcode": 1.6983,
-   "first step": 1.6902,
+   "second step": 1.6899,
+   "with all": 1.7029,
+   "with intent on the home": 1.6954,
+   "with facts about the home": 1.7028,
+   "with intent in the pool": 1.7035,
+   "with facts for the postcode": 1.7115,
+   "first step": 1.6912,
    "gain": {
     "with all": [
-     0.0139,
-     -0.0037,
-     0.0322
+     0.013,
+     -0.0054,
+     0.0301
     ],
     "with intent on the home": [
-     -0.0002,
-     -0.0091,
-     0.0115
+     0.0055,
+     -0.005,
+     0.0165
     ],
     "with facts about the home": [
-     0.0043,
-     -0.0071,
-     0.0144
+     0.0129,
+     -0.0008,
+     0.0242
     ],
     "with intent in the pool": [
-     0.0082,
-     -0.0043,
-     0.0217
+     0.0136,
+     0.0007,
+     0.0265
     ],
     "with facts for the postcode": [
-     0.0057,
-     -0.0106,
-     0.0244
+     0.0216,
+     0.0036,
+     0.0399
     ]
    },
    "gain_nine_months_out": [
     0.0082,
-    -0.0085,
-    0.0269
+    -0.012,
+    0.0279
    ]
   },
   "t0_9": {
-   "second step": 1.6531,
-   "with all": 1.6435,
-   "with intent on the home": 1.6569,
-   "with facts about the home": 1.6423,
-   "with intent in the pool": 1.6561,
-   "with facts for the postcode": 1.6348,
-   "first step": 1.6383,
+   "second step": 1.6382,
+   "with all": 1.6418,
+   "with intent on the home": 1.6416,
+   "with facts about the home": 1.6191,
+   "with intent in the pool": 1.6458,
+   "with facts for the postcode": 1.6504,
+   "first step": 1.6358,
    "gain": {
     "with all": [
-     -0.0096,
-     -0.0356,
-     0.0162
+     0.0036,
+     -0.0184,
+     0.026
     ],
     "with intent on the home": [
-     0.0038,
-     -0.01,
-     0.0194
+     0.0034,
+     -0.0101,
+     0.0173
     ],
     "with facts about the home": [
-     -0.0108,
-     -0.0314,
-     0.0083
+     -0.0191,
+     -0.0375,
+     -0.0017
     ],
     "with intent in the pool": [
-     0.0031,
-     -0.017,
-     0.0232
+     0.0076,
+     -0.0109,
+     0.0291
     ],
     "with facts for the postcode": [
-     -0.0183,
-     -0.0434,
-     0.0068
+     0.0122,
+     -0.0124,
+     0.0354
     ]
    },
    "gain_nine_months_out": [
-    -0.0188,
-    -0.0474,
-    0.0083
+    -0.0046,
+    -0.0284,
+    0.0233
    ]
   },
   "t10_19": {
-   "second step": 1.5282,
-   "with all": 1.5569,
-   "with intent on the home": 1.5361,
-   "with facts about the home": 1.5317,
-   "with intent in the pool": 1.5377,
-   "with facts for the postcode": 1.558,
-   "first step": 1.5192,
+   "second step": 1.5333,
+   "with all": 1.5473,
+   "with intent on the home": 1.5376,
+   "with facts about the home": 1.5361,
+   "with intent in the pool": 1.5434,
+   "with facts for the postcode": 1.5511,
+   "first step": 1.519,
    "gain": {
     "with all": [
-     0.0287,
-     0.0016,
-     0.0575
+     0.0139,
+     -0.0144,
+     0.0398
     ],
     "with intent on the home": [
-     0.0079,
-     -0.0086,
-     0.0244
+     0.0043,
+     -0.012,
+     0.0182
     ],
     "with facts about the home": [
-     0.0035,
-     -0.0103,
-     0.019
+     0.0027,
+     -0.011,
+     0.0186
     ],
     "with intent in the pool": [
-     0.0095,
-     -0.0156,
-     0.0331
+     0.0101,
+     -0.0145,
+     0.0378
     ],
     "with facts for the postcode": [
-     0.0298,
-     0.0042,
-     0.057
+     0.0178,
+     -0.0112,
+     0.0462
     ]
    },
    "gain_nine_months_out": [
-    0.0311,
-    0.002,
-    0.0652
+    0.0175,
+    -0.0166,
+    0.0479
    ]
   },
   "t20p": {
-   "second step": 1.4255,
-   "with all": 1.36,
-   "with intent on the home": 1.441,
-   "with facts about the home": 1.4777,
-   "with intent in the pool": 1.413,
-   "with facts for the postcode": 1.4007,
-   "first step": 1.334,
+   "second step": 1.427,
+   "with all": 1.396,
+   "with intent on the home": 1.443,
+   "with facts about the home": 1.4456,
+   "with intent in the pool": 1.403,
+   "with facts for the postcode": 1.3909,
+   "first step": 1.3338,
    "gain": {
     "with all": [
-     -0.0655,
-     -0.1438,
-     0.0257
+     -0.031,
+     -0.1216,
+     0.0574
     ],
     "with intent on the home": [
-     0.0155,
-     -0.0332,
-     0.0734
+     0.0159,
+     -0.0375,
+     0.0766
     ],
     "with facts about the home": [
-     0.0522,
-     -0.0007,
-     0.1081
+     0.0186,
+     -0.0357,
+     0.0727
     ],
     "with intent in the pool": [
-     -0.0125,
-     -0.0919,
-     0.0797
+     -0.024,
+     -0.1123,
+     0.059
     ],
     "with facts for the postcode": [
-     -0.0248,
-     -0.0974,
-     0.0513
+     -0.0361,
+     -0.1119,
+     0.0461
     ]
    },
    "gain_nine_months_out": [
-    -0.068,
-    -0.1643,
-    0.0251
+    -0.0375,
+    -0.135,
+    0.0616
    ]
   }
  }
