@@ -19,20 +19,32 @@
      "deployed": 1.7408,
      "january": 1.7593,
      "monthly": 1.7593,
+     "month_old": 1.7579,
      "monthly_minus_january": [
       0.0,
       0.0,
       0.0
+     ],
+     "monthly_minus_month_old": [
+      0.0014,
+      0.0,
+      0.0029
      ]
     },
     "t20p": {
      "deployed": 1.291,
      "january": 1.3506,
      "monthly": 1.3506,
+     "month_old": 1.3457,
      "monthly_minus_january": [
       0.0,
       0.0,
       0.0
+     ],
+     "monthly_minus_month_old": [
+      0.0049,
+      -0.0045,
+      0.0137
      ]
     }
    }
@@ -47,7 +59,13 @@
      "deployed": 1.7278,
      "january": 1.7428,
      "monthly": 1.7464,
+     "month_old": 1.7428,
      "monthly_minus_january": [
+      0.0036,
+      0.0019,
+      0.0052
+     ],
+     "monthly_minus_month_old": [
       0.0036,
       0.0019,
       0.0052
@@ -57,7 +75,13 @@
      "deployed": 1.2998,
      "january": 1.3416,
      "monthly": 1.3577,
+     "month_old": 1.3416,
      "monthly_minus_january": [
+      0.0161,
+      0.005,
+      0.0288
+     ],
+     "monthly_minus_month_old": [
       0.0161,
       0.005,
       0.0288
@@ -81,20 +105,32 @@
      "deployed": 1.7196,
      "january": 1.7341,
      "monthly": 1.7403,
+     "month_old": 1.7367,
      "monthly_minus_january": [
       0.0062,
       0.0042,
       0.0078
+     ],
+     "monthly_minus_month_old": [
+      0.0036,
+      0.0021,
+      0.0051
      ]
     },
     "t20p": {
      "deployed": 1.2992,
      "january": 1.3443,
      "monthly": 1.3556,
+     "month_old": 1.3507,
      "monthly_minus_january": [
       0.0113,
       -0.001,
       0.0235
+     ],
+     "monthly_minus_month_old": [
+      0.0049,
+      -0.0033,
+      0.0135
      ]
     }
    },
@@ -115,20 +151,32 @@
      "deployed": 1.7026,
      "january": 1.7156,
      "monthly": 1.7246,
+     "month_old": 1.7209,
      "monthly_minus_january": [
       0.009,
       0.0067,
       0.0109
+     ],
+     "monthly_minus_month_old": [
+      0.0037,
+      0.0021,
+      0.005
      ]
     },
     "t20p": {
      "deployed": 1.3229,
      "january": 1.3522,
      "monthly": 1.3815,
+     "month_old": 1.3685,
      "monthly_minus_january": [
       0.0293,
       0.0154,
       0.0433
+     ],
+     "monthly_minus_month_old": [
+      0.013,
+      0.005,
+      0.0236
      ]
     }
    },
@@ -149,20 +197,32 @@
      "deployed": 1.6998,
      "january": 1.7099,
      "monthly": 1.7221,
+     "month_old": 1.719,
      "monthly_minus_january": [
       0.0122,
       0.0096,
       0.0143
+     ],
+     "monthly_minus_month_old": [
+      0.0031,
+      0.0015,
+      0.0046
      ]
     },
     "t20p": {
      "deployed": 1.3142,
      "january": 1.342,
      "monthly": 1.3812,
+     "month_old": 1.3649,
      "monthly_minus_january": [
       0.0392,
       0.0219,
       0.0591
+     ],
+     "monthly_minus_month_old": [
+      0.0163,
+      0.0081,
+      0.0284
      ]
     }
    },
@@ -183,20 +243,32 @@
      "deployed": 1.6907,
      "january": 1.7013,
      "monthly": 1.7147,
+     "month_old": 1.713,
      "monthly_minus_january": [
       0.0134,
       0.0106,
       0.016
+     ],
+     "monthly_minus_month_old": [
+      0.0017,
+      0.0006,
+      0.0033
      ]
     },
     "t20p": {
      "deployed": 1.3234,
      "january": 1.348,
      "monthly": 1.3939,
+     "month_old": 1.3907,
      "monthly_minus_january": [
       0.0459,
       0.0279,
       0.0666
+     ],
+     "monthly_minus_month_old": [
+      0.0032,
+      -0.0049,
+      0.0138
      ]
     }
    },
@@ -217,20 +289,32 @@
      "deployed": 1.6824,
      "january": 1.692,
      "monthly": 1.7073,
+     "month_old": 1.7043,
      "monthly_minus_january": [
       0.0153,
       0.0127,
       0.0178
+     ],
+     "monthly_minus_month_old": [
+      0.003,
+      0.0018,
+      0.0045
      ]
     },
     "t20p": {
      "deployed": 1.3198,
      "january": 1.3364,
      "monthly": 1.3928,
+     "month_old": 1.3795,
      "monthly_minus_january": [
       0.0564,
       0.0374,
       0.0777
+     ],
+     "monthly_minus_month_old": [
+      0.0133,
+      0.0047,
+      0.0225
      ]
     }
    },
@@ -251,20 +335,32 @@
      "deployed": 1.6651,
      "january": 1.6724,
      "monthly": 1.6903,
+     "month_old": 1.6861,
      "monthly_minus_january": [
       0.0179,
       0.0152,
       0.0206
+     ],
+     "monthly_minus_month_old": [
+      0.0042,
+      0.0027,
+      0.0056
      ]
     },
     "t20p": {
      "deployed": 1.3297,
      "january": 1.3482,
      "monthly": 1.3985,
+     "month_old": 1.3918,
      "monthly_minus_january": [
       0.0503,
       0.0291,
       0.0725
+     ],
+     "monthly_minus_month_old": [
+      0.0067,
+      -0.0017,
+      0.0146
      ]
     }
    },
@@ -285,20 +381,32 @@
      "deployed": 1.6554,
      "january": 1.6628,
      "monthly": 1.6814,
+     "month_old": 1.6787,
      "monthly_minus_january": [
       0.0186,
       0.0155,
       0.0212
+     ],
+     "monthly_minus_month_old": [
+      0.0027,
+      0.0013,
+      0.0045
      ]
     },
     "t20p": {
      "deployed": 1.342,
      "january": 1.3539,
      "monthly": 1.4201,
+     "month_old": 1.4065,
      "monthly_minus_january": [
       0.0662,
       0.0435,
       0.0883
+     ],
+     "monthly_minus_month_old": [
+      0.0136,
+      0.003,
+      0.0263
      ]
     }
    },
@@ -319,20 +427,32 @@
      "deployed": 1.6531,
      "january": 1.66,
      "monthly": 1.6791,
+     "month_old": 1.6759,
      "monthly_minus_january": [
       0.0191,
       0.0155,
       0.0222
+     ],
+     "monthly_minus_month_old": [
+      0.0032,
+      0.0015,
+      0.0048
      ]
     },
     "t20p": {
      "deployed": 1.3319,
      "january": 1.3561,
      "monthly": 1.408,
+     "month_old": 1.4062,
      "monthly_minus_january": [
       0.0519,
       0.0319,
       0.0744
+     ],
+     "monthly_minus_month_old": [
+      0.0018,
+      -0.0077,
+      0.012
      ]
     }
    },
@@ -353,20 +473,32 @@
      "deployed": 1.646,
      "january": 1.651,
      "monthly": 1.6693,
+     "month_old": 1.6672,
      "monthly_minus_january": [
       0.0183,
       0.0144,
       0.0215
+     ],
+     "monthly_minus_month_old": [
+      0.0021,
+      0.0004,
+      0.0037
      ]
     },
     "t20p": {
      "deployed": 1.3428,
      "january": 1.3621,
      "monthly": 1.4183,
+     "month_old": 1.406,
      "monthly_minus_january": [
       0.0562,
       0.0384,
       0.076
+     ],
+     "monthly_minus_month_old": [
+      0.0123,
+      0.0015,
+      0.0231
      ]
     }
    },
@@ -387,20 +519,32 @@
      "deployed": 1.6323,
      "january": 1.6357,
      "monthly": 1.6568,
+     "month_old": 1.6531,
      "monthly_minus_january": [
       0.0211,
       0.0177,
       0.0241
+     ],
+     "monthly_minus_month_old": [
+      0.0037,
+      0.002,
+      0.0055
      ]
     },
     "t20p": {
      "deployed": 1.3344,
      "january": 1.3558,
      "monthly": 1.4182,
+     "month_old": 1.4075,
      "monthly_minus_january": [
       0.0624,
       0.0432,
       0.0844
+     ],
+     "monthly_minus_month_old": [
+      0.0107,
+      0.0033,
+      0.0193
      ]
     }
    },
@@ -417,20 +561,42 @@
    "deployed": 1.6846,
    "january": 1.6947,
    "monthly": 1.7076,
+   "month_old": 1.7046,
    "monthly_minus_january": [
     0.0129,
     0.0112,
     0.0144
+   ],
+   "monthly_minus_month_old": [
+    0.003,
+    0.0026,
+    0.0034
+   ],
+   "weekly_over_monthly": [
+    0.0012,
+    0.001,
+    0.0013
    ]
   },
   "t20p": {
    "deployed": 1.3209,
    "january": 1.3493,
    "monthly": 1.3897,
+   "month_old": 1.38,
    "monthly_minus_january": [
     0.0404,
     0.0302,
     0.0518
+   ],
+   "monthly_minus_month_old": [
+    0.0097,
+    0.0067,
+    0.0124
+   ],
+   "weekly_over_monthly": [
+    0.0037,
+    0.0026,
+    0.0048
    ]
   }
  }

@@ -18,7 +18,12 @@ waits 11, runs one request at a time, honours Retry-After and resumes where it
 stopped. Only the search listing is read.
 
     python gazette_list.py <out_dir> <kind> <year> [<year> ...]     every notice published in those years
+    python gazette_list.py <out_dir> <kind> --since <yyyy-mm-dd>    every notice published from that day to today
+    python gazette_list.py <out_dir> <kind> --since auto            from a week before the latest notice held
     python gazette_list.py <out_dir> <kind> --status
+
+A month that has not ended is left for --since, which keeps no record of what it has read: run it again
+from the first day of the last unfinished month (the weekly refresh does) and it adds only what is new.
 
 <kind> is deceased or bankruptcy; give each its own <out_dir>.
 
@@ -81,9 +86,39 @@ PARSE = {"deceased": parse_deceased, "bankruptcy": parse_bankruptcy}
 
 
 def months(years):
+    """The months of those years that have ended, latest first."""
+    today = dt.date.today()
     for y in years:
         for m in range(12, 0, -1):
-            yield f"{y}-{m:02d}", f"{y}-{m:02d}-01", f"{y}-{m:02d}-{calendar.monthrange(y, m)[1]:02d}"
+            if dt.date(y, m, calendar.monthrange(y, m)[1]) < today:
+                yield f"{y}-{m:02d}", f"{y}-{m:02d}-01", f"{y}-{m:02d}-{calendar.monthrange(y, m)[1]:02d}"
+
+
+def read_range(kind, d0, d1, seen, fh):
+    """Every notice of the kind published from d0 to d1 that is not held yet. Returns (listed, new, kept)."""
+    section, code = KINDS[kind]
+    page, listed, new, kept = 1, 0, 0, 0
+    while True:
+        j = json.loads(get(f"{SITE}/{section}/notice/data.json?results-page-size={PAGE}&noticetypes={code}"
+                           f"&start-publish-date={d0}&end-publish-date={d1}&results-page={page}"))
+        ent = j.get("entry") or []
+        ent = ent if isinstance(ent, list) else [ent]
+        for e in ent:
+            i = e["id"].rsplit("/", 1)[-1]
+            if e.get("f:notice-code") != code:
+                continue
+            listed += 1
+            if i in seen:
+                continue
+            seen.add(i); new += 1
+            r = PARSE[kind](e)
+            if r.get("postcode"):
+                kept += 1
+                fh.write(json.dumps({"id": i, "published": (e.get("published") or "")[:10], **r}) + "\n")
+        fh.flush()
+        if page * PAGE >= int(j.get("f:total", 0)) or not ent:
+            return listed, new, kept
+        page += 1
 
 
 def main():
@@ -99,6 +134,15 @@ def main():
         return
     out.mkdir(parents=True, exist_ok=True)
     seen = {json.loads(l)["id"] for l in open(f)} if f.exists() else set()
+    if sys.argv[3] == "--since":
+        d0, d1 = sys.argv[4], dt.date.today().isoformat()
+        if d0 == "auto":                                 # a week of overlap picks up notices the listing gained late
+            latest = max((json.loads(l)["published"] for l in open(f)), default=d1) if f.exists() else d1
+            d0 = (dt.date.fromisoformat(latest) - dt.timedelta(days=7)).isoformat()
+        with open(f, "a") as fh:
+            listed, new, kept = read_range(kind, d0, d1, seen, fh)
+        print(f"{dt.datetime.now():%F %T} {kind} {d0} to {d1}: {listed:,} listed, {new:,} new, {kept:,} of them with an address", flush=True)
+        return
     with open(f, "a") as fh:
         for tag, d0, d1 in months([int(y) for y in sys.argv[3:]]):
             if tag in st["done"]:

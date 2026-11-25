@@ -45,6 +45,20 @@ import pandas as pd
 
 Y0, Y1 = 1995, 2019
 NY = Y1 - Y0 + 1
+
+
+def set_last_year(y1):
+    """Move the last year the tables hold (2019, the research table's, unless this is called). Call it before
+    Panel(): the live site scores on tables that run to the present."""
+    global Y1, NY
+    Y1 = int(y1); NY = Y1 - Y0 + 1
+
+
+def clock(day):
+    """(shift, score_year) that put a scoring day on 1 January: every date is moved on by `shift` months, so the
+    twelve months before the first of `day`'s month become a calendar year and every feature reads a full one."""
+    shift = (12 - (day.month - 1)) % 12
+    return shift, day.year + (1 if shift else 0)
 PANEL_FROM = 2001
 CHUNK_BUCKETS = 5            # each chunk holds 5% of properties
 
@@ -88,10 +102,29 @@ def _median_table(codes, yi, price, n_codes):
 
 
 class Panel:
-    def __init__(self, tx_path, verbose=True):
+    def __init__(self, tx_path, verbose=True, shift=0, late=None):
+        """`shift` moves every date on by that many months (see clock()); sales after the last year (Y1) are
+        dropped, as they are not known on the scoring day. `late` is for the newest months of an up-to-date
+        table, whose sales are only part registered: {month (year * 12 + month - 1, after the shift): weight},
+        and each sale of such a month then counts as `weight` sales in every local and national count, so
+        that the counts read as they will once the rest are registered. None of these changes the research
+        table (shift 0, to 2019, no weights)."""
         say = (lambda *a: print(*a, flush=True)) if verbose else (lambda *a: None)
-        tx = pd.read_parquet(tx_path, columns=["key", "year", "month", "price", "ptype", "is_new",
-                                               "leasehold", "outcode", "postcode"])
+        cols = ["key", "year", "month", "price", "ptype", "is_new", "leasehold", "outcode", "postcode"]
+        tx = tx_path[cols].copy() if isinstance(tx_path, pd.DataFrame) else pd.read_parquet(tx_path, columns=cols)
+        self.shift = int(shift)
+        if shift:
+            ym = tx["year"].to_numpy().astype("int64") * 12 + tx["month"].to_numpy() - 1 + shift
+            tx["year"] = (ym // 12).astype("int16"); tx["month"] = (ym % 12 + 1).astype("int8")
+        if int(tx["year"].max()) > Y1:
+            tx = tx[tx["year"] <= Y1].reset_index(drop=True)
+        w = None
+        if late:
+            ym = tx["year"].to_numpy().astype("int64") * 12 + tx["month"].to_numpy() - 1
+            w = np.ones(len(tx))
+            for k, v in late.items():
+                w[ym == int(k)] = float(v)
+        cnt = dict(weights=w, dtype="float32") if late else {}
         say(f"transactions {len(tx):,}")
         self.key = tx["key"].to_numpy()
         self.year = tx["year"].to_numpy().astype("int32")
@@ -136,22 +169,23 @@ class Panel:
 
         # ---- dense context tables ------------------------------------------
         first = ~same_prev
-        self.d_sales_cs = _cs(_dense(self.oc, yi, n_oc))
-        self.d_new_cs = _cs(_dense(self.oc, yi, n_oc, weights=self.is_new.astype("float64")))
+        new = self.is_new.astype("float64") * (w if late else 1.0)
+        self.d_sales_cs = _cs(_dense(self.oc, yi, n_oc, **cnt))
+        self.d_new_cs = _cs(_dense(self.oc, yi, n_oc, weights=new, dtype="float32" if late else "int32"))
         self.d_stock = np.cumsum(_dense(self.oc[first], yi[first], n_oc), axis=1)
-        self.s_sales_cs = _cs(_dense(sec, yi, n_sec))
+        self.s_sales_cs = _cs(_dense(sec, yi, n_sec, **cnt))
         self.s_stock = np.cumsum(_dense(sec[first], yi[first], n_sec), axis=1)
-        p_sales = _dense(self.pc, yi, n_pc, dtype="int16")
+        p_sales = _dense(self.pc, yi, n_pc, **(cnt or dict(dtype="int16")))
         self.p_sales_cs = _cs(p_sales); del p_sales
         self.p_stock = np.cumsum(_dense(self.pc[first], yi[first], n_pc, dtype="int16"), axis=1).astype("int16")
-        self.p_new_cs = _cs(_dense(self.pc, yi, n_pc, weights=self.is_new.astype("float64"), dtype="int16"))
+        self.p_new_cs = _cs(_dense(self.pc, yi, n_pc, weights=new, dtype="float32" if late else "int16"))
         pfy = np.full(n_pc, Y1 + 1, dtype="int32"); np.minimum.at(pfy, self.pc, self.year); self.p_first_year = pfy
         say("medians...")
         self.d_med = _median_table(self.oc, yi, self.price, n_oc)
         self.s_med = _median_table(sec, yi, self.price, n_sec)
         nat = pd.DataFrame({"y": yi, "p": self.price}).groupby("y")["p"]
         self.n_med = nat.median().reindex(range(NY)).to_numpy()
-        self.n_sales = np.bincount(yi, minlength=NY).astype("float64")
+        self.n_sales = np.bincount(yi, weights=w, minlength=NY).astype("float64")
         say("price percentiles...")
         self.price_pct = (pd.DataFrame({"d": self.oc, "y": yi, "p": self.price})
                           .groupby(["d", "y"], sort=False)["p"].rank(pct=True).to_numpy().astype("float32"))

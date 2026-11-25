@@ -11,6 +11,9 @@ Stages:
   score   <transactions> <model.txt> <lab_deploy.json> <cache_dir>
           score every currently owned home in England and Wales for a sale
           in the next 12 months with the deployed model
+  live    <model.txt> <lab_deploy.json> <cache_dir> [second.json] [live_dir]
+          the same on the up-to-date sale records (live_sales.py): scored on
+          the first of the month after they end, with notices read to today
   houses  <national_dir> <cache_dir>
           one pass over the national cells: the houses and sight-lines of
           each postcode area, one file per area
@@ -112,7 +115,32 @@ def area_of(pc):
 
 
 # ---------------------------------------------------------------- stage 1
-def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1_000_000):
+def live_clock(live_dir, today=None):
+    """Where the live site stands. The scoring day is the first of the month after the last month of sales on
+    record; panel2.clock() puts it on a 1 January. The notices are read as on the first of next month, so every
+    notice published to today counts: `ahead` is how many months after the scoring day that is, and `read` the
+    same month as an index (year * 12 + month - 1). `late` is the weight of each part-registered month's sales
+    in the panel's counts (live_sales.registered), by month in the panel's clock."""
+    import datetime as dt
+    import panel2 as P2
+    info = json.load(open(Path(live_dir) / "sales.json"))
+    y, m = int(info["last_month"][:4]), int(info["last_month"][5:])
+    day = dt.date(y + (m == 12), m % 12 + 1, 1)
+    today = today or dt.date.today()
+    read = today.year * 12 + today.month
+    shift, year = P2.clock(day)
+    late = {int(k[:4]) * 12 + int(k[5:]) - 1 + shift: round(1 / max(q, 0.2), 3) for k, q in info.get("registered_share", {}).items() if q < 1}
+    return {"sales_to": info["last_month"], "sales_read_on": info["read_on"], "scored_on": day.isoformat(),
+            "notices_to": today.isoformat(), "shift": shift, "year": year, "read": read,
+            "ahead": read - (day.year * 12 + day.month - 1), "late": late}
+
+
+def live(model_path, deploy_json, cache_dir, second_json=None, live_dir="research/data/live"):
+    """score(), on the up-to-date sale records (live_sales.py) and the notices published to today."""
+    score(None, model_path, deploy_json, cache_dir, second_json, live_dir=live_dir)
+
+
+def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1_000_000, live_dir=None):
     """Every currently owned home in England and Wales, scored in batches.
 
     With `second_json` the model's prediction is passed through a second step, which adds to its log-odds:
@@ -120,11 +148,21 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
     lab_second_notice.json adds the Gazette notices and keeps the calendar-year meaning; stack_late.py's
     lab_second.json aims at homes not yet on the market (a sale completing between July and June)."""
     import lightgbm as lgb
+    import panel2 as P2
     import signals as SG
-    from panel2 import NY, Panel, Y0, full_features
     cache = Path(cache_dir); cache.mkdir(parents=True, exist_ok=True)
     fams = json.load(open(deploy_json))["families"]
-    panel = Panel(tx_path)
+    year, when = V4.SCORE_YEAR, None
+    if live_dir:                                      # the scoring day follows the sale records; see live_clock()
+        import notice_signals as NS
+        when = live_clock(live_dir); year = when["year"]
+        P2.set_last_year(year - 1); NS.go_live(live_dir)
+        tx_path = str(Path(live_dir) / "transactions.parquet")
+        print(f"live: sales to {when['sales_to']}, scored on {when['scored_on']}, notices to {when['notices_to']}", flush=True)
+    panel = P2.Panel(tx_path, shift=when["shift"] if when else 0, late=when["late"] if when else None)
+    if when:
+        panel.ahead = when["ahead"]
+    Y0, full_features = P2.Y0, P2.full_features
     bst = lgb.Booster(model_file=model_path)
     assert bst.feature_name() == SG.columns(fams), "model features do not match its families"
     second, row_fams = None, []
@@ -144,12 +182,12 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
     parts = []
     for a in range(0, len(s_all), batch):
         s = s_all[a:a + batch]
-        t = np.full(len(s), V4.SCORE_YEAR, dtype="int32")
+        t = np.full(len(s), year, dtype="int32")
         p = bst.predict(full_features(panel, s, t, fams, lookups), num_threads=4)
         p_year = p; flag = np.zeros(len(s), bool)
         if second is not None:                        # the columns as the second step was fitted on them (stored at half precision)
             lp = np.clip(p, 1e-6, 1 - 1e-6); lp = np.log(lp / (1 - lp))
-            have = {"first_step": lp, "tenure": (V4.SCORE_YEAR - panel.year[s]).astype("float64")}
+            have = {"first_step": lp, "tenure": (year - panel.year[s]).astype("float64")}
             for f in row_fams:
                 R = np.clip(SG.row_features(f, panel, s, t), -6e4, 6e4).astype("float16").astype("float32")
                 have.update({c: R[:, i] for i, c in enumerate(SG.ROW_FAMILIES[f]["columns"])})
@@ -164,10 +202,10 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
                     flag |= np.isfinite(have[c])
             p = 1 / (1 + np.exp(-(lp + raw)))             # the second step adds to the first step's log-odds
         d, byi = panel.oc[s], panel.year[s] - Y0
-        est = panel.price[s] * panel.d_med[d, NY - 1] / np.maximum(panel.d_med[d, byi], 1)
+        est = panel.price[s] * panel.d_med[d, P2.NY - 1] / np.maximum(panel.d_med[d, byi], 1)
         parts.append(pd.DataFrame({
             "pc": panel.pc[s].astype("int32"), "ptype": np.array(list("DSTF"))[panel.ptype[s]],
-            "tenure": (V4.SCORE_YEAR - panel.year[s]).astype("int16"), "price": panel.price[s].astype("int32"),
+            "tenure": (year - panel.year[s]).astype("int16"), "price": panel.price[s].astype("int32"),
             "p_sale": p.astype("float32"), "p_year": p_year.astype("float32"), "notice": flag,
             "est_value": np.clip(est, 30_000, 5_000_000).astype("float32")}))
         print(f"  scored {a + len(s):,} of {len(s_all):,}", flush=True)
@@ -177,7 +215,7 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
     n_notice = int(out.notice.sum())                      # scored homes with a notice, before any others are added
     if second is not None and "NOTICE" in row_fams:       # homes named in a notice that the sale records do not hold
         import notice_signals as NS
-        u = NS.unseen_homes(V4.SCORE_YEAR, out)
+        u = NS.unseen_homes(year, out, t0=when["read"] if when else None)
         print(f"{n_notice:,} scored homes have a notice; {len(u):,} more homes named in a notice have no sale on record "
               f"(expected sellers {u.p_sale.sum():,.0f})", flush=True)
         if len(u):
@@ -188,6 +226,10 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
                   open(cache / "second.json", "w"), indent=1)
     elif (cache / "second.json").exists():
         (cache / "second.json").unlink()
+    if when:
+        json.dump({**when, "sales": json.load(open(Path(live_dir) / "sales.json"))["sales"]}, open(cache / "live.json", "w"), indent=1)
+    elif (cache / "live.json").exists():
+        (cache / "live.json").unlink()
     out.to_parquet(cache / "scored_all.parquet", index=False)
     print(f"{len(out):,} owned homes scored, mean p {out.p_sale.mean():.4f}, expected sellers {out.p_sale.sum():,.0f}",
           flush=True)
@@ -524,6 +566,13 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
             model["lift_top10"] = round(sec["lift_top10"]["with_notices"], 2)
         model["second_step"] = {"reads": sec.get("row_families"), "homes_with_a_notice": sec.get("homes_with_a_notice"),
                                 "homes_with_no_sale_on_record": sec.get("unseen_homes")}
+    if (cache / "live.json").exists():                    # scored by the live refresh: what the scores are made from
+        import calendar
+        import datetime as dt
+        lv = json.load(open(cache / "live.json"))
+        day, (y, m) = dt.date.fromisoformat(lv["notices_to"]), lv["sales_to"].split("-")
+        model["as_of"] = {"sales_to": f"{calendar.month_name[int(m)]} {y}", "notices_to": f"{day.day} {calendar.month_name[day.month]} {day.year}",
+                          "scored_on": lv["scored_on"], "sales": lv.get("sales")}
     areas = sorted(p.stem for p in (cache / "houses").glob("*.parquet") if not p.stem.endswith("_sight"))
     areas = [a for a in areas if not only or a in only]
     index, nation, first = [], [], None
@@ -560,4 +609,4 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
 
 
 if __name__ == "__main__":
-    {"score": score, "houses": houses, "export": export}[sys.argv[1]](*sys.argv[2:])
+    {"score": score, "live": live, "houses": houses, "export": export}[sys.argv[1]](*sys.argv[2:])

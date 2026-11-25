@@ -33,12 +33,17 @@ def load_year(zpath: Path) -> pd.DataFrame:
     with zipfile.ZipFile(zpath) as zf:
         name = zf.namelist()[0]
         with zf.open(name) as fh:
-            df = pd.read_csv(
-                fh, header=None, names=COLS, usecols=USECOLS,
-                dtype={"price": "int64", "postcode": "string",
-                       "paon": "string", "saon": "string"},
-                keep_default_na=False, na_values=[],
-            )
+            return read_ppd(fh)
+
+
+def read_ppd(fh) -> pd.DataFrame:
+    """One Price Paid file (an open CSV in the standard layout) as rows of the transaction table."""
+    df = pd.read_csv(
+        fh, header=None, names=COLS, usecols=USECOLS,
+        dtype={"price": "int64", "postcode": "string",
+               "paon": "string", "saon": "string"},
+        keep_default_na=False, na_values=[],
+    )
     # Standard residential sales only: category A, known property type,
     # positive price, valid postcode.
     df = df[(df["ppd_cat"] == "A") & (df["ptype"] != "O") & (df["price"] > 0)]

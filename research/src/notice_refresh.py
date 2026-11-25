@@ -38,23 +38,7 @@ LABELS = {"july_to_june": "Completes July to June", "october_to_june": "Complete
 
 def features_at(N, rows, years, shift, window=NS.WINDOW):
     """notice_signals.Notices.features, read `shift` months after 1 January of each year on a look-back of `window` months."""
-    p = N.panel
-    t0 = np.asarray(years, np.int64) * 12 + shift
-    bought = p.year[rows].astype(np.int64) * 12 + p.month[rows] - 1
-    out = np.full((len(rows), len(NS.COLS)), np.nan, np.float32)
-    for j, k in enumerate(NS.KINDS):
-        if k not in N.ev:
-            continue
-        homes, comp = N.ev[k]
-        g = np.searchsorted(homes, p.key[rows]); g[g == len(homes)] = 0
-        has = homes[g] == p.key[rows]
-        base = g.astype(np.int64) * NS.M
-        hi = np.searchsorted(comp, base + t0, side="left")
-        lo = np.searchsorted(comp, base + t0 - window, side="left")
-        n = np.where(has, hi - lo, 0); ok = n > 0
-        last = comp[np.maximum(hi - 1, 0)] - base
-        out[ok, 3 * j] = (t0 - last)[ok]; out[ok, 3 * j + 1] = (last - bought)[ok]; out[ok, 3 * j + 2] = n[ok]
-    return out
+    return N.features(rows, years, shift, window)
 
 
 def both_readings():

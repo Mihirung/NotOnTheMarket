@@ -40,6 +40,14 @@ WINDOW = 48
 M = 100_000                                             # month indices are below this
 TX = "research/data/transactions.parquet"
 LINK_VERSION = 2
+LIVE = None                                             # set by go_live(): the directory of the up-to-date sale records
+
+
+def go_live(live_dir="research/data/live"):
+    """Read the up-to-date sale records (live_sales.py) instead of the research table. The notices are linked to
+    them in files of their own (linked_live.*), rebuilt when either the notices or the sale records have grown."""
+    global TX, LIVE
+    LIVE = Path(live_dir); TX = str(LIVE / "transactions.parquet")
 # two facts read off the address and kept beside the link: a care or nursing home, and a flat or a named block
 CARE = r"nursing|care home|care centre|residential home|rest home|hospice|hospital|\bcare\b"
 FLAT = r"\bflat\b|\bapartment\b|\bcourt\b|\bhouse,"
@@ -56,10 +64,12 @@ def linked(kind, tx_keys=None, refresh=False, every=False):
     of the likeliest reading of the address, which tells two notices for one home apart from two homes).
     Kept in <dir>/linked.parquet and rebuilt when the listing has grown."""
     from planning_link import key_of, readings
-    d = DIRS[kind]; src, out, info = d / "listing.jsonl", d / "linked.parquet", d / "linked.json"
+    d = DIRS[kind]; tag = "_live" if LIVE else ""
+    src, out, info = d / "listing.jsonl", d / f"linked{tag}.parquet", d / f"linked{tag}.json"
     n_lines = sum(1 for _ in open(src))
+    n_sales = json.load(open(LIVE / "sales.json"))["sales"] if LIVE else None
     old = json.load(open(info)) if out.exists() and info.exists() else {}
-    if not (old.get("notices") == n_lines and old.get("version") == LINK_VERSION and not refresh):
+    if not (old.get("notices") == n_lines and old.get("version") == LINK_VERSION and old.get("sales") == n_sales and not refresh):
         n = pd.DataFrame([json.loads(l) for l in open(src)]).drop_duplicates("id")
         n["pub"] = pd.to_datetime(n.published, errors="coerce")
         n = n.dropna(subset=["pub", "postcode", "address"]).reset_index(drop=True)
@@ -83,7 +93,7 @@ def linked(kind, tx_keys=None, refresh=False, every=False):
                           "flat": low.str.contains(FLAT, regex=True).to_numpy() & ~care})
         t.to_parquet(out, index=False)
         by = pd.DataFrame({"y": n.pub.dt.year.to_numpy(), "got": has}).groupby("y").got.agg(["size", "sum"])
-        json.dump({"version": LINK_VERSION, "notices": n_lines, "with_an_address": int(len(n)), "linked_to_a_home": int(has.sum()),
+        json.dump({"version": LINK_VERSION, "notices": n_lines, "sales": n_sales, "with_an_address": int(len(n)), "linked_to_a_home": int(has.sum()),
                    "by_year": {int(y): [int(a), int(b)] for y, a, b in zip(by.index, by["size"], by["sum"])}},
                   open(info, "w"), indent=1)
     t = pd.read_parquet(out)
@@ -102,12 +112,17 @@ class Notices:
                 continue
             t = linked(k, keys)
             homes = np.unique(t.key.to_numpy())                      # sorted home keys with a notice
-            comp = np.sort(np.searchsorted(homes, t.key.to_numpy()).astype(np.int64) * M + t.ym.to_numpy())
+            comp = np.sort(np.searchsorted(homes, t.key.to_numpy()).astype(np.int64) * M + t.ym.to_numpy()
+                           + getattr(panel, "shift", 0))             # in the panel's clock (panel2.clock)
             self.ev[k] = (homes, comp)
 
-    def features(self, rows, years):
+    def features(self, rows, years, ahead=None, window=WINDOW):
+        """The NOTICE columns for spells `rows` scored in January of `years`. `ahead` reads the notices that many
+        months later (the live site reads them to today; the panel's own `ahead` is the default, else 0), and
+        `window` is the look-back in months."""
         p = self.panel
-        t0 = np.asarray(years, np.int64) * 12                       # January of the year scored
+        ahead = getattr(p, "ahead", 0) if ahead is None else ahead
+        t0 = np.asarray(years, np.int64) * 12 + ahead               # the first of the month the notices are read in
         bought = p.year[rows].astype(np.int64) * 12 + p.month[rows] - 1
         out = np.full((len(rows), len(COLS)), np.nan, np.float32)
         for j, k in enumerate(KINDS):
@@ -118,7 +133,7 @@ class Notices:
             has = homes[g] == p.key[rows]
             base = g.astype(np.int64) * M
             hi = np.searchsorted(comp, base + t0, side="left")       # notices published before January of the year
-            lo = np.searchsorted(comp, base + t0 - WINDOW, side="left")
+            lo = np.searchsorted(comp, base + t0 - window, side="left")
             n = np.where(has, hi - lo, 0)
             ok = n > 0
             last = comp[np.maximum(hi - 1, 0)] - base                # the month of the latest one
@@ -135,12 +150,13 @@ def sales(columns=("key", "year", "month", "postcode")):
     return tx
 
 
-def unseen_rows(kind, year, tx):
+def unseen_rows(kind, year, tx, t0=None):
     """Homes named in a notice in the WINDOW months before 1 January of `year` that had no sale on record on that
     day: one row per address, with UNSEEN_COLS and whether its first sale on record came in that year (`sold`) or
     between July and the next June (`late`). Care and nursing homes are left out: they are not sold with the estate.
-    `tx` is sales(). Everything about the postcode uses only sales before that day."""
-    t0 = year * 12
+    `tx` is sales(). Everything about the postcode uses only sales before that day. `t0` reads on the first of
+    another month instead (a month index, year * 12 + month - 1)."""
+    t0 = year * 12 if t0 is None else int(t0)
     t = linked(kind, every=True)
     first = tx[tx.key.isin(set(t.key[t.has]))].groupby("key").ym.min()
     f = np.where(t.has, t.key.map(first).fillna(10**9).to_numpy(), 10**9).astype(np.int64)     # month of the first sale on record
@@ -163,7 +179,7 @@ def unseen_rows(kind, year, tx):
     return w[["key", "postcode", "ym", "sold", "late"] + UNSEEN_COLS]
 
 
-def unseen_homes(score_year, scored, spec_json="research/outputs/lab/notice_unseen.json"):
+def unseen_homes(score_year, scored, spec_json="research/outputs/lab/notice_unseen.json", t0=None):
     """Homes named in a notice in the window before 1 January of `score_year` that have no sale on record, as rows
     like `scored` (export_site_v5.score). Each is scored by the model notice_unseen.py fitted for its kind of notice
     and kept only if that is above what a home on record sells at; it is given the commonest kind of home and the
@@ -178,7 +194,7 @@ def unseen_homes(score_year, scored, spec_json="research/outputs/lab/notice_unse
         if not q or not q.get("file") or not (DIRS[k] / "listing.jsonl").exists():
             continue
         tx = sales() if tx is None else tx
-        r = unseen_rows(k, score_year, tx)
+        r = unseen_rows(k, score_year, tx, t0)
         b = lgb.Booster(model_file=str(Path(spec_json).parent / q["file"]))
         assert b.feature_name() == q["columns"] == UNSEEN_COLS, "the model for homes with no sale on record does not match its columns"
         r["p_sale"] = b.predict(r[UNSEEN_COLS].to_numpy(np.float32), num_threads=4)

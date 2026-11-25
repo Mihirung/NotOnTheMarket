@@ -7,6 +7,8 @@ sale completing in the twelve months that follow. Three rankings are compared:
   deployed    the January figure alone
   january     plus a notice step that reads notices to 31 December: the product, scored once a year
   monthly     plus a notice step that reads notices to the end of the month before: refreshed monthly
+  month_old   plus a notice step that reads notices to a month earlier still: a monthly refresh on the
+              day before its next one, which is what a weekly refresh would be measured against
 
 Everything else is as in notice_step.py: the first step is the deployed model as fitted to 2015, and
 each home-year is scored by notice steps fitted on the other folds of homes in the other year. The
@@ -76,7 +78,8 @@ def main():
     rng = np.random.default_rng(5); draws = [rng.poisson(1.0, LE.N_BLOCKS).astype("float64") for _ in range(LE.BOOT)]
     j = NS.KINDS.index("dec")
     R = {"years": list(ST.YEARS), "kinds": kinds, "home_years": int(len(p)), "months": []}
-    boot = {b[0]: [] for b in BANDS}
+    boot, late = {b[0]: [] for b in BANDS}, {b[0]: [] for b in BANDS}
+    prev = NR.features_at(N, rows, years, -1)                                # notices to 30 November
     for s in range(12):
         there = ~((end > 0) & (end < start + s))                             # not sold since 1 January
         y = ((end >= start + s) & (end < start + s + 12)).astype(np.float64)
@@ -84,6 +87,8 @@ def main():
         Ns = N0 if s == 0 else NR.features_at(N, rows, years, s)
         arms = {"deployed": ST.logit(q), "january": NR.cross({**d, "N": N0, "y": y}, q, kinds, there)}
         arms["monthly"] = arms["january"] if s == 0 else NR.cross({**d, "N": Ns, "y": y}, q, kinds, there)
+        arms["month_old"] = arms["january"] if s == 1 else NR.cross({**d, "N": prev, "y": y}, q, kinds, there)
+        prev = Ns
         m = there[test]
         t = {k: d[k][test][m] for k in ("year", "tenure", "block", "district")}; yy = y[test][m]
         row = {"scored_on_1": MONTH[s], "months_after_1_january": s, "test_home_years_still_there": int(m.sum()), "rate": round(float(yy.mean()), 4), "bands": {}}
@@ -93,7 +98,9 @@ def main():
             r = {arm: round(band.lift(tp), 4) for arm, tp in tops.items()}
             dd = np.array([band.lift(tops["monthly"], g[band.block]) - band.lift(tops["january"], g[band.block]) for g in draws])
             r["monthly_minus_january"] = [round(r["monthly"] - r["january"], 4)] + [round(float(np.percentile(dd, x)), 4) for x in (2.5, 97.5)]
-            row["bands"][name] = r; boot[name].append(dd)
+            d2 = np.array([band.lift(tops["monthly"], g[band.block]) - band.lift(tops["month_old"], g[band.block]) for g in draws])
+            r["monthly_minus_month_old"] = [round(r["monthly"] - r["month_old"], 4)] + [round(float(np.percentile(d2, x)), 4) for x in (2.5, 97.5)]
+            row["bands"][name] = r; boot[name].append(dd); late[name].append(d2)
         mo, owned = Ns[test][m][:, 3 * j], Ns[test][m][:, 3 * j + 1]
         fresh = (mo >= 1) & (mo <= s) & (owned >= 0)                         # a deceased-estate notice published since 1 January
         if fresh.sum() >= 30:
@@ -107,9 +114,12 @@ def main():
 
     R["average_over_the_year"] = {}
     for name, _, _ in BANDS:
-        v = {arm: round(float(np.mean([r["bands"][name][arm] for r in R["months"]])), 4) for arm in ("deployed", "january", "monthly")}
-        dd = np.mean(boot[name], axis=0)
+        v = {arm: round(float(np.mean([r["bands"][name][arm] for r in R["months"]])), 4) for arm in ("deployed", "january", "monthly", "month_old")}
+        dd, d2 = np.mean(boot[name], axis=0), np.mean(late[name], axis=0)
         v["monthly_minus_january"] = [round(v["monthly"] - v["january"], 4)] + [round(float(np.percentile(dd, x)), 4) for x in (2.5, 97.5)]
+        v["monthly_minus_month_old"] = [round(v["monthly"] - v["month_old"], 4)] + [round(float(np.percentile(d2, x)), 4) for x in (2.5, 97.5)]
+        # a monthly refresh is on average half a month behind and a weekly one half a week: the difference, in months of delay
+        v["weekly_over_monthly"] = [round(x * (0.5 - 0.5 * 7 / 30.44), 4) for x in v["monthly_minus_month_old"]]
         R["average_over_the_year"][name] = v
     print(json.dumps(R["average_over_the_year"]), flush=True)
     OUT.mkdir(parents=True, exist_ok=True)
@@ -120,6 +130,7 @@ def main():
 def report(R):
     pc = lambda x: f"{100 * x:.1f}%"                                    # noqa: E731
     ch = lambda v: f"{v[0]:+.3f} ({v[1]:+.3f} to {v[2]:+.3f})"          # noqa: E731
+    c4 = lambda v: f"{v[0]:+.4f} ({v[1]:+.4f} to {v[2]:+.4f})"          # noqa: E731
     A, T = R["average_over_the_year"]["all"], R["average_over_the_year"]["t20p"]
     md = ["# What refreshing the scores every month would add", "",
           "A test, not a change to the product. The product scores homes once a year, on 1 January. Here the ranking is looked at on the",
@@ -128,10 +139,13 @@ def report(R):
           "homes in the other year. The first step keeps its January figure throughout, so this is what the notices alone gain from",
           "being read sooner. Figures are sellers found in the best tenth of each postcode district, times random.", "",
           "## Every home", "",
-          "| Looked at on 1 | No notices | Notices to 31 December | Notices to the month before | Monthly against yearly (95% range) |", "|---|---|---|---|---|"]
+          "| Looked at on 1 | No notices | Notices to 31 December | Notices to the month before | Monthly against yearly (95% range) | "
+          "What a month's delay costs |", "|---|---|---|---|---|---|"]
     md += [f"| {r['scored_on_1']} | {r['bands']['all']['deployed']:.3f} | {r['bands']['all']['january']:.3f} | {r['bands']['all']['monthly']:.3f} | "
-           f"{ch(r['bands']['all']['monthly_minus_january']) if r['months_after_1_january'] else ''} |" for r in R["months"]]
-    md += [f"| **Average over the year** | {A['deployed']:.3f} | {A['january']:.3f} | {A['monthly']:.3f} | {ch(A['monthly_minus_january'])} |", "",
+           f"{ch(r['bands']['all']['monthly_minus_january']) if r['months_after_1_january'] else ''} | {ch(r['bands']['all']['monthly_minus_month_old'])} |"
+           for r in R["months"]]
+    md += [f"| **Average over the year** | {A['deployed']:.3f} | {A['january']:.3f} | {A['monthly']:.3f} | {ch(A['monthly_minus_january'])} | "
+           f"{ch(A['monthly_minus_month_old'])} |", "",
            "## Homes owned for 20 years or more", "",
            "| Looked at on 1 | No notices | Notices to 31 December | Notices to the month before | Monthly against yearly (95% range) |", "|---|---|---|---|---|"]
     md += [f"| {r['scored_on_1']} | {r['bands']['t20p']['deployed']:.3f} | {r['bands']['t20p']['january']:.3f} | {r['bands']['t20p']['monthly']:.3f} | "
@@ -145,7 +159,12 @@ def report(R):
     md += ["", "## Reading it", "",
            f"Averaged over the year, the notices add {gain_y:+.3f} to the best tenth when the product is scored once a year and {gain_m:+.3f} when it is",
            f"refreshed every month: {gain_m / gain_y:.1f} times as much. A notice says most in its first six months, and a yearly score does not",
-           "hold the ones published since January.", ""]
+           "hold the ones published since January.", "",
+           "## Weekly or monthly", "",
+           f"Reading the notices a month late costs {c4(A['monthly_minus_month_old'])} on average (the last column of the first table). A ranking",
+           "refreshed monthly is on average half a month behind and one refreshed weekly half a week, so a weekly refresh is worth about",
+           f"{c4(A['weekly_over_monthly'])} more than a monthly one; for homes owned 20 years or more, {c4(T['weekly_over_monthly'])}.",
+           "The Land Registry adds sales once a month, so only the notices can be read weekly.", ""]
     (OUT / "NOTICE_MONTHLY.md").write_text("\n".join(md))
     print("\n".join(md))
 

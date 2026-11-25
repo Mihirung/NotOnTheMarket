@@ -331,6 +331,39 @@ postcode's homes are owned and how many have a sale on record. Care and
 nursing homes are dropped first. The scorer adds each such home at that
 model's figure when it is above the average home's.
 
+**The live site.** The research table stops in December 2019; the site does
+not. `live_sales.py` keeps a second table up to date from the Land Registry's
+yearly files (reissued near the end of each month), `gazette_list.py --since
+auto` adds the notices published since the last read, and
+`export_site_v5.py live` scores every owned home on the first of the month
+after the sale records end, with the notices read to today. `refresh.sh` runs
+the three and writes the site's files; run it weekly.
+
+```bash
+bash refresh.sh                                 # notices to today, sales if reissued, every home scored, the site's files (about an hour)
+python src/live_check.py                        # the checks behind it, on the up-to-date sale records
+```
+
+The model has only ever scored on a 1 January. `panel2.clock()` moves every
+date on so that the scoring day falls on one, and each feature then reads the
+twelve months before that day instead of a calendar year. Scored that way in
+April, July and October the model ranks as well as in January (1.73, 1.75 and
+1.73 against 1.73 in 2017), and the model fitted to 2018 still finds 1.73
+times random on the sales of 2025 (`outputs/signals/LIVE_CHECK.md`). Scores
+left at their January figure fall from 1.74 to 1.63 by December, and
+the notices add 2.3 times as much read as they appear as read once a year
+(`NOTICE_MONTHLY.md`); weekly is worth a little more than monthly, and costs a
+dozen requests.
+
+A sale reaches the register weeks or months after it completes, so the last
+six months of every file are part empty (the newest month holds about a
+quarter of its sales). Left alone that costs the ranking 0.06, because every local and
+national count reads as a falling market. `live_sales.registered()` judges
+how much of each month is in, and the panel counts each of its sales for the
+ones still to come (`late` weights), which wins back 0.05. What cannot be
+won back: about one home in a hundred of the best tenth has just been sold
+and the register does not yet say so.
+
 **Judge a signal on homes not yet listed.** A home scored on 1 January that
 completes a sale by June was almost certainly for sale already, so "sells
 in the calendar year" rewards a signal for spotting listings. Energy

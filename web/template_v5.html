@@ -393,7 +393,7 @@ details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
       Wales 1 m LIDAR, OS OpenMap Local buildings, OS Open UPRN and Copernicus terrain. Each address joins its sale
       records through its exact postcode (ONS UPRN Directory), so counts of homes with a given view are estimates.
       Likelihood figures come from a real model trained on HM Land Registry Price Paid Data (England &amp; Wales,
-      1995–2019, 24.3M transactions; out-of-time AUC <span id="footauc"></span>). A home named in a bankruptcy order or a deceased-estate notice in The Gazette
+      1995–2019, 24.3M transactions; out-of-time AUC <span id="footauc"></span>). <span id="footasof"></span> A home named in a bankruptcy order or a deceased-estate notice in The Gazette
       has its likelihood adjusted, and homes named in a deceased-estate notice that have no sale on record are counted in;
       the notices are used for ranking only and are never shown. Air quality and health-access figures
       are real, from AHAH v4 inputs. Drive times are approximated from straight-line distance, not routed. Offer figures
@@ -798,6 +798,8 @@ function setNb(k, v){ S.brief.nb = {...(S.brief.nb||{}), [k]:v}; save(); render(
    are then loaded. These are estimates from distance, typical speeds and
    stations, not a timetable or live traffic. */
 const MODES = {car:"By car", walk:"On foot", pt:"By public transport"};
+// what the scores are made from, when the page is built from the live refresh (export_site_v5.py live)
+function asOf(){ const a=DATA.model.as_of; return a ? `Sales registered to the end of ${a.sales_to} · notices to ${a.notices_to}` : ""; }
 const MODE1 = {car:"by car", walk:"on foot", pt:"by public transport"};
 let STATIONS = null, PLACES = null; const PCS = {};
 function loadTravel(){ if(!loadTravel.p) loadTravel.p = Promise.all([
@@ -1583,6 +1585,7 @@ function vResults(){
       <div style="font-size:17px;margin-top:6px">≈ <b class="num" style="color:var(--accent-deep)">${s.likely.toLocaleString()}</b>
         would sell for the right offer within 12 months. Portals in this area today show roughly
         <b class="num">${Math.max(1,Math.round(s.n*0.032)).toLocaleString()}</b>.</div>
+      ${asOf()?`<div class="mono" style="font-size:11px;color:var(--muted);margin-top:8px">${esc(asOf())}</div>`:""}
     </div>
     <a class="btn ghost" href="#/search">Change what matters</a>
   </div>
@@ -1858,6 +1861,8 @@ function render(){
     : nav(r.v);
   document.getElementById("citysw").innerHTML = "";            // no area to choose: the search covers the country
   const fa=document.getElementById("footauc"); if(fa) fa.textContent=DATA.model.auc_oot||"";
+  const fo=document.getElementById("footasof"), ao=DATA.model.as_of;
+  if(fo) fo.textContent = ao ? `Scores are refreshed from the sales registered to the end of ${ao.sales_to} and the notices published to ${ao.notices_to}.` : "";
   const app=document.getElementById("app"), samePage=(location.hash||"#/")===render.lastPage;
   app.innerHTML =
     r.v==="offer"?vOffer(r.code) : r.v==="search"?vSearch() :
