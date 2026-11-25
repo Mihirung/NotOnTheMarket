@@ -309,6 +309,7 @@ python src/notice_fairness.py 2020              # where the notices fall, by dep
 python src/notice_timing.py                     # how soon after a notice a home is sold, month by month
 python src/notice_later_year.py                 # the deployed ranking with notices against 2019, a year no part of it was fitted on
 python src/notice_refresh.py                    # a test: what refreshing the scores on 1 July, with notices to 30 June, would add
+python src/notice_monthly.py                    # a test: the same on the first of every month, and the average over the year
 python src/notice_context.py                    # a test: would the notice step rank better with facts about the home
 python src/gazette_list.py data/gazette_bankruptcy bankruptcy 2012   # only for the look-back test below
 python src/notice_lookback.py                   # a test: a 60-month look-back for bankruptcy orders
