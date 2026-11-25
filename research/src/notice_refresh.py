@@ -166,7 +166,7 @@ def main():
            for r in R["homes_with_a_notice_on_1_july"]]
     md += ["", "## Reading it", "",
            "A notice published January to June is invisible to a January score until the next January. Read on 1 July it is one to",
-           "six months old, which is when it says most. One refresh a year is the least that could be tested here; a monthly refresh",
+           "six months old, which is when it says most. One extra refresh a year is the least that could be tested here; a monthly refresh",
            "would read every notice within a month of publication.", ""]
     OUT.mkdir(parents=True, exist_ok=True)
     json.dump(R, open(OUT / "NOTICE_REFRESH.json", "w"), indent=1)

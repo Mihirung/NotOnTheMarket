@@ -1,0 +1,344 @@
+{
+ "years": [
+  2017,
+  2018
+ ],
+ "refreshed_months_after_1_january": 6,
+ "kinds": [
+  "bk",
+  "dec"
+ ],
+ "home_years": 9126882,
+ "test_home_years": 2591431,
+ "test_home_years_still_there_on_1_july": 2544001,
+ "measures": {
+  "july_to_june": {
+   "all": {
+    "deployed": 1.6824,
+    "january_as_now": 1.6917,
+    "january": 1.6915,
+    "july": 1.7068,
+    "july_minus_january": [
+     0.0153,
+     0.0125,
+     0.0179
+    ],
+    "july_minus_deployed": [
+     0.0244,
+     0.0198,
+     0.0285
+    ],
+    "january_minus_deployed": [
+     0.0091,
+     0.0057,
+     0.0124
+    ]
+   },
+   "t0_9": {
+    "deployed": 1.6506,
+    "january_as_now": 1.6566,
+    "january": 1.6549,
+    "july": 1.6643,
+    "july_minus_january": [
+     0.0094,
+     0.0062,
+     0.0128
+    ],
+    "july_minus_deployed": [
+     0.0137,
+     0.0087,
+     0.0185
+    ],
+    "january_minus_deployed": [
+     0.0043,
+     0.0001,
+     0.0082
+    ]
+   },
+   "t10_19": {
+    "deployed": 1.5038,
+    "january_as_now": 1.5118,
+    "january": 1.5125,
+    "july": 1.5323,
+    "july_minus_january": [
+     0.0198,
+     0.0146,
+     0.0246
+    ],
+    "july_minus_deployed": [
+     0.0285,
+     0.0217,
+     0.0343
+    ],
+    "january_minus_deployed": [
+     0.0087,
+     0.0033,
+     0.0135
+    ]
+   },
+   "t20p": {
+    "deployed": 1.3198,
+    "january_as_now": 1.3364,
+    "january": 1.3347,
+    "july": 1.3895,
+    "july_minus_january": [
+     0.0548,
+     0.036,
+     0.0764
+    ],
+    "july_minus_deployed": [
+     0.0697,
+     0.0385,
+     0.0942
+    ],
+    "january_minus_deployed": [
+     0.0149,
+     -0.0082,
+     0.0362
+    ]
+   }
+  },
+  "october_to_june": {
+   "all": {
+    "deployed": 1.6675,
+    "january_as_now": 1.6777,
+    "january": 1.6765,
+    "july": 1.6892,
+    "july_minus_january": [
+     0.0127,
+     0.0094,
+     0.0159
+    ],
+    "july_minus_deployed": [
+     0.0217,
+     0.0164,
+     0.0268
+    ],
+    "january_minus_deployed": [
+     0.009,
+     0.0047,
+     0.0131
+    ]
+   },
+   "t0_9": {
+    "deployed": 1.6225,
+    "january_as_now": 1.629,
+    "january": 1.6263,
+    "july": 1.6357,
+    "july_minus_january": [
+     0.0094,
+     0.0057,
+     0.0136
+    ],
+    "july_minus_deployed": [
+     0.0132,
+     0.0074,
+     0.019
+    ],
+    "january_minus_deployed": [
+     0.0038,
+     -0.0013,
+     0.0092
+    ]
+   },
+   "t10_19": {
+    "deployed": 1.5051,
+    "january_as_now": 1.5104,
+    "january": 1.5104,
+    "july": 1.5279,
+    "july_minus_january": [
+     0.0175,
+     0.0118,
+     0.0226
+    ],
+    "july_minus_deployed": [
+     0.0228,
+     0.0149,
+     0.031
+    ],
+    "january_minus_deployed": [
+     0.0053,
+     -0.0018,
+     0.0114
+    ]
+   },
+   "t20p": {
+    "deployed": 1.3633,
+    "january_as_now": 1.3727,
+    "january": 1.3703,
+    "july": 1.4078,
+    "july_minus_january": [
+     0.0375,
+     0.0162,
+     0.0602
+    ],
+    "july_minus_deployed": [
+     0.0445,
+     0.015,
+     0.0738
+    ],
+    "january_minus_deployed": [
+     0.007,
+     -0.0192,
+     0.0288
+    ]
+   }
+  }
+ },
+ "homes_with_a_notice_on_1_july": [
+  {
+   "kind": "bk",
+   "notice": "1 to 6 months before",
+   "homes": 638,
+   "completes_july_to_june": 0.0298,
+   "completes_october_to_june": 0.0235,
+   "deployed_said": 0.0411,
+   "july_step_says": 0.043,
+   "best_tenth_january": 0.119,
+   "best_tenth_july": 0.138
+  },
+  {
+   "kind": "bk",
+   "notice": "7 to 12 months before",
+   "homes": 547,
+   "completes_july_to_june": 0.053,
+   "completes_october_to_june": 0.0457,
+   "deployed_said": 0.0404,
+   "july_step_says": 0.0409,
+   "best_tenth_january": 0.093,
+   "best_tenth_july": 0.097
+  },
+  {
+   "kind": "bk",
+   "notice": "13 to 24 months before",
+   "homes": 1077,
+   "completes_july_to_june": 0.0399,
+   "completes_october_to_june": 0.0279,
+   "deployed_said": 0.041,
+   "july_step_says": 0.0449,
+   "best_tenth_january": 0.192,
+   "best_tenth_july": 0.184
+  },
+  {
+   "kind": "bk",
+   "notice": "25 to 36 months before",
+   "homes": 1122,
+   "completes_july_to_june": 0.0499,
+   "completes_october_to_june": 0.0383,
+   "deployed_said": 0.0406,
+   "july_step_says": 0.0454,
+   "best_tenth_january": 0.201,
+   "best_tenth_july": 0.196
+  },
+  {
+   "kind": "bk",
+   "notice": "37 to 48 months before",
+   "homes": 1309,
+   "completes_july_to_june": 0.0435,
+   "completes_october_to_june": 0.0321,
+   "deployed_said": 0.0399,
+   "july_step_says": 0.0463,
+   "best_tenth_january": 0.194,
+   "best_tenth_july": 0.218
+  },
+  {
+   "kind": "bk",
+   "notice": "Any time in the window, about an earlier owner",
+   "homes": 513,
+   "completes_july_to_june": 0.0351,
+   "completes_october_to_june": 0.0312,
+   "deployed_said": 0.0314,
+   "july_step_says": 0.0333,
+   "best_tenth_january": 0.084,
+   "best_tenth_july": 0.07
+  },
+  {
+   "kind": "bk",
+   "notice": "Every home with one",
+   "homes": 5206,
+   "completes_july_to_june": 0.0426,
+   "completes_october_to_june": 0.0328,
+   "deployed_said": 0.0396,
+   "july_step_says": 0.0436,
+   "best_tenth_january": 0.165,
+   "best_tenth_july": 0.169
+  },
+  {
+   "kind": "dec",
+   "notice": "1 to 6 months before",
+   "homes": 532,
+   "completes_july_to_june": 0.3741,
+   "completes_october_to_june": 0.2199,
+   "deployed_said": 0.0392,
+   "july_step_says": 0.344,
+   "best_tenth_january": 0.094,
+   "best_tenth_july": 0.974
+  },
+  {
+   "kind": "dec",
+   "notice": "7 to 12 months before",
+   "homes": 467,
+   "completes_july_to_june": 0.182,
+   "completes_october_to_june": 0.1113,
+   "deployed_said": 0.037,
+   "july_step_says": 0.1961,
+   "best_tenth_january": 0.805,
+   "best_tenth_july": 0.799
+  },
+  {
+   "kind": "dec",
+   "notice": "13 to 24 months before",
+   "homes": 760,
+   "completes_july_to_june": 0.0908,
+   "completes_october_to_june": 0.0645,
+   "deployed_said": 0.0367,
+   "july_step_says": 0.0779,
+   "best_tenth_january": 0.657,
+   "best_tenth_july": 0.651
+  },
+  {
+   "kind": "dec",
+   "notice": "25 to 36 months before",
+   "homes": 668,
+   "completes_july_to_june": 0.0479,
+   "completes_october_to_june": 0.0329,
+   "deployed_said": 0.0387,
+   "july_step_says": 0.0553,
+   "best_tenth_january": 0.38,
+   "best_tenth_july": 0.382
+  },
+  {
+   "kind": "dec",
+   "notice": "37 to 48 months before",
+   "homes": 336,
+   "completes_july_to_june": 0.0387,
+   "completes_october_to_june": 0.0179,
+   "deployed_said": 0.0429,
+   "july_step_says": 0.0614,
+   "best_tenth_january": 0.494,
+   "best_tenth_july": 0.452
+  },
+  {
+   "kind": "dec",
+   "notice": "Any time in the window, about an earlier owner",
+   "homes": 4793,
+   "completes_july_to_june": 0.0428,
+   "completes_october_to_june": 0.0319,
+   "deployed_said": 0.0352,
+   "july_step_says": 0.0444,
+   "best_tenth_january": 0.207,
+   "best_tenth_july": 0.199
+  },
+  {
+   "kind": "dec",
+   "notice": "Every home with one",
+   "homes": 7556,
+   "completes_july_to_june": 0.0798,
+   "completes_october_to_june": 0.0528,
+   "deployed_said": 0.0364,
+   "july_step_says": 0.08,
+   "best_tenth_january": 0.309,
+   "best_tenth_july": 0.364
+  }
+ ]
+}
