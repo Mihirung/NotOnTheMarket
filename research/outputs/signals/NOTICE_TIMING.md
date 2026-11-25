@@ -9,11 +9,11 @@ at about 4% a year, so about 4% within 12 months, 8% within 24 and 12% within 36
 
 | Addresses | Number | 0 to 2 months | 3 to 5 | 6 to 11 | 12 to 23 | 24 to 35 | Within 12 months | Within 24 | Within 36 |
 |---|---|---|---|---|---|---|---|---|---|
-| Every address | 44,303 | 0.3% | 0.5% | 1.2% | 2.5% | 2.6% | 2.0% | 4.5% | 7.3% |
-| A sale on record before the notice | 17,424 | 0.7% | 0.9% | 2.2% | 4.8% | 4.7% | 3.8% | 8.6% | 13.6% |
-| The same, not sold in the 12 months before it | 16,616 | 0.7% | 0.9% | 2.3% | 4.9% | 4.8% | 3.9% | 8.8% | 13.9% |
-| No sale on record before the notice | 26,879 | 0.1% | 0.3% | 0.5% | 1.0% | 1.2% | 0.9% | 1.9% | 3.2% |
-| The same, not a flat or a named block | 22,699 | 0.1% | 0.3% | 0.6% | 1.2% | 1.3% | 1.0% | 2.2% | 3.6% |
+| Every address | 44,203 | 0.3% | 0.5% | 1.2% | 2.5% | 2.6% | 2.0% | 4.6% | 7.3% |
+| A sale on record before the notice | 17,383 | 0.7% | 0.9% | 2.2% | 4.8% | 4.7% | 3.8% | 8.6% | 13.6% |
+| The same, not sold in the 12 months before it | 16,576 | 0.7% | 0.9% | 2.3% | 4.9% | 4.8% | 3.9% | 8.8% | 13.9% |
+| No sale on record before the notice | 26,820 | 0.1% | 0.3% | 0.5% | 1.0% | 1.2% | 0.9% | 1.9% | 3.2% |
+| The same, not a flat or a named block | 22,650 | 0.1% | 0.3% | 0.6% | 1.2% | 1.3% | 1.0% | 2.2% | 3.6% |
 
 Of the addresses with a sale on record before the notice, 4.6% had been sold in the 12 months before it: the notice came after the sale.
 

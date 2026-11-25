@@ -1,0 +1,302 @@
+{
+ "kind": "dec",
+ "rows_with_one": 35034,
+ "arms": {
+  "step": {
+   "columns": 3,
+   "rounds": [
+    99,
+    62,
+    74,
+    62,
+    60,
+    57,
+    83,
+    67,
+    89,
+    72
+   ]
+  },
+  "home": {
+   "columns": 13,
+   "rounds": [
+    127,
+    67,
+    89,
+    71,
+    94,
+    63,
+    82,
+    66,
+    78,
+    68
+   ]
+  },
+  "home_first": {
+   "columns": 14,
+   "rounds": [
+    130,
+    69,
+    85,
+    89,
+    105,
+    66,
+    78,
+    67,
+    111,
+    85
+   ]
+  },
+  "home_area": {
+   "columns": 27,
+   "rounds": [
+    78,
+    95,
+    97,
+    87,
+    100,
+    76,
+    84,
+    80,
+    89,
+    72
+   ]
+  },
+  "home_area_first": {
+   "columns": 28,
+   "rounds": [
+    102,
+    80,
+    132,
+    88,
+    88,
+    71,
+    74,
+    76,
+    94,
+    72
+   ]
+  },
+  "home_area_life": {
+   "columns": 32,
+   "rounds": [
+    74,
+    83,
+    79,
+    92,
+    85,
+    68,
+    69,
+    105,
+    91,
+    80
+   ]
+  },
+  "home_area_life_first": {
+   "columns": 33,
+   "rounds": [
+    79,
+    89,
+    119,
+    92,
+    98,
+    75,
+    77,
+    72,
+    102,
+    83
+   ]
+  }
+ },
+ "bands": {
+  "all": {
+   "deployed": 1.7408,
+   "step": 1.7594,
+   "home": 1.7589,
+   "home_first": 1.7588,
+   "home_area": 1.7596,
+   "home_area_first": 1.7588,
+   "home_area_life": 1.759,
+   "home_area_life_first": 1.7589,
+   "home_minus_step": [
+    -0.0005,
+    -0.0016,
+    0.0006
+   ],
+   "home_first_minus_step": [
+    -0.0006,
+    -0.0019,
+    0.0005
+   ],
+   "home_area_minus_step": [
+    0.0002,
+    -0.001,
+    0.0013
+   ],
+   "home_area_first_minus_step": [
+    -0.0006,
+    -0.0017,
+    0.0005
+   ],
+   "home_area_life_minus_step": [
+    -0.0004,
+    -0.0016,
+    0.0006
+   ],
+   "home_area_life_first_minus_step": [
+    -0.0005,
+    -0.0016,
+    0.0006
+   ]
+  },
+  "t0_9": {
+   "deployed": 1.7405,
+   "step": 1.7503,
+   "home": 1.749,
+   "home_first": 1.7486,
+   "home_area": 1.7499,
+   "home_area_first": 1.7497,
+   "home_area_life": 1.7493,
+   "home_area_life_first": 1.7499,
+   "home_minus_step": [
+    -0.0013,
+    -0.0028,
+    0.0003
+   ],
+   "home_first_minus_step": [
+    -0.0017,
+    -0.0038,
+    0.0001
+   ],
+   "home_area_minus_step": [
+    -0.0004,
+    -0.0021,
+    0.0015
+   ],
+   "home_area_first_minus_step": [
+    -0.0006,
+    -0.0023,
+    0.0012
+   ],
+   "home_area_life_minus_step": [
+    -0.001,
+    -0.0028,
+    0.001
+   ],
+   "home_area_life_first_minus_step": [
+    -0.0004,
+    -0.0025,
+    0.0018
+   ]
+  },
+  "t10_19": {
+   "deployed": 1.5139,
+   "step": 1.5357,
+   "home": 1.5355,
+   "home_first": 1.5355,
+   "home_area": 1.5361,
+   "home_area_first": 1.5357,
+   "home_area_life": 1.5357,
+   "home_area_life_first": 1.5355,
+   "home_minus_step": [
+    -0.0002,
+    -0.0012,
+    0.0004
+   ],
+   "home_first_minus_step": [
+    -0.0002,
+    -0.0011,
+    0.0004
+   ],
+   "home_area_minus_step": [
+    0.0004,
+    -0.0003,
+    0.0013
+   ],
+   "home_area_first_minus_step": [
+    0.0,
+    -0.001,
+    0.0009
+   ],
+   "home_area_life_minus_step": [
+    0.0,
+    -0.0013,
+    0.0013
+   ],
+   "home_area_life_first_minus_step": [
+    -0.0002,
+    -0.0013,
+    0.0008
+   ]
+  },
+  "t20p": {
+   "deployed": 1.291,
+   "step": 1.3506,
+   "home": 1.3506,
+   "home_first": 1.3506,
+   "home_area": 1.3506,
+   "home_area_first": 1.3506,
+   "home_area_life": 1.3506,
+   "home_area_life_first": 1.3506,
+   "home_minus_step": [
+    0.0,
+    -0.0004,
+    0.0005
+   ],
+   "home_first_minus_step": [
+    0.0,
+    -0.0003,
+    0.0004
+   ],
+   "home_area_minus_step": [
+    0.0,
+    -0.0004,
+    0.0005
+   ],
+   "home_area_first_minus_step": [
+    0.0,
+    -0.0004,
+    0.0005
+   ],
+   "home_area_life_minus_step": [
+    0.0,
+    -0.0004,
+    0.0005
+   ],
+   "home_area_life_first_minus_step": [
+    0.0,
+    -0.0003,
+    0.0005
+   ]
+  }
+ },
+ "log_loss_test_homes_with_one": {
+  "rows": 9405,
+  "deployed": 0.24531,
+  "step": 0.20676,
+  "home": 0.20609,
+  "home_first": 0.20589,
+  "home_area": 0.20613,
+  "home_area_first": 0.206,
+  "home_area_life": 0.20642,
+  "home_area_life_first": 0.20613
+ },
+ "gain_share": {
+  "notice_owned": 0.483,
+  "notice_months": 0.447,
+  "price_pct": 0.017,
+  "owner_age": 0.01,
+  "log_price_rel": 0.009,
+  "first_step": 0.007,
+  "retired": 0.004,
+  "tenure": 0.004,
+  "imd_rank": 0.003,
+  "flats": 0.002,
+  "social_rent": 0.002,
+  "pc_stock": 0.002,
+  "widowed": 0.002,
+  "p_owner_85": 0.002,
+  "p_owner_75": 0.001
+ },
+ "helps": false
+}

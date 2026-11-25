@@ -1,0 +1,119 @@
+{
+ "years": [
+  2017,
+  2018
+ ],
+ "kind": "bk",
+ "look_back_months": [
+  48,
+  60
+ ],
+ "home_years": 9126882,
+ "older_notices": [
+  {
+   "notice": "25 to 36 months before",
+   "rows": 4318,
+   "home_years": 11965,
+   "sold": 585,
+   "rate": 0.0489,
+   "deployed_said": 0.0404,
+   "times": 1.21,
+   "times_range": [
+    1.11,
+    1.31
+   ],
+   "step_says": 0.0483
+  },
+  {
+   "notice": "37 to 48 months before",
+   "rows": 5075,
+   "home_years": 13928,
+   "sold": 727,
+   "rate": 0.0522,
+   "deployed_said": 0.0404,
+   "times": 1.29,
+   "times_range": [
+    1.2,
+    1.39
+   ],
+   "step_says": 0.0479
+  },
+  {
+   "notice": "49 to 60 months before",
+   "rows": 6038,
+   "home_years": 17129,
+   "sold": 729,
+   "rate": 0.0426,
+   "deployed_said": 0.0404,
+   "times": 1.05,
+   "times_range": [
+    0.98,
+    1.14
+   ],
+   "step_says": 0.043
+  },
+  {
+   "notice": "49 to 60 months before, about an earlier owner",
+   "rows": 2144,
+   "home_years": 6128,
+   "sold": 222,
+   "rate": 0.0362,
+   "deployed_said": 0.0381,
+   "times": 0.95,
+   "times_range": [
+    0.82,
+    1.08
+   ],
+   "step_says": 0.037
+  }
+ ],
+ "bands": {
+  "all": {
+   "deployed": 1.7408,
+   "months_48": 1.7594,
+   "months_60": 1.7596,
+   "months_60_minus_48": [
+    0.0002,
+    -0.0009,
+    0.0013
+   ]
+  },
+  "t0_9": {
+   "deployed": 1.7405,
+   "months_48": 1.7503,
+   "months_60": 1.7497,
+   "months_60_minus_48": [
+    -0.0006,
+    -0.0022,
+    0.0009
+   ]
+  },
+  "t10_19": {
+   "deployed": 1.5139,
+   "months_48": 1.5357,
+   "months_60": 1.5348,
+   "months_60_minus_48": [
+    -0.0009,
+    -0.0033,
+    0.0014
+   ]
+  },
+  "t20p": {
+   "deployed": 1.291,
+   "months_48": 1.3506,
+   "months_60": 1.3538,
+   "months_60_minus_48": [
+    0.0032,
+    -0.0073,
+    0.0145
+   ]
+  }
+ },
+ "log_loss_test_homes_with_one": {
+  "rows": 8009,
+  "deployed": 0.18685,
+  "months_48": 0.18633,
+  "months_60": 0.18681
+ },
+ "helps": false
+}
