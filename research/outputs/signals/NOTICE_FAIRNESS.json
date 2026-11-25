@@ -1,0 +1,467 @@
+{
+ "score_year": 2020,
+ "window_months": 48,
+ "addresses": 37232947,
+ "kinds": {
+  "bk": {
+   "addresses_named": 58071,
+   "per_1000_addresses": 1.56,
+   "groups": {
+    "imd_rank": {
+     "per_1000_by_fifth": [
+      1.86,
+      1.71,
+      1.56,
+      1.41,
+      1.26
+     ],
+     "times_average_by_fifth": [
+      1.19,
+      1.1,
+      1.0,
+      0.9,
+      0.81
+     ]
+    },
+    "white_british": {
+     "per_1000_by_fifth": [
+      1.63,
+      1.66,
+      1.73,
+      1.57,
+      1.33
+     ],
+     "times_average_by_fifth": [
+      1.03,
+      1.05,
+      1.09,
+      0.99,
+      0.84
+     ]
+    },
+    "white_other": {
+     "per_1000_by_fifth": [
+      1.3,
+      1.6,
+      1.65,
+      1.66,
+      1.7
+     ],
+     "times_average_by_fifth": [
+      0.82,
+      1.01,
+      1.04,
+      1.05,
+      1.08
+     ]
+    },
+    "indian": {
+     "per_1000_by_fifth": [
+      1.38,
+      1.55,
+      1.58,
+      1.68,
+      1.72
+     ],
+     "times_average_by_fifth": [
+      0.87,
+      0.98,
+      1.0,
+      1.06,
+      1.09
+     ]
+    },
+    "pakistani": {
+     "per_1000_by_fifth": [
+      1.51,
+      1.45,
+      1.67,
+      1.66,
+      1.62
+     ],
+     "times_average_by_fifth": [
+      0.95,
+      0.92,
+      1.06,
+      1.05,
+      1.03
+     ]
+    },
+    "bangladeshi": {
+     "per_1000_by_fifth": [
+      1.53,
+      1.56,
+      1.58,
+      1.63,
+      1.61
+     ],
+     "times_average_by_fifth": [
+      0.97,
+      0.98,
+      1.0,
+      1.03,
+      1.02
+     ]
+    },
+    "black_african": {
+     "per_1000_by_fifth": [
+      1.47,
+      1.56,
+      1.62,
+      1.63,
+      1.64
+     ],
+     "times_average_by_fifth": [
+      0.93,
+      0.99,
+      1.02,
+      1.03,
+      1.04
+     ]
+    },
+    "black_caribbean": {
+     "per_1000_by_fifth": [
+      1.46,
+      1.5,
+      1.62,
+      1.66,
+      1.67
+     ],
+     "times_average_by_fifth": [
+      0.92,
+      0.95,
+      1.02,
+      1.05,
+      1.06
+     ]
+    },
+    "christian": {
+     "per_1000_by_fifth": [
+      1.45,
+      1.52,
+      1.71,
+      1.81,
+      1.42
+     ],
+     "times_average_by_fifth": [
+      0.92,
+      0.96,
+      1.08,
+      1.14,
+      0.9
+     ]
+    },
+    "muslim": {
+     "per_1000_by_fifth": [
+      1.44,
+      1.56,
+      1.69,
+      1.59,
+      1.64
+     ],
+     "times_average_by_fifth": [
+      0.91,
+      0.98,
+      1.07,
+      1.01,
+      1.04
+     ]
+    },
+    "hindu": {
+     "per_1000_by_fifth": [
+      1.4,
+      1.52,
+      1.64,
+      1.65,
+      1.71
+     ],
+     "times_average_by_fifth": [
+      0.88,
+      0.96,
+      1.03,
+      1.04,
+      1.08
+     ]
+    },
+    "sikh": {
+     "per_1000_by_fifth": [
+      1.47,
+      1.51,
+      1.64,
+      1.67,
+      1.62
+     ],
+     "times_average_by_fifth": [
+      0.93,
+      0.95,
+      1.04,
+      1.06,
+      1.02
+     ]
+    },
+    "jewish": {
+     "per_1000_by_fifth": [
+      1.37,
+      1.52,
+      1.65,
+      1.7,
+      1.67
+     ],
+     "times_average_by_fifth": [
+      0.87,
+      0.96,
+      1.04,
+      1.07,
+      1.05
+     ]
+    },
+    "no_religion": {
+     "per_1000_by_fifth": [
+      1.76,
+      1.71,
+      1.52,
+      1.47,
+      1.46
+     ],
+     "times_average_by_fifth": [
+      1.11,
+      1.08,
+      0.96,
+      0.93,
+      0.92
+     ]
+    }
+   }
+  },
+  "dec": {
+   "addresses_named": 105898,
+   "per_1000_addresses": 2.84,
+   "groups": {
+    "imd_rank": {
+     "per_1000_by_fifth": [
+      1.74,
+      2.47,
+      2.94,
+      3.21,
+      3.86
+     ],
+     "times_average_by_fifth": [
+      0.61,
+      0.87,
+      1.03,
+      1.13,
+      1.36
+     ]
+    },
+    "white_british": {
+     "per_1000_by_fifth": [
+      3.25,
+      3.32,
+      3.25,
+      2.74,
+      1.87
+     ],
+     "times_average_by_fifth": [
+      1.13,
+      1.15,
+      1.12,
+      0.95,
+      0.65
+     ]
+    },
+    "white_other": {
+     "per_1000_by_fifth": [
+      2.18,
+      2.86,
+      3.23,
+      3.21,
+      2.95
+     ],
+     "times_average_by_fifth": [
+      0.75,
+      0.99,
+      1.12,
+      1.11,
+      1.02
+     ]
+    },
+    "indian": {
+     "per_1000_by_fifth": [
+      2.45,
+      2.69,
+      2.87,
+      3.3,
+      3.12
+     ],
+     "times_average_by_fifth": [
+      0.85,
+      0.93,
+      0.99,
+      1.14,
+      1.08
+     ]
+    },
+    "pakistani": {
+     "per_1000_by_fifth": [
+      2.21,
+      2.47,
+      3.58,
+      3.05,
+      3.12
+     ],
+     "times_average_by_fifth": [
+      0.77,
+      0.86,
+      1.24,
+      1.06,
+      1.08
+     ]
+    },
+    "bangladeshi": {
+     "per_1000_by_fifth": [
+      2.24,
+      3.18,
+      3.07,
+      2.89,
+      3.05
+     ],
+     "times_average_by_fifth": [
+      0.78,
+      1.1,
+      1.06,
+      1.0,
+      1.06
+     ]
+    },
+    "black_african": {
+     "per_1000_by_fifth": [
+      1.88,
+      2.65,
+      3.33,
+      3.17,
+      3.39
+     ],
+     "times_average_by_fifth": [
+      0.65,
+      0.92,
+      1.16,
+      1.1,
+      1.18
+     ]
+    },
+    "black_caribbean": {
+     "per_1000_by_fifth": [
+      2.1,
+      2.69,
+      3.21,
+      3.13,
+      3.3
+     ],
+     "times_average_by_fifth": [
+      0.73,
+      0.93,
+      1.11,
+      1.09,
+      1.14
+     ]
+    },
+    "christian": {
+     "per_1000_by_fifth": [
+      3.63,
+      3.48,
+      3.11,
+      2.51,
+      1.69
+     ],
+     "times_average_by_fifth": [
+      1.26,
+      1.21,
+      1.08,
+      0.87,
+      0.59
+     ]
+    },
+    "muslim": {
+     "per_1000_by_fifth": [
+      1.93,
+      2.72,
+      3.04,
+      3.45,
+      3.29
+     ],
+     "times_average_by_fifth": [
+      0.67,
+      0.94,
+      1.05,
+      1.19,
+      1.14
+     ]
+    },
+    "hindu": {
+     "per_1000_by_fifth": [
+      2.5,
+      2.68,
+      3.12,
+      2.94,
+      3.18
+     ],
+     "times_average_by_fifth": [
+      0.87,
+      0.93,
+      1.08,
+      1.02,
+      1.1
+     ]
+    },
+    "sikh": {
+     "per_1000_by_fifth": [
+      2.45,
+      2.92,
+      3.15,
+      2.95,
+      2.97
+     ],
+     "times_average_by_fifth": [
+      0.85,
+      1.01,
+      1.09,
+      1.02,
+      1.03
+     ]
+    },
+    "jewish": {
+     "per_1000_by_fifth": [
+      3.1,
+      2.8,
+      2.88,
+      2.87,
+      2.77
+     ],
+     "times_average_by_fifth": [
+      1.07,
+      0.97,
+      1.0,
+      0.99,
+      0.96
+     ]
+    },
+    "no_religion": {
+     "per_1000_by_fifth": [
+      1.95,
+      2.72,
+      3.08,
+      3.39,
+      3.28
+     ],
+     "times_average_by_fifth": [
+      0.68,
+      0.94,
+      1.07,
+      1.18,
+      1.14
+     ]
+    }
+   }
+  }
+ }
+}
