@@ -393,8 +393,9 @@ details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
       Wales 1 m LIDAR, OS OpenMap Local buildings, OS Open UPRN and Copernicus terrain. Each address joins its sale
       records through its exact postcode (ONS UPRN Directory), so counts of homes with a given view are estimates.
       Likelihood figures come from a real model trained on HM Land Registry Price Paid Data (England &amp; Wales,
-      1995–2019, 24.3M transactions; out-of-time AUC <span id="footauc"></span>). A home named in a bankruptcy order in The Gazette
-      has its likelihood adjusted; the notices are used for ranking only and are never shown. Air quality and health-access figures
+      1995–2019, 24.3M transactions; out-of-time AUC <span id="footauc"></span>). A home named in a bankruptcy order or a deceased-estate notice in The Gazette
+      has its likelihood adjusted, and homes named in a deceased-estate notice that have no sale on record are counted in;
+      the notices are used for ranking only and are never shown. Air quality and health-access figures
       are real, from AHAH v4 inputs. Drive times are approximated from straight-line distance, not routed. Offer figures
       use a proof-of-concept pricing rule, an assumption until campaign data exists.</div>
     <div class="mono" style="margin-top:8px">Contains HM Land Registry data © Crown copyright (OGL v3.0) ·
