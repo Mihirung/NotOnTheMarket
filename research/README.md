@@ -341,7 +341,10 @@ the three and writes the site's files; run it weekly.
 
 ```bash
 bash refresh.sh                                 # notices to today, sales if reissued, every home scored, the site's files (about an hour)
+python ../web/build.py outputs/site5/site_data.json ../web/template_v5.html outputs/site5/index.html
+bash ../web/check_page.sh outputs/site5         # the page in a headless browser: a last line of [] is a clean run
 python src/live_check.py                        # the checks behind it, on the up-to-date sale records
+python src/notice_timing.py live 2025 2025      # how soon recent notices are followed by a sale
 ```
 
 The model has only ever scored on a 1 January. `panel2.clock()` moves every

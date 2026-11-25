@@ -10,6 +10,8 @@ nursing homes are left out. An address with no sale on record at all counts as n
 shares are lower bounds. Only counts and shares are written out.
 
     python notice_timing.py
+    python notice_timing.py live <first year> <last year>     the same for recent notices, on the up-to-date sale
+                                                              records (live_sales.py); writes NOTICE_TIMING_LIVE
 
 Writes research/outputs/signals/NOTICE_TIMING.json and .md.
 """
@@ -24,6 +26,7 @@ import notice_signals as NS  # noqa: E402
 
 OUT = Path("research/outputs/signals")
 FIRST, LAST = 2015, 2017                                # notices first published in these years
+NAME = "NOTICE_TIMING"
 SPANS = [(0, 2), (3, 5), (6, 11), (12, 23), (24, 35)]   # months after the notice
 KIND = {"bk": "Bankruptcy orders", "dec": "Deceased-estate notices"}
 
@@ -50,6 +53,9 @@ def main():
           f"{R['sales_to']}. Each figure is the share of addresses completing a sale in that stretch of months after the notice.",
           "The three-year figure uses only the notices with three years of sales after them. A home with a sale on record sells",
           "at about 4% a year, so about 4% within 12 months, 8% within 24 and 12% within 36.", ""]
+    if NS.LIVE:
+        md[-1:] = ["The last six months of these sale records are only part registered (live_sales.py), so the figures that reach",
+                   "into them are low.", ""]
     for k in NS.KINDS:
         if not (NS.DIRS[k] / "listing.jsonl").exists():
             continue
@@ -87,10 +93,12 @@ def main():
            "probably already listed. Sales completing six months or more after the notice are the ones a letter sent on the day",
            "of the notice could still reach before the home is listed.", ""]
     OUT.mkdir(parents=True, exist_ok=True)
-    json.dump(R, open(OUT / "NOTICE_TIMING.json", "w"), indent=1)
-    (OUT / "NOTICE_TIMING.md").write_text("\n".join(md))
+    json.dump(R, open(OUT / f"{NAME}.json", "w"), indent=1)
+    (OUT / f"{NAME}.md").write_text("\n".join(md))
     print("\n".join(md))
 
 
 if __name__ == "__main__":
+    if sys.argv[1:2] == ["live"]:
+        NS.go_live(); FIRST, LAST, NAME = int(sys.argv[2]), int(sys.argv[3]), "NOTICE_TIMING_LIVE"
     main()
