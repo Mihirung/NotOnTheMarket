@@ -3,7 +3,9 @@
 #
 #   bash research/refresh.sh
 #
-# 1. Notices: every bankruptcy order and deceased-estate notice published since a week before the latest one held.
+# 1. Notices: every notice of the kinds the model reads, published since a week before the latest one held.
+#    The later-sales model reads deceased-estate notices only (bankruptcy orders failed its test), so only
+#    those are fetched: nothing is collected about living people that the site does not use.
 #    The Gazette's robots.txt asks for 10 seconds between requests; gazette_list.py waits 11, makes one request
 #    at a time and reads only the search listing. Skipped if another download of notices is running.
 # 2. Sales: the Land Registry's yearly files for this year and last, if it has reissued them since they were read
@@ -29,12 +31,15 @@ mkdir -p "$CACHE"
 step() { echo "=== $1 $(date -u +%F_%T)" | tee -a "$LOG"; }
 run() { "$@" >> "$LOG" 2>&1 || { echo "FAILED: $*" | tee -a "$LOG"; exit 1; }; }
 
-step "notices"
+LAB=research/outputs/lab
+if [ "${MODEL:-late}" = late ]; then TAG=_late; else TAG=; fi
+KINDS=$(python -c "import json; print(' '.join(json.load(open('$LAB/lab_second_notice$TAG.json'))['kinds']))")
+step "notices ($KINDS)"
 if pgrep -f "gazette_list.py" > /dev/null; then
   echo "another download of notices is running; reading what is on disk" | tee -a "$LOG"
 else
-  for pair in "gazette deceased" "gazette_bankruptcy bankruptcy"; do
-    set -- $pair
+  for k in $KINDS; do
+    if [ "$k" = dec ]; then set -- gazette deceased; else set -- gazette_bankruptcy bankruptcy; fi
     python research/src/gazette_list.py research/data/$1 $2 --since auto >> "$LOG" 2>&1 \
       || echo "NOTICES NOT READ ($2): the site is refreshed without the newest ones" | tee -a "$LOG"
   done
@@ -48,12 +53,7 @@ else
   echo "no certificate token (EPC_TOKEN_FILE): the certificates on disk are used" | tee -a "$LOG"
 fi
 step "score every owned home"
-LAB=research/outputs/lab
-if [ "${MODEL:-late}" = late ]; then
-  run python research/src/export_site_v5.py live $LAB/model_deploy_late.txt $LAB/lab_deploy_late.json $CACHE $LAB/lab_second_notice_late.json
-else
-  run python research/src/export_site_v5.py live $LAB/model_deploy.txt $LAB/lab_deploy.json $CACHE $LAB/lab_second_notice.json
-fi
+run python research/src/export_site_v5.py live $LAB/model_deploy$TAG.txt $LAB/lab_deploy$TAG.json $CACHE $LAB/lab_second_notice$TAG.json
 step "export the site"
 run python research/src/export_site_v5.py export $CACHE research/data/geo_postcode.parquet \
     research/outputs/national research/outputs/lab research/outputs/site5
