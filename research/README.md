@@ -305,6 +305,7 @@ python src/notice_step.py first                 # the deployed model's figure fo
 python src/notice_step.py features              # months since a notice at each home
 python src/notice_step.py                       # the second step: fitted on 18 chunks, tested on the 2 test chunks
 python src/notice_unseen.py                     # homes named in a notice with no sale on record: rates, and the model that scores them
+python src/notice_fairness.py 2020              # where the notices fall, by deprivation and by the make-up of the postcode
 python src/export_site_v5.py score data/transactions.parquet outputs/lab/model_deploy.txt outputs/lab/lab_deploy.json outputs/site5_cache outputs/lab/lab_second_notice.json
 ```
 
