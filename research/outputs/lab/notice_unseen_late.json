@@ -1,0 +1,33 @@
+{
+ "what": "models for homes named in a notice with no sale on record: the chance of a first sale completing between July of the year and June of the next",
+ "target": "late",
+ "years": [
+  2017,
+  2018
+ ],
+ "homes_on_record_sell_at": 0.0389,
+ "kinds": {
+  "dec": {
+   "file": "model_unseen_late_dec.txt",
+   "columns": [
+    "months",
+    "n",
+    "flat",
+    "own_outright",
+    "own_mortgage",
+    "social_rent",
+    "private_rent",
+    "hh_alone_65",
+    "age_75_84",
+    "age_85_plus",
+    "flats",
+    "bungalows",
+    "detached",
+    "n_addr",
+    "on_record"
+   ],
+   "min_p": 0.0389,
+   "rounds": 265
+  }
+ }
+}

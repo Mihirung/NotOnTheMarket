@@ -1,0 +1,276 @@
+{
+ "years": [
+  2017,
+  2018
+ ],
+ "homes_on_record_sell_at": 0.0389,
+ "kinds": {
+  "bk": {
+   "notices": 154239,
+   "share_with_no_home_on_record": 0.554,
+   "care_or_nursing_homes_left_out": 125,
+   "home_years": 60914,
+   "bands": [
+    {
+     "homes": "all",
+     "n": 60914,
+     "sold": 873,
+     "rate": 0.0143,
+     "range": [
+      0.0135,
+      0.0153
+     ],
+     "other_rate": 0.0141
+    },
+    {
+     "homes": "1 to 6 months before",
+     "n": 6963,
+     "sold": 87,
+     "rate": 0.0125,
+     "range": [
+      0.0099,
+      0.015
+     ],
+     "other_rate": 0.0113
+    },
+    {
+     "homes": "7 to 12 months before",
+     "n": 6842,
+     "sold": 90,
+     "rate": 0.0132,
+     "range": [
+      0.0105,
+      0.0159
+     ],
+     "other_rate": 0.013
+    },
+    {
+     "homes": "13 to 24 months before",
+     "n": 13776,
+     "sold": 227,
+     "rate": 0.0165,
+     "range": [
+      0.0143,
+      0.0187
+     ],
+     "other_rate": 0.0151
+    },
+    {
+     "homes": "25 to 36 months before",
+     "n": 15324,
+     "sold": 223,
+     "rate": 0.0146,
+     "range": [
+      0.0128,
+      0.0167
+     ],
+     "other_rate": 0.0148
+    },
+    {
+     "homes": "37 to 48 months before",
+     "n": 18009,
+     "sold": 246,
+     "rate": 0.0137,
+     "range": [
+      0.0119,
+      0.0155
+     ],
+     "other_rate": 0.0142
+    },
+    {
+     "homes": "a flat or a named block",
+     "n": 8952,
+     "sold": 49,
+     "rate": 0.0055,
+     "range": [
+      0.0039,
+      0.0072
+     ],
+     "other_rate": 0.0051
+    },
+    {
+     "homes": "any other address",
+     "n": 51962,
+     "sold": 824,
+     "rate": 0.0159,
+     "range": [
+      0.0149,
+      0.0171
+     ],
+     "other_rate": 0.0156
+    }
+   ],
+   "counted_in": false
+  },
+  "dec": {
+   "notices": 292587,
+   "share_with_no_home_on_record": 0.604,
+   "care_or_nursing_homes_left_out": 33184,
+   "home_years": 82806,
+   "bands": [
+    {
+     "homes": "all",
+     "n": 82806,
+     "sold": 4861,
+     "rate": 0.0587,
+     "range": [
+      0.0572,
+      0.0604
+     ],
+     "other_rate": 0.1121
+    },
+    {
+     "homes": "1 to 6 months before",
+     "n": 15273,
+     "sold": 2052,
+     "rate": 0.1344,
+     "range": [
+      0.129,
+      0.14
+     ],
+     "other_rate": 0.3031
+    },
+    {
+     "homes": "7 to 12 months before",
+     "n": 12882,
+     "sold": 989,
+     "rate": 0.0768,
+     "range": [
+      0.0721,
+      0.0816
+     ],
+     "other_rate": 0.1725
+    },
+    {
+     "homes": "13 to 24 months before",
+     "n": 20255,
+     "sold": 899,
+     "rate": 0.0444,
+     "range": [
+      0.0416,
+      0.0471
+     ],
+     "other_rate": 0.0688
+    },
+    {
+     "homes": "25 to 36 months before",
+     "n": 18343,
+     "sold": 518,
+     "rate": 0.0282,
+     "range": [
+      0.026,
+      0.0308
+     ],
+     "other_rate": 0.0338
+    },
+    {
+     "homes": "37 to 48 months before",
+     "n": 16053,
+     "sold": 403,
+     "rate": 0.0251,
+     "range": [
+      0.0227,
+      0.0273
+     ],
+     "other_rate": 0.0262
+    },
+    {
+     "homes": "a flat or a named block",
+     "n": 16517,
+     "sold": 212,
+     "rate": 0.0128,
+     "range": [
+      0.0112,
+      0.0147
+     ],
+     "other_rate": 0.022
+    },
+    {
+     "homes": "any other address",
+     "n": 66289,
+     "sold": 4649,
+     "rate": 0.0701,
+     "range": [
+      0.0682,
+      0.0722
+     ],
+     "other_rate": 0.1346
+    }
+   ],
+   "counted_in": true,
+   "test": {
+    "log_loss_one_rate_per_band": 0.21059,
+    "log_loss_model": 0.20044,
+    "change": -0.01015,
+    "change_range": [
+     -0.01109,
+     -0.00927
+    ],
+    "sold": 4861,
+    "model_expected": 4850,
+    "rounds": [
+     139,
+     308
+    ],
+    "fifths": [
+     {
+      "fifth": 1,
+      "homes": 16562,
+      "model_expected": 0.0108,
+      "sold": 0.0073
+     },
+     {
+      "fifth": 2,
+      "homes": 16561,
+      "model_expected": 0.0251,
+      "sold": 0.0254
+     },
+     {
+      "fifth": 3,
+      "homes": 16561,
+      "model_expected": 0.0395,
+      "sold": 0.044
+     },
+     {
+      "fifth": 4,
+      "homes": 16561,
+      "model_expected": 0.0658,
+      "sold": 0.0685
+     },
+     {
+      "fifth": 5,
+      "homes": 16561,
+      "model_expected": 0.1517,
+      "sold": 0.1484
+     }
+    ],
+    "scored_below_a_home_on_record": {
+     "homes": 41023,
+     "sold": 0.0211
+    },
+    "better_than_bands": true
+   },
+   "model": {
+    "rounds": 265,
+    "share_of_gain": {
+     "months": 0.505,
+     "flat": 0.2,
+     "on_record": 0.126,
+     "age_85_plus": 0.039,
+     "own_outright": 0.034,
+     "flats": 0.015,
+     "own_mortgage": 0.013,
+     "n_addr": 0.012,
+     "n": 0.012,
+     "social_rent": 0.01,
+     "age_75_84": 0.01,
+     "private_rent": 0.008,
+     "detached": 0.007,
+     "bungalows": 0.006,
+     "hh_alone_65": 0.004
+    }
+   },
+   "later_year": null
+  }
+ }
+}

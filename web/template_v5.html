@@ -393,7 +393,7 @@ details.faq p{color:var(--muted);font-size:15px;margin:10px 0 2px}
       Wales 1 m LIDAR, OS OpenMap Local buildings, OS Open UPRN and Copernicus terrain. Each address joins its sale
       records through its exact postcode (ONS UPRN Directory), so counts of homes with a given view are estimates.
       Likelihood figures come from a real model trained on HM Land Registry Price Paid Data (England &amp; Wales,
-      1995–2019, 24.3M transactions; out-of-time AUC <span id="footauc"></span>). <span id="footasof"></span> A home named in a bankruptcy order or a deceased-estate notice in The Gazette
+      1995–2019, 24.3M transactions; out-of-time AUC <span id="footauc"></span>). <span id="foottarget"></span> <span id="footasof"></span> A home named in a bankruptcy order or a deceased-estate notice in The Gazette
       has its likelihood adjusted, and homes named in a deceased-estate notice that have no sale on record are counted in;
       the notices are used for ranking only and are never shown. Air quality and health-access figures
       are real, from AHAH v4 inputs. Drive times are approximated from straight-line distance, not routed. Offer figures
@@ -1583,7 +1583,7 @@ function vResults(){
     <div>
       <div class="bignum num">${s.n.toLocaleString()} homes <small>fit the life you described</small></div>
       <div style="font-size:17px;margin-top:6px">≈ <b class="num" style="color:var(--accent-deep)">${s.likely.toLocaleString()}</b>
-        would sell for the right offer within 12 months. Portals in this area today show roughly
+        would sell for the right offer within ${DATA.model.target==="late"?18:12} months. Portals in this area today show roughly
         <b class="num">${Math.max(1,Math.round(s.n*0.032)).toLocaleString()}</b>.</div>
       ${asOf()?`<div class="mono" style="font-size:11px;color:var(--muted);margin-top:8px">${esc(asOf())}</div>`:""}
     </div>
@@ -1861,6 +1861,8 @@ function render(){
     : nav(r.v);
   document.getElementById("citysw").innerHTML = "";            // no area to choose: the search covers the country
   const fa=document.getElementById("footauc"); if(fa) fa.textContent=DATA.model.auc_oot||"";
+  const ft=document.getElementById("foottarget");
+  if(ft) ft.textContent = DATA.model.target==="late" ? "The likelihood is the chance that a sale completes between six and eighteen months after the scoring day, so a home already on the market counts for little; energy certificates, placed by property reference number and never by address, help to tell the two apart." : "";
   const fo=document.getElementById("footasof"), ao=DATA.model.as_of;
   if(fo) fo.textContent = ao ? `Scores are refreshed from the sales registered to the end of ${ao.sales_to} and the notices published to ${ao.notices_to}.` : "";
   const app=document.getElementById("app"), samePage=(location.hash||"#/")===render.lastPage;

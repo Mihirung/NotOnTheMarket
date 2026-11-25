@@ -151,7 +151,8 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
     import panel2 as P2
     import signals as SG
     cache = Path(cache_dir); cache.mkdir(parents=True, exist_ok=True)
-    fams = json.load(open(deploy_json))["families"]
+    dep = json.load(open(deploy_json)); fams = dep["families"]
+    label = dep.get("label", "y")                     # "late": a model aimed at homes not yet on the market (model_lab.py QM_LABEL)
     year, when = V4.SCORE_YEAR, None
     if live_dir:                                      # the scoring day follows the sale records; see live_clock()
         import notice_signals as NS
@@ -215,7 +216,8 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
     n_notice = int(out.notice.sum())                      # scored homes with a notice, before any others are added
     if second is not None and "NOTICE" in row_fams:       # homes named in a notice that the sale records do not hold
         import notice_signals as NS
-        u = NS.unseen_homes(year, out, t0=when["read"] if when else None)
+        spec = Path(deploy_json).parent / ("notice_unseen_late.json" if label == "late" else "notice_unseen.json")
+        u = NS.unseen_homes(year, out, spec_json=str(spec), t0=when["read"] if when else None)
         print(f"{n_notice:,} scored homes have a notice; {len(u):,} more homes named in a notice have no sale on record "
               f"(expected sellers {u.p_sale.sum():,.0f})", flush=True)
         if len(u):
@@ -230,6 +232,7 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
         json.dump({**when, "sales": json.load(open(Path(live_dir) / "sales.json"))["sales"]}, open(cache / "live.json", "w"), indent=1)
     elif (cache / "live.json").exists():
         (cache / "live.json").unlink()
+    json.dump(dep, open(cache / "deploy.json", "w"), indent=1)        # the model these scores came from, for the export
     out.to_parquet(cache / "scored_all.parquet", index=False)
     print(f"{len(out):,} owned homes scored, mean p {out.p_sale.mean():.4f}, expected sellers {out.p_sale.sum():,.0f}",
           flush=True)
@@ -551,10 +554,11 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
             if cp.exists() else None)
     lab = Path(lab_dir)
     load = lambda f: json.load(open(lab / f)) if (lab / f).exists() else {}
-    deploy = load("lab_deploy.json"); pct = deploy.get("pct", 100); name = deploy.get("name", "ALL")
-    best = load(f"lab_fit_{name}@{pct}.json") or load("lab_curve.json").get(f"ALL@{pct}") or {}
-    local = load("lab_local.json").get(f"{name}@{pct}", {})
-    model = {"auc_oot": round(best.get("auc", 0), 3),
+    deploy = json.load(open(cache / "deploy.json")) if (cache / "deploy.json").exists() else load("lab_deploy.json")
+    pct = deploy.get("pct", 100); name = deploy.get("name", "ALL"); late = deploy.get("label") == "late"
+    best = {} if late else load(f"lab_fit_{name}@{pct}.json") or load("lab_curve.json").get(f"ALL@{pct}") or {}
+    local = {} if late else load("lab_local.json").get(f"{name}@{pct}", {})
+    model = {"auc_oot": round(best.get("auc", 0), 3), "target": "late" if late else "year",
              "lift_top10": round(local.get("local_lift10") or best.get("lift10", 0), 2),
              "lift_top10_national": round(best.get("lift10", 0), 2), "lift_top1": round(best.get("lift1", 0), 2),
              "train_rows": deploy.get("train_rows"), "sample_pct": pct, "n_signals": len(deploy.get("features", [])),
@@ -564,6 +568,8 @@ def export(cache, geo_path, nat, lab_dir, out_dir, *only):
         sec = json.load(open(cache / "second.json"))
         if sec.get("lift_top10"):
             model["lift_top10"] = round(sec["lift_top10"]["with_notices"], 2)
+        if sec.get("auc_later"):                          # a model aimed at later sales is judged on them
+            model["auc_oot"] = round(sec["auc_later"]["with_notices"], 3)
         model["second_step"] = {"reads": sec.get("row_families"), "homes_with_a_notice": sec.get("homes_with_a_notice"),
                                 "homes_with_no_sale_on_record": sec.get("unseen_homes")}
     if (cache / "live.json").exists():                    # scored by the live refresh: what the scores are made from

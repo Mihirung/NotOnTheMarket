@@ -1,0 +1,508 @@
+{
+ "when": "2026-11-25",
+ "first_step": "+HOUSE+AREA+PD+EPC@100~late",
+ "target": "late",
+ "kinds": [
+  "bk",
+  "dec"
+ ],
+ "window_months": 48,
+ "rows": 9126882,
+ "sold_later_against_expected": 1.1041,
+ "rounds_chosen": {
+  "bk": [
+   3,
+   11,
+   14,
+   18,
+   29,
+   40,
+   40,
+   41,
+   41,
+   47
+  ],
+  "dec": [
+   49,
+   49,
+   49,
+   54,
+   57,
+   57,
+   58,
+   59,
+   63,
+   71
+  ]
+ },
+ "log_loss_with_a_notice": {
+  "both": {
+   "rows": 55080,
+   "home_years": 150186,
+   "sold": 7498,
+   "deployed_expected": 5093,
+   "second_step_expected": 7532,
+   "before": 0.19925,
+   "after": 0.19296,
+   "change": -0.00629,
+   "range": [
+    -0.00732,
+    -0.00525
+   ]
+  },
+  "bk": {
+   "rows": 20075,
+   "home_years": 55994,
+   "sold": 2554,
+   "deployed_expected": 1923,
+   "second_step_expected": 2453,
+   "before": 0.18669,
+   "after": 0.18706,
+   "change": 0.00037,
+   "range": [
+    -0.00047,
+    0.00119
+   ]
+  },
+  "dec": {
+   "rows": 35034,
+   "home_years": 94269,
+   "sold": 4945,
+   "deployed_expected": 3172,
+   "second_step_expected": 5081,
+   "before": 0.20661,
+   "after": 0.19636,
+   "change": -0.01025,
+   "range": [
+    -0.01174,
+    -0.00865
+   ]
+  }
+ },
+ "bands": {
+  "all": {
+   "later": {
+    "first_step": 1.6956,
+    "both": 1.6993,
+    "bk": 1.6917,
+    "dec": 1.702,
+    "gain_both": [
+     0.0037,
+     -0.0004,
+     0.0078
+    ],
+    "gain_bk": [
+     -0.0039,
+     -0.0059,
+     -0.0017
+    ],
+    "gain_dec": [
+     0.0064,
+     0.0033,
+     0.0096
+    ]
+   },
+   "not_listed": {
+    "first_step": 1.6043,
+    "both": 1.6087,
+    "bk": 1.6003,
+    "dec": 1.6113,
+    "gain_both": [
+     0.0044,
+     0.0002,
+     0.0084
+    ],
+    "gain_bk": [
+     -0.004,
+     -0.0062,
+     -0.0018
+    ],
+    "gain_dec": [
+     0.007,
+     0.0036,
+     0.0103
+    ]
+   },
+   "year": {
+    "first_step": 1.9268,
+    "both": 1.9427,
+    "bk": 1.9262,
+    "dec": 1.9422,
+    "gain_both": [
+     0.0159,
+     0.0121,
+     0.0199
+    ],
+    "gain_bk": [
+     -0.0006,
+     -0.0024,
+     0.0017
+    ],
+    "gain_dec": [
+     0.0154,
+     0.0117,
+     0.0195
+    ]
+   }
+  },
+  "t0_9": {
+   "later": {
+    "first_step": 1.6404,
+    "both": 1.6394,
+    "bk": 1.6379,
+    "dec": 1.6419,
+    "gain_both": [
+     -0.001,
+     -0.0068,
+     0.0047
+    ],
+    "gain_bk": [
+     -0.0025,
+     -0.005,
+     0.0001
+    ],
+    "gain_dec": [
+     0.0015,
+     -0.0032,
+     0.0068
+    ]
+   },
+   "not_listed": {
+    "first_step": 1.5646,
+    "both": 1.5636,
+    "bk": 1.562,
+    "dec": 1.5661,
+    "gain_both": [
+     -0.001,
+     -0.0068,
+     0.0051
+    ],
+    "gain_bk": [
+     -0.0026,
+     -0.0052,
+     0.0001
+    ],
+    "gain_dec": [
+     0.0015,
+     -0.0035,
+     0.007
+    ]
+   },
+   "year": {
+    "first_step": 1.8677,
+    "both": 1.8699,
+    "bk": 1.865,
+    "dec": 1.872,
+    "gain_both": [
+     0.0022,
+     -0.0038,
+     0.0081
+    ],
+    "gain_bk": [
+     -0.0027,
+     -0.0052,
+     -0.0003
+    ],
+    "gain_dec": [
+     0.0043,
+     -0.0015,
+     0.0095
+    ]
+   }
+  },
+  "t10_19": {
+   "later": {
+    "first_step": 1.5771,
+    "both": 1.5855,
+    "bk": 1.5771,
+    "dec": 1.5857,
+    "gain_both": [
+     0.0084,
+     0.0026,
+     0.0141
+    ],
+    "gain_bk": [
+     0.0,
+     -0.0037,
+     0.004
+    ],
+    "gain_dec": [
+     0.0086,
+     0.0037,
+     0.0129
+    ]
+   },
+   "not_listed": {
+    "first_step": 1.4154,
+    "both": 1.425,
+    "bk": 1.4167,
+    "dec": 1.4243,
+    "gain_both": [
+     0.0096,
+     0.0044,
+     0.0159
+    ],
+    "gain_bk": [
+     0.0013,
+     -0.0019,
+     0.0051
+    ],
+    "gain_dec": [
+     0.0089,
+     0.0043,
+     0.013
+    ]
+   },
+   "year": {
+    "first_step": 1.9039,
+    "both": 1.9242,
+    "bk": 1.9044,
+    "dec": 1.924,
+    "gain_both": [
+     0.0203,
+     0.0134,
+     0.0273
+    ],
+    "gain_bk": [
+     0.0005,
+     -0.0038,
+     0.0048
+    ],
+    "gain_dec": [
+     0.0201,
+     0.0143,
+     0.0258
+    ]
+   }
+  },
+  "t20p": {
+   "later": {
+    "first_step": 1.6135,
+    "both": 1.6169,
+    "bk": 1.6069,
+    "dec": 1.6252,
+    "gain_both": [
+     0.0034,
+     -0.0186,
+     0.0244
+    ],
+    "gain_bk": [
+     -0.0066,
+     -0.0225,
+     0.0081
+    ],
+    "gain_dec": [
+     0.0117,
+     -0.0078,
+     0.0283
+    ]
+   },
+   "not_listed": {
+    "first_step": 1.3355,
+    "both": 1.3453,
+    "bk": 1.3316,
+    "dec": 1.3506,
+    "gain_both": [
+     0.0098,
+     -0.0106,
+     0.0321
+    ],
+    "gain_bk": [
+     -0.0039,
+     -0.0184,
+     0.0103
+    ],
+    "gain_dec": [
+     0.0151,
+     -0.0065,
+     0.0321
+    ]
+   },
+   "year": {
+    "first_step": 2.1538,
+    "both": 2.1796,
+    "bk": 2.1474,
+    "dec": 2.1876,
+    "gain_both": [
+     0.0258,
+     0.0035,
+     0.0526
+    ],
+    "gain_bk": [
+     -0.0064,
+     -0.0216,
+     0.0099
+    ],
+    "gain_dec": [
+     0.0338,
+     0.0139,
+     0.0564
+    ]
+   }
+  }
+ },
+ "auc_later": {
+  "first_step": 0.6007,
+  "with_notices": 0.601
+ },
+ "homes_with_a_notice": [
+  {
+   "kind": "bk",
+   "notice": "1 to 6 months before",
+   "home_years": 5955,
+   "sold_later": 0.04,
+   "first_step_said": 0.0351,
+   "with_the_step": 0.0409,
+   "in_best_tenth_before": 0.11,
+   "in_best_tenth_after": 0.184
+  },
+  {
+   "kind": "bk",
+   "notice": "7 to 12 months before",
+   "home_years": 5665,
+   "sold_later": 0.0436,
+   "first_step_said": 0.0358,
+   "with_the_step": 0.0443,
+   "in_best_tenth_before": 0.107,
+   "in_best_tenth_after": 0.296
+  },
+  {
+   "kind": "bk",
+   "notice": "13 to 24 months before",
+   "home_years": 11013,
+   "sold_later": 0.0521,
+   "first_step_said": 0.0357,
+   "with_the_step": 0.0471,
+   "in_best_tenth_before": 0.113,
+   "in_best_tenth_after": 0.324
+  },
+  {
+   "kind": "bk",
+   "notice": "25 to 36 months before",
+   "home_years": 11965,
+   "sold_later": 0.0452,
+   "first_step_said": 0.0343,
+   "with_the_step": 0.0444,
+   "in_best_tenth_before": 0.098,
+   "in_best_tenth_after": 0.292
+  },
+  {
+   "kind": "bk",
+   "notice": "37 to 48 months before",
+   "home_years": 13928,
+   "sold_later": 0.0475,
+   "first_step_said": 0.0341,
+   "with_the_step": 0.0446,
+   "in_best_tenth_before": 0.087,
+   "in_best_tenth_after": 0.322
+  },
+  {
+   "kind": "bk",
+   "notice": "Any, owner bought before it",
+   "home_years": 48526,
+   "sold_later": 0.0466,
+   "first_step_said": 0.0348,
+   "with_the_step": 0.0446,
+   "in_best_tenth_before": 0.1,
+   "in_best_tenth_after": 0.296
+  },
+  {
+   "kind": "bk",
+   "notice": "Any, about an earlier owner",
+   "home_years": 7468,
+   "sold_later": 0.0392,
+   "first_step_said": 0.0311,
+   "with_the_step": 0.0386,
+   "in_best_tenth_before": 0.08,
+   "in_best_tenth_after": 0.209
+  },
+  {
+   "kind": "dec",
+   "notice": "1 to 6 months before",
+   "home_years": 5685,
+   "sold_later": 0.1564,
+   "first_step_said": 0.0349,
+   "with_the_step": 0.1482,
+   "in_best_tenth_before": 0.088,
+   "in_best_tenth_after": 0.855
+  },
+  {
+   "kind": "dec",
+   "notice": "7 to 12 months before",
+   "home_years": 4891,
+   "sold_later": 0.0883,
+   "first_step_said": 0.034,
+   "with_the_step": 0.0914,
+   "in_best_tenth_before": 0.062,
+   "in_best_tenth_after": 0.759
+  },
+  {
+   "kind": "dec",
+   "notice": "13 to 24 months before",
+   "home_years": 7166,
+   "sold_later": 0.0622,
+   "first_step_said": 0.0344,
+   "with_the_step": 0.0602,
+   "in_best_tenth_before": 0.064,
+   "in_best_tenth_after": 0.582
+  },
+  {
+   "kind": "dec",
+   "notice": "25 to 36 months before",
+   "home_years": 6246,
+   "sold_later": 0.0469,
+   "first_step_said": 0.0356,
+   "with_the_step": 0.0508,
+   "in_best_tenth_before": 0.093,
+   "in_best_tenth_after": 0.436
+  },
+  {
+   "kind": "dec",
+   "notice": "37 to 48 months before",
+   "home_years": 5144,
+   "sold_later": 0.0453,
+   "first_step_said": 0.0353,
+   "with_the_step": 0.0454,
+   "in_best_tenth_before": 0.083,
+   "in_best_tenth_after": 0.266
+  },
+  {
+   "kind": "dec",
+   "notice": "Any, owner bought before it",
+   "home_years": 29132,
+   "sold_later": 0.0787,
+   "first_step_said": 0.0348,
+   "with_the_step": 0.078,
+   "in_best_tenth_before": 0.078,
+   "in_best_tenth_after": 0.58
+  },
+  {
+   "kind": "dec",
+   "notice": "Any, about an earlier owner",
+   "home_years": 65137,
+   "sold_later": 0.0407,
+   "first_step_said": 0.0331,
+   "with_the_step": 0.0431,
+   "in_best_tenth_before": 0.062,
+   "in_best_tenth_after": 0.23
+  }
+ ],
+ "clear_of_zero": false,
+ "passes_by_kind": {
+  "bk": false,
+  "dec": true
+ },
+ "passes": true,
+ "product": [
+  {
+   "kind": "dec",
+   "file": "model_second_notice_late_dec.txt",
+   "columns": [
+    "notice_dec_months",
+    "notice_dec_owned",
+    "notice_dec_n"
+   ],
+   "rounds": 100
+  }
+ ]
+}

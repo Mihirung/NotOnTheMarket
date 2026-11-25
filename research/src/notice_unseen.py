@@ -21,11 +21,15 @@ Rates are lower bounds: an address that fails to match its later sale record cou
 Only counts and rates are written out.
 
     python notice_unseen.py
+    QM_LABEL=late python notice_unseen.py     the same for the model aimed at homes not yet on the market: the
+                                              first sale completes between July of the year and June of the next
 
 Writes research/outputs/signals/NOTICE_UNSEEN.json and .md, and for the product
-research/outputs/lab/notice_unseen.json and model_unseen_<kind>.txt.
+research/outputs/lab/notice_unseen.json and model_unseen_<kind>.txt (NOTICE_UNSEEN_LATE, notice_unseen_late.json and
+model_unseen_late_<kind>.txt for the later sale).
 """
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -48,6 +52,9 @@ MAX_ROUNDS = 400
 FOLDS = 5
 BLOCKS = 2048
 LATER = 2019                                            # a year after both, never fitted on
+LATE = os.environ.get("QM_LABEL", "y") == "late"        # what is predicted: the first sale in the calendar year, or a later one
+TARGET, OTHER, TAG = ("late", "sold", "_late") if LATE else ("sold", "late", "")
+WHAT, WHAT_OTHER = (("Completes July to June", "First sold in the year") if LATE else ("First sold in the year", "Completes July to June"))
 
 
 def rounds_for(X, y, block):
@@ -100,7 +107,7 @@ def spread(block, *vals):
 
 def test(r):
     """Cross-fitted predictions for every row: the model's and the plain alternative's."""
-    X, y, year = r[NS.UNSEEN_COLS].to_numpy(np.float32), r.sold.to_numpy(float), r.year.to_numpy()
+    X, y, year = r[NS.UNSEEN_COLS].to_numpy(np.float32), r[TARGET].to_numpy(float), r.year.to_numpy()
     block = r.block.to_numpy(); fold = block % FOLDS
     pm, pb, rounds = np.full(len(r), np.nan), np.full(len(r), np.nan), []
     for f in range(FOLDS):
@@ -114,13 +121,13 @@ def test(r):
 
 def later_year(k, tx, model, min_p):
     """The product's model set against a later year it never saw: the homes it counts in, what it expected, what sold."""
-    if int(tx.ym.max()) < LATER * 12 + 11:
+    if int(tx.ym.max()) < LATER * 12 + (17 if LATE else 11):          # the outcome is not all on record
         return None
     r = NS.unseen_rows(k, LATER, tx)
     if len(r) < 1000:
         return None
     p = model.predict(r[NS.UNSEEN_COLS].to_numpy(np.float32), num_threads=4)
-    y, keep = r.sold.to_numpy(float), p >= min_p
+    y, keep = r[TARGET].to_numpy(float), p >= min_p
     return {"year": LATER, "homes": int(len(r)), "counted_in": int(keep.sum()), "model_expected": round(float(p[keep].sum())),
             "sold": int(y[keep].sum()), "rate": round(float(y[keep].mean()), 4) if keep.any() else None,
             "left_out": int((~keep).sum()), "left_out_rate": round(float(y[~keep].mean()), 4) if (~keep).any() else None}
@@ -132,6 +139,9 @@ def main():
     te = LE.load_test(PANEL, years=YEARS)
     base = float(te["y"].mean())                        # what a home with a sale on record sells at in those years
     del te
+    if LATE:                                            # ... or goes on to sell between July and the next June
+        yr = [np.load(PANEL / f"year_{c}.npy") for c in (0, 1)]
+        base = float(np.concatenate([np.load(PANEL / f"late_{c}.npy")[(v >= YEARS[0]) & (v <= YEARS[1])] for c, v in zip((0, 1), yr)]).mean())
     R = {"years": list(YEARS), "homes_on_record_sell_at": round(base, 4), "kinds": {}}
     spec, md = {}, []
     for k in NS.KINDS:
@@ -140,23 +150,23 @@ def main():
         t = NS.linked(k, every=True)
         r = pd.concat([NS.unseen_rows(k, T, tx).assign(year=T) for T in YEARS], ignore_index=True)
         r["block"] = (pd.util.hash_array(r.key.to_numpy(np.int64)) % BLOCKS).astype(np.int64)
-        y, block = r.sold.to_numpy(float), r.block.to_numpy()
+        y, block = r[TARGET].to_numpy(float), r.block.to_numpy()
         bands = []
         for name, m in ([("all", np.ones(len(r), bool))] + [(f"{a} to {b} months before", ((r.months >= a) & (r.months <= b)).to_numpy()) for a, b in MONTHS]
                         + [("a flat or a named block", (r.flat > 0).to_numpy()), ("any other address", (r.flat == 0).to_numpy())]):
             if m.sum() < 50:
                 continue
-            bands.append({"homes": name, "n": int(m.sum()), "first_sold_in_the_year": int(y[m].sum()), "rate": round(float(y[m].mean()), 4),
-                          "range": [round(v, 4) for v in spread(block[m], y[m])], "completes_july_to_june": round(float(r.late[m].mean()), 4)})
+            bands.append({"homes": name, "n": int(m.sum()), "sold": int(y[m].sum()), "rate": round(float(y[m].mean()), 4),
+                          "range": [round(v, 4) for v in spread(block[m], y[m])], "other_rate": round(float(r[OTHER][m].mean()), 4)})
             print(k, bands[-1], flush=True)
         K = {"notices": int(len(t)), "share_with_no_home_on_record": round(float((~t.has).mean()), 3),
              "care_or_nursing_homes_left_out": int(t.care.sum()), "home_years": int(len(r)), "bands": bands}
         md += [f"## {KIND[k]}", "",
                f"{len(t):,} notices with an address; {100 * (~t.has).mean():.0f}% name a home with no sale on record at all. "
                f"{int(t.care.sum()):,} at care or nursing homes are left out. Measured on {len(r):,} home-years.", "",
-               "| Homes | Number | First sold in the year (95% range) | Completes July to June |", "|---|---|---|---|",
+               f"| Homes | Number | {WHAT} (95% range) | {WHAT_OTHER} |", "|---|---|---|---|",
                *[f"| {b['homes'].capitalize()} | {b['n']:,} | {100 * b['rate']:.1f}% ({100 * b['range'][0]:.1f} to {100 * b['range'][1]:.1f}) | "
-                 f"{100 * b['completes_july_to_june']:.1f}% |" for b in bands], ""]
+                 f"{100 * b['other_rate']:.1f}% |" for b in bands], ""]
         worth = bool(bands) and bands[0]["range"][0] > base and len(r) >= MIN_ROWS and all((r.year == T).sum() >= 1000 for T in YEARS)
         K["counted_in"] = worth
         if not worth:
@@ -178,15 +188,15 @@ def main():
         md += [f"The model against one rate per band of months, each home scored by a model that never saw it or its year: log loss "
                f"{T_['log_loss_one_rate_per_band']:.5f} with bands, {T_['log_loss_model']:.5f} with the model, a change of {T_['change']:+.5f} "
                f"({T_['change_range'][0]:+.5f} to {T_['change_range'][1]:+.5f}). The model expected {T_['model_expected']:,} first sales; there were {T_['sold']:,}.", "",
-               "| Fifth of homes, by the model's score | Homes | Model expected | Sold in the year |", "|---|---|---|---|",
+               f"| Fifth of homes, by the model's score | Homes | Model expected | {WHAT} |", "|---|---|---|---|",
                *[f"| {['Lowest', 'Second', 'Middle', 'Fourth', 'Highest'][f['fifth'] - 1]} | {f['homes']:,} | {100 * f['model_expected']:.1f}% | {100 * f['sold']:.1f}% |"
                  for f in T_["fifths"]], ""]
         X = r[NS.UNSEEN_COLS].to_numpy(np.float32)
         final = fit(X, y, block)                          # the product's model: both years, every home
-        final.save_model(str(LAB / f"model_unseen_{k}.txt"))
+        final.save_model(str(LAB / f"model_unseen{TAG}_{k}.txt"))
         gain = final.feature_importance("gain"); gain = gain / max(gain.sum(), 1e-9)
         K["model"] = {"rounds": final.num_trees(), "share_of_gain": {c: round(float(g), 3) for c, g in sorted(zip(NS.UNSEEN_COLS, gain), key=lambda v: -v[1])}}
-        spec[k] = {"file": f"model_unseen_{k}.txt", "columns": NS.UNSEEN_COLS, "min_p": round(base, 4), "rounds": final.num_trees()}
+        spec[k] = {"file": f"model_unseen{TAG}_{k}.txt", "columns": NS.UNSEEN_COLS, "min_p": round(base, 4), "rounds": final.num_trees()}
         md += ["What the product's model leans on, by share of its gain: "
                + ", ".join(f"{c} {100 * g:.0f}%" for c, g in list(K["model"]["share_of_gain"].items())[:6]) + ".", ""]
         L = K["later_year"] = later_year(k, tx, final, spec[k]["min_p"])
@@ -196,16 +206,19 @@ def main():
                    f"leaves out sold at {100 * L['left_out_rate']:.1f}%.", ""]
         R["kinds"][k] = K
     OUT.mkdir(parents=True, exist_ok=True)
-    json.dump(R, open(OUT / "NOTICE_UNSEEN.json", "w"), indent=1)
-    json.dump({"what": "models for homes named in a notice with no sale on record: the chance of a first sale in the calendar year",
-               "years": list(YEARS), "homes_on_record_sell_at": round(base, 4), "kinds": spec}, open(LAB / "notice_unseen.json", "w"), indent=1)
+    json.dump(R, open(OUT / f"NOTICE_UNSEEN{TAG.upper()}.json", "w"), indent=1)
+    json.dump({"what": "models for homes named in a notice with no sale on record: the chance of a first sale "
+                       + ("completing between July of the year and June of the next" if LATE else "in the calendar year"),
+               "target": TARGET, "years": list(YEARS), "homes_on_record_sell_at": round(base, 4), "kinds": spec},
+              open(LAB / f"notice_unseen{TAG}.json", "w"), indent=1)
     head = ["# Homes named in a notice that the sale records do not hold", "",
             "The model scores only homes with a sale on record since 1995. These are the others: homes named in a notice with no",
-            f"sale on record when the year began, {YEARS[0]} and {YEARS[1]} together. Homes that do have a record sell at {100 * base:.1f}% a year.",
+            f"sale on record when the year began, {YEARS[0]} and {YEARS[1]} together. Homes that do have a record "
+            + (f"complete a sale between July and the next June at {100 * base:.1f}%." if LATE else f"sell at {100 * base:.1f}% a year."),
             "The product counts in a kind of notice only where the whole range is above that, and then only the homes its model",
             "scores above that.", ""]
     foot = ["Lower bounds: an address that fails to match its later sale record counts as not sold.", ""]
-    (OUT / "NOTICE_UNSEEN.md").write_text("\n".join(head + md + foot))
+    (OUT / f"NOTICE_UNSEEN{TAG.upper()}.md").write_text("\n".join(head + md + foot))
     print("\n".join(head + md + foot))
 
 

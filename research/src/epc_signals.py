@@ -35,6 +35,10 @@ Columns (the EPC family):
   cert_rent_24m, cert_other_12m   rental and other certificates there, any home of this kind
 
 Certificates begin in October 2008, so years before 2010 are left blank.
+
+On the live site the panel's dates are moved on so that the scoring day falls on a 1 January
+(panel2.clock); the certificates' months are moved on with them, and every year of certificates
+up to the panel's last is read.
 """
 from pathlib import Path
 
@@ -58,90 +62,101 @@ def _win(key_sorted, base, a, b):
 
 
 class Epc:
-    def __init__(self, panel, month, years=range(2008, 2020), say=print):
+    def __init__(self, panel, month, years=None, say=print):
+        import panel2 as P2
         self.panel = panel
+        shift = getattr(panel, "shift", 0)                                               # the panel's clock (panel2.clock)
+        years = range(2008, P2.Y1 + 1) if years is None else years                       # to 2019 for the research table
         n_pc = len(panel.pc_names); self.ng = n_pc * 4
         self.ym = panel.year.astype(np.int64) * 12 + month.astype(np.int64) - 1          # month of every sale
         self.g = panel.pc.astype(np.int64) * 4 + panel.ptype                             # (postcode, kind of home) of every sale
 
         # ---- certificates, placed by UPRN -------------------------------------------------
-        t = pd.concat([pd.read_parquet(EPC / f"certificates_{y}.parquet",
-                                       columns=["uprn", "lodged", "transaction", "tenure", "ptype", "form"])
-                       for y in years if (EPC / f"certificates_{y}.parquet").exists()], ignore_index=True)
-        tr = t.transaction.str.lower().str.replace("-", " ").str.strip()
-        tr = tr.fillna("")
-        social = (tr.eq("rental (social)") | (tr.str.startswith("rental") & t.tenure.fillna("").str.lower().str.contains("social"))).to_numpy(dtype=bool)
-        home = np.where(t.ptype.isin(["Flat", "Maisonette"]), 3, t.form.map(FORM).fillna(-1)).astype(np.int8)
-        ck = tr.map(CK).fillna(2).astype(np.int8).to_numpy()
+        # read a year at a time and kept as numbers only: thirty million rows of text do not fit beside the panel
+        parts = []
+        for y in years:
+            if not (EPC / f"certificates_{y}.parquet").exists():
+                continue
+            t = pd.read_parquet(EPC / f"certificates_{y}.parquet", columns=["uprn", "lodged", "transaction", "tenure", "ptype", "form"])
+            tr = t.transaction.str.lower().str.replace("-", " ").str.strip().fillna("")
+            parts.append((t.uprn.to_numpy(),
+                          (t.lodged.dt.year * 12 + t.lodged.dt.month - 1).to_numpy(dtype=np.float64) + shift,
+                          tr.map(CK).fillna(2).astype(np.int8).to_numpy(),
+                          np.where(t.ptype.isin(["Flat", "Maisonette"]), 3, t.form.map(FORM).fillna(-1)).astype(np.int8),
+                          (tr.eq("rental (social)") | (tr.str.startswith("rental") & t.tenure.fillna("").str.lower().str.contains("social"))).to_numpy(dtype=bool)))
+            del t, tr
+        cu, cym, ck, home, social = (np.concatenate([p[i] for p in parts]) for i in range(5))
+        del parts
         u = pd.read_parquet(ONSUD)
         code = pd.Index(panel.pc_names).get_indexer(u.postcode.cat.categories)
         uu = u.uprn.to_numpy(); o = np.argsort(uu); uu = uu[o]; upc = code[u.postcode.cat.codes.to_numpy()][o]
         self.n_uprn = np.bincount(upc[upc >= 0], minlength=n_pc).astype(np.float32)
-        del u
-        cu = t.uprn.to_numpy()
+        del u, o
         i = np.minimum(np.searchsorted(uu, cu), len(uu) - 1)
         pc = np.where(uu[i] == cu, upc[i], -1)
-        cym = (t.lodged.dt.year * 12 + t.lodged.dt.month - 1).to_numpy(dtype=np.float64)
         keep = (pc >= 0) & (home >= 0) & ~social & np.isfinite(cym)
-        say(f"certificates {len(t):,}; used (placed in a postcode with sales, kind of home known, not social rent): {keep.mean():.1%}")
-        del t, uu, upc
+        say(f"certificates {len(cu):,}; used (placed in a postcode with sales, kind of home known, not social rent): {keep.mean():.1%}")
+        del uu, upc, i, social
         self.keep = keep                                                      # which certificates are used, in file order (epc2_signals.py)
         self.c_g = pc[keep].astype(np.int64) * 4 + home[keep]; self.c_k = ck[keep]; self.c_ym = cym[keep].astype(np.int64); self.c_u = cu[keep]
+        del pc, home, ck, cym, cu
         self.last_month = int(self.c_ym.max())
+        self.began = 2008 * 12 + 9 + shift                                               # October 2008, in the panel's clock
         self._anchor(say)
         self._tables = {}
 
     # ---------------------------------------------------------------- which UPRN is which home
     def _anchor(self, say):
+        # Thirty million sales and as many certificates: each working array is dropped as soon as it has been used,
+        # so that the whole fits in memory beside the panel.
         p = self.panel; n = len(p.key)
         # sale and new-dwelling certificates, sorted by (group, month)
         sel = (self.c_k == 0) | (self.c_k == 3)
-        o = np.lexsort((self.c_ym[sel], self.c_g[sel]))
-        sg, sym, su, sk = self.c_g[sel][o], self.c_ym[sel][o], self.c_u[sel][o], self.c_k[sel][o]
-        skey = sg * M + sym
+        sg, sym, su = self.c_g[sel], self.c_ym[sel], self.c_u[sel]; del sel
+        o = np.lexsort((sym, sg)); su = su[o]; skey = sg[o] * M + sym[o]; del o, sg, sym
         # runs of one UPRN in that order: a window holds one UPRN only if its run reaches the window's end
         brk = np.nonzero(np.r_[su[1:] != su[:-1], True])[0]
-        run_end = brk[np.searchsorted(brk, np.arange(len(su)))] + 1
+        run_end = brk[np.searchsorted(brk, np.arange(len(su)))] + 1; del brk
         # every sale: the previous sale's month in the same (postcode, kind), and whether another sale shares its month
         so = np.lexsort((self.ym, self.g)); gs, ys = self.g[so], self.ym[so]
         same_prev = np.r_[False, (gs[1:] == gs[:-1])]
-        prev = np.where(same_prev, np.r_[0, ys[:-1]], -10**6)
-        dup = np.zeros(n, bool); d = same_prev & (np.r_[0, ys[:-1]] == ys); dup[1:] |= d[1:]; dup[:-1] |= d[1:]
+        before = np.r_[0, ys[:-1]]
+        prev = np.where(same_prev, before, -10**6)
+        d = same_prev & (before == ys); del before, same_prev
+        dup = np.zeros(n, bool); dup[1:] |= d[1:]; dup[:-1] |= d[1:]
         # the month of the previous sale strictly before this one (ties share it)
-        first_of_month = ~d
-        prev_strict = np.maximum.accumulate(np.where(first_of_month, np.arange(n), 0))
-        prev_ym = prev[prev_strict]
-        new = p.is_new[so].astype(bool)
-        lo_m = np.maximum(prev_ym + 1, ys - np.where(new, 30, 18))
-        lo = np.searchsorted(skey, gs * M + lo_m, side="left"); hi = np.searchsorted(skey, gs * M + ys + 1, side="left")
-        one = (hi > lo) & (run_end[np.minimum(lo, len(su) - 1)] >= hi) & ~dup & (ys >= 2008 * 12 + 9)
-        uprn_sorted = np.where(one, su[np.minimum(lo, len(su) - 1)], -1)
-        spell_u = np.full(n, -1, np.int64); spell_u[so] = uprn_sorted
+        prev_strict = np.maximum.accumulate(np.where(~d, np.arange(n), 0)); del d
+        prev_ym = prev[prev_strict]; del prev, prev_strict
+        lo_m = np.maximum(prev_ym + 1, ys - np.where(p.is_new[so].astype(bool), 30, 18)); del prev_ym
+        lo = np.searchsorted(skey, gs * M + lo_m, side="left"); del lo_m
+        hi = np.searchsorted(skey, gs * M + ys + 1, side="left"); del gs, skey
+        at = np.minimum(lo, len(su) - 1)
+        one = (hi > lo) & (run_end[at] >= hi) & ~dup & (ys >= self.began); del hi, lo, run_end, dup, ys
+        spell_u = np.full(n, -1, np.int64); spell_u[so] = np.where(one, su[at], -1); del one, at, su, so
         self.matched = spell_u >= 0                                   # this sale itself was matched
         # a home keeps its UPRN through its later sales (rows are sorted by home, then time)
         first = np.r_[True, p.key[1:] != p.key[:-1]]
-        idx = np.where(spell_u >= 0, np.arange(n), -1)
-        start = np.maximum.accumulate(np.where(first, np.arange(n), 0))
-        last = np.maximum.accumulate(idx)                                      # latest matched row so far ...
-        last = np.where(last >= start, last, -1)                               # ... if it is the same home
-        self.spell_u = np.where(last >= 0, spell_u[np.maximum(last, 0)], -1)
-        say(f"sales since October 2008 matched to one UPRN: {self.matched[self.ym >= 2008 * 12 + 9].mean():.1%}; "
+        start = np.maximum.accumulate(np.where(first, np.arange(n), 0)); del first
+        last = np.maximum.accumulate(np.where(self.matched, np.arange(n), -1))  # latest matched row so far ...
+        last = np.where(last >= start, last, -1); del start                    # ... if it is the same home
+        self.spell_u = np.where(last >= 0, spell_u[np.maximum(last, 0)], -1); del last
+        say(f"sales since October 2008 matched to one UPRN: {self.matched[self.ym >= self.began].mean():.1%}; "
             f"spells with a known UPRN: {(self.spell_u >= 0).mean():.1%}")
         # each UPRN's first anchoring month, and every matched sale of it
-        mu, mym = spell_u[self.matched], self.ym[self.matched]
-        o2 = np.lexsort((mym, mu)); mu, mym = mu[o2], mym[o2]
+        mu, mym = spell_u[self.matched], self.ym[self.matched]; del spell_u
+        o2 = np.lexsort((mym, mu)); mu, mym = mu[o2], mym[o2]; del o2
         self.m_key = mu * M + mym                                              # (UPRN, month of a matched sale), sorted
-        fa = pd.Series(mym).groupby(mu).min()
-        self.anchor_u = fa.index.to_numpy(); self.anchor_ym = fa.to_numpy()
+        fa = pd.Series(mym).groupby(mu).min(); del mu, mym
+        self.anchor_u = fa.index.to_numpy(); self.anchor_ym = fa.to_numpy(); del fa
         # every certificate: when its UPRN was first anchored, and the first matched sale at or after it
         j = np.minimum(np.searchsorted(self.anchor_u, self.c_u), len(self.anchor_u) - 1)
-        a = np.where(self.anchor_u[j] == self.c_u, self.anchor_ym[j], 10**7)
+        a = np.where(self.anchor_u[j] == self.c_u, self.anchor_ym[j], 10**7); del j
         self.c_exact = a < self.c_ym                                           # lodged while the home was already known
-        self.c_gone = np.where(~self.c_exact & (a < 10**7), a, 10**7)          # leaves the pool when its UPRN is anchored
+        self.c_gone = np.where(~self.c_exact & (a < 10**7), a, 10**7); del a   # leaves the pool when its UPRN is anchored
         # certificates by UPRN, for the exact features
         o3 = np.lexsort((self.c_ym, self.c_k, self.c_u))
-        self.u_key = (self.c_u[o3] * 4 + self.c_k[o3]) * M + self.c_ym[o3]
-        o4 = np.lexsort((self.c_ym, self.c_u)); self.ua_u = self.c_u[o4]; self.ua_ym = self.c_ym[o4]
+        self.u_key = (self.c_u[o3] * 4 + self.c_k[o3]) * M + self.c_ym[o3]; del o3
+        o4 = np.lexsort((self.c_ym, self.c_u)); self.ua_u = self.c_u[o4]; self.ua_ym = self.c_ym[o4]; del o4
         self.ua_key = self.ua_u * M + self.ua_ym
 
     # ---------------------------------------------------------------- tables for one year

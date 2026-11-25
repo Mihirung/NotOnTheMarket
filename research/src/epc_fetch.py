@@ -15,6 +15,9 @@ repository) and is never printed or written anywhere else.
 
     EPC_TOKEN_FILE=<file> python epc_fetch.py columns        the files in the zip and their columns
     EPC_TOKEN_FILE=<file> python epc_fetch.py fetch [years]  writes research/data/epc/certificates_<year>.parquet
+    EPC_TOKEN_FILE=<file> python epc_fetch.py refresh        this year's file again (and last year's early in the year),
+                                                             unless it was read in the last 20 days: the service adds a
+                                                             month of certificates at a time
 """
 import io
 import os
@@ -138,8 +141,19 @@ def columns():
     print("kept:", pick([c.strip('"') for c in header]))
 
 
-def fetch(*years):
-    """One parquet file per year of certificates, so a stopped run resumes at the next year."""
+def refresh():
+    today = time.localtime()
+    years = [str(today.tm_year)] + ([str(today.tm_year - 1)] if today.tm_mon <= 2 else [])
+    stale = [y for y in years if not (OUT / f"certificates_{y}.parquet").exists()
+             or time.time() - (OUT / f"certificates_{y}.parquet").stat().st_mtime > 20 * 86400]
+    if not stale:
+        print("nothing new: this year's certificates were read in the last 20 days", flush=True); return
+    fetch(*stale, again=True)
+
+
+def fetch(*years, again=False):
+    """One parquet file per year of certificates, so a stopped run resumes at the next year. `again` reads a
+    year that is already on disk afresh and replaces it."""
     OUT.mkdir(parents=True, exist_ok=True)
     rf = RangeFile()
     z = zipfile.ZipFile(io.BufferedReader(rf, buffer_size=1024 * 1024))
@@ -147,7 +161,7 @@ def fetch(*years):
     for i in members:
         year = i.filename.split("-")[1][:4]
         dest = OUT / f"certificates_{year}.parquet"
-        if (years and year not in years) or dest.exists():
+        if (years and year not in years) or (dest.exists() and not again):
             continue
         with z.open(i) as f:
             head = pd.read_csv(io.BytesIO(f.readline()), nrows=0).columns.tolist()
@@ -178,4 +192,4 @@ def fetch(*years):
 
 
 if __name__ == "__main__":
-    {"columns": columns, "fetch": fetch}[sys.argv[1]](*sys.argv[2:])
+    {"columns": columns, "fetch": fetch, "refresh": refresh}[sys.argv[1]](*sys.argv[2:])
