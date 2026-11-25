@@ -14,6 +14,9 @@ The test: homes are split into five folds. Each fold in one year is scored by a 
 other folds in the other year, so no home and no year scores itself. The model is set against the
 plain alternative, one rate for each band of months.
 
+The product's model is then set against a later year it never saw (LATER): how many homes it counts
+in, how many first sales it expected, and how many there were.
+
 Rates are lower bounds: an address that fails to match its later sale record counts as not sold.
 Only counts and rates are written out.
 
@@ -44,6 +47,7 @@ PAR = dict(objective="binary", learning_rate=0.05, num_leaves=6, min_data_in_lea
 MAX_ROUNDS = 400
 FOLDS = 5
 BLOCKS = 2048
+LATER = 2019                                            # a year after both, never fitted on
 
 
 def rounds_for(X, y, block):
@@ -106,6 +110,20 @@ def test(r):
             pm[te] = m.predict(X[te], num_threads=4)
             pb[te] = by_band(X[tr][:, 0], y[tr], X[te][:, 0])
     return pm, pb, rounds
+
+
+def later_year(k, tx, model, min_p):
+    """The product's model set against a later year it never saw: the homes it counts in, what it expected, what sold."""
+    if int(tx.ym.max()) < LATER * 12 + 11:
+        return None
+    r = NS.unseen_rows(k, LATER, tx)
+    if len(r) < 1000:
+        return None
+    p = model.predict(r[NS.UNSEEN_COLS].to_numpy(np.float32), num_threads=4)
+    y, keep = r.sold.to_numpy(float), p >= min_p
+    return {"year": LATER, "homes": int(len(r)), "counted_in": int(keep.sum()), "model_expected": round(float(p[keep].sum())),
+            "sold": int(y[keep].sum()), "rate": round(float(y[keep].mean()), 4) if keep.any() else None,
+            "left_out": int((~keep).sum()), "left_out_rate": round(float(y[~keep].mean()), 4) if (~keep).any() else None}
 
 
 def main():
@@ -171,6 +189,11 @@ def main():
         spec[k] = {"file": f"model_unseen_{k}.txt", "columns": NS.UNSEEN_COLS, "min_p": round(base, 4), "rounds": final.num_trees()}
         md += ["What the product's model leans on, by share of its gain: "
                + ", ".join(f"{c} {100 * g:.0f}%" for c, g in list(K["model"]["share_of_gain"].items())[:6]) + ".", ""]
+        L = K["later_year"] = later_year(k, tx, final, spec[k]["min_p"])
+        if L and L["counted_in"] and L["left_out"]:
+            md += [f"Set against {L['year']}, a year the model never saw: it counts in {L['counted_in']:,} of {L['homes']:,} homes and expected "
+                   f"{L['model_expected']:,} first sales; there were {L['sold']:,} ({100 * L['rate']:.1f}%). The {L['left_out']:,} homes it "
+                   f"leaves out sold at {100 * L['left_out_rate']:.1f}%.", ""]
         R["kinds"][k] = K
     OUT.mkdir(parents=True, exist_ok=True)
     json.dump(R, open(OUT / "NOTICE_UNSEEN.json", "w"), indent=1)
