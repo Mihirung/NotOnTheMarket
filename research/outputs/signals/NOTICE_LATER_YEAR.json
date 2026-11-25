@@ -11,13 +11,13 @@
   "all": {
    "homes": 1349789,
    "deployed": 1.759,
-   "with_notices": 1.7852,
+   "with_notices": 1.7861,
    "bk": 1.7601,
-   "dec": 1.785,
+   "dec": 1.7859,
    "with_notices_change": [
-    0.0262,
-    0.019,
-    0.0328
+    0.0271,
+    0.0199,
+    0.0334
    ],
    "bk_change": [
     0.0011,
@@ -25,21 +25,21 @@
     0.0033
    ],
    "dec_change": [
-    0.026,
-    0.0199,
-    0.032
+    0.0269,
+    0.0208,
+    0.0328
    ]
   },
   "t0_9": {
    "homes": 626542,
    "deployed": 1.7821,
-   "with_notices": 1.7944,
+   "with_notices": 1.794,
    "bk": 1.783,
-   "dec": 1.7927,
+   "dec": 1.7922,
    "with_notices_change": [
-    0.0123,
-    0.0063,
-    0.0187
+    0.0119,
+    0.0056,
+    0.0185
    ],
    "bk_change": [
     0.0009,
@@ -47,21 +47,21 @@
     0.003
    ],
    "dec_change": [
-    0.0106,
-    0.0047,
+    0.0101,
+    0.0042,
     0.0168
    ]
   },
   "t10_19": {
    "homes": 555005,
    "deployed": 1.5023,
-   "with_notices": 1.5265,
+   "with_notices": 1.5271,
    "bk": 1.5018,
-   "dec": 1.5271,
+   "dec": 1.5277,
    "with_notices_change": [
-    0.0242,
-    0.0127,
-    0.0364
+    0.0248,
+    0.0136,
+    0.0371
    ],
    "bk_change": [
     -0.0005,
@@ -69,9 +69,9 @@
     0.0048
    ],
    "dec_change": [
-    0.0248,
-    0.0154,
-    0.0349
+    0.0254,
+    0.0161,
+    0.0356
    ]
   },
   "t20p": {
@@ -82,8 +82,8 @@
    "dec": 1.462,
    "with_notices_change": [
     0.118,
-    0.0808,
-    0.1579
+    0.0807,
+    0.1578
    ],
    "bk_change": [
     0.0099,
@@ -93,7 +93,7 @@
    "dec_change": [
     0.1081,
     0.0747,
-    0.1446
+    0.1445
    ]
   }
  },
@@ -156,7 +156,7 @@
    "deployed_said": 0.0302,
    "with_the_step": 0.0316,
    "best_tenth_before": 0.06,
-   "best_tenth_after": 0.084
+   "best_tenth_after": 0.08
   },
   {
    "kind": "bk",
@@ -174,9 +174,9 @@
    "homes": 315,
    "sold": 0.273,
    "deployed_said": 0.0341,
-   "with_the_step": 0.2754,
+   "with_the_step": 0.2874,
    "best_tenth_before": 0.073,
-   "best_tenth_after": 0.816
+   "best_tenth_after": 0.813
   },
   {
    "kind": "dec",
@@ -184,9 +184,9 @@
    "homes": 232,
    "sold": 0.1638,
    "deployed_said": 0.0353,
-   "with_the_step": 0.1729,
+   "with_the_step": 0.1771,
    "best_tenth_before": 0.073,
-   "best_tenth_after": 0.832
+   "best_tenth_after": 0.823
   },
   {
    "kind": "dec",
@@ -194,9 +194,9 @@
    "homes": 432,
    "sold": 0.0718,
    "deployed_said": 0.035,
-   "with_the_step": 0.0872,
+   "with_the_step": 0.0875,
    "best_tenth_before": 0.062,
-   "best_tenth_after": 0.715
+   "best_tenth_after": 0.708
   },
   {
    "kind": "dec",
@@ -204,9 +204,9 @@
    "homes": 317,
    "sold": 0.0379,
    "deployed_said": 0.0363,
-   "with_the_step": 0.0495,
+   "with_the_step": 0.0501,
    "best_tenth_before": 0.041,
-   "best_tenth_after": 0.375
+   "best_tenth_after": 0.385
   },
   {
    "kind": "dec",
@@ -214,9 +214,9 @@
    "homes": 314,
    "sold": 0.035,
    "deployed_said": 0.0379,
-   "with_the_step": 0.0489,
+   "with_the_step": 0.0472,
    "best_tenth_before": 0.083,
-   "best_tenth_after": 0.341
+   "best_tenth_after": 0.296
   },
   {
    "kind": "dec",
@@ -224,9 +224,9 @@
    "homes": 3450,
    "sold": 0.0394,
    "deployed_said": 0.0332,
-   "with_the_step": 0.0369,
+   "with_the_step": 0.0377,
    "best_tenth_before": 0.076,
-   "best_tenth_after": 0.117
+   "best_tenth_after": 0.13
   },
   {
    "kind": "dec",
@@ -234,14 +234,14 @@
    "homes": 5060,
    "sold": 0.0621,
    "deployed_said": 0.034,
-   "with_the_step": 0.0638,
+   "with_the_step": 0.0652,
    "best_tenth_before": 0.073,
-   "best_tenth_after": 0.275
+   "best_tenth_after": 0.28
   }
  ],
  "log_loss_homes_with_a_notice": {
   "homes": 7527,
   "before": 0.20968,
-  "after": 0.18539
+  "after": 0.18536
  }
 }

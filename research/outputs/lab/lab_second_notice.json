@@ -22,7 +22,7 @@
     "notice_dec_owned",
     "notice_dec_n"
    ],
-   "rounds": 75
+   "rounds": 156
   }
  ],
  "columns": [
@@ -47,6 +47,6 @@
  "clear_of_zero": true,
  "lift_top10": {
   "deployed": 1.7408,
-  "with_notices": 1.7587
+  "with_notices": 1.7594
  }
 }

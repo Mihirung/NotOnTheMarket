@@ -24,10 +24,14 @@
  "notices": {
   "bk": {
    "version": 2,
-   "notices": 123900,
-   "with_an_address": 123900,
-   "linked_to_a_home": 54093,
+   "notices": 124831,
+   "with_an_address": 124831,
+   "linked_to_a_home": 54540,
    "by_year": {
+    "2012": [
+     931,
+     447
+    ],
     "2013": [
      23314,
      11374
@@ -60,10 +64,18 @@
   },
   "dec": {
    "version": 2,
-   "notices": 91344,
-   "with_an_address": 91344,
-   "linked_to_a_home": 44731,
+   "notices": 208583,
+   "with_an_address": 208583,
+   "linked_to_a_home": 94772,
    "by_year": {
+    "2013": [
+     24447,
+     12325
+    ],
+    "2014": [
+     27010,
+     13654
+    ],
     "2015": [
      30164,
      14986
@@ -76,9 +88,13 @@
      32571,
      15663
     ],
+    "2018": [
+     33968,
+     14408
+    ],
     "2019": [
-     358,
-     78
+     32172,
+     9732
     ]
    }
   }
@@ -253,37 +269,55 @@
   {
    "kind": "dec",
    "notice": "25 to 36 months before",
-   "rows": 1200,
-   "home_years": 3339,
-   "sold": 173,
-   "rate": 0.0518,
+   "rows": 2259,
+   "home_years": 6246,
+   "sold": 341,
+   "rate": 0.0546,
    "rate_range": [
-    0.0444,
-    0.0599
+    0.0487,
+    0.0611
    ],
-   "model_said": 0.0426,
-   "times": 1.22,
+   "model_said": 0.0402,
+   "times": 1.36,
    "times_range": [
-    1.04,
-    1.41
+    1.21,
+    1.52
+   ]
+  },
+  {
+   "kind": "dec",
+   "notice": "37 to 48 months before",
+   "rows": 1838,
+   "home_years": 5144,
+   "sold": 252,
+   "rate": 0.049,
+   "rate_range": [
+    0.0429,
+    0.0558
+   ],
+   "model_said": 0.0407,
+   "times": 1.21,
+   "times_range": [
+    1.05,
+    1.38
    ]
   },
   {
    "kind": "dec",
    "notice": "Any time in the window, about an earlier owner",
-   "rows": 13198,
-   "home_years": 37390,
-   "sold": 1562,
-   "rate": 0.0418,
+   "rows": 23008,
+   "home_years": 65137,
+   "sold": 2707,
+   "rate": 0.0416,
    "rate_range": [
-    0.0397,
-    0.0438
+    0.0399,
+    0.043
    ],
-   "model_said": 0.0343,
-   "times": 1.22,
+   "model_said": 0.0365,
+   "times": 1.14,
    "times_range": [
-    1.15,
-    1.28
+    1.09,
+    1.18
    ]
   }
  ],
@@ -301,39 +335,39 @@
    39
   ],
   "dec": [
-   64,
-   66,
+   57,
+   60,
+   62,
+   62,
    67,
-   68,
-   73,
-   76,
-   82,
-   85,
-   93,
-   93
+   72,
+   74,
+   83,
+   89,
+   99
   ]
  },
  "bands": {
   "all": {
    "year": {
     "deployed": 1.7408,
-    "both": 1.7587,
+    "both": 1.7594,
     "bk": 1.7405,
-    "dec": 1.7597,
+    "dec": 1.7603,
     "gain_both": {
-     "gain": 0.0179,
+     "gain": 0.0186,
      "range": [
-      0.0133,
-      0.0218
+      0.0136,
+      0.0224
      ],
      "by_seed": [
-      0.0179,
-      0.0198,
-      0.0172
+      0.0186,
+      0.0197,
+      0.0191
      ],
      "range_with_fit_noise": [
-      0.0125,
-      0.0225
+      0.0135,
+      0.0226
      ]
     },
     "gain_bk": {
@@ -347,35 +381,35 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.0188,
+     "gain": 0.0195,
      "range": [
-      0.0145,
-      0.0224
+      0.0152,
+      0.0233
      ],
      "by_seed": [
-      0.0188
+      0.0195
      ]
     }
    },
    "later": {
     "deployed": 1.662,
-    "both": 1.6672,
+    "both": 1.6681,
     "bk": 1.66,
-    "dec": 1.6692,
+    "dec": 1.6701,
     "gain_both": {
-     "gain": 0.0052,
+     "gain": 0.0061,
      "range": [
-      0.0016,
-      0.0093
+      0.0026,
+      0.0096
      ],
      "by_seed": [
-      0.0052,
-      0.0057,
-      0.0079
+      0.0061,
+      0.0054,
+      0.0083
      ],
      "range_with_fit_noise": [
-      0.0007,
-      0.0102
+      0.0015,
+      0.0107
      ]
     },
     "gain_bk": {
@@ -389,35 +423,35 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.0071,
+     "gain": 0.008,
      "range": [
-      0.004,
-      0.0107
+      0.0044,
+      0.0112
      ],
      "by_seed": [
-      0.0071
+      0.008
      ]
     }
    },
    "not_listed": {
     "deployed": 1.6912,
-    "both": 1.6961,
+    "both": 1.697,
     "bk": 1.6894,
-    "dec": 1.6979,
+    "dec": 1.6987,
     "gain_both": {
-     "gain": 0.0049,
+     "gain": 0.0058,
      "range": [
-      0.0016,
-      0.009
+      0.0022,
+      0.0097
      ],
      "by_seed": [
-      0.0049,
-      0.0049,
-      0.0071
+      0.0058,
+      0.0046,
+      0.0074
      ],
      "range_with_fit_noise": [
-      0.0008,
-      0.0098
+      0.0013,
+      0.0106
      ]
     },
     "gain_bk": {
@@ -431,13 +465,13 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.0067,
+     "gain": 0.0075,
      "range": [
-      0.0036,
-      0.0104
+      0.0039,
+      0.0108
      ],
      "by_seed": [
-      0.0067
+      0.0075
      ]
     }
    }
@@ -445,23 +479,23 @@
   "t0_9": {
    "year": {
     "deployed": 1.7405,
-    "both": 1.7476,
+    "both": 1.7503,
     "bk": 1.7389,
-    "dec": 1.7495,
+    "dec": 1.7515,
     "gain_both": {
-     "gain": 0.0071,
+     "gain": 0.0098,
      "range": [
-      0.0019,
-      0.0117
+      0.0049,
+      0.0146
      ],
      "by_seed": [
-      0.0071,
-      0.0073,
-      0.0039
+      0.0098,
+      0.0075,
+      0.006
      ],
      "range_with_fit_noise": [
-      0.0006,
-      0.013
+      0.0036,
+      0.0159
      ]
     },
     "gain_bk": {
@@ -475,35 +509,35 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.009,
+     "gain": 0.011,
      "range": [
-      0.0041,
-      0.0136
+      0.0065,
+      0.0153
      ],
      "by_seed": [
-      0.009
+      0.011
      ]
     }
    },
    "later": {
     "deployed": 1.6202,
-    "both": 1.624,
+    "both": 1.6238,
     "bk": 1.6186,
     "dec": 1.6254,
     "gain_both": {
-     "gain": 0.0039,
+     "gain": 0.0037,
      "range": [
-      -0.0013,
-      0.0086
+      -0.0015,
+      0.0082
      ],
      "by_seed": [
-      0.0039,
-      0.0015,
-      0.0015
+      0.0037,
+      0.0008,
+      -0.0006
      ],
      "range_with_fit_noise": [
-      -0.002,
-      0.0092
+      -0.0031,
+      0.0098
      ]
     },
     "gain_bk": {
@@ -519,8 +553,8 @@
     "gain_dec": {
      "gain": 0.0052,
      "range": [
-      0.0006,
-      0.0096
+      0.0007,
+      0.0095
      ],
      "by_seed": [
       0.0052
@@ -529,23 +563,23 @@
    },
    "not_listed": {
     "deployed": 1.6358,
-    "both": 1.6396,
+    "both": 1.6394,
     "bk": 1.6344,
     "dec": 1.6408,
     "gain_both": {
-     "gain": 0.0037,
+     "gain": 0.0035,
      "range": [
-      -0.0016,
-      0.0087
+      -0.0017,
+      0.0081
      ],
      "by_seed": [
-      0.0037,
-      0.0018,
-      0.002
+      0.0035,
+      0.0008,
+      -0.0006
      ],
      "range_with_fit_noise": [
-      -0.002,
-      0.0091
+      -0.0032,
+      0.0096
      ]
     },
     "gain_bk": {
@@ -561,8 +595,8 @@
     "gain_dec": {
      "gain": 0.0049,
      "range": [
-      0.0002,
-      0.0096
+      0.0003,
+      0.0094
      ],
      "by_seed": [
       0.0049
@@ -573,23 +607,23 @@
   "t10_19": {
    "year": {
     "deployed": 1.5139,
-    "both": 1.5359,
+    "both": 1.5357,
     "bk": 1.5119,
-    "dec": 1.5379,
+    "dec": 1.5376,
     "gain_both": {
-     "gain": 0.022,
+     "gain": 0.0218,
      "range": [
-      0.0154,
-      0.0279
+      0.0153,
+      0.0276
      ],
      "by_seed": [
-      0.022,
+      0.0218,
       0.0268,
-      0.0225
+      0.0236
      ],
      "range_with_fit_noise": [
       0.0135,
-      0.0298
+      0.0293
      ]
     },
     "gain_bk": {
@@ -603,35 +637,35 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.024,
+     "gain": 0.0238,
      "range": [
       0.0175,
-      0.03
+      0.0293
      ],
      "by_seed": [
-      0.024
+      0.0238
      ]
     }
    },
    "later": {
     "deployed": 1.4861,
-    "both": 1.4936,
+    "both": 1.4938,
     "bk": 1.4838,
-    "dec": 1.4973,
+    "dec": 1.4971,
     "gain_both": {
-     "gain": 0.0075,
+     "gain": 0.0077,
      "range": [
       0.0024,
-      0.013
+      0.0132
      ],
      "by_seed": [
-      0.0075,
-      0.0075,
-      0.0112
+      0.0077,
+      0.0077,
+      0.0124
      ],
      "range_with_fit_noise": [
-      0.0009,
-      0.0144
+      0.0002,
+      0.0153
      ]
     },
     "gain_bk": {
@@ -645,35 +679,35 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.0112,
+     "gain": 0.011,
      "range": [
-      0.0075,
-      0.0152
+      0.0065,
+      0.0153
      ],
      "by_seed": [
-      0.0112
+      0.011
      ]
     }
    },
    "not_listed": {
     "deployed": 1.519,
-    "both": 1.5249,
+    "both": 1.5252,
     "bk": 1.5167,
-    "dec": 1.5286,
+    "dec": 1.5284,
     "gain_both": {
-     "gain": 0.006,
+     "gain": 0.0062,
      "range": [
-      0.001,
-      0.0116
+      0.0009,
+      0.0123
      ],
      "by_seed": [
-      0.006,
-      0.007,
-      0.0101
+      0.0062,
+      0.0073,
+      0.0114
      ],
      "range_with_fit_noise": [
-      -0.0005,
-      0.0131
+      -0.0012,
+      0.0144
      ]
     },
     "gain_bk": {
@@ -687,13 +721,13 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.0097,
+     "gain": 0.0094,
      "range": [
-      0.0057,
-      0.0137
+      0.0049,
+      0.014
      ],
      "by_seed": [
-      0.0097
+      0.0094
      ]
     }
    }
@@ -701,23 +735,23 @@
   "t20p": {
    "year": {
     "deployed": 1.291,
-    "both": 1.3554,
+    "both": 1.3506,
     "bk": 1.2958,
-    "dec": 1.3506,
+    "dec": 1.3473,
     "gain_both": {
-     "gain": 0.0644,
+     "gain": 0.0596,
      "range": [
-      0.0383,
-      0.0903
+      0.0319,
+      0.0836
      ],
      "by_seed": [
+      0.0596,
       0.0644,
-      0.066,
       0.0612
      ],
      "range_with_fit_noise": [
-      0.0378,
-      0.0907
+      0.0315,
+      0.0841
      ]
     },
     "gain_bk": {
@@ -731,35 +765,35 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.0596,
+     "gain": 0.0563,
      "range": [
-      0.0362,
-      0.0825
+      0.034,
+      0.0813
      ],
      "by_seed": [
-      0.0596
+      0.0563
      ]
     }
    },
    "later": {
     "deployed": 1.3144,
-    "both": 1.3394,
+    "both": 1.3344,
     "bk": 1.3178,
-    "dec": 1.3344,
+    "dec": 1.331,
     "gain_both": {
-     "gain": 0.0249,
+     "gain": 0.0199,
      "range": [
-      0.0018,
-      0.0475
+      -0.0019,
+      0.0438
      ],
      "by_seed": [
-      0.0249,
-      0.0332,
+      0.0199,
+      0.0282,
       0.0316
      ],
      "range_with_fit_noise": [
-      0.0003,
-      0.0491
+      -0.0048,
+      0.0466
      ]
     },
     "gain_bk": {
@@ -773,35 +807,35 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.0199,
+     "gain": 0.0166,
      "range": [
-      0.0005,
-      0.0343
+      -0.0015,
+      0.0322
      ],
      "by_seed": [
-      0.0199
+      0.0166
      ]
     }
    },
    "not_listed": {
     "deployed": 1.3338,
-    "both": 1.3571,
+    "both": 1.3518,
     "bk": 1.3385,
-    "dec": 1.3506,
+    "dec": 1.3471,
     "gain_both": {
-     "gain": 0.0233,
+     "gain": 0.018,
      "range": [
-      -0.0002,
-      0.0446
+      -0.0039,
+      0.0418
      ],
      "by_seed": [
-      0.0233,
-      0.0354,
+      0.018,
+      0.0301,
       0.0301
      ],
      "range_with_fit_noise": [
-      -0.0032,
-      0.0476
+      -0.0077,
+      0.0456
      ]
     },
     "gain_bk": {
@@ -815,13 +849,13 @@
      ]
     },
     "gain_dec": {
-     "gain": 0.0168,
+     "gain": 0.0133,
      "range": [
-      -0.0012,
-      0.0303
+      -0.0045,
+      0.0289
      ],
      "by_seed": [
-      0.0168
+      0.0133
      ]
     }
    }
@@ -829,22 +863,22 @@
  },
  "log_loss_with_a_notice": {
   "both": {
-   "rows": 42388,
-   "home_years": 114424,
-   "sold": 7607,
-   "deployed_expected": 4317,
-   "second_step_expected": 7719,
-   "before": 0.24855,
-   "after": 0.21621,
-   "change": -0.03235,
+   "rows": 55080,
+   "home_years": 150186,
+   "sold": 9170,
+   "deployed_expected": 5729,
+   "second_step_expected": 9060,
+   "before": 0.23151,
+   "after": 0.20648,
+   "change": -0.02503,
    "range": [
-    -0.03428,
-    -0.03029
+    -0.02649,
+    -0.02346
    ],
    "by_seed": [
-    -0.03235,
-    -0.03185,
-    -0.03264
+    -0.02503,
+    -0.02462,
+    -0.02523
    ]
   },
   "bk": {
@@ -865,20 +899,20 @@
    ]
   },
   "dec": {
-   "rows": 22327,
-   "home_years": 58471,
-   "sold": 4939,
-   "deployed_expected": 2096,
-   "second_step_expected": 5160,
-   "before": 0.30316,
-   "after": 0.24053,
-   "change": -0.06262,
+   "rows": 35034,
+   "home_years": 94269,
+   "sold": 6504,
+   "deployed_expected": 3510,
+   "second_step_expected": 6501,
+   "before": 0.25526,
+   "after": 0.21581,
+   "change": -0.03945,
    "range": [
-    -0.06667,
-    -0.05847
+    -0.04185,
+    -0.03688
    ],
    "by_seed": [
-    -0.06262
+    -0.03945
    ]
   }
  },
@@ -929,7 +963,7 @@
    "test_home_years": 1244,
    "sold_later_not_listed": 0.0375,
    "in_best_tenth_before": 0.095,
-   "in_best_tenth_after": 0.205
+   "in_best_tenth_after": 0.204
   },
   {
    "kind": "bk",
@@ -941,7 +975,7 @@
    "test_home_years": 1476,
    "sold_later_not_listed": 0.0427,
    "in_best_tenth_before": 0.077,
-   "in_best_tenth_after": 0.237
+   "in_best_tenth_after": 0.236
   },
   {
    "kind": "bk",
@@ -953,7 +987,7 @@
    "test_home_years": 4936,
    "sold_later_not_listed": 0.0428,
    "in_best_tenth_before": 0.102,
-   "in_best_tenth_after": 0.21
+   "in_best_tenth_after": 0.209
   },
   {
    "kind": "bk",
@@ -973,11 +1007,11 @@
    "home_years": 5685,
    "sold_in_year": 0.3011,
    "deployed_said": 0.0376,
-   "second_step_says": 0.2943,
+   "second_step_says": 0.2903,
    "test_home_years": 579,
    "sold_later_not_listed": 0.1379,
    "in_best_tenth_before": 0.074,
-   "in_best_tenth_after": 0.838
+   "in_best_tenth_after": 0.843
   },
   {
    "kind": "dec",
@@ -985,11 +1019,11 @@
    "home_years": 4891,
    "sold_in_year": 0.174,
    "deployed_said": 0.0375,
-   "second_step_says": 0.1787,
+   "second_step_says": 0.1759,
    "test_home_years": 481,
    "sold_later_not_listed": 0.0832,
    "in_best_tenth_before": 0.085,
-   "in_best_tenth_after": 0.796
+   "in_best_tenth_after": 0.786
   },
   {
    "kind": "dec",
@@ -997,47 +1031,59 @@
    "home_years": 7166,
    "sold_in_year": 0.0895,
    "deployed_said": 0.0381,
-   "second_step_says": 0.0905,
+   "second_step_says": 0.0887,
    "test_home_years": 715,
    "sold_later_not_listed": 0.0598,
    "in_best_tenth_before": 0.049,
-   "in_best_tenth_after": 0.702
+   "in_best_tenth_after": 0.669
   },
   {
    "kind": "dec",
    "notice": "25 to 36 months before",
-   "home_years": 3339,
-   "sold_in_year": 0.0518,
-   "deployed_said": 0.0426,
-   "second_step_says": 0.0825,
-   "test_home_years": 327,
-   "sold_later_not_listed": 0.0275,
-   "in_best_tenth_before": 0.104,
-   "in_best_tenth_after": 0.795
+   "home_years": 6246,
+   "sold_in_year": 0.0546,
+   "deployed_said": 0.0402,
+   "second_step_says": 0.0569,
+   "test_home_years": 615,
+   "sold_later_not_listed": 0.0309,
+   "in_best_tenth_before": 0.088,
+   "in_best_tenth_after": 0.439
+  },
+  {
+   "kind": "dec",
+   "notice": "37 to 48 months before",
+   "home_years": 5144,
+   "sold_in_year": 0.049,
+   "deployed_said": 0.0407,
+   "second_step_says": 0.0524,
+   "test_home_years": 504,
+   "sold_later_not_listed": 0.0615,
+   "in_best_tenth_before": 0.077,
+   "in_best_tenth_after": 0.294
   },
   {
    "kind": "dec",
    "notice": "Any, owner bought before it",
-   "home_years": 21081,
-   "sold_in_year": 0.1602,
-   "deployed_said": 0.0386,
-   "second_step_says": 0.1646,
-   "test_home_years": 2102,
-   "sold_later_not_listed": 0.0816,
+   "home_years": 29132,
+   "sold_in_year": 0.1303,
+   "deployed_said": 0.0388,
+   "second_step_says": 0.1294,
+   "test_home_years": 2894,
+   "sold_later_not_listed": 0.0735,
    "in_best_tenth_before": 0.073,
-   "in_best_tenth_after": 0.775
+   "in_best_tenth_after": 0.609
   },
   {
    "kind": "dec",
    "notice": "Any, about an earlier owner",
-   "home_years": 37390,
-   "sold_in_year": 0.0418,
-   "deployed_said": 0.0343,
-   "second_step_says": 0.0452,
-   "test_home_years": 3714,
-   "sold_later_not_listed": 0.0397,
-   "in_best_tenth_before": 0.077,
-   "in_best_tenth_after": 0.244
+   "home_years": 65137,
+   "sold_in_year": 0.0416,
+   "deployed_said": 0.0365,
+   "second_step_says": 0.0419,
+   "test_home_years": 6511,
+   "sold_later_not_listed": 0.0393,
+   "in_best_tenth_before": 0.081,
+   "in_best_tenth_after": 0.157
   }
  ],
  "clear_of_zero": true,
@@ -1066,7 +1112,7 @@
     "notice_dec_owned",
     "notice_dec_n"
    ],
-   "rounds": 75
+   "rounds": 156
   }
  ]
 }
