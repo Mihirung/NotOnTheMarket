@@ -358,6 +358,35 @@ the notices add 2.3 times as much read as they appear as read once a year
 (`NOTICE_MONTHLY.md`); weekly is worth a little more than monthly, and costs a
 dozen requests.
 
+**What the score means.** The site's score is the chance that a sale
+completes six to eighteen months after the scoring day. A home that completes
+sooner was, with few exceptions, already on the market that day, and a buyer
+can find it on a portal. The model is the later-sales fit with energy
+certificates (`outputs/signals/LATE_MODEL.md`), which read a certificate
+lodged for a marketed sale as a sign the home is already for sale. On the
+2017 and 2018 test it finds 1.70 times random among later sellers against
+1.66 for the model of sales in the next twelve months, and on the up-to-date
+records it wins in six of the seven years from 2019 to 2025 (1.80 against
+1.68 scored on 1 January 2025; 2021 is the exception). Homes owned for 20
+years or more gain most: 1.63 against 1.33 in 2025. Only deceased-estate
+notices are added to this model: bankruptcy orders make its ranking slightly
+worse (`NOTICE_STEP_LATE.md`).
+
+```bash
+EPC_TOKEN_FILE=<file> python src/epc_fetch.py fetch       # certificates for every year (refresh: this year's again, monthly)
+QM_LABEL=late python src/model_lab.py data/panel3 outputs/lab deploy_set 4 "+HOUSE+AREA+PD+EPC" "BASE+HIST+GEO+VIEW+HOUSE+AREA+PD+EPC" 100
+python src/notice_step_late.py first                      # the later-sales model's figure for every home-year of 2017 and 2018 (once)
+python src/notice_step_late.py                            # its notice step
+QM_LABEL=late python src/notice_unseen.py                 # and its model for homes with no sale on record
+python src/live_check.py late                             # the check on current sales: each 1 January from 2019
+python src/live_check.py late lag                         # and one day with part of its last six months hidden
+MODEL=year bash refresh.sh                                # the site on the model of sales in the next twelve months instead
+```
+
+The product fit and the certificate features need most of a 16 GB machine.
+Run them one at a time; `MEMORY_CAP_GB=15 bash refresh.sh` makes a job that
+outgrows the machine stop with an error instead of starving the rest.
+
 A sale reaches the register weeks or months after it completes, so the last
 six months of every file are part empty (the newest month holds about a
 quarter of its sales). Left alone that costs the ranking 0.06, because every local and

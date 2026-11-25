@@ -63,4 +63,4 @@ first step's log-odds. Test homes of 2017 and 2018; each home-year is scored by 
 | Deceased-estate notice | Any, owner bought before it | 29,132 | 7.9% | 3.5% | 7.8% | 8% | 58% |
 | Deceased-estate notice | Any, about an earlier owner | 65,137 | 4.1% | 3.3% | 4.3% | 6% | 23% |
 
-In the product: deceased-estate notices (100 rounds).
+In the product: deceased-estate notices (100 rounds). Left out, because the homes that have one are not better scored on this target: bankruptcy orders. With what is in, the best tenth finds 1.702 times random.

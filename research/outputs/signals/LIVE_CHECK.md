@@ -46,3 +46,27 @@ months hidden (131,552 sales), by the deployed model.
 
 Homes sold in those six months whose sale was hidden are 0.6% of the homes scored and 1.0% of the best tenth
 (1.7 times random): the ranking finds them because they were about to sell, and cannot know they have.
+
+## Homes not yet on the market
+
+Scored on 1 January; the sellers counted are those completing between July of that year and June of the next. A model
+is shown only for the years after the last one it was fitted on.
+
+| Scored on 1 January | Later sales with certificates, fitted to 2015 | Later sales with certificates, fitted to 2018 (the site's) | Next twelve months, fitted to 2015 | Next twelve months, fitted to 2018 (the model before) |
+|---|---|---|---|---|
+| 2019 | 1.747 | 1.748 | 1.628 | 1.701 |
+| 2020 | 1.685 | 1.732 | 1.597 | 1.623 |
+| 2021 | 1.613 | 1.637 | 1.648 | 1.681 |
+| 2022 | 1.687 | 1.782 | 1.719 | 1.740 |
+| 2023 | 1.777 | 1.788 | 1.696 | 1.697 |
+| 2024 | 1.750 | 1.745 | 1.671 | 1.698 |
+| 2025 | 1.793* | 1.803* | 1.641* | 1.684* |
+
+2024-10-01 with part of its last six months hidden and counted up, as the live site scores (131,141 sales hidden; the homes just sold are 0.5% of those scored):
+
+| Model | Every sale known | Part hidden, counted up | Just sold, share of the best tenth |
+|---|---|---|---|
+| Next twelve months, fitted to 2015 | 1.653 (1.625 to 1.685) | 1.634 (1.602 to 1.664) | 0.9% |
+| Later sales with certificates, fitted to 2015 | 1.767 (1.735 to 1.797) | 1.740 (1.709 to 1.769) | 1.3% |
+| Next twelve months, fitted to 2018 (the model before) | 1.692 (1.661 to 1.721) | 1.665 (1.636 to 1.694) | 1.0% |
+| Later sales with certificates, fitted to 2018 (the site's) | 1.736 (1.704 to 1.768) | 1.711 (1.681 to 1.743) | 1.4% |

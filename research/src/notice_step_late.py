@@ -143,12 +143,19 @@ def main():
             continue
         bst.save_model(str(f)); parts.append({"kind": k, "file": f.name, "columns": [ST.NAMES[i] for i in ST.cols_of(k)], "rounds": bst.num_trees()})
     R["product"] = parts
+    # what the product's ranking is: the arm with exactly the kinds that passed
+    passed = [q["kind"] for q in parts]
+    prod = main_arm if passed == kinds else passed[0] if len(passed) == 1 else None
+    if prod:
+        R["auc_later"]["with_notices"] = round(auc(later, arms[prod][test]), 4)
+    R["product_ranking"] = {"kinds": passed, "later": A["later"][prod] if prod else A["later"]["first_step"],
+                            "gain": A["later"][f"gain_{prod}"] if prod else None}
     json.dump({"first_step": FIRST, "label": "the sale completes six to eighteen months after the scoring day", "target": "late",
                "score": "log-odds = the first step's log-odds + each part's raw output, for homes where the part's first column is present",
                "parts": parts, "columns": [c for q in parts for c in q["columns"]], "row_families": ["NOTICE"], "kinds": [q["kind"] for q in parts],
                "window_months": NS.WINDOW, "rows": int(len(p)), "fitted_on": "every home-year of 2017 and 2018 with a notice, first step fitted to 2015",
                "passes": bool(R["passes"] and parts), "clear_of_zero": R["clear_of_zero"], "auc_later": R["auc_later"],
-               "lift_top10": {"deployed": A["later"]["first_step"], "with_notices": A["later"][main_arm]}},
+               "lift_top10": {"deployed": A["later"]["first_step"], "with_notices": R["product_ranking"]["later"]}},
               open(LAB / "lab_second_notice_late.json", "w"), indent=1)
 
     pc = lambda x: "" if x is None else f"{100 * x:.1f}%"               # noqa: E731
@@ -181,7 +188,10 @@ def main():
            "| Notice | Published | Home-years | Sold later | First step said | With the step | In the best tenth before | After |", "|---|---|---|---|---|---|---|---|"]
     md += [f"| {ST.KIND[r['kind']]} | {r['notice']} | {r['home_years']:,} | {pc(r['sold_later'])} | {pc(r['first_step_said'])} | {pc(r['with_the_step'])} | "
            f"{whole(r['in_best_tenth_before'])} | {whole(r['in_best_tenth_after'])} |" for r in R["homes_with_a_notice"]]
-    md += ["", "In the product: " + (", ".join(f"{ST.KIND[q['kind']].lower()}s ({q['rounds']} rounds)" for q in parts) or "none") + ".", ""]
+    left = [ST.KIND[k].lower() + "s" for k in kinds if k not in passed]
+    md += ["", "In the product: " + (", ".join(f"{ST.KIND[q['kind']].lower()}s ({q['rounds']} rounds)" for q in parts) or "none") + "."
+           + (f" Left out, because the homes that have one are not better scored on this target: {', '.join(left)}." if left else "")
+           + (f" With what is in, the best tenth finds {R['product_ranking']['later']:.3f} times random." if prod else ""), ""]
     OUT.mkdir(parents=True, exist_ok=True)
     json.dump(R, open(OUT / "NOTICE_STEP_LATE.json", "w"), indent=1)
     (OUT / "NOTICE_STEP_LATE.md").write_text("\n".join(md))

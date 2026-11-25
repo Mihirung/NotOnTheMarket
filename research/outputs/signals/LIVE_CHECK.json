@@ -1298,6 +1298,65 @@
     ]
    }
   ],
-  "lag": {}
+  "lag": {
+   "day": "2024-10-01",
+   "sales_hidden": 131141,
+   "homes": 1530924,
+   "just_sold_share_of_homes": 0.0055,
+   "models": {
+    "year_to_2015": {
+     "all_sales_known": [
+      1.6528,
+      1.6247,
+      1.6846
+     ],
+     "part_hidden_counted_up": [
+      1.6336,
+      1.6024,
+      1.6639
+     ],
+     "just_sold_share_of_best_tenth": 0.0095
+    },
+    "late_to_2015": {
+     "all_sales_known": [
+      1.7666,
+      1.7346,
+      1.7974
+     ],
+     "part_hidden_counted_up": [
+      1.7401,
+      1.7088,
+      1.7694
+     ],
+     "just_sold_share_of_best_tenth": 0.0134
+    },
+    "year_to_2018": {
+     "all_sales_known": [
+      1.6922,
+      1.6608,
+      1.7212
+     ],
+     "part_hidden_counted_up": [
+      1.6652,
+      1.6358,
+      1.6944
+     ],
+     "just_sold_share_of_best_tenth": 0.01
+    },
+    "late_to_2018": {
+     "all_sales_known": [
+      1.7365,
+      1.7039,
+      1.7681
+     ],
+     "part_hidden_counted_up": [
+      1.711,
+      1.6808,
+      1.7434
+     ],
+     "just_sold_share_of_best_tenth": 0.0137
+    }
+   }
+  }
  }
 }
