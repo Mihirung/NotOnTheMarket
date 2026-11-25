@@ -1,11 +1,32 @@
 {
- "what": "share first sold in the calendar year, by months from the notice to 1 January; homes with no sale on record",
+ "what": "models for homes named in a notice with no sale on record: the chance of a first sale in the calendar year",
  "years": [
   2017,
   2018
  ],
- "min_homes": 300,
- "rates": {
-  "bk": {}
+ "homes_on_record_sell_at": 0.0401,
+ "kinds": {
+  "dec": {
+   "file": "model_unseen_dec.txt",
+   "columns": [
+    "months",
+    "n",
+    "flat",
+    "own_outright",
+    "own_mortgage",
+    "social_rent",
+    "private_rent",
+    "hh_alone_65",
+    "age_75_84",
+    "age_85_plus",
+    "flats",
+    "bungalows",
+    "detached",
+    "n_addr",
+    "on_record"
+   ],
+   "min_p": 0.0401,
+   "rounds": 329
+  }
  }
 }

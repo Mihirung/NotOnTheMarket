@@ -12,27 +12,41 @@
     "notice_bk_owned",
     "notice_bk_n"
    ],
-   "rounds": 36
+   "rounds": 35
+  },
+  {
+   "kind": "dec",
+   "file": "model_second_notice_dec.txt",
+   "columns": [
+    "notice_dec_months",
+    "notice_dec_owned",
+    "notice_dec_n"
+   ],
+   "rounds": 75
   }
  ],
  "columns": [
   "notice_bk_months",
   "notice_bk_owned",
-  "notice_bk_n"
+  "notice_bk_n",
+  "notice_dec_months",
+  "notice_dec_owned",
+  "notice_dec_n"
  ],
  "row_families": [
   "NOTICE"
  ],
  "kinds": [
-  "bk"
+  "bk",
+  "dec"
  ],
  "window_months": 48,
  "rows": 9126882,
  "fitted_on": "every home-year of 2017 and 2018 with a notice, first step fitted to 2015",
  "passes": true,
- "clear_of_zero": false,
+ "clear_of_zero": true,
  "lift_top10": {
   "deployed": 1.7408,
-  "with_notices": 1.7406
+  "with_notices": 1.7587
  }
 }
