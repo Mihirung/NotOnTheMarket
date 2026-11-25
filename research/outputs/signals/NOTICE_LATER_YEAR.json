@@ -1,0 +1,247 @@
+{
+ "year": 2019,
+ "homes": 1349789,
+ "sold": 0.0331,
+ "deployed_expected": 0.0366,
+ "kinds": [
+  "bk",
+  "dec"
+ ],
+ "bands": {
+  "all": {
+   "homes": 1349789,
+   "deployed": 1.759,
+   "with_notices": 1.7852,
+   "bk": 1.7601,
+   "dec": 1.785,
+   "with_notices_change": [
+    0.0262,
+    0.019,
+    0.0328
+   ],
+   "bk_change": [
+    0.0011,
+    -0.0014,
+    0.0033
+   ],
+   "dec_change": [
+    0.026,
+    0.0199,
+    0.032
+   ]
+  },
+  "t0_9": {
+   "homes": 626542,
+   "deployed": 1.7821,
+   "with_notices": 1.7944,
+   "bk": 1.783,
+   "dec": 1.7927,
+   "with_notices_change": [
+    0.0123,
+    0.0063,
+    0.0187
+   ],
+   "bk_change": [
+    0.0009,
+    -0.001,
+    0.003
+   ],
+   "dec_change": [
+    0.0106,
+    0.0047,
+    0.0168
+   ]
+  },
+  "t10_19": {
+   "homes": 555005,
+   "deployed": 1.5023,
+   "with_notices": 1.5265,
+   "bk": 1.5018,
+   "dec": 1.5271,
+   "with_notices_change": [
+    0.0242,
+    0.0127,
+    0.0364
+   ],
+   "bk_change": [
+    -0.0005,
+    -0.0056,
+    0.0048
+   ],
+   "dec_change": [
+    0.0248,
+    0.0154,
+    0.0349
+   ]
+  },
+  "t20p": {
+   "homes": 168242,
+   "deployed": 1.3539,
+   "with_notices": 1.4719,
+   "bk": 1.3638,
+   "dec": 1.462,
+   "with_notices_change": [
+    0.118,
+    0.0808,
+    0.1579
+   ],
+   "bk_change": [
+    0.0099,
+    -0.0079,
+    0.0292
+   ],
+   "dec_change": [
+    0.1081,
+    0.0747,
+    0.1446
+   ]
+  }
+ },
+ "homes_with_a_notice": [
+  {
+   "kind": "bk",
+   "notice": "1 to 6 months before",
+   "homes": 332,
+   "sold": 0.0271,
+   "deployed_said": 0.0371,
+   "with_the_step": 0.0382,
+   "best_tenth_before": 0.096,
+   "best_tenth_after": 0.096
+  },
+  {
+   "kind": "bk",
+   "notice": "7 to 12 months before",
+   "homes": 344,
+   "sold": 0.0407,
+   "deployed_said": 0.039,
+   "with_the_step": 0.0454,
+   "best_tenth_before": 0.137,
+   "best_tenth_after": 0.247
+  },
+  {
+   "kind": "bk",
+   "notice": "13 to 24 months before",
+   "homes": 542,
+   "sold": 0.0535,
+   "deployed_said": 0.0393,
+   "with_the_step": 0.0478,
+   "best_tenth_before": 0.111,
+   "best_tenth_after": 0.29
+  },
+  {
+   "kind": "bk",
+   "notice": "25 to 36 months before",
+   "homes": 499,
+   "sold": 0.0361,
+   "deployed_said": 0.0383,
+   "with_the_step": 0.0468,
+   "best_tenth_before": 0.122,
+   "best_tenth_after": 0.313
+  },
+  {
+   "kind": "bk",
+   "notice": "37 to 48 months before",
+   "homes": 503,
+   "sold": 0.0199,
+   "deployed_said": 0.0372,
+   "with_the_step": 0.0461,
+   "best_tenth_before": 0.099,
+   "best_tenth_after": 0.278
+  },
+  {
+   "kind": "bk",
+   "notice": "Any time in the window, about an earlier owner",
+   "homes": 249,
+   "sold": 0.0281,
+   "deployed_said": 0.0302,
+   "with_the_step": 0.0316,
+   "best_tenth_before": 0.06,
+   "best_tenth_after": 0.084
+  },
+  {
+   "kind": "bk",
+   "notice": "Every home with one",
+   "homes": 2469,
+   "sold": 0.0352,
+   "deployed_said": 0.0374,
+   "with_the_step": 0.044,
+   "best_tenth_before": 0.107,
+   "best_tenth_after": 0.239
+  },
+  {
+   "kind": "dec",
+   "notice": "1 to 6 months before",
+   "homes": 315,
+   "sold": 0.273,
+   "deployed_said": 0.0341,
+   "with_the_step": 0.2754,
+   "best_tenth_before": 0.073,
+   "best_tenth_after": 0.816
+  },
+  {
+   "kind": "dec",
+   "notice": "7 to 12 months before",
+   "homes": 232,
+   "sold": 0.1638,
+   "deployed_said": 0.0353,
+   "with_the_step": 0.1729,
+   "best_tenth_before": 0.073,
+   "best_tenth_after": 0.832
+  },
+  {
+   "kind": "dec",
+   "notice": "13 to 24 months before",
+   "homes": 432,
+   "sold": 0.0718,
+   "deployed_said": 0.035,
+   "with_the_step": 0.0872,
+   "best_tenth_before": 0.062,
+   "best_tenth_after": 0.715
+  },
+  {
+   "kind": "dec",
+   "notice": "25 to 36 months before",
+   "homes": 317,
+   "sold": 0.0379,
+   "deployed_said": 0.0363,
+   "with_the_step": 0.0495,
+   "best_tenth_before": 0.041,
+   "best_tenth_after": 0.375
+  },
+  {
+   "kind": "dec",
+   "notice": "37 to 48 months before",
+   "homes": 314,
+   "sold": 0.035,
+   "deployed_said": 0.0379,
+   "with_the_step": 0.0489,
+   "best_tenth_before": 0.083,
+   "best_tenth_after": 0.341
+  },
+  {
+   "kind": "dec",
+   "notice": "Any time in the window, about an earlier owner",
+   "homes": 3450,
+   "sold": 0.0394,
+   "deployed_said": 0.0332,
+   "with_the_step": 0.0369,
+   "best_tenth_before": 0.076,
+   "best_tenth_after": 0.117
+  },
+  {
+   "kind": "dec",
+   "notice": "Every home with one",
+   "homes": 5060,
+   "sold": 0.0621,
+   "deployed_said": 0.034,
+   "with_the_step": 0.0638,
+   "best_tenth_before": 0.073,
+   "best_tenth_after": 0.275
+  }
+ ],
+ "log_loss_homes_with_a_notice": {
+  "homes": 7527,
+  "before": 0.20968,
+  "after": 0.18539
+ }
+}
