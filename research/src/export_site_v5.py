@@ -178,7 +178,7 @@ def score(tx_path, model_path, deploy_json, cache_dir, second_json=None, batch=1
         row_fams = [f for f in SG.ROW_FAMILIES if set(SG.ROW_FAMILIES[f]["columns"]) & set(sj["columns"])]
         known = {"first_step", "tenure"} | {c for f in row_fams for c in SG.ROW_FAMILIES[f]["columns"]}
         assert all(b.feature_name() == cols for b, cols, _ in second) and set(sj["columns"]) <= known, "the second step's columns are not all known"
-    lookups = {f: SG.lookup(f, panel.pc_names) for f in fams if f not in SG.TIME_VARYING}
+    lookups = {f: SG.lookup(f, panel.pc_names) for f in fams if f not in SG.TIME_VARYING and f not in SG.ROW_FAMILIES}
     s_all = np.nonzero(~panel.sold & (panel.ptype >= 0))[0]
     parts = []
     for a in range(0, len(s_all), batch):
