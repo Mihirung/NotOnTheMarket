@@ -1,0 +1,100 @@
+{
+ "notices_first_published": [
+  2024,
+  2025
+ ],
+ "sales_to": "2026-09",
+ "kinds": {
+  "dec": {
+   "rows": [
+    {
+     "homes": "Every address",
+     "addresses": 64304,
+     "0_to_2": 0.045,
+     "3_to_5": 0.0623,
+     "6_to_11": 0.1315,
+     "12_to_23": 0.1184,
+     "24_to_35": null,
+     "within_12": 0.2409,
+     "within_24": 0.3774,
+     "within_36": null
+    },
+    {
+     "homes": "A sale on record before the notice",
+     "addresses": 20010,
+     "0_to_2": 0.0506,
+     "3_to_5": 0.0712,
+     "6_to_11": 0.1595,
+     "12_to_23": 0.1589,
+     "24_to_35": null,
+     "within_12": 0.2835,
+     "within_24": 0.4479,
+     "within_36": null
+    },
+    {
+     "homes": "The same, not sold in the 12 months before it",
+     "addresses": 17768,
+     "0_to_2": 0.0568,
+     "3_to_5": 0.0795,
+     "6_to_11": 0.1761,
+     "12_to_23": 0.1736,
+     "24_to_35": null,
+     "within_12": 0.3148,
+     "within_24": 0.4957,
+     "within_36": null
+    },
+    {
+     "homes": "No sale on record before the notice",
+     "addresses": 44294,
+     "0_to_2": 0.0424,
+     "3_to_5": 0.0582,
+     "6_to_11": 0.1189,
+     "12_to_23": 0.1007,
+     "24_to_35": null,
+     "within_12": 0.2217,
+     "within_24": 0.3465,
+     "within_36": null
+    },
+    {
+     "homes": "The same, not a flat or a named block",
+     "addresses": 37897,
+     "0_to_2": 0.0485,
+     "3_to_5": 0.0664,
+     "6_to_11": 0.1361,
+     "12_to_23": 0.1141,
+     "24_to_35": null,
+     "within_12": 0.2535,
+     "within_24": 0.3961,
+     "within_36": null
+    }
+   ],
+   "sold_in_the_12_months_before": 0.112,
+   "share_by_month_after_on_record_not_just_sold": [
+    0.0206,
+    0.0168,
+    0.0195,
+    0.0227,
+    0.0266,
+    0.0302,
+    0.0302,
+    0.0327,
+    0.0301,
+    0.0284,
+    0.0283,
+    0.0216,
+    0.0199,
+    0.0179,
+    0.0136,
+    0.0122,
+    0.011,
+    0.0093,
+    0.0081,
+    0.0062,
+    0.0047,
+    0.0035,
+    0.0039,
+    0.0034
+   ]
+  }
+ }
+}
